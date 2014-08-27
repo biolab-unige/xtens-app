@@ -1,0 +1,18 @@
+{   
+    "Welcome": "Welcome",
+    "create-a-new-data-type": "Create a new data type:",
+    "name": "Name",
+    "file-upload": "File Upload",
+    "yes": "YES",
+    "no": "NO",
+    "description": "Description",
+    "version": "Version",
+    "ontology": "Ontology",
+    "select-an-ontology-to-name-metadata-fields": "Select an ontology to name metadata fields",
+    "add-metadata-group": "Add Metadata Group",
+    "save-data-type": "Save Data Type",
+    "type": "Type",
+    "required": "Required",
+    "is-list": "Is List",
+    "has Units": "Has Units"
+}
