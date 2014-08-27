@@ -116,4 +116,10 @@ npm-debug.log
 nbproject
 .idea
 .node_history
+
+#################################################
+# Eclipse projects folders
+#
+#################################################
 .metadata
+.settings
