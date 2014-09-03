@@ -37,6 +37,7 @@ var jsFilesToInject = [
     'js/modules/XtensConstants.js',
     'js/modules/MetadataField.js',
     'js/modules/DataType.js',
+    'js/modules/Operator.js',
 
     // All of the rest of your client-side js files
     // will be injected here in no particular order.

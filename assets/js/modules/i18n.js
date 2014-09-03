@@ -20,10 +20,24 @@
         "schema": "Schema",
         "json-schema": "JSON Schema",
         "new-data-type": "New Data Type",
+<<<<<<< HEAD
         "edit": "Edit",
         "group": "Group",
         "add-attribute": "Add Attribute",
         "add-loop": "Add Loop"
+=======
+        "new-operator" : "New Operator",
+        "first-name" : "First Name",
+        "last-name": "Last Name",
+        "birth-date": "Birth Date",
+        "sex" : "Sex",
+        "email" : "Email",
+        "login" : "Login",
+        "password" : "Password",
+        "operator-list" : "Operator List",
+        "create-a-new-operator" : "Create a New Operator",
+        "save-operator" : "Save Operator"
+>>>>>>> a9c64975685e080f0fe6185f952cb233bb2777b3
     };
 
     var it = {

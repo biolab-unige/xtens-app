@@ -29,13 +29,25 @@ module.exports.routes = {
     // (Alternatively, remove this and add an `index.html` file in your `assets` directory)
     '/': {
         controller: 'home'
+<<<<<<< HEAD
+    }, 
+    
+	'/superadmin':{
+		controller:'superadmin'
+	},
+=======
     },
     
     /*
    '/dataTypes/new': {
         controller: 'dataType',
         action: 'insertnew'
+<<<<<<< HEAD
    } */
+=======
+   } 
+>>>>>>> a3a692fcde92e75c755677ee6f7e94b9999f1c84
+>>>>>>> a9c64975685e080f0fe6185f952cb233bb2777b3
 
     // If a request to a URL doesn't match any of the custom routes above,
     // it is matched against Sails route blueprints.  See `config/blueprints.js`
