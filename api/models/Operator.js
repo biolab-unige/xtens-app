@@ -4,22 +4,25 @@
 var bcrypt = require('bcrypt');
 
 var Operator = {
+    connection:'postgresqlMaffo',
+    tableName: 'operator'
     attributes: {
+
         firstName: {
-            type: 'STRING',
+            type: 'string',
             required: true,
             max: 64
         },
         lastName: {
-            type: 'STRING',
+            type: 'string',
             required: true,
             max: 64
         },
         birthDate: {
-            type: 'DATE'
+            type: 'date'
         },
         sex: {
-            type: 'STRING',
+            type: 'string',
             enum: ['M', 'F', 'N.A.']
         },
         email: {
@@ -27,13 +30,24 @@ var Operator = {
             required: true
         },
         login: {
-            type: 'STRING',
+            type: 'string',
             required: true,
             max: 64
         },
         password: {
-            type: 'STRING'
+            type: 'string',
+            required: true
         },
+
+        createdAt: {
+            type: 'datetime',
+            defaultsTo: function (){ return new Date(); }
+        },
+
+        updatedAt: { type: 'datetime', 
+            defaultsTo: function (){ return new Date(); } 
+        },
+
 
         // Override toJSON instance method
         // to remove password value

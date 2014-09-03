@@ -19,7 +19,18 @@
         "has-units": "Has Units",
         "schema": "Schema",
         "json-schema": "JSON Schema",
-        "new-data-type": "New Data Type"
+        "new-data-type": "New Data Type",
+        "new-operator" : "New Operator",
+        "first-name" : "First Name",
+        "last-name": "Last Name",
+        "birth-date": "Birth Date",
+        "sex" : "Sex",
+        "email" : "Email",
+        "login" : "Login",
+        "password" : "Password",
+        "operator-list" : "Operator List",
+        "create-a-new-operator" : "Create a New Operator",
+        "save-operator" : "Save Operator"
     };
 
     var it = {

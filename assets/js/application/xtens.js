@@ -34,14 +34,27 @@ jQuery(function($) {
         routes: {
             "": "datatypes",
             "datatypes": "datatypes",
-            "datatypes/new": "datatype-create"
+            "datatypes/new": "datatype-create",
+            "operator" : "operator",
+            "operator/new" : "operator-create"
         },
 
     });
     
     var DataType = xtens.module("datatype");
+    var Operator = xtens.module("operator");
     var router = new XtensRouter();
     
+     router.on('route:operator',function() {
+    var listView = new Operator.Views.List();
+        listView.render();
+     });
+
+     router.on('route:operator-create',function(){
+        var editView = new Operator.Views.Edit();
+        editView.render();
+     });
+
     router.on('route:datatypes', function() {
         var listView = new DataType.Views.List();
         listView.render();

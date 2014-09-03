@@ -1,0 +1,66 @@
+<h2><%= __("create-a-new-operator") %></h2>
+
+<div id="content"> 
+
+    <form class="form-horizontal edit-operator-form" role="form">
+        <div class="form-group row">
+            <label for="schemaName" class="col-md-2 control-label"><%= __("first-name") %></label>
+            <div class="col-md-6">
+                <input text class="form-control" id=schemaName" placeholder="Operator First Name">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="schemaSurname" class="col-md-2 control-label"><%=__("last-name") %></label>
+            <div class="col-md-6">
+                <input text class="form-control" id="surname" placeholder="Operator Last Name">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="date" class="col-md-2 control-label"><%=__("birth-date") %></label>
+            <div class="col-md-6">
+                <input text class="form-control" id="date" placeholder="Operator Birth Date">
+            </div>
+        </div>
+        <div class="form-group row">
+		
+            <label for="sex" class="col-md-2 control-label"><%=__("sex") %></label>
+		<div class = "col-md-6">
+		<div class="radio">
+  		<label>
+    		<input type="radio" name="sex" id="sex1" value="option1" checked>
+    		M
+  		</label>
+		
+  		<label>
+    		<input type="radio" name="sex" id="sex2" value="option2">
+    		F
+  		</label>
+		</div>
+		</div>
+        </div>
+        <div class="form-group row">
+            <label for="email" class="col-md-2 control-label"><%=__("email") %></label>
+            <div class="col-md-6">
+                <input text class="form-control" id="email" placeholder="Operator Email">
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="login" class="col-md-2 control-label"><%=__("login") %></label>
+            <div class="col-md-6">
+                <input text class="form-control" id="login" placeholder="Operator Login">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="password" class="col-md-2 control-label"><%=__("password") %></label>
+            <div class="col-md-6">
+                <input text class="form-control" id="password" placeholder="Operator Password">
+            </div>
+        </div>
+
+        <div id="buttonbardiv" class="row text-center">
+            <input type="submit" class="btn btn-primary" value="<%=__('save-operator') %>" >
+        </div>
+    </form>
+
+</div> <!--content -->
