@@ -36,6 +36,7 @@ var jsFilesToInject = [
     'js/modules/i18n.js',
     'js/modules/XtensConstants.js',
     'js/modules/MetadataField.js',
+    'js/modules/MetadataGroup.js',
     'js/modules/DataType.js',
     'js/modules/Operator.js',
 

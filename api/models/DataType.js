@@ -1,8 +1,7 @@
 /**
  * DataType.js
  */
-module.exports = {
-    connection: 'postgresqlServerLaptop21',
+var DataType = {
     tableName: 'data_type',
     attributes: {
         name: {
@@ -25,3 +24,4 @@ module.exports = {
         }
     }
 };
+module.exports = DataType;

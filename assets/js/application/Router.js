@@ -6,10 +6,13 @@
     var XtensRouter = Backbone.Router.extend({
 
         routes: {
-            "": "datatypes",
-            "datatypes": "datatypes",
+            "": "datatype",
+            "datatypes": "datatype",
             "datatypes/new": "datatype-edit",
-            "datatypes/edit/:id": "datatype-edit"
+            "datatypes/edit/:id": "datatype-edit",
+            "operators": "operator",
+            "operators/new": "operator-edit",
+            "operators/edit/:id": "operator-edit"
         }
 
     });

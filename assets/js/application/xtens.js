@@ -33,18 +33,6 @@ var xtens = {
 // // application
 jQuery(function($) {
     // Initialise your application here (?)
-    /*
-       var XtensRouter = Backbone.Router.extend({
-
-routes: {
-"": "datatypes",
-"datatypes": "datatypes",
-"datatypes/new": "datatype-create",
-"operator" : "operator",
-"operator/new" : "operator-create"
-},
-
-}); */
 
     var DataType = xtens.module("datatype");
     var Operator = xtens.module("operator");
@@ -55,12 +43,12 @@ routes: {
         listView.render();
     });
 
-    router.on('route:operator-create',function(){
+    router.on('route:operator-edit',function(){
         var editView = new Operator.Views.Edit();
         editView.render();
     });
 
-    router.on('route:datatypes', function() {
+    router.on('route:datatype', function() {
         var listView = new DataType.Views.List();
         listView.render();
     });

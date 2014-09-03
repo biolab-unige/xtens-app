@@ -6,7 +6,7 @@
     // XTENS router alias
     var router = xtens.router;
 
-    MetadataGroup.Views.Edit = Backbone.View.Extend({
+    MetadataGroup.Views.Edit = Backbone.View.extend({
 
         tagName: 'div',   
         className: 'metadataGroup',
