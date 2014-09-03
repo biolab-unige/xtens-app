@@ -20,7 +20,11 @@ var xtens = {
             // Create a module and save it under this name
             return modules[name] = { Views: {} };
         };
-    }()
+        
+    }(),
+    
+    app: _.extend({}, Backbone.Events)
+
 };
 
 // Using the jQuery ready event is excellent for ensuring all 
@@ -29,6 +33,7 @@ var xtens = {
 // // application
 jQuery(function($) {
     // Initialise your application here (?)
+    /*
     var XtensRouter = Backbone.Router.extend({
 
         routes: {
@@ -37,11 +42,11 @@ jQuery(function($) {
             "datatypes/new": "datatype-create"
         },
 
-    });
+    }); */
     
     var DataType = xtens.module("datatype");
-    var router = new XtensRouter();
-    
+    var router = xtens.router;
+
     router.on('route:datatypes', function() {
         var listView = new DataType.Views.List();
         listView.render();

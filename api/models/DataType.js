@@ -2,10 +2,15 @@
  * DataType.js
  */
 var DataType = {
+    tableName: 'data_type',
     attributes: {
         id: {
             type: 'INTEGER',
-            required: true
+            required: true,
+            autoIncrement: true,
+            primaryKey: true,
+            unique: true
+            
         },
         name: {
             type: 'STRING',

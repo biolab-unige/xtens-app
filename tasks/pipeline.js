@@ -32,6 +32,7 @@ var jsFilesToInject = [
 
     // Customised client-side js files
     'js/application/xtens.js',
+    'js/application/Router.js',
     'js/modules/i18n.js',
     'js/modules/XtensConstants.js',
     'js/modules/MetadataField.js',
