@@ -27,7 +27,7 @@
     // define a DataType
     DataType.Model = Backbone.Model.extend({
 
-        urlRoot: '/dataTypes/new',
+        urlRoot: '/dataType',
 
         initialize: function() {
             // add a nested MetadataField collection

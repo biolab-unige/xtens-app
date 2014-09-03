@@ -52,7 +52,7 @@ jQuery(function($) {
         listView.render();
     });
 
-    router.on('route:datatype-create', function() {
+    router.on('route:datatype-edit', function() {
         var editView = new DataType.Views.Edit();
         editView.render();
     });

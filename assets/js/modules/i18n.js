@@ -19,7 +19,11 @@
         "has-units": "Has Units",
         "schema": "Schema",
         "json-schema": "JSON Schema",
-        "new-data-type": "New Data Type"
+        "new-data-type": "New Data Type",
+        "edit": "Edit",
+        "group": "Group",
+        "add-attribute": "Add Attribute",
+        "add-loop": "Add Loop"
     };
 
     var it = {

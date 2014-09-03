@@ -1,26 +1,27 @@
 /**
  * DataType.js
  */
-var DataType = {
+module.exports = {
+    connection: 'postgresqlServerLaptop21',
     tableName: 'data_type',
     attributes: {
-        id: {
-            type: 'INTEGER',
-            required: true,
-            autoIncrement: true,
-            primaryKey: true,
-            unique: true
-            
-        },
         name: {
-            type: 'STRING',
+            type: 'string',
             minLength: 4,
             maxLength: 32,
-            required: true
+            required: true,
+            columnName: 'name'
         },
         schema: {
-            type: 'JSON',
-            required:true
+            type: 'json',
+            required:true,
+            columnName: 'schema'
+        },
+        createdAt: {
+            columnName: 'created_at'
+        },
+        updatedAt: {
+            columnName: 'updated_at'
         }
     }
 };
