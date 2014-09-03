@@ -20,7 +20,11 @@ var xtens = {
             // Create a module and save it under this name
             return modules[name] = { Views: {} };
         };
-    }()
+
+    }(),
+
+    app: _.extend({}, Backbone.Events)
+
 };
 
 // Using the jQuery ready event is excellent for ensuring all 
@@ -29,31 +33,32 @@ var xtens = {
 // // application
 jQuery(function($) {
     // Initialise your application here (?)
-    var XtensRouter = Backbone.Router.extend({
+    /*
+       var XtensRouter = Backbone.Router.extend({
 
-        routes: {
-            "": "datatypes",
-            "datatypes": "datatypes",
-            "datatypes/new": "datatype-create",
-            "operator" : "operator",
-            "operator/new" : "operator-create"
-        },
+routes: {
+"": "datatypes",
+"datatypes": "datatypes",
+"datatypes/new": "datatype-create",
+"operator" : "operator",
+"operator/new" : "operator-create"
+},
 
-    });
-    
+}); */
+
     var DataType = xtens.module("datatype");
     var Operator = xtens.module("operator");
-    var router = new XtensRouter();
-    
-     router.on('route:operator',function() {
-    var listView = new Operator.Views.List();
-        listView.render();
-     });
+    var router = xtens.router;
 
-     router.on('route:operator-create',function(){
+    router.on('route:operator',function() {
+        var listView = new Operator.Views.List();
+        listView.render();
+    });
+
+    router.on('route:operator-create',function(){
         var editView = new Operator.Views.Edit();
         editView.render();
-     });
+    });
 
     router.on('route:datatypes', function() {
         var listView = new DataType.Views.List();

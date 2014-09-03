@@ -19,16 +19,19 @@
 
     // dependencies
     var i18n = xtens.module("i18n").en;
-    var MetadataField = xtens.module("metadatafield");    
+    var MetadataField = xtens.module("metadatafield"); 
+
+    // XTENS router alias
+    var router = xtens.router;   
 
     // define a DataType
     DataType.Model = Backbone.Model.extend({
 
-        urlRoot: '/dataType',
+        urlRoot: '/dataTypes/new',
 
         initialize: function() {
             // add a nested MetadataField collection
-            this.set({ metadataFields: new MetadataField.List() });
+            // this.set({ metadataFields: new MetadataField.List() });
         }
     });
 
@@ -58,13 +61,18 @@
             'click .btn-primary': 'addMetadataField'    // not used yet 
         },
 
-        saveDataType: function() {
+        saveDataType: function(ev) {
             var dataTypeDetails = $(ev.currentTarget).serializeObject();
-            dataTypeDetails = { name: dataTypeDetails.name, schema: {"pippo": "franco"} };
+            dataTypeDetails = { name: dataTypeDetails.schemaName, schema: {"pippo": "franco"} };
             var dataType = new DataType.Model();
             dataType.save(dataTypeDetails, {
+                patch: true,
                 success: function(dataType) {
+                    console.log(dataType);
                     router.navigate('datatypes', {trigger: true});
+                },
+                error: function() {
+                    console.log("Error saving the DataType");
                 }
             });
             return false;
