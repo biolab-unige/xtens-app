@@ -3,40 +3,42 @@
 <div id="content"> 
 
     <form class="form-horizontal edit-datatype-form" role="form">
-        <div class="form-group row">
-            <label for="schemaName" class="col-md-2 control-label"><%= __("name") %></label>
-            <div class="col-md-6">
-                <input text class="form-control" id="schemaName" name="schemaName" placeholder="Data Type Name">
+        <div class="form-group" id="schemaContainer">
+            <div class="form-group row">
+                <label for="schemaName" class="col-md-2 control-label"><%= __("name") %></label>
+                <div class="col-md-6">
+                    <input text class="form-control" id="schemaName" name="schemaName" placeholder="Data Type Name">
+                </div>
+                <label for="fileUpload" class="col-md-2 control-label"><%= __("file-upload") %></label>
+                <div class="col-md-2">
+                    <select class="form-control" id="fileUpload" name="fileUpload">
+                        <option value="Y" selected="true"><%=__("yes") %></option>
+                        <option value="N"><%=__("no") %></option>
+                    </select>
+                </div>
             </div>
-            <label for="fileUpload" class="col-md-2 control-label"><%= __("file-upload") %></label>
-            <div class="col-md-2">
-                <select class="form-control" id="fileUpload" name="fileUpload">
-                    <option value="Y" selected="true"><%=__("yes") %></option>
-                    <option value="N"><%=__("no") %></option>
-                </select>
+            <div class="form-group row">
+                <label for="description" class="col-md-2 control-label"><%=__("description") %></label>
+                <div class="col-md-10">
+                    <input text class="form-control" id="description" name="description" placeholder="Brief Description">
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <label for="description" class="col-md-2 control-label"><%=__("description") %></label>
-            <div class="col-md-10">
-                <input text class="form-control" id="description" name="description" placeholder="Brief Description">
+            <div class="form-group row">
+                <label for="version" class="col-md-2 control-label"><%=__("version") %></label>
+                <div class="col-md-2">
+                    <input text class="form-control" id="version" name="version" placeholder="0.0.X">
+                </div>
+                <label for="ontology" class="col-md-2 control-label"><%=__("ontology") %></label>
+                <div class="col-md-6">
+                    <select class="form-control" id="ontology" name="ontology">
+                        <option value="" selected="true">Select an ontology to name metadata fields</option>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <label for="version" class="col-md-2 control-label"><%=__("version") %></label>
-            <div class="col-md-2">
-                <input text class="form-control" id="version" name="version" placeholder="0.0.X">
-            </div>
-            <label for="ontology" class="col-md-2 control-label"><%=__("ontology") %></label>
-            <div class="col-md-6">
-                <select class="form-control" id="ontology" name="ontology">
-                    <option value="" selected="true">Select an ontology to name metadata fields</option>
-                </select>
-            </div>
-        </div>
+        </div> <!-- schemaContainer -->  
         <div id="buttonbardiv" class="row text-center">
-            <input type="button" class="btn btn-primary" value="<%=__('add-metadata-group') %>" >
-            <input type="submit" class="btn btn-default" value="<%=__('save-data-type') %>" >
+            <input type="button" class="btn btn-default add-metadata-group" value="<%=__('add-metadata-group') %>" >
+            <input type="submit" class="btn btn-primary" value="<%=__('save-data-type') %>" >
         </div>
     </form>
 

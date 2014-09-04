@@ -19,7 +19,7 @@
 
     // dependencies
     var i18n = xtens.module("i18n").en;
-    var MetadataField = xtens.module("metadatafield"); 
+    var MetadataGroup = xtens.module("metadatagroup"); 
 
     // XTENS router alias
     var router = xtens.router;   
@@ -58,7 +58,7 @@
 
         events: {
             'submit .edit-datatype-form': 'saveDataType',
-            'click .btn-primary': 'addMetadataField'    // not used yet 
+            'click .add-metadata-group': 'addMetadataGroup'    // not used yet 
         },
 
         saveDataType: function(ev) {
@@ -78,10 +78,11 @@
             return false;
         },
 
-        addMetadataField: function() {
-            var metadataField = new MetadataField.Model();
-            var metadataFieldView = new MetadataField.View({model: metadataField});
-            this.$el.append(metadataFieldView.render());
+        addMetadataGroup: function() {
+            // var metadataField = new MetadataField.Model();
+            var view = new MetadataGroup.Views.Edit();
+            $("#schemaContainer").append(view.render().el);
+            return false;
         }   
     });
 

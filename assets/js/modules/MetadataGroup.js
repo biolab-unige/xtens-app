@@ -12,11 +12,12 @@
         className: 'metadataGroup',
         
         initialize: function() {
-            this.template = JST["views/templates/metadatafield-edit.ejs"];
+            this.template = JST["views/templates/metadatagroup-edit.ejs"];
         },
 
         render: function(options) {
-            this.$el.html(this.template({__: i18n}));
+            var id = this.id;
+            this.$el.html(this.template({__: i18n, id: 0}));
             return this;
         }
 
