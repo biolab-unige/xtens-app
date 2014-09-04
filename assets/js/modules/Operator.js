@@ -1,20 +1,20 @@
 (function(xtens, Operator) {
-    
+
     // jQuery serializeObject plugin - to be moved in a separate module (by Massi)
-     $.fn.serializeObject = function() {
-      var o = {};
-      var a = this.serializeArray();
-      $.each(a, function() {
-          if (o[this.name] !== undefined) {
-              if (!o[this.name].push) {
-                  o[this.name] = [o[this.name]];
-              }
-              o[this.name].push(this.value || '');
-          } else {
-              o[this.name] = this.value || '';
-          }
-      });
-      return o;
+    $.fn.serializeObject = function() {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
     };
 
     // dependencies
@@ -26,11 +26,7 @@
 
         urlRoot: '/operator',
 
-        initialize: function() {
-            // add a nested MetadataField collection
-            this.set({ metadataFields: new MetadataField.List() });
-        }
-    });
+        });
 
     Operator.List = Backbone.Collection.extend({
         url: '/operator',
@@ -54,25 +50,30 @@
         },
 
         events: {
-            'submit .edit-operator-form': 'saveOperator',
-             
+            'submit .edit-operator-form': 'saveOperator'
         },
 
-        saveOperator: function() {
+        saveOperator: function(ev) {
+
             var operatorDetails = $(ev.currentTarget).serializeObject();
-            operatorDetails = { name: operatorDetails.name, schema: {"pippo": "franco"} };
+            operatorDetails = {firstName: operatorDetails.name, 				   lastName:operatorDetails.surname,birthDate:operatorDetails.date,sex:operatorDetails.sex,email:operatorDetails.email,login:operatorDetails.login,password:operatorDetails.password };
+            
             var operator = new Operator.Model();
+	
             operator.save(operatorDetails, {
+		
                 success: function(operator) {
+                    
                     router.navigate('operator', {trigger: true});
+                },
+                error: function() {
+                    console.log("Error saving the Operator");
                 }
             });
             return false;
-        },
-
+        }
     });
 
-	
     Operator.Views.List = Backbone.View.extend({
         el: $("#main"),
 

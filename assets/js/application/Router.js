@@ -13,6 +13,7 @@
             "operators": "operator",
             "operators/new": "operator-edit",
             "operators/edit/:id": "operator-edit"
+           
         }
 
     });

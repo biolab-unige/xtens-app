@@ -34,7 +34,10 @@
         "password" : "Password",
         "operator-list" : "Operator List",
         "create-a-new-operator" : "Create a New Operator",
-        "save-operator" : "Save Operator"
+        "save-operator" : "Save Operator",
+        "m" : "M",
+        "f" : "F",
+	"a-new-operator-is-created" : "A New Operator is created!"
     };
 
     var it = {

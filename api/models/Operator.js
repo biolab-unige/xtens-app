@@ -4,6 +4,7 @@
 var bcrypt = require('bcrypt');
 
 var Operator = {
+    connection:'postgresql',
     tableName: 'operator',
     attributes: {
 
