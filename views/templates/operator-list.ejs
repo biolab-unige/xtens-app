@@ -15,15 +15,14 @@
                 </tr>
             </thead>
             <tbody>  <% _.each(operators, function(operator) { %> 
-                    <tr>
-                        <td><%= operator.get("firstName") %></td>
-                        <td><%= operator.get("lastName") %></td>
-                         <td><%= operator.get("birthDate") %></td>
-                         <td><%= operator.get("sex") %></td>
-                         <td><%= operator.get("email") %></td>
-                         <td><%= operator.get("login") %></td>
-                        <td><a class="btn btn-default" href="#/operators/edit/<%= operator.id %>"><%=__("edit") %></a></td>
- 
+            <tr>
+                <td><%= operator.get("firstName") %></td>
+                <td><%= operator.get("lastName") %></td>
+                <td><%= operator.get("birthDate") %></td>
+                <td><%= operator.get("sex") %></td>
+                <td><%= operator.get("email") %></td>
+                <td><%= operator.get("login") %></td>
+                <td><a class="btn btn-default" href="#/operators/edit/<%= operator.id %>"><%=__("edit") %></a></td>
 
 
 
@@ -31,8 +30,9 @@
 
 
 
-                  </tr>
-                <% }) %>
+
+            </tr>
+            <% }) %>
             </tbody>
         </table>
     </div>

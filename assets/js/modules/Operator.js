@@ -25,7 +25,7 @@
 
         urlRoot: '/operator',
 
-        });
+    });
 
     Operator.List = Backbone.Collection.extend({
         url: '/operator',
@@ -46,41 +46,41 @@
         render: function(options)  {
             var self = this;
             if(options.id) {
-          self.operator = new Operator.Model({id: options.id});
-          self.operator.fetch({
-            success: function (operator) {
-  		self.$el.html(self.template({__: i18n, operator: operator}));
+                self.operator = new Operator.Model({id: options.id});
+                self.operator.fetch({
+                    success: function (operator) {
+                        self.$el.html(self.template({__: i18n, operator: operator}));
+                        return self;
+
+                    }
+                });
+            } else {
+                self.$el.html(self.template({__: i18n,operator:null}));
                 return self;
-                           
+            }},
+
+            events: {
+                'submit .edit-operator-form': 'saveOperator'
+            },
+
+            saveOperator: function(ev) {
+
+                var operatorDetails = $(ev.currentTarget).serializeObject();
+                operatorDetails = {firstName: operatorDetails.name,lastName:operatorDetails.surname,birthDate:operatorDetails.date,sex:operatorDetails.sex,email:operatorDetails.email,login:operatorDetails.login,password:operatorDetails.password };
+
+                var operator = new Operator.Model();
+
+                operator.save(operatorDetails, {
+                    patch:true,	
+                    success: function(operator) {
+                        router.navigate('operators', {trigger: true});
+                    },
+                    error: function() {
+                        console.log("Error saving the Operator");
+                    }
+                });
+                return false;
             }
-          });
-        } else {
-            self.$el.html(self.template({__: i18n,operator:null}));
-            return self;
-        }},
-
-        events: {
-            'submit .edit-operator-form': 'saveOperator'
-        },
-
-        saveOperator: function(ev) {
-
-            var operatorDetails = $(ev.currentTarget).serializeObject();
-            operatorDetails = {firstName: operatorDetails.name,lastName:operatorDetails.surname,birthDate:operatorDetails.date,sex:operatorDetails.sex,email:operatorDetails.email,login:operatorDetails.login,password:operatorDetails.password };
-            
-            var operator = new Operator.Model();
-	
-            operator.save(operatorDetails, {
-                patch:true,	
-                success: function(operator) {
-                    router.navigate('operators', {trigger: true});
-                },
-                error: function() {
-                    console.log("Error saving the Operator");
-                }
-            });
-            return false;
-        }
     });
 
     Operator.Views.List = Backbone.View.extend({

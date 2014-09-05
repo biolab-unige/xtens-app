@@ -48,7 +48,7 @@ jQuery(function($) {
         editView.render({id:id});
     });
 
-	
+
 
     router.on('route:datatype', function() {
         var listView = new DataType.Views.List();

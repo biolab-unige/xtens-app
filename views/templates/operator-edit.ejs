@@ -1,55 +1,55 @@
 
 
-    <form class="form-horizontal edit-operator-form" role="form">
-         <legend><%= operator ? 'Edit' : 'New' %> Operator</legend>
-         <div class="form-group row">
-             <label class="col-md-2 control-label"><%= __("first-name") %></label>
+<form class="form-horizontal edit-operator-form" role="form">
+    <legend><%= operator ? 'Edit' : 'New' %> Operator</legend>
+    <div class="form-group row">
+        <label class="col-md-2 control-label"><%= __("first-name") %></label>
         <input class = "col-md-6" name="name" type="text" value="<%= operator ? operator.get('firstName') : '' %>">
-        </div>
-        <div class="form-group row">
-            <label class="col-md-2 control-label"><%= __("last-name") %></label>
+    </div>
+    <div class="form-group row">
+        <label class="col-md-2 control-label"><%= __("last-name") %></label>
         <input class = "col-md-6" name="surname" type="text" value="<%= operator ? operator.get('lastName') : '' %>">
-        </div>
-        <div class="form-group row">
-            <label class="col-md-2 control-label"><%= __("birth-date") %></label>
+    </div>
+    <div class="form-group row">
+        <label class="col-md-2 control-label"><%= __("birth-date") %></label>
         <input class = "col-md-6" name="date" type="text" value="<%= operator ? operator.get('birthDate') : '' %>">
-        </div>
-        <div class="form-group row">
-            <label class="col-md-2 control-label"><%= __("sex") %></label>
-            <div class="col-md-6">
-                <select class="form-control" id="sex" name="sex" >
-                        <option value="M" ><%=__("m") %></option>
-                        <option value="F"><%=__("f") %></option>
-                        <option selected="selected"><%= operator ? operator.get('sex') : '' %>
+    </div>
+    <div class="form-group row">
+        <label class="col-md-2 control-label"><%= __("sex") %></label>
+        <div class="col-md-6">
+            <select class="form-control" id="sex" name="sex" >
+                <option value="M" ><%=__("m") %></option>
+                <option value="F"><%=__("f") %></option>
+                <option selected="selected"><%= operator ? operator.get('sex') : '' %>
 
-</option>
-                    </select>
-                    </div>
-
+                </option>
+            </select>
         </div>
-        <div class="form-group row">
-            <label class="col-md-2 control-label"><%= __("email") %></label>
+
+    </div>
+    <div class="form-group row">
+        <label class="col-md-2 control-label"><%= __("email") %></label>
         <input class ="col-md-6" name="email" type="email" value="<%= operator ? operator.get('email') : '' %>">
-        </div>
-        <div class="form-group row">
-            <label class="col-md-2 control-label"><%= __("login") %></label>
+    </div>
+    <div class="form-group row">
+        <label class="col-md-2 control-label"><%= __("login") %></label>
         <input class="col-md-6" name="login" type="text" value="<%= operator ? operator.get('login') : '' %>">
-        </div>
-        <div class="form-group row">
-            <label class="col-md-2 control-label"><%= __("password") %></label>
+    </div>
+    <div class="form-group row">
+        <label class="col-md-2 control-label"><%= __("password") %></label>
         <input class="col-md-6" name="password" type="text" value="<%= operator ? operator.get('password') : '' %>">
-        </div>
+    </div>
 
 
 
-        <hr />
-        <div id="buttonbardiv" class="row text-center">
+    <hr />
+    <div id="buttonbardiv" class="row text-center">
 
-       <button type="submit" class="btn"><%= operator ? 'Update' : 'Create' %> Operator</button>
-       <% if(operator) { %>
+        <button type="submit" class="btn"><%= operator ? 'Update' : 'Create' %> Operator</button>
+        <% if(operator) { %>
         <input type="hidden" name="id" value="<%= operator.id %>" />
-       <button data-operator-id="<%= operator.id %>" class="btn btn-danger delete">Delete</button>
-       <% }; %>
-       </div>
-           </form>
+        <button data-operator-id="<%= operator.id %>" class="btn btn-danger delete">Delete</button>
+        <% }; %>
+    </div>
+</form>
 
