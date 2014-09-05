@@ -81,7 +81,7 @@
         addMetadataGroup: function() {
             // var metadataField = new MetadataField.Model();
             var view = new MetadataGroup.Views.Edit();
-            $("#schemaContainer").append(view.render().el);
+            this.$("#schemaContainer").append(view.render().el);
             return false;
         }   
     });

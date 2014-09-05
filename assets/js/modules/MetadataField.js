@@ -1,17 +1,16 @@
 (function(xtens, MetadataField) {
     // Dependencies
-    var Constants = xtens.module("xtensconstants").Constants;
-    var FieldTypes = xtens.module("xtensconstants").FieldTypes;
+    var constants = xtens.module("xtensconstants").Constants;
+    var fieldTypes = xtens.module("xtensconstants").FieldTypes;
     var i18n = xtens.module("i18n").en;
 
     MetadataField.Model = Backbone.Model.extend({
 
         defaults: {
-            label: Constants.METADATA_FIELD,
-            id: 0,
+            label: constants.METADATA_FIELD,
             name: null,
             ontologyUri: null,
-            type: FieldTypes.STRING,
+            type: fieldTypes.STRING,
             required: false,
             customValue: null,
             isList: false,
@@ -26,17 +25,30 @@
 
     });
 
-    MetadataField.View = Backbone.View.extend({
-
+    MetadataField.Views.Edit = Backbone.View.extend({
+        
+        tagName: 'div',
+        className: 'metadataField',
+        
         // template: _.template($("#metadata-field-form-template").html()),
         initialize: function() {
-            this.template = JST['views/templates/metadatafield.html'];
+            this.template = JST['views/templates/metadatafield-edit.ejs'];
         },
 
         render: function() {
-            this.$el.html(this.template({__: i18n}));
+            this.$el.html(this.template({__: i18n, fieldTypes: fieldTypes}));
             return this;
+        },
+
+        events: {
+            'click .remove-me': 'removeMe'
+        },
+
+        removeMe: function(ev) {
+            this.remove();
+            ev.stopPropagation();
         }
+
     });
 
     MetadataField.List = Backbone.Collection.extend({

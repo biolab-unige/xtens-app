@@ -15,7 +15,7 @@
 // (if you're using LESS with the built-in default config, you'll want
 //  to change `assets/styles/importer.less` instead.)
 var cssFilesToInject = [
-    'styles/**/*.css'
+    'dependencies/**/*.css'
 ];
 
 
@@ -36,6 +36,7 @@ var jsFilesToInject = [
     'js/modules/i18n.js',
     'js/modules/XtensConstants.js',
     'js/modules/MetadataField.js',
+    'js/modules/MetadataLoop.js',
     'js/modules/MetadataGroup.js',
     'js/modules/DataType.js',
     'js/modules/Operator.js',
