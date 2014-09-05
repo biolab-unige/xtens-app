@@ -1,48 +1,50 @@
 {
-  "name": "xtens-app",
-  "version": "0.0.0",
-  "description": "a digital repository for heterogeneous biomedical data",
-  "main": "app.js",
-  "keywords": [
-    "data",
-    "metadata",
-    "data model"
-  ],
-  "authors": [
-    "Massimiliano Izzo"
-  ],
-  "license": "BSD 3-clause",
-  "homepage": "www.xtens.org",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
-  "dependencies": {
-    "jquery": "1.11.1",
-    "bootstrap": "3.2.0",
-    "underscore": null,
-    "backbone": null,
-    "font-awesome": "~4.2.0"
-  },
-  "exportsOverride": {
-    "jquery": {
-      "js/dependencies": "**/jquery.min.js"
+    "name": "xtens-app",
+    "version": "0.0.0",
+    "description": "a digital repository for heterogeneous biomedical data",
+    "main": "app.js",
+    "keywords": [
+        "data",
+        "metadata",
+        "data model"
+    ],
+    "authors": [
+        "Massimiliano Izzo"
+    ],
+    "license": "BSD 3-clause",
+    "homepage": "www.xtens.org",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ],
+    "dependencies": {
+        "jquery": "1.11.1",
+        "bootstrap": "3.2.0",
+        "underscore": null,
+        "backbone": null,
+        "font-awesome": "~4.2.0"
     },
-    "bootstrap": {
-      "js/dependencies": "dist/js/bootstrap.min.js",
-      "styles/dependencies": "dist/css/*.min.css"
-    },
-    "underscore": {
-      "js/dependencies": "**/underscore.js"
-    },
-    "backbone": {
-      "js/dependencies": "**/backbone.js"
-    },
-    "font-awesome": {
-        "styles/dependencies": "css"
+    "exportsOverride": {
+        "jquery": {
+            "js": "**/jquery.min.js"
+        },
+        "bootstrap": {
+            "js": "dist/js/bootstrap.min.js",
+            "styles": "dist/css/*.min.css",
+            "fonts": "dist/fonts/*.*"
+        },
+        "underscore": {
+            "js": "**/underscore.js"
+        },
+        "backbone": {
+            "js": "**/backbone.js"
+        },
+        "font-awesome": {
+            "styles": "css/font-awesome.css",
+            "fonts": "fonts/*.*"
+        }
     }
-  }
 }

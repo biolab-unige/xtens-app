@@ -21,8 +21,8 @@ module.exports = function(grunt) {
             install: {
                 // grunt-bower-task default options
                 options: {
-                    targetDir: './assets',
-                    layout: 'byType',
+                    targetDir: './assets/dependencies',
+                    layout: 'byComponent',
                     install: true,
                     verbose: true,
                     cleanTargetDir: false,

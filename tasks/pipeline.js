@@ -26,9 +26,9 @@ var jsFilesToInject = [
     // Dependencies like sails.io.js, jQuery, or Angular
     // are brought in here
     'js/dependencies/sail.io.js',
-    'js/dependencies/**/jquery.min.js',
-    'js/dependencies/**/underscore.js',
-    'js/dependencies/**/*.js',
+    'dependencies/**/jquery.min.js',
+    'dependencies/**/underscore.js',
+    'dependencies/**/*.js',
 
     // Customised client-side js files
     'js/application/xtens.js',
