@@ -26,11 +26,13 @@ var Operator = {
         },
         sex: {
             type: 'string',
-            enum: ['M', 'F', 'N.A.']
+            enum: ['M', 'F', 'N.A.'],
+	    columnName: 'sex'
         },
         email: {
             type: 'email',
-            required: true
+            required: true,
+	    columnName: 'email'
         },
         login: {
             type: 'string',

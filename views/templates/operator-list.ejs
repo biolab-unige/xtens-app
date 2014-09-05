@@ -5,17 +5,35 @@
         <table class="table striped">
             <thead>
                 <tr>
-                    <th><%= __("firstname") %></th>
-                    <th><%= __("lastname") %></th>
-                    <th><%= __("birthdate") %></th>
+                    <th><%= __("first-name") %></th>
+                    <th><%= __("last-name") %></th>
+                    <th><%= __("birth-date") %></th>
                     <th><%= __("sex") %></th>
                     <th><%= __("email") %></th>
                     <th><%= __("login") %></th>
-                    <th><%= __("password") %></th>
                     <th></th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>  <% _.each(operators, function(operator) { %> 
+                    <tr>
+                        <td><%= operator.get("firstName") %></td>
+                        <td><%= operator.get("lastName") %></td>
+                         <td><%= operator.get("birthDate") %></td>
+                         <td><%= operator.get("sex") %></td>
+                         <td><%= operator.get("email") %></td>
+                         <td><%= operator.get("login") %></td>
+                        <td><a class="btn btn-default" href="#/operators/edit/<%= operator.id %>"><%=__("edit") %></a></td>
+ 
+
+
+
+
+
+
+
+                  </tr>
+                <% }) %>
+            </tbody>
         </table>
     </div>
     <div id="buttonbardiv" class="row text-center">

@@ -18,9 +18,8 @@
     };
 
     // dependencies
-    var i18n = xtens.module("i18n").en;
-    var MetadataField = xtens.module("metadatafield");    
-
+    var i18n = xtens.module("i18n").en;    
+    var router = xtens.router; 
     // define an Operator
     Operator.Model = Backbone.Model.extend({
 
@@ -44,10 +43,21 @@
             this.template = JST["views/templates/operator-edit.ejs"]; 
         },
 
-        render: function(options) {
-            this.$el.html(this.template({__: i18n}));
-            return this;
-        },
+        render: function(options)  {
+            var self = this;
+            if(options.id) {
+          self.operator = new Operator.Model({id: options.id});
+          self.operator.fetch({
+            success: function (operator) {
+  		self.$el.html(self.template({__: i18n, operator: operator}));
+                return self;
+                           
+            }
+          });
+        } else {
+            self.$el.html(self.template({__: i18n,operator:null}));
+            return self;
+        }},
 
         events: {
             'submit .edit-operator-form': 'saveOperator'
@@ -56,15 +66,14 @@
         saveOperator: function(ev) {
 
             var operatorDetails = $(ev.currentTarget).serializeObject();
-            operatorDetails = {firstName: operatorDetails.name, 				   lastName:operatorDetails.surname,birthDate:operatorDetails.date,sex:operatorDetails.sex,email:operatorDetails.email,login:operatorDetails.login,password:operatorDetails.password };
+            operatorDetails = {firstName: operatorDetails.name,lastName:operatorDetails.surname,birthDate:operatorDetails.date,sex:operatorDetails.sex,email:operatorDetails.email,login:operatorDetails.login,password:operatorDetails.password };
             
             var operator = new Operator.Model();
 	
             operator.save(operatorDetails, {
-		
+                patch:true,	
                 success: function(operator) {
-                    
-                    router.navigate('operator', {trigger: true});
+                    router.navigate('operators', {trigger: true});
                 },
                 error: function() {
                     console.log("Error saving the Operator");
@@ -84,10 +93,10 @@
         render: function(options) {
 
             var self = this;
-            var operator = new Operator.List();
-            operator.fetch({
-                success: function(operator) {
-                    self.$el.html(self.template({__: i18n, operator: operator.models}));
+            var operators= new Operator.List();
+            operators.fetch({
+                success: function(operators) {
+                    self.$el.html(self.template({__: i18n, operators: operators.models}));
                     return self;
                 },
                 error: function() {

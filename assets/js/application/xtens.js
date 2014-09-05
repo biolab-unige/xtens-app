@@ -43,9 +43,9 @@ jQuery(function($) {
         listView.render();
     });
 
-    router.on('route:operator-edit',function(){
+    router.on('route:operator-edit',function(id){
         var editView = new Operator.Views.Edit();
-        editView.render();
+        editView.render({id:id});
     });
 
 	
