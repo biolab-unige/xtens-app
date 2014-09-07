@@ -1,0 +1,92 @@
+<h4 class="row">
+    <a class="remove-me">
+        <span class="fa fa-times-circle"></span>
+    </a>
+    <%= __("attribute") %>
+    </br>
+</h4>
+<div class='form-group'>
+    <div class='form-group row'>
+        <label class="col-md-1 control-label"><%= __('type') %></label>
+        <div class="col-md-3">
+            <select class="form-control">
+                <option selected value=""><%= __('please-select') %></opt>
+                <% _.each(fieldTypes, function(fieldType) {
+                %>
+                <option value="<% fieldType %>"><%= fieldType.toUpperCase() %></option>
+                <%
+                }) %>
+            </select>
+        </div>
+        <label class="col-md-1 control-label"><%= __('name') %></label>
+        <div class="col-md-3">
+            <input text class="form-control" placeholder="Field Name" value="">
+        </div>
+        <label class="col-md-1 control-label"><%= __('custom-value') %></label>
+        <div class="col-md-3">
+            <input text class="form-control" placeholder="Custom Value" value="">
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-4 text-center">
+            <label class="checkbox-inline">
+                <input type="checkbox" value="required"><%=__('required') %>
+            </label>
+        </div>
+        <div class="col-md-4 text-center">
+            <label class="checkbox-inline">
+                <input type="checkbox" value="isList"><%=__('is-list') %>
+            </label>
+        </div>
+        <div class="col-md-4 text-center">
+            <label class="checkbox-inline">
+                <input type="checkbox" value="hasUnit"><%=__('has-units') %>
+            </label>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3 col-md-offset-4 text-center">
+            <input text class="form-control" placeholder="" value="">
+        </div>
+
+        <div class="col-md-1 text-center">
+            <input type="button" class="btn btn-primary add-value-to-list" value="<%=__('add-value') %>">
+        </div>
+        <div class="col-md-3 text-center">
+            <input text class="form-control" placeholder="" value="">
+        </div>
+        <div class="col-md-1 text-center">
+            <input type="button" class="btn btn-primary add-unit-to-list" value="<%=__('add-unit') %>">
+        </div> 
+    </div>
+    <div class="form-group row">
+        <div class="col-md-4 col-md-offset-4">
+            <select multiple class="form-control"></select>
+        </div>
+        <div class="col-md-4">
+            <select multiple class="form-control"></select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-4 text-center">
+            <label class="checkbox-inline">
+                <input type="checkbox" value="hasDbTableConnection"><%=__('has-database-connection') %>
+            </label>
+        </div>
+        <div class="col-md-4">
+            <select class="form-control">
+                <option selected value=""><%= __('please-select') %></opt>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-md-1 control-label"><%= __('min') %></label>
+        <div class="col-md-3">
+            <input text class="form-control" placeholder="Minimum Value" value="">
+        </div>
+        <label class="col-md-1 control-label"><%= __('max') %></label>
+        <div class="col-md-3">
+            <input text class="form-control" placeholder="Maximum Value" value="">
+        </div>
+    </div>
+</div>
