@@ -67,7 +67,8 @@
 
                 var operatorDetails = $(ev.currentTarget).serializeObject();
                 operatorDetails = {firstName: operatorDetails.name,lastName:operatorDetails.surname,birthDate:operatorDetails.date,sex:operatorDetails.sex,email:operatorDetails.email,login:operatorDetails.login,password:operatorDetails.password };
-
+                operatorDetails.birthDate = new Date(operatorDetails.birthDate);
+                
                 var operator = new Operator.Model();
 
                 operator.save(operatorDetails, {

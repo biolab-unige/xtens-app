@@ -3,7 +3,8 @@
 <div id="content">
     <div class="table-responsive">
         <table class="table striped">
-            <thead>
+            <thead> 
+               
                 <tr>
                     <th><%= __("first-name") %></th>
                     <th><%= __("last-name") %></th>
@@ -16,9 +17,11 @@
             </thead>
             <tbody>  <% _.each(operators, function(operator) { %> 
             <tr>
+
+
                 <td><%= operator.get("firstName") %></td>
                 <td><%= operator.get("lastName") %></td>
-                <td><%= operator.get("birthDate") %></td>
+                <td><%= operator.get("birthDate").toUTCString() %></td>
                 <td><%= operator.get("sex") %></td>
                 <td><%= operator.get("email") %></td>
                 <td><%= operator.get("login") %></td>
@@ -39,4 +42,4 @@
     <div id="buttonbardiv" class="row text-center">
         <a href="#/operators/new" class="btn btn-primary"><%= __("new-operator")%></a>
     </div>
-</div>
+     </div>
