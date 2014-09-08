@@ -32,9 +32,7 @@
             "js": "**/jquery.min.js"
         },
         "bootstrap": {
-            "js": "dist/js/bootstrap.min.js",
-            "styles": "dist/css/*.min.css",
-            "fonts": "dist/fonts/*.*"
+            "less": "less"
         },
         "underscore": {
             "js": "**/underscore.js"

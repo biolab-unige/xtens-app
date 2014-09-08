@@ -39,13 +39,13 @@
 
         addMetadataField: function(ev) {
             var view = new MetadataField.Views.Edit();
-            this.$('.metadata-group-body').append(view.render().el);
+            this.$('.metadataGroup-body').append(view.render().el);
             return false;
         },
 
         addMetadataLoop: function(ev) {
             var view = new MetadataLoop.Views.Edit();
-            this.$('.metadata-group-body').append(view.render().el);
+            this.$('.metadataGroup-body').append(view.render().el);
             return false;
         },
 
