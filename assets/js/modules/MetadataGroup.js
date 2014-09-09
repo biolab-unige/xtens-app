@@ -2,8 +2,10 @@
 
     // dependencies
     var i18n = xtens.module("i18n").en;
+    var MetadataComponent = xtens.module("metadatacomponent");
     var MetadataField = xtens.module("metadatafield");
     var MetadataLoop = xtens.module("metadataloop");
+    
 
     // XTENS router alias
     var router = xtens.router;
@@ -14,7 +16,7 @@
         model: MetadataGroup.Model
     });
 
-    MetadataGroup.Views.Edit = Backbone.View.extend({
+    MetadataGroup.Views.Edit = MetadataComponent.Views.Edit.fullExtend({
         
         // model: MetadataGroup.Model,
 
@@ -24,12 +26,13 @@
         initialize: function() {
             this.template = JST["views/templates/metadatagroup-edit.ejs"];
         },
-
+        
+        /*
         render: function(options) {
             var id = this.id;
             this.$el.html(this.template({__: i18n, id: 0}));
             return this;
-        },
+        }, */
 
         events: {
             'click .add-metadata-field': 'addMetadataField',
@@ -48,11 +51,12 @@
             this.$('.metadataGroup-body').append(view.render().el);
             return false;
         },
-
+        
+        /*
         removeMe: function(ev) {
             this.remove();
             ev.stopPropagation();
-        }
+        } */
 
     });
 

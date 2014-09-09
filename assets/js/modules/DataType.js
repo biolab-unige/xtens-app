@@ -1,6 +1,6 @@
 (function(xtens, DataType) {
     
-    // jQuery serializeObject plugin - to be moved in a separate module (by Massi)
+    /* jQuery serializeObject plugin - to be moved in a separate module (by Massi)
      $.fn.serializeObject = function() {
       var o = {};
       var a = this.serializeArray();
@@ -15,7 +15,7 @@
           }
       });
       return o;
-    };
+    }; */
 
     // dependencies
     var i18n = xtens.module("i18n").en;

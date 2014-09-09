@@ -2,6 +2,7 @@
     // Dependencies
     var constants = xtens.module("xtensconstants").Constants;
     var fieldTypes = xtens.module("xtensconstants").FieldTypes;
+    var MetadataComponent = xtens.module("metadatacomponent");
     var i18n = xtens.module("i18n").en;
 
     MetadataField.Model = Backbone.Model.extend({
@@ -25,7 +26,7 @@
 
     });
 
-    MetadataField.Views.Edit = Backbone.View.extend({
+    MetadataField.Views.Edit = MetadataComponent.Views.Edit.fullExtend({
         
         tagName: 'div',
         className: 'metadataField',
@@ -34,7 +35,7 @@
         initialize: function() {
             this.template = JST['views/templates/metadatafield-edit.ejs'];
         },
-
+        
         render: function() {
             this.$el.html(this.template({__: i18n, fieldTypes: fieldTypes}));
             return this;
@@ -43,11 +44,12 @@
         events: {
             'click .remove-me': 'removeMe'
         },
-
+        
+        /*
         removeMe: function(ev) {
             this.remove();
             ev.stopPropagation();
-        }
+        } */
 
     });
 

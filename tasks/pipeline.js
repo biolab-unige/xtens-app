@@ -32,10 +32,12 @@ var jsFilesToInject = [
     'dependencies/**/*.js',
 
     // Customised client-side js files
+    'js/application/utils.js',
     'js/application/xtens.js',
     'js/application/Router.js',
     'js/modules/i18n.js',
     'js/modules/XtensConstants.js',
+    'js/modules/MetadataComponent.js',
     'js/modules/MetadataField.js',
     'js/modules/MetadataLoop.js',
     'js/modules/MetadataGroup.js',
