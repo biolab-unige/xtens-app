@@ -60,7 +60,8 @@
             }},
 
             events: {
-                'submit .edit-operator-form': 'saveOperator'
+                'submit .edit-operator-form': 'saveOperator',
+                'click .delete': 'deleteOperator'
             },
 
             saveOperator: function(ev) {
@@ -81,7 +82,17 @@
                     }
                 });
                 return false;
-            }
+           },
+            deleteOperator: function (ev) {
+                var that = this;
+        that.operator.destroy({
+          success: function () {
+            console.log('destroyed');
+            router.navigate('operators', {trigger:true});
+          }
+        });
+        return false;
+      }
     });
 
     Operator.Views.List = Backbone.View.extend({
