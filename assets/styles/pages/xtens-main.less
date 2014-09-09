@@ -1,0 +1,33 @@
+@dt-width: 95%;
+@main-color: #fff; 
+@content-color: #fff;
+@border-width: 3px;
+@border-style: solid solid;
+#main {
+    background-color: @main-color;
+}
+#content {
+    width: 100%;
+}
+#content .dataType {
+}
+#content .metadataGroup {
+    .make-xs-column(10);
+    .make-xs-column-offset(1);
+    border-color:  @brand-primary;
+    border-width: @border-width;
+    border-style: @border-style;
+}
+#content .metadataGroup-body {
+    .make-row();
+}
+#content .metadataLoop {
+    .make-xs-column(10);
+    .make-xs-column-offset(1);
+    border-color: @brand-info;
+    border-width: @border-width;
+    border-style: @border-style;
+}
+#content .metadataField {
+    width: @dt-width;
+}
