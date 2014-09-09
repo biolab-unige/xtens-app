@@ -21,11 +21,11 @@
 
                 <td><%= operator.get("firstName") %></td>
                 <td><%= operator.get("lastName") %></td>
-                <td><%= operator.get("birthDate").toUTCString() %></td>
+                <td><%= operator.get("birthDate") %></td>
                 <td><%= operator.get("sex") %></td>
                 <td><%= operator.get("email") %></td>
                 <td><%= operator.get("login") %></td>
-                <td><a class="btn btn-default" href="#/operators/edit/<%= operator.id %>"><%=__("edit") %></a></td>
+                <td><a class="btn" href="#/operators/edit/<%= operator.id %>"><%=__("edit") %></a></td>
 
 
 
