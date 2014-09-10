@@ -1,48 +1,53 @@
 {
-    "name": "xtens-app",
-    "version": "0.0.0",
-    "description": "a digital repository for heterogeneous biomedical data",
-    "main": "app.js",
-    "keywords": [
-        "data",
-        "metadata",
-        "data model"
-    ],
-    "authors": [
-        "Massimiliano Izzo"
-    ],
-    "license": "BSD 3-clause",
-    "homepage": "www.xtens.org",
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components",
-        "test",
-        "tests"
-    ],
-    "dependencies": {
-        "jquery": "1.11.1",
-        "bootstrap": "3.2.0",
-        "underscore": null,
-        "backbone": null,
-        "font-awesome": "~4.2.0"
+  "name": "xtens-app",
+  "version": "0.0.0",
+  "description": "a digital repository for heterogeneous biomedical data",
+  "main": "app.js",
+  "keywords": [
+    "data",
+    "metadata",
+    "data model"
+  ],
+  "authors": [
+    "Massimiliano Izzo"
+  ],
+  "license": "BSD 3-clause",
+  "homepage": "www.xtens.org",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "1.11.1",
+    "bootstrap": "3.2.0",
+    "underscore": null,
+    "backbone": null,
+    "font-awesome": "~4.2.0",
+    "select2": "https://github.com/ivaynberg/select2.git#~3.5.1",
+    "select2-bootstrap-css": "https://github.com/t0m/select2-bootstrap-css.git#~1.4.1"
+  },
+  "exportsOverride": {
+    "jquery": {
+      "js": "**/jquery.min.*"
     },
-    "exportsOverride": {
-        "jquery": {
-            "js": "**/jquery.min.*"
-        },
-        "bootstrap": {
-            "less": "less"
-        },
-        "underscore": {
-            "js": "**/underscore.js"
-        },
-        "backbone": {
-            "js": "**/backbone.js"
-        },
-        "font-awesome": {
-            "styles": "css/font-awesome.css",
-            "fonts": "fonts/*.*"
-        }
+    "bootstrap": {
+      "less": "less"
+    },
+    "underscore": {
+      "js": "**/underscore.js"
+    },
+    "backbone": {
+      "js": "**/backbone.js"
+    },
+    "font-awesome": {
+      "styles": "css/font-awesome.css",
+      "fonts": "fonts/*.*"
+    },
+    "select2-bootstrap": {
+      "": "**/select2-bootstrap.css"
     }
+  }
 }

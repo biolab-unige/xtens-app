@@ -10,7 +10,6 @@
         <div class="form-group-sm">
             <label class="control-label"><%= __('type') %></label>
             <select class="form-control">
-                <option selected value=""><%= __('please-select') %></opt>
                 <% _.each(fieldTypes, function(fieldType) {
                 %>
                 <option value="<% fieldType %>"><%= fieldType.toUpperCase() %></option>
@@ -68,7 +67,7 @@
     </div>
     <div class="col-md-2">
         <div class="text-center">
-            <button type="button" class="btn btn-primary btn-block add-value-to-list"><%=__('add-value') %></button>
+            <button type="button" class="btn btn-primary btn-sm add-value-to-list"><%=__('add-value') %></button>
         </div>
     </div>
 
@@ -79,7 +78,7 @@
     </div>
     <div class="col-md-2">
         <div class="text-center">
-            <button type="button" class="btn btn-primary btn-block add-unit-to-list"><%=__('add-unit') %></button>
+            <button type="button" class="btn btn-primary btn-sm add-unit-to-list"><%=__('add-unit') %></button>
         </div>
     </div> 
 </div>
@@ -100,9 +99,12 @@
         </label>
     </div>
     <div class="col-md-4 col-md-offset-2">
-        <select class="form-control">
-            <option selected value=""><%= __('please-select') %></opt>
-        </select>
+        <div class="form-group-sm">
+            <label class="control-label"><%=__('db-table') %></label>
+            <select class="form-control">
+                <option selected value=""><%= __('please-select') %></opt>
+            </select>
+        </div>
     </div>
 </div>
 

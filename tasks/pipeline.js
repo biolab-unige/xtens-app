@@ -16,6 +16,7 @@
 //  to change `assets/styles/importer.less` instead.)
 var cssFilesToInject = [
     'styles/**/*.css',
+    'dependencies/select2/select2.css',
     'dependencies/**/*.css'
 ];
 
