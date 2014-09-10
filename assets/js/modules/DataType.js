@@ -45,10 +45,14 @@
      */
 
     DataType.Views.Edit = Backbone.View.extend({
-        el: $("#main"),
+        
+        tagName: 'div',
+        className: 'dataType',
 
         initialize: function() {
+            $("#main").html(this.el);
             this.template = JST["views/templates/datatype-edit.ejs"]; 
+            this.render();
         },
 
         render: function(options) {
@@ -90,10 +94,13 @@
      *  This is the view to show in a table the full list of existing datatypes
      */
     DataType.Views.List = Backbone.View.extend({
-        el: $("#main"),
+        tagName: 'div',
+        className: 'dataTypes',
 
         initialize: function() {
+            $("#main").html(this.el);
             this.template = JST["views/templates/datatype-list.ejs"];
+            this.render();
         },
 
         render: function(options) {
@@ -103,15 +110,15 @@
             dataTypes.fetch({
                 success: function(dataTypes) {
                     self.$el.html(self.template({__: i18n, dataTypes: dataTypes.models}));
-                    return self;
+                    // return self;
                 },
                 error: function() {
                     self.$el.html(self.template({__: i18n}));
-                    return self;    
+                    // return self;    
                 }
 
             });
-
+            return this;
         }
     });
 } (xtens, xtens.module("datatype")));

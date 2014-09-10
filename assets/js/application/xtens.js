@@ -51,13 +51,11 @@ jQuery(function($) {
 
 
     router.on('route:datatype', function() {
-        var listView = new DataType.Views.List();
-        listView.render();
+        router.loadView(new DataType.Views.List());
     });
 
     router.on('route:datatype-edit', function() {
-        var editView = new DataType.Views.Edit();
-        editView.render();
+        router.loadView(new DataType.Views.Edit());
     });
 
     Backbone.history.start();

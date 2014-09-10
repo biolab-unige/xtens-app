@@ -2,6 +2,7 @@
 @main-color: #fff; 
 @content-color: #fff;
 @border-width: 3px;
+@border-width-metadatafield: 2px;
 @border-style: solid solid;
 #main {
     background-color: @main-color;
@@ -32,8 +33,19 @@
     .make-row();
 }
 #content .metadataField {
-    .make-xs-column(12);    
+    .make-xs-column(12); 
+    border-color:  @brand-primary;
+    border-width: @border-width-metadatafield;
+    border-style: @border-style;
+   
 }
-#content .metadataField-body {
+#content .metadataField-row {
     .make-row();
+}
+
+#content .metadataField-half {
+    .make-sm-column-offset(1);
+    .make-sm-column(4);
+    .make-xs-column-offset(1);
+    .make-xs-column(10);
 }
