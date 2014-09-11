@@ -1,21 +1,6 @@
 (function(xtens, Operator) {
 
-    // jQuery serializeObject plugin - to be moved in a separate module (by Massi)
-    $.fn.serializeObject = function() {
-        var o = {};
-        var a = this.serializeArray();
-        $.each(a, function() {
-            if (o[this.name] !== undefined) {
-                if (!o[this.name].push) {
-                    o[this.name] = [o[this.name]];
-                }
-                o[this.name].push(this.value || '');
-            } else {
-                o[this.name] = this.value || '';
-            }
-        });
-        return o;
-    };
+
 
     // dependencies
     var i18n = xtens.module("i18n").en;    
@@ -37,10 +22,14 @@
      */
 
     Operator.Views.Edit = Backbone.View.extend({
-        el: $("#main"),
+        
+	tagName: 'div',
+        className: 'operator',
 
-        initialize: function() {
+        initialize: function(options) {
+	    $("#main").html(this.el);
             this.template = JST["views/templates/operator-edit.ejs"]; 
+	    this.render(options);
         },
 
         render: function(options)  {
@@ -96,10 +85,14 @@
     });
 
     Operator.Views.List = Backbone.View.extend({
-        el: $("#main"),
+
+        tagName: 'div',
+        className: 'operator',
 
         initialize: function() {
+	    $("#main").html(this.el);
             this.template = JST["views/templates/operator-list.ejs"];
+	    this.render();
         },
 
         render: function(options) {

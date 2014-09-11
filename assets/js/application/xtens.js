@@ -39,13 +39,13 @@ jQuery(function($) {
     var router = xtens.router;
 
     router.on('route:operator',function() {
-        var listView = new Operator.Views.List();
-        listView.render();
+        router.loadView(new Operator.Views.List());
+        
     });
 
     router.on('route:operator-edit',function(id){
-        var editView = new Operator.Views.Edit();
-        editView.render({id:id});
+        router.loadView(new Operator.Views.Edit({id:id}));
+       
     });
 
 
