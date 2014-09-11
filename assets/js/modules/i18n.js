@@ -23,6 +23,7 @@
         "add-value": "Add Value",
         "add-unit": "Add Unit",
         "has-database-connection": "Has Database Connection",
+        "db-table": "DB Table",
         "min": "MIN",
         "max": "MAX",
         "schema": "Schema",

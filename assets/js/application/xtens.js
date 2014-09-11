@@ -48,8 +48,6 @@ jQuery(function($) {
        
     });
 
-
-
     router.on('route:datatype', function() {
         router.loadView(new DataType.Views.List());
     });
