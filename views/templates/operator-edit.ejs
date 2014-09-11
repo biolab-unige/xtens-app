@@ -1,10 +1,10 @@
 
 
-<form class="form-horizontal edit-operator-form" role="form">
+<form name = "Myform" class="form-horizontal edit-operator-form" role="form">
     <legend><%= operator ? 'Edit' : 'New' %> Operator</legend>
     <div class="form-group row">
         <label class="col-md-2 control-label"><%= __("first-name") %></label>
-        <input class = "col-md-6" name="name" type="text" value="<%= operator ? operator.get('firstName') : '' %>">
+        <input class = "col-md-6" name="name" id="first" type="text" value="<%= operator ? operator.get('firstName') : '' %>">
     </div>
     <div class="form-group row">
         <label class="col-md-2 control-label"><%= __("last-name") %></label>
@@ -12,19 +12,33 @@
     </div>
     <div class="form-group row">
         <label class="col-md-2 control-label"><%= __("birth-date") %></label>
-        <input class = "col-md-6" name="date" type="date" value="<%= operator ? operator.get('birthDate') : '' %>">
+        <input class = "col-md-6" name="date" type="date" format ="DD/MM/YYYY" value="<%= operator ? operator.get("birthDate").slice(0,9) +  (parseInt(operator.get("birthDate").slice(9,10))+1): '' %>">
     </div>
     <div class="form-group row">
         <label class="col-md-2 control-label"><%= __("sex") %></label>
+         <% if(!operator) { %>
         <div class="col-md-6">
             <select class="form-control" id="sex" name="sex" >
                 <option value="M" ><%=__("m") %></option>
                 <option value="F"><%=__("f") %></option>
-                <option selected="selected"><%= operator ? operator.get('sex') : '' %>
-
-                </option>
-            </select>
+               
+             </select>
         </div>
+         <% } %>
+          <% if(operator) { %>
+        <div class="col-md-6">
+            <select class="form-control" id="sex" name="sex" >
+                <% if(operator.get('sex') == 'M') { %>
+                <option value="M" selected ><%=__("m") %></option>
+                <option value="F"><%=__("f") %></option>
+                <% } else { %>
+                 <option value="M" ><%=__("m") %></option>
+                <option value="F" selected><%=__("f") %></option>
+                <% } %>     
+         </select>
+        </div>
+         <% } %>
+
 
     </div>
     <div class="form-group row">
@@ -35,10 +49,12 @@
         <label class="col-md-2 control-label"><%= __("login") %></label>
         <input class="col-md-6" name="login" type="text" value="<%= operator ? operator.get('login') : '' %>">
     </div>
+    <% if(!operator) { %>
          <div class="form-group row">
         <label class="col-md-2 control-label"><%= __("password") %></label>
-        <input class="col-md-6" name="password" type="text" value="<%= operator ? operator.get('password') : '' %>">
+        <input class="col-md-6" name="password" type="text" />
     </div>
+     <% } %>
 
 
 
@@ -49,7 +65,7 @@
         <% } %>
 
         <% if(operator) { %>
-         <button type="hidden" class="btn" name="update">Update Operator</button>
+         <button type="hidden" class="btn update" name="update">Update Operator</button>
         <input type="hidden" name="id" value="<%= operator.id %>" />
         <button data-operator-id="<%= operator.id %>" class="btn btn-danger delete">Delete</button>
         <% }; %>

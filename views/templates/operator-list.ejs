@@ -21,7 +21,7 @@
 
                 <td><%= operator.get("firstName") %></td>
                 <td><%= operator.get("lastName") %></td>
-                <td><%= operator.get("birthDate") %></td>
+                <td><%= operator.get("birthDate").slice(0,9) +  (parseInt(operator.get("birthDate").slice(9,10))+1)%></td>
                 <td><%= operator.get("sex") %></td>
                 <td><%= operator.get("email") %></td>
                 <td><%= operator.get("login") %></td>
