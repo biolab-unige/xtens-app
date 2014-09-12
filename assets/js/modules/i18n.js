@@ -48,8 +48,9 @@
         "save-operator" : "Save Operator",
         "m" : "M",
         "f" : "F",
-	"a-new-operator-is-created" : "A New Operator is created!"
-    };
+	"group-list": "Group List",
+        "new-group": "New Group"
+};
 
     var it = {
     

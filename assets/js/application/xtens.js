@@ -36,7 +36,19 @@ jQuery(function($) {
 
     var DataType = xtens.module("datatype");
     var Operator = xtens.module("operator");
+    var Group = xtens.module("group");
     var router = xtens.router;
+
+    router.on('route:group',function() {
+        router.loadView(new Group.Views.List());
+        
+    });
+
+    router.on('route:group-edit',function(id){
+        router.loadView(new Group.Views.Edit({id:id}));
+       
+    });
+
 
     router.on('route:operator',function() {
         router.loadView(new Operator.Views.List());
