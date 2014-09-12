@@ -77,9 +77,11 @@
                 var that = this;
               
                 that.operator.set({firstName: document.Myform.name.value,lastName:document.Myform.surname.value,birthDate:document.Myform.date.value,sex:document.Myform.sex.value,email:document.Myform.email.value,login:document.Myform.login.value});
-                that.operator.save({},{url:'/operator/'+that.operator.get('id') } );
+                that.operator.save();
                 
                 router.navigate('operators', {trigger:true});
+		window.location.reload();
+		
                 return false;
 
             },
