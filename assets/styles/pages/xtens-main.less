@@ -4,6 +4,9 @@
 @border-width: 3px;
 @border-width-metadatafield: 2px;
 @border-style: solid solid;
+.hidden {
+    display: none;
+}
 #main {
     background-color: @main-color;
 }
@@ -38,6 +41,9 @@
     border-width: @border-width-metadatafield;
     border-style: @border-style;
    
+}
+#content .metadataField-formgroup {
+    .form-group;
 }
 #content .metadataField-row {
     .make-row();

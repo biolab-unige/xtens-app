@@ -30,7 +30,8 @@ var jsFilesToInject = [
     'js/dependencies/sail.io.js',
     'dependencies/**/jquery.min.js',
     'dependencies/**/underscore.js',
-    'dependencies/**/*.js',
+    'dependencies/**/backbone.js',
+    'dependencies/**/select2.js',
 
     // Customised client-side js files
     'js/application/utils.js',
@@ -47,7 +48,6 @@ var jsFilesToInject = [
 
     // All of the rest of your client-side js files
     // will be injected here in no particular order.
-    'js/**/*.js'
 ];
 
 

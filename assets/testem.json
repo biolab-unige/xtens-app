@@ -1,0 +1,26 @@
+{
+    "framework": "mocha",
+    "src_files": [
+        "js/jst.js",
+        "js/dependencies/sail.io.js",
+        "dependencies/jquery/js/jquery.min.js",
+        "dependencies/underscore/js/underscore.js",
+        "dependencies/backbone/js/backbone.js",
+        "js/application/utils.js",
+        "js/application/xtens.js",
+        "js/application/Router.js",
+        "js/modules/i18n.js",
+        "js/modules/XtensConstants.js",
+        "js/modules/MetadataComponent.js",
+        "js/modules/MetadataField.js",
+        "js/modules/MetadataLoop.js",
+        "js/modules/MetadataGroup.js",
+        "js/modules/DataType.js",
+        "js/modules/Operator.js",
+        "dependencies/chai/chai.js",
+        "dependencies/sinon-chai/lib/sinon-chai.js",
+        "dependencies/sinon/lib/sinon.js",
+        "test/application/xtens-test.js",
+        "test/modules/MetadataField-test.js"
+    ]
+}

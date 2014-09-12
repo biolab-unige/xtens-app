@@ -5,9 +5,9 @@
     <%= __("attribute") %>
     </br>
 </h4>
-<div class="metadataField-row">
-    <div class="metadataField-half">
-        <div class="form-group-sm">
+<div class="metadataField-formgroup">
+    <div class="metadataField-row">
+        <div class="metadataField-half">
             <label class="control-label"><%= __('type') %></label>
             <select class="form-control">
                 <% _.each(fieldTypes, function(fieldType) {
@@ -17,41 +17,34 @@
                 }) %>
             </select>
         </div>
-    </div>
 
-    <div class="metadataField-half">
-        <div class="form-group-sm">
+        <div class="metadataField-half">
             <label class="control-label"><%= __('name') %></label>
             <input text class="form-control" placeholder="Field Name" value="">
         </div>
     </div>
 </div>
-
-<div class="metadataField-row">
-    <div class="metadataField-half">
-        <div class="form-group-sm">
+<div class="metadataField-formgroup">
+    <div class="metadataField-row">
+        <div class="metadataField-half">
             <label class="control-label"><%= __('custom-value') %></label>
             <input text class="form-control" placeholder="Custom Value" value="">
         </div>
-    </div>
-    <div class="metadataField-half">
-        <div class="form-group-sm text-center">
+        <div class="metadataField-half">
             <label class="checkbox-inline">
                 <input type="checkbox" value="required"><%=__('required') %>
             </label>
         </div>
     </div>
 </div>
-<div class="metadataField-row">
-    <div class="metadataField-half">
-        <div class="form-group-sm text-center">
+<div class="metadataField-formgroup">
+    <div class="metadataField-row">
+        <div class="metadataField-half">
             <label class="checkbox-inline">
                 <input type="checkbox" value="isList"><%=__('is-list') %>
             </label>
         </div>
-    </div>
-    <div class="metadataField-half">
-        <div class="form-group-sm text-center">
+        <div class="metadataField-half">
             <label class="checkbox-inline">
                 <input type="checkbox" value="hasUnit"><%=__('has-units') %>
             </label>
@@ -59,47 +52,49 @@
     </div>
 </div>
 
-<div class="metadataField-row">
-    <div class="col-md-3 col-md-offset-1">
-        <div class="form-group-sm text-center">
-            <input text class="form-control" placeholder="" value="">
+<div class="metadataField-formgroup">
+    <div class="metadataField-row">
+        <div class="col-md-3 col-md-offset-1">
+            <div class="text-center">
+                <input text class="form-control" placeholder="" value="">
+            </div>
         </div>
-    </div>
-    <div class="col-md-2">
-        <div class="text-center">
-            <button type="button" class="btn btn-primary btn-sm add-value-to-list"><%=__('add-value') %></button>
+        <div class="col-md-2">
+            <div class="text-center">
+                <button type="button" class="btn btn-primary btn-sm add-value-to-list"><%=__('add-value') %></button>
+            </div>
         </div>
-    </div>
 
-    <div class="col-md-3 col-md-offset-1">
-        <div class="form-group-sm text-center">
-            <input text class="form-control" placeholder="" value="">
+        <div class="col-md-3 col-md-offset-1">
+            <div class="text-center">
+                <input text class="form-control" placeholder="" value="">
+            </div>
         </div>
-    </div>
-    <div class="col-md-2">
-        <div class="text-center">
-            <button type="button" class="btn btn-primary btn-sm add-unit-to-list"><%=__('add-unit') %></button>
-        </div>
-    </div> 
-</div>
-
-<div class="metadataField-row">
-    <div class="col-md-3 col-md-offset-1">
-        <select multiple class="form-control"></select>
-    </div>
-    <div class="col-md-3 col-md-offset-3">
-        <select multiple class="form-control"></select>
+        <div class="col-md-2">
+            <div class="text-center">
+                <button type="button" class="btn btn-primary btn-sm add-unit-to-list"><%=__('add-unit') %></button>
+            </div>
+        </div> 
     </div>
 </div>
-
-<div class="metadataField-row">
-    <div class="col-md-4 col-md-offset-1 text-center">
-        <label class="checkbox-inline">
-            <input type="checkbox" value="hasDbTableConnection"><%=__('has-database-connection') %>
-        </label>
+<div class="metadataField-formgroup">
+    <div class="metadataField-row">
+        <div class="col-md-3 col-md-offset-1">
+            <select multiple class="form-control"></select>
+        </div>
+        <div class="col-md-3 col-md-offset-3">
+            <select multiple class="form-control"></select>
+        </div>
     </div>
-    <div class="col-md-4 col-md-offset-2">
-        <div class="form-group-sm">
+</div>
+<div class="metadataField-formgroup">
+    <div class="metadataField-row">
+        <div class="col-md-4 col-md-offset-1">
+            <label class="checkbox-inline">
+                <input type="checkbox" value="hasDbTableConnection"><%=__('has-database-connection') %>
+            </label>
+        </div>
+        <div class="col-md-4 col-md-offset-2">
             <label class="control-label"><%=__('db-table') %></label>
             <select class="form-control">
                 <option selected value=""><%= __('please-select') %></opt>
@@ -107,16 +102,13 @@
         </div>
     </div>
 </div>
-
-<div class="metadataField-row">
-    <div class="metadataField-half">
-        <div class="form-group-sm">
+<div class="metadataField-formgroup">
+    <div class="metadataField-row">
+        <div class="metadataField-half">
             <label class="control-label"><%= __('min') %></label>
             <input text class="form-control" placeholder="Minimum Value" value="">
         </div>
-    </div>
-    <div class="metadataField-half">
-        <div class="form-group-sm">
+        <div class="metadataField-half">
             <label class="control-label"><%= __('max') %></label>
             <input text class="form-control" placeholder="Maximum Value" value="">
         </div>

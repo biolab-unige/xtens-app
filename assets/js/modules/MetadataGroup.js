@@ -43,7 +43,6 @@
         addMetadataField: function(ev) {
             var view = new MetadataField.Views.Edit();
             this.$('.metadataGroup-body').append(view.render().el);
-            view.$("select").select2({width: 'resolve'});
             return false;
         },
 

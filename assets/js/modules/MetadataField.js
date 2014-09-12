@@ -38,19 +38,24 @@
         
         render: function() {
             this.$el.html(this.template({__: i18n, fieldTypes: fieldTypes}));
+            this.$("select").select2({width: 'resolve'});
             return this;
         },
 
         events: {
-            'click .remove-me': 'removeMe'
+            'click .remove-me': 'removeMe',
+            'click .add-value': 'addValueToList',
+            'click .add-unit': 'addUnitToList'
         },
         
-        /*
-        removeMe: function(ev) {
-            this.remove();
-            ev.stopPropagation();
-        } */
+        addValueToList: function(ev) {
+        
+        },
 
+        addUnitToList: function(ev) {
+        
+        }
+           
     });
 
     MetadataField.List = Backbone.Collection.extend({

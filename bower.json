@@ -49,5 +49,10 @@
     "select2-bootstrap": {
       "": "**/select2-bootstrap.css"
     }
+  },
+  "devDependencies": {
+    "chai": "~1.9.1",
+    "sinon": "~1.10.3",
+    "sinon-chai": "~2.5.0"
   }
 }

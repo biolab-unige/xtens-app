@@ -25,9 +25,11 @@ module.exports = function(grunt) {
                     layout: 'byComponent',
                     install: true,
                     verbose: true,
-                    cleanTargetDir: false,
+                    cleanTargetDir: true,
                     cleanBowerDir: false,
-                    bowerOptions: {}
+                    bowerOptions: {
+                        production: true
+                    }
                 }
             }
         }
