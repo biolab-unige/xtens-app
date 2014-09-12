@@ -1,6 +1,6 @@
-<h2><%= __("operator-list") %></h2> 
+<h2 class="legend" align="center"><%= __("operator-list") %></h2> 
 
-<div id="content">
+<div id="list">
     <div class="table-responsive">
         <table class="table striped">
             <thead> 
@@ -19,13 +19,13 @@
             <tr>
 
 
-                <td><%= operator.get("firstName") %></td>
-                <td><%= operator.get("lastName") %></td>
-                <td><%= operator.get("birthDate") %></td>
-                <td><%= operator.get("sex") %></td>
-                <td><%= operator.get("email") %></td>
-                <td><%= operator.get("login") %></td>
-                <td><a class="btn" href="#/operators/edit/<%= operator.id %>"><%=__("edit") %></a></td>
+                <td class="oper_val"><%= operator.get("firstName") %></td>
+                <td class="oper_val"><%= operator.get("lastName") %></td>
+                <td class="oper_val"><%= operator.get("birthDate").slice(0,9) +  (parseInt(operator.get("birthDate").slice(9,10))+1)%></td>
+                <td class="oper_val"><%= operator.get("sex") %></td>
+                <td class="oper_val"><%= operator.get("email") %></td>
+                <td class="oper_val"><%= operator.get("login") %></td>
+                <td><a id="edit" class="btn" href="#/operators/edit/<%= operator.id %>"><%=__("edit") %></a></td>
 
 
 

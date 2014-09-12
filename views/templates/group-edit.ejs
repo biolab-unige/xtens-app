@@ -1,0 +1,23 @@
+
+<div id="group"> 
+<form name = "Myform" class="form-horizontal edit-group-form" role="form">
+    <legend class="legend"align="center"><%= group ? 'Edit' : 'New' %> Group</legend>
+    <div class="form-group row">
+        <label  class="col-md-3 control-label"><%= __("name") %></label>
+        <input class = "col-md-6" name="name" id="first" type="text" value="<%= group ? group.get('name') : '' %>">
+    </div>
+   
+    <hr />
+    <div id="buttonbardiv" class="row text-center">
+         <% if(!group) { %>
+        <button type="submit" class="btn" >Create Group</button>
+        <% } %>
+
+        <% if(group) { %>
+         <button type="hidden" class="btn update" name="update">Update Group</button>
+        <input type="hidden" name="id" value="<%= group.id %>" />
+        <button data-group-id="<%= group.id %>" class="btn btn-danger delete">Delete</button>
+        <% }; %>
+    </div>
+</form>
+</div>

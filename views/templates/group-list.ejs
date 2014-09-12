@@ -1,0 +1,28 @@
+<h2 class="legend" align="center"><%= __("group-list") %></h2> 
+
+<div id="list">
+    <div class="table-responsive">
+        <table class="table striped">
+            <thead> 
+               
+                <tr>
+                    <th><%= __("name") %></th>
+                                      <th></th>
+                </tr>
+            </thead>
+            <tbody>  <% _.each(groups, function(group) { %> 
+            <tr>
+
+
+                <td class="group_val"><%= group.get("name") %></td>
+                               <td><a id="edit" class="btn" href="#/groups/edit/<%= group.id %>"><%=__("edit") %></a></td>
+
+            </tr>
+            <% }) %>
+            </tbody>
+        </table>
+    </div>
+    <div id="buttonbardiv" class="row text-center">
+        <a href="#/groups/new" class="btn btn-primary"><%= __("new-group")%></a>
+    </div>
+     </div>
