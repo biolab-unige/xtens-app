@@ -27,9 +27,46 @@ describe('MetadataField.Views.Edit', function() {
     describe('#addvalueToList', function() {
         beforeEach(function() {
             this.view.render();
-            this.view.$el.find();
         });
 
+        it('should add the written value to the list', function() {
+            var testString = "test string value";
+            this.view.$("input.value-to-add").val(testString);
+            this.view.addValueToList();
+            var $valueSel = this.view.$("select.value-list");
+            $valueSel.children("option").should.have.length(1);
+            $valueSel.children("option:first").html().should.equal(testString);
+        });
+
+        it('should clean the value-to-add textbox after adding', function() {
+           var testString = "test string value"; 
+            this.view.$("input.value-to-add").val(testString);
+            this.view.addValueToList();
+            var value = this.view.$("input.value-to-add").val();
+            value.should.be.empty;
+        });
+
+        it('should not add a value that already exists', function() {
+            var testString = "test string value";
+            var theSameString = "test string value";
+            var anotherTestString = "another one!";
+            this.view.$("input.value-to-add").val(testString);
+            this.view.addValueToList();
+            this.view.$("input.value-to-add").val(theSameString);
+            this.view.addValueToList();
+            var $valueSel = this.view.$("select.value-list");
+            $valueSel.children("option").should.have.length(1);
+            this.view.$("input.value-to-add").val(anotherTestString);
+            this.view.addValueToList();
+            $valueSel.children("option").should.have.length(2);
+            this.view.$("input.value-to-add").val(theSameString);
+            this.view.addValueToList();
+            $valueSel.children("option").should.have.length(2);
+            $valueSel.children("option:first").val().should.equal(testString);
+            $valueSel.children("option:first").html().should.equal(testString);
+            $valueSel.children("option").eq(1).val().should.equal(anotherTestString);
+            $valueSel.children("option").eq(1).html().should.equal(anotherTestString);
+        });
 
     });
 
