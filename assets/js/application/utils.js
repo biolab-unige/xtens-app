@@ -57,7 +57,7 @@
      *  Ajax prefilters are useful for hooking into all AJAX request
      */
 
-    $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
+  /*  $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
         options.url = 'http://localhost:1337' + options.url;
     });    
 

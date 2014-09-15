@@ -1,0 +1,25 @@
+<h2 class="legend" align="center"><%= __("operator-association") %></h2> 
+
+<div id="association">
+    
+            <thead> 
+               
+             
+            </thead>
+            <tbody>  <% _.each(operators, function(operator) { %> 
+            <tr>
+
+
+               <select class="col-md-6" id="operators" name="operators" >
+                <option class="col-md-6"  ><%= operator.get("id") %></option>
+             </select>
+      
+            </tr>
+            <% }) %>
+            </tbody>
+        </table>
+    </div>
+    <div id="buttonbardiv" class="row text-center">
+        <a class="btn btn-primary"><%= __("save-association")%></a>
+    </div>
+     </div>

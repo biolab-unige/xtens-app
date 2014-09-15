@@ -17,10 +17,7 @@
         model: Operator.Model
     });
 
-    /**
-     * This is the view to create/edit the DataType
-     */
-
+    
     Operator.Views.Edit = Backbone.View.extend({
 
         tagName: 'div',

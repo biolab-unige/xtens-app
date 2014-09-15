@@ -49,6 +49,12 @@ jQuery(function($) {
        
     });
 
+     router.on('route:group-association',function(id){
+        router.loadView(new Group.Views.Association({id:id}));
+       
+    });
+
+
 
     router.on('route:operator',function() {
         router.loadView(new Operator.Views.List());

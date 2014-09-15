@@ -49,7 +49,9 @@
         "m" : "M",
         "f" : "F",
 	"group-list": "Group List",
-        "new-group": "New Group"
+        "new-group": "New Group",
+        "associate-new-operator":"Associate An Operator",
+        "save-association":"Save Association"
 };
 
     var it = {
