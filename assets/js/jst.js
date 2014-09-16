@@ -61,27 +61,6 @@ __p += ' \n            </tbody>\n        </table>\n    </div>\n    <div id="butt
 return __p
 };
 
-this["JST"]["views/templates/group-association.ejs"] = function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-__p += '<h2 class="legend" align="center">' +
-((__t = ( __("operator-association") )) == null ? '' : __t) +
-'</h2> \n\n<div id="association">\n    \n            <thead> \n               \n             \n            </thead>\n            <tbody>  ';
- _.each(operators, function(operator) { ;
-__p += ' \n            <tr>\n\n\n               <select class="col-md-6" id="operators" name="operators" >\n                <option class="col-md-6"  >' +
-((__t = ( operator.get("id") )) == null ? '' : __t) +
-'</option>\n             </select>\n      \n            </tr>\n            ';
- }) ;
-__p += '\n            </tbody>\n        </table>\n    </div>\n    <div id="buttonbardiv" class="row text-center">\n        <a class="btn btn-primary">' +
-((__t = ( __("save-association"))) == null ? '' : __t) +
-'</a>\n    </div>\n     </div>\n';
-
-}
-return __p
-};
-
 this["JST"]["views/templates/group-edit.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
@@ -128,10 +107,6 @@ __p += ' \n            <tr>\n\n\n                <td class="group_val">' +
 ((__t = ( group.id )) == null ? '' : __t) +
 '">' +
 ((__t = (__("edit") )) == null ? '' : __t) +
-'</a></td>\n\t\t\t\t<td><a id="edit" class="btn" href="#/groups/association/' +
-((__t = ( group.id )) == null ? '' : __t) +
-'">' +
-((__t = (__("associate-new-operator") )) == null ? '' : __t) +
 '</a></td>\n            </tr>\n            ';
  }) ;
 __p += '\n            </tbody>\n        </table>\n    </div>\n    <div id="buttonbardiv" class="row text-center">\n        <a href="#/groups/new" class="btn btn-primary">' +
@@ -278,7 +253,11 @@ __p += '\n\n\n    </div>\n    <div class="form-group row">\n        <label class
 ((__t = ( __("login") )) == null ? '' : __t) +
 '</label>\n        <input class="col-md-6" name="login" type="text" value="' +
 ((__t = ( operator ? operator.get('login') : '' )) == null ? '' : __t) +
-'">\n    </div>\n    ';
+'">\n    </div>\n    <div class="form-group row">\n        <label class="col-md-3 control-label">' +
+((__t = ( __("group") )) == null ? '' : __t) +
+'</label>\n            <input class="col-md-6" name="group" type="text" value="' +
+((__t = ( operator ? operator.get('groups') : '' )) == null ? '' : __t) +
+'">\n            </div>\n            \n    ';
  if(!operator) { ;
 __p += '\n         <div class="form-group row">\n        <label class="col-md-3 control-label">' +
 ((__t = ( __("password") )) == null ? '' : __t) +

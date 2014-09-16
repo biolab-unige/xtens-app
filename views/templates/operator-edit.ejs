@@ -49,6 +49,11 @@
         <label class="col-md-3 control-label"><%= __("login") %></label>
         <input class="col-md-6" name="login" type="text" value="<%= operator ? operator.get('login') : '' %>">
     </div>
+    <div class="form-group row">
+        <label class="col-md-3 control-label"><%= __("group") %></label>
+            <input class="col-md-6" name="group" type="text" value="<%= operator ? operator.get('groups') : '' %>">
+            </div>
+            
     <% if(!operator) { %>
          <div class="form-group row">
         <label class="col-md-3 control-label"><%= __("password") %></label>

@@ -124,30 +124,4 @@
         }
     });
 
- Group.Views.Association = Backbone.View.extend({
-
-        tagName: 'div',
-        className: 'group',
-
-        initialize: function() {
-            $("#main").html(this.el);
-            this.template = JST["views/templates/group-association.ejs"];
-            this.render();
-        },
-render: function()  {
-            var self = this;
-            if(this.id) {
-                self.group = new Group.Model({id: this.id});
-                self.group.fetch({
-                    success: function (group) {
-                        self.$el.html(self.template({__: i18n, group: group}));
-                        return self;
-
-                    }
-                });
-            } else {
-                self.$el.html(self.template({__: i18n,group:null}));
-                return self;
-            }}
- });
 } (xtens, xtens.module("group")));
