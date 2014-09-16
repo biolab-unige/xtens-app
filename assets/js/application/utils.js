@@ -79,5 +79,15 @@
         });
         return o;
     };
+    
+    /**
+     * Method to prevent undesired key-related events (ENTER, ...)
+     */
+    $("html").on('keypress', function(ev) {
+            if (ev.keyCode === 13) { // The ENTER keycode is 13
+                return false;
+            }
+    });
+
 })(jQuery);
 

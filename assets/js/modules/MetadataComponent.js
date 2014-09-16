@@ -8,7 +8,7 @@
             this.template = null;   // no template implemented at this stage
         },
 
-        render: function() {
+        render: function() { 
             this.$el.html(this.template({ __: i18n, id: 0 }));
             return this;
         },

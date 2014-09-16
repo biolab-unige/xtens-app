@@ -25,6 +25,7 @@
         
         initialize: function() {
             this.template = JST["views/templates/metadatagroup-edit.ejs"];
+            this.nestedViews = [];
         },
         
         /*
@@ -41,14 +42,16 @@
         },
 
         addMetadataField: function(ev) {
-            var view = new MetadataField.Views.Edit();
+            var view = new MetadataField.Views.Edit({id: this.nestedViews.length});
             this.$('.metadataGroup-body').append(view.render().el);
+            this.nestedViews.push(view);
             return false;
         },
 
         addMetadataLoop: function(ev) {
             var view = new MetadataLoop.Views.Edit();
             this.$('.metadataGroup-body').append(view.render().el);
+            this.nestedViews.push(view);
             return false;
         },
         

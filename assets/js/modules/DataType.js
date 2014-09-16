@@ -1,30 +1,32 @@
 (function(xtens, DataType) {
-    
-    /* jQuery serializeObject plugin - to be moved in a separate module (by Massi)
-     $.fn.serializeObject = function() {
-      var o = {};
-      var a = this.serializeArray();
-      $.each(a, function() {
-          if (o[this.name] !== undefined) {
-              if (!o[this.name].push) {
-                  o[this.name] = [o[this.name]];
-              }
-              o[this.name].push(this.value || '');
-          } else {
-              o[this.name] = this.value || '';
-          }
-      });
-      return o;
-    }; */
 
     // dependencies
     var i18n = xtens.module("i18n").en;
+    var Constants = xtens.module("xtensconstants").Constants;
     var MetadataGroup = xtens.module("metadatagroup"); 
 
     // XTENS router alias
     var router = xtens.router;   
 
-    // define a DataType
+    /**
+     * Serialize a form element as a metadata field view
+     */
+    function serializeAsMetadataField(element) {
+        var $element = $(element);
+        var fieldJson = $element.find("select, input, textarea").serializeObject();
+        fieldJson.label = Constants.METADATA_FIELD;
+        fieldJson.required = fieldJson.required ? true : false;
+        fieldJson.isList = fieldJson.isList ? true : false;
+        fieldJson.possibleValues = _.isEmpty(fieldJson.possibleValues) ? [] : fieldJson.possibleValues.split(',');
+        fieldJson.hasUnits = fieldJson.hasUnits ? true : false;
+        fieldJson.possibleUnits = _.isEmpty(fieldJson.possibleUnits) ? [] : fieldJson.possibleUnits.split(",");
+        fieldJson.fromDatabaseEntities = fieldJson.fromDatabaseEntities ? true : false;
+        return fieldJson;
+    }
+
+    /**
+     *  define a DataType model
+     */
     DataType.Model = Backbone.Model.extend({
 
         urlRoot: '/dataType',
@@ -45,13 +47,14 @@
      */
 
     DataType.Views.Edit = Backbone.View.extend({
-        
+
         tagName: 'div',
         className: 'dataType',
 
         initialize: function() {
             $("#main").html(this.el);
-            this.template = JST["views/templates/datatype-edit.ejs"]; 
+            this.template = JST["views/templates/datatype-edit.ejs"];
+            this.nestedViews = [];
             this.render();
         },
 
@@ -65,29 +68,59 @@
             'click .add-metadata-group': 'addMetadataGroup'    // not used yet 
         },
 
-        saveDataType: function(ev) {
-            var dataTypeDetails = $(ev.currentTarget).serializeObject();
-            dataTypeDetails = { name: dataTypeDetails.schemaName, schema: {"pippo": "franco"} };
-            var dataType = new DataType.Model();
-            dataType.save(dataTypeDetails, {
-                patch: true,
-                success: function(dataType) {
-                    console.log(dataType);
-                    router.navigate('datatypes', {trigger: true});
-                },
-                error: function() {
-                    console.log("Error saving the DataType");
-                }
+        serializeMetadataBody: function() {
+            var metadataBody = [];
+            this.$('.metadataGroup').each(function(metadataGroupIndex, metadataGroupElement) {
+                var groupJson = {label: Constants.METADATA_GROUP, content: [] };
+                $(metadataGroupElement).find('.metadataGroup-body').children().each(function(metadataComponentIndex, metadataComponentElement) {
+                    if ($(metadataComponentElement).hasClass('metadataField')) {
+                        groupJson.content.push(serializeAsMetadataField(metadataComponentElement));
+                    }
+                    else if ($(metadataComponentElement).hasClass('metadataLoop')) {
+                        var loopJson = {label: Constants.METADATA_LOOP, content: []};
+                        $(metadataComponentElement).find('.metadataLoop-body').children().each(function(metadataFieldIndex, metadataFieldElement) {
+                            loopJson.content.push(serializeAsMetadataField(metadataFieldElement));
+                        });
+                        groupJson.content.push(loopJson);
+                    } 
+                });
+                metadataBody.push(groupJson);
             });
+            return metadataBody;
+        },
+
+        saveDataType: function(ev) {
+            try {
+                dataTypeDetails = {};
+                dataTypeDetails.header = this.$("#schemaHeader").find("select, input, textarea").serializeObject();
+                dataTypeDetails.body = this.serializeMetadataBody();
+                dataTypeDetails = { name: dataTypeDetails.header.schemaName, schema: dataTypeDetails };
+                var dataType = new DataType.Model();
+                dataType.save(dataTypeDetails, {
+                    patch: true,
+                    success: function(dataType) {
+                        console.log(dataType);
+                        router.navigate('datatypes', {trigger: true});
+                    },
+                    error: function() {
+                        console.log("Error saving the DataType");
+                    }
+                });
+            }
+            catch(e) {
+                console.log(e);
+            }
             return false;
         },
 
         addMetadataGroup: function() {
             // var metadataField = new MetadataField.Model();
             var view = new MetadataGroup.Views.Edit();
-            this.$("#schemaContainer").append(view.render().el);
+            this.$("#schemaBody").append(view.render().el);
+            this.nestedViews.push(view);
             return false;
-        }   
+        },
+
     });
 
     /**

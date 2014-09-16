@@ -3,7 +3,7 @@
 <div id="content"> 
 
     <form class="form-horizontal edit-datatype-form" role="form">
-        <div class="form-group" id="schemaContainer">
+        <div id="schemaHeader">
             <div class="form-group row">
                 <label for="schemaName" class="col-md-2 control-label"><%= __("name") %></label>
                 <div class="col-md-6">
@@ -35,7 +35,8 @@
                     </select>
                 </div>
             </div>
-        </div> <!-- schemaContainer -->  
+        </div> <!-- schemaHeader -->
+        <div id="schemaBody"></div>  
         <div id="buttonbardiv" class="row text-center">
             <input type="button" class="btn btn-default add-metadata-group" value="<%=__('add-metadata-group') %>" >
             <input type="submit" class="btn btn-primary" value="<%=__('save-data-type') %>" >

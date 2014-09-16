@@ -12,6 +12,7 @@
         // template: _.template($("#metadata-field-form-template").html()),
         initialize: function() {
             this.template = JST['views/templates/metadataloop-edit.ejs'];
+            this.nestedViews = [];
         },
         
         /*
@@ -32,8 +33,9 @@
         }, */
 
         addMetadataField: function(ev) {
-            var view = new MetadataField.Views.Edit();
+            var view = new MetadataField.Views.Edit({id: this.nestedViews.length});
             this.$('.metadataLoop-body').append(view.render().el);
+            this.nestedViews.push(view);
             ev.stopPropagation();
             return false;
 

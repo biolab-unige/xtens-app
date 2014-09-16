@@ -32,13 +32,14 @@
         className: 'metadataField',
 
         // template: _.template($("#metadata-field-form-template").html()),
-        initialize: function() {
+        initialize: function(attrs) {
+            this.options = attrs;
             this.template = JST['views/templates/metadatafield-edit.ejs'];
         },
 
         render: function() {
+            this.el.id = this.className + "_" + this.options.id;
             this.$el.html(this.template({__: i18n, fieldTypes: fieldTypes}));
-            this.$("select").select2({width: 'resolve'});
             return this;
         },
 
@@ -46,7 +47,9 @@
             'change .field-type': 'onFieldTypeChange',
             'click .remove-me': 'removeMe',
             'click .add-value-to-list': 'addValueToList',
-            'click .add-unit-to-list': 'addUnitToList'
+            'click .add-unit-to-list': 'addUnitToList',
+            'change input[type=checkbox][name=isList]': 'isListOnChange',
+            'change input[type=checkbox][name=hasUnit]': 'hasUnitOnChange'
         },
 
         addValueToList: function(ev) {
@@ -77,8 +80,35 @@
                 this.$("select.unit-list").append($("<option>").attr("value", unit).html(unit));
             }
             this.$("input.unit-to-add").val("");
-        }
+        },
 
+        isListOnChange: function(ev) {
+            if ($(ev.target).is(':checked')) {
+                this.$('.value-list').select2({
+                    multiple: 'true',
+                    tags: [],
+                    width: 'resolve'
+                });
+            }
+            else {
+                this.$('.value-list').select2('destroy');
+                this.$(".value-list").val("");
+            }
+        },
+
+        hasUnitOnChange: function(ev) {
+            if ($(ev.target).is(':checked')) {
+                this.$('.unit-list').select2({
+                    multiple: 'true',
+                    tags: [],
+                    width: 'resolve'
+                });
+            }
+            else {
+                this.$('.unit-list').select2('destroy');
+                this.$(".unit-list").val("");
+            }
+        }
     });
 
     MetadataField.List = Backbone.Collection.extend({
