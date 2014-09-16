@@ -2,6 +2,7 @@
 
 
 
+    
     // dependencies
     var i18n = xtens.module("i18n").en;    
     var router = xtens.router; 
@@ -122,4 +123,5 @@
 
         }
     });
+
 } (xtens, xtens.module("group")));

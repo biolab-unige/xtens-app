@@ -49,7 +49,6 @@ jQuery(function($) {
        
     });
 
-
     router.on('route:operator',function() {
         router.loadView(new Operator.Views.List());
         

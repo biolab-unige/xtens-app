@@ -45,6 +45,7 @@ var jsFilesToInject = [
     'js/modules/MetadataGroup.js',
     'js/modules/DataType.js',
     'js/modules/Operator.js',
+    'js/modules/Group.js',
 
     // All of the rest of your client-side js files
     // will be injected here in no particular order.

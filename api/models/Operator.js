@@ -45,8 +45,6 @@ var Operator = {
         },
 
         createdAt: {
-            type: 'datetime',
-            defaultsTo: function (){ return new Date(); },
             columnName: 'created_at'
         },
 
@@ -71,6 +69,11 @@ var Operator = {
                 values.password = hash;
                 next();
             });
+        },
+        groups:{
+            collection:'group',
+            via:'operators',
+            dominant:true
         }
     }	
 };
