@@ -7,8 +7,22 @@
 
 module.exports = {
 
+addGroupToOperator: function(req,res,next){
 
+     /* Operator.findOne(req.param('operator_id')).populate('groups').exec(function(err,bean){
+        if(err) return next(err);
+        if(!bean) return next();
+        bean.groups.add(req.param('group_id'));            
+        bean.save(function(err) {
+            if(err) return next(err);
+            res.redirect('/operator');
+        });
+    });*/
+}
+   
 
+/*removeGroupFromOperator: function(req,res,next){
+   }
     /**
      * `OperatorController.create()`
 

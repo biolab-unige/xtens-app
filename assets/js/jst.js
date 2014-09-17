@@ -6,7 +6,7 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<h2>' +
 ((__t = ( __("create-a-new-data-type") )) == null ? '' : __t) +
-'</h2>\n\n<div id="content"> \n\n    <form class="form-horizontal edit-datatype-form" role="form">\n        <div class="form-group" id="schemaContainer">\n            <div class="form-group row">\n                <label for="schemaName" class="col-md-2 control-label">' +
+'</h2>\n\n<div id="content"> \n\n    <form class="form-horizontal edit-datatype-form" role="form">\n        <div id="schemaHeader">\n            <div class="form-group row">\n                <label for="schemaName" class="col-md-2 control-label">' +
 ((__t = ( __("name") )) == null ? '' : __t) +
 '</label>\n                <div class="col-md-6">\n                    <input text class="form-control" id="schemaName" name="schemaName" placeholder="Data Type Name">\n                </div>\n                <label for="fileUpload" class="col-md-2 control-label">' +
 ((__t = ( __("file-upload") )) == null ? '' : __t) +
@@ -20,7 +20,7 @@ __p += '<h2>' +
 ((__t = (__("version") )) == null ? '' : __t) +
 '</label>\n                <div class="col-md-2">\n                    <input text class="form-control" id="version" name="version" placeholder="0.0.X">\n                </div>\n                <label for="ontology" class="col-md-2 control-label">' +
 ((__t = (__("ontology") )) == null ? '' : __t) +
-'</label>\n                <div class="col-md-6">\n                    <select class="form-control" id="ontology" name="ontology">\n                        <option value="" selected="true">Select an ontology to name metadata fields</option>\n                    </select>\n                </div>\n            </div>\n        </div> <!-- schemaContainer -->  \n        <div id="buttonbardiv" class="row text-center">\n            <input type="button" class="btn btn-default add-metadata-group" value="' +
+'</label>\n                <div class="col-md-6">\n                    <select class="form-control" id="ontology" name="ontology">\n                        <option value="" selected="true">Select an ontology to name metadata fields</option>\n                    </select>\n                </div>\n            </div>\n        </div> <!-- schemaHeader -->\n        <div id="schemaBody"></div>  \n        <div id="buttonbardiv" class="row text-center">\n            <input type="button" class="btn btn-default add-metadata-group" value="' +
 ((__t = (__('add-metadata-group') )) == null ? '' : __t) +
 '" >\n            <input type="submit" class="btn btn-primary" value="' +
 ((__t = (__('save-data-type') )) == null ? '' : __t) +
@@ -126,41 +126,41 @@ __p += '<h4>\n    <a class="remove-me">\n        <span class="fa fa-times-circle
 ((__t = ( __("attribute") )) == null ? '' : __t) +
 '\n    </br>\n</h4>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="metadataField-half">\n            <label class="control-label">' +
 ((__t = ( __('type') )) == null ? '' : __t) +
-'</label>\n            <select class="form-control field-type">\n                ';
+'</label>\n            <select class="form-control field-type" name="fieldType">\n                ';
  _.each(fieldTypes, function(fieldType) {
                 ;
-__p += '\n                <option value="';
- fieldType ;
-__p += '">' +
+__p += '\n                <option value="' +
+((__t = ( fieldType )) == null ? '' : __t) +
+'">' +
 ((__t = ( fieldType.toUpperCase() )) == null ? '' : __t) +
 '</option>\n                ';
 
                 }) ;
 __p += '\n            </select>\n        </div>\n\n        <div class="metadataField-half">\n            <label class="control-label">' +
 ((__t = ( __('name') )) == null ? '' : __t) +
-'</label>\n            <input text class="form-control" placeholder="Field Name" value="">\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="metadataField-half">\n            <label class="control-label">' +
+'</label>\n            <input text class="form-control" placeholder="Field Name" name="name" value="">\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="metadataField-half">\n            <label class="control-label">' +
 ((__t = ( __('custom-value') )) == null ? '' : __t) +
-'</label>\n            <input text class="form-control" placeholder="Custom Value" value="">\n        </div>\n        <div class="metadataField-half">\n            <label class="checkbox-inline">\n                <input type="checkbox" value="required">' +
+'</label>\n            <input text class="form-control" placeholder="Custom Value" name="customValue" value="">\n        </div>\n        <div class="metadataField-half">\n            <label class="checkbox-inline">\n                <input type="checkbox" name="required" value="required">' +
 ((__t = (__('required') )) == null ? '' : __t) +
-'\n            </label>\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="metadataField-half">\n            <label class="checkbox-inline">\n                <input type="checkbox" value="isList">' +
+'\n            </label>\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="metadataField-half">\n            <label class="checkbox-inline">\n                <input type="checkbox" name="isList" value="isList">' +
 ((__t = (__('is-list') )) == null ? '' : __t) +
-'\n            </label>\n        </div>\n        <div class="metadataField-half">\n            <label class="checkbox-inline">\n                <input type="checkbox" value="hasUnit">' +
+'\n            </label>\n        </div>\n        <div class="metadataField-half">\n            <label class="checkbox-inline">\n                <input type="checkbox" name="hasUnit" value="hasUnit">' +
 ((__t = (__('has-units') )) == null ? '' : __t) +
-'\n            </label>\n        </div>\n    </div>\n</div>\n\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="col-md-3 col-md-offset-1">\n            <div class="text-center">\n                <input text class="form-control value-to-add" placeholder="" value="">\n            </div>\n        </div>\n        <div class="col-md-2">\n            <div class="text-center">\n                <button type="button" class="btn btn-primary btn-sm add-value-to-list">' +
+'\n            </label>\n        </div>\n    </div>\n</div>\n<!--\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="col-md-3 col-md-offset-1">\n            <div class="text-center">\n                <input text class="form-control value-to-add" placeholder="" value="">\n            </div>\n        </div>\n        <div class="col-md-2">\n            <div class="text-center">\n                <button type="button" class="btn btn-primary btn-sm add-value-to-list">' +
 ((__t = (__('add-value') )) == null ? '' : __t) +
 '</button>\n            </div>\n        </div>\n\n        <div class="col-md-3 col-md-offset-1">\n            <div class="text-center">\n                <input text class="form-control unit-to-add" placeholder="" value="">\n            </div>\n        </div>\n        <div class="col-md-2">\n            <div class="text-center">\n                <button type="button" class="btn btn-primary btn-sm add-unit-to-list">' +
 ((__t = (__('add-unit') )) == null ? '' : __t) +
-'</button>\n            </div>\n        </div> \n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="col-md-3 col-md-offset-1">\n            <select multiple class="form-control value-list"></select>\n        </div>\n        <div class="col-md-3 col-md-offset-3">\n            <select multiple class="form-control unit-list"></select>\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="col-md-4 col-md-offset-1">\n            <label class="checkbox-inline">\n                <input type="checkbox" value="hasDbTableConnection">' +
+'</button>\n            </div>\n        </div> \n    </div>\n</div>\n-->\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="col-md-3 col-md-offset-1">\n            <input type="hidden" name="possibleValues" class="form-control value-list">\n            <!--\n            <select name="possibleValues" multiple class="form-control value-list"></select>\n            -->\n        </div>\n        <div class="col-md-3 col-md-offset-3">\n            <input type="hidden" name="possibleUnits" class="form-control unit-list">\n            <!--\n            <select name="possibleUnits" multiple class="form-control unit-list"></select>\n            -->\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="col-md-4 col-md-offset-1">\n            <label class="checkbox-inline">\n                <input type="checkbox" value="hasDbTableConnection">' +
 ((__t = (__('has-database-connection') )) == null ? '' : __t) +
 '\n            </label>\n        </div>\n        <div class="col-md-4 col-md-offset-2">\n            <label class="control-label">' +
 ((__t = (__('db-table') )) == null ? '' : __t) +
-'</label>\n            <select class="form-control">\n                <option selected value="">' +
+'</label>\n            <select class="form-control" name="tableConnection" name="tableConnection">\n                <option selected value="">' +
 ((__t = ( __('please-select') )) == null ? '' : __t) +
 '</opt>\n            </select>\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="metadataField-half">\n            <label class="control-label">' +
 ((__t = ( __('min') )) == null ? '' : __t) +
-'</label>\n            <input text class="form-control" placeholder="Minimum Value" value="">\n        </div>\n        <div class="metadataField-half">\n            <label class="control-label">' +
+'</label>\n            <input text class="form-control" name="min" placeholder="Minimum Value" value="">\n        </div>\n        <div class="metadataField-half">\n            <label class="control-label">' +
 ((__t = ( __('max') )) == null ? '' : __t) +
-'</label>\n            <input text class="form-control" placeholder="Maximum Value" value="">\n        </div>\n    </div>\n</div>\n';
+'</label>\n            <input text class="form-control" name="max" placeholder="Maximum Value" value="">\n        </div>\n    </div>\n</div>\n';
 
 }
 return __p

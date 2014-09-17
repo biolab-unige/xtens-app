@@ -18,7 +18,8 @@ var Group = {
 
         operators:{
             collection:'operator',
-           via:'groups'}
+            via:'groups'
+        }
     }
 };
 module.exports = Group;
