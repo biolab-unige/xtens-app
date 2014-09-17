@@ -63,8 +63,8 @@ jQuery(function($) {
         router.loadView(new DataType.Views.List());
     });
 
-    router.on('route:datatype-edit', function() {
-        router.loadView(new DataType.Views.Edit());
+    router.on('route:datatype-edit', function(id) {
+        router.loadView(new DataType.Views.Edit({id: id}));
     });
 
     Backbone.history.start();

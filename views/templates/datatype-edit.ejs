@@ -1,4 +1,5 @@
-<h2><%= __("create-a-new-data-type") %></h2>
+<h1><%= __("data-type-manager") %></h1>
+    <h2><%= dataType ? __("update-data-type") : __("create-data-type") %></h2>
 
 <div id="content"> 
 
@@ -7,26 +8,27 @@
             <div class="form-group row">
                 <label for="schemaName" class="col-md-2 control-label"><%= __("name") %></label>
                 <div class="col-md-6">
-                    <input text class="form-control" id="schemaName" name="schemaName" placeholder="Data Type Name">
+                    <input text class="form-control" id="schemaName" name="schemaName" 
+                    value="<%= dataType ? dataType.get('name') : '' %>" placeholder="Data Type Name">
                 </div>
                 <label for="fileUpload" class="col-md-2 control-label"><%= __("file-upload") %></label>
                 <div class="col-md-2">
-                    <select class="form-control" id="fileUpload" name="fileUpload">
-                        <option value="Y" selected="true"><%=__("yes") %></option>
-                        <option value="N"><%=__("no") %></option>
-                    </select>
+                    <input type="checkbox" id="fileUpload" name="fileUpload" value="fileUpload" 
+                    <% if(dataType && dataType.get('schema').header.fileUpload) { %> checked="checked" <% } %> >
                 </div>
             </div>
             <div class="form-group row">
                 <label for="description" class="col-md-2 control-label"><%=__("description") %></label>
                 <div class="col-md-10">
-                    <input text class="form-control" id="description" name="description" placeholder="Brief Description">
+                    <input text class="form-control" id="description" name="description" 
+                    value="<%= dataType ? dataType.get('schema').header.description : '' %>" placeholder="Brief Description">
                 </div>
             </div>
             <div class="form-group row">
                 <label for="version" class="col-md-2 control-label"><%=__("version") %></label>
                 <div class="col-md-2">
-                    <input text class="form-control" id="version" name="version" placeholder="0.0.X">
+                    <input text class="form-control" id="version" name="version" 
+                    value="<%= dataType ? dataType.get('schema').header.version : '' %>" placeholder="0.0.X">
                 </div>
                 <label for="ontology" class="col-md-2 control-label"><%=__("ontology") %></label>
                 <div class="col-md-6">
@@ -40,6 +42,11 @@
         <div id="buttonbardiv" class="row text-center">
             <input type="button" class="btn btn-default add-metadata-group" value="<%=__('add-metadata-group') %>" >
             <input type="submit" class="btn btn-primary" value="<%=__('save-data-type') %>" >
+            <% if (dataType) { %>
+            <input type="hidden" name="id" value="<%= dataType.id %>" />
+            <button data-dataType-id="<%= dataType.id %>" class="btn btn-danger delete"><%= __("delete") %></button>
+            <%} %>
+
         </div>
     </form>
 

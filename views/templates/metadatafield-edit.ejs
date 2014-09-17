@@ -12,7 +12,9 @@
             <select class="form-control field-type" name="fieldType">
                 <% _.each(fieldTypes, function(fieldType) {
                 %>
-                <option value="<%= fieldType %>"><%= fieldType.toUpperCase() %></option>
+                <option value="<%= fieldType %>"
+                <% if (component && component.fieldType === fieldType) { %> selected="selected" <% } %> >
+                <%= fieldType.toUpperCase() %></option>
                 <%
                 }) %>
             </select>
@@ -20,7 +22,8 @@
 
         <div class="metadataField-half">
             <label class="control-label"><%= __('name') %></label>
-            <input text class="form-control" placeholder="Field Name" name="name" value="">
+            <input text class="form-control" placeholder="Field Name" name="name" 
+            value="<%= component ? component.name : '' %>">
         </div>
     </div>
 </div>
@@ -28,11 +31,13 @@
     <div class="metadataField-row">
         <div class="metadataField-half">
             <label class="control-label"><%= __('custom-value') %></label>
-            <input text class="form-control" placeholder="Custom Value" name="customValue" value="">
+            <input text class="form-control" placeholder="Custom Value" name="customValue" 
+            value="<%= component ? component.customValue : '' %>">
         </div>
         <div class="metadataField-half">
             <label class="checkbox-inline">
-                <input type="checkbox" name="required" value="required"><%=__('required') %>
+                <input type="checkbox" name="required" value="required" <% if(component && component.required) { %> checked="checked" <% } %>  >
+                <%=__('required') %>
             </label>
         </div>
     </div>
@@ -41,12 +46,14 @@
     <div class="metadataField-row">
         <div class="metadataField-half">
             <label class="checkbox-inline">
-                <input type="checkbox" name="isList" value="isList"><%=__('is-list') %>
+                <input type="checkbox" name="isList" value="isList" <% if(component && component.isList) { %> checked="checked" <% } %>  > 
+                <%=__('is-list') %>
             </label>
         </div>
         <div class="metadataField-half">
             <label class="checkbox-inline">
-                <input type="checkbox" name="hasUnit" value="hasUnit"><%=__('has-units') %>
+                <input type="checkbox" name="hasUnit" value="hasUnit" <% if(component && component.hasUnit) { %> checked="checked" <% } %>  >
+                <%=__('has-units') %>
             </label>
         </div>
     </div>
@@ -81,13 +88,15 @@
 <div class="metadataField-formgroup">
     <div class="metadataField-row">
         <div class="col-md-3 col-md-offset-1">
-            <input type="hidden" name="possibleValues" class="form-control value-list">
+            <input type="hidden" name="possibleValues" class="form-control value-list"
+            value="<%= component ? component.possibleValues.join() : '' %>">
             <!--
             <select name="possibleValues" multiple class="form-control value-list"></select>
             -->
         </div>
         <div class="col-md-3 col-md-offset-3">
-            <input type="hidden" name="possibleUnits" class="form-control unit-list">
+            <input type="hidden" name="possibleUnits" class="form-control unit-list"
+            value="<%= component ? component.possibleUnits.join() : '' %>">
             <!--
             <select name="possibleUnits" multiple class="form-control unit-list"></select>
             -->
@@ -98,7 +107,8 @@
     <div class="metadataField-row">
         <div class="col-md-4 col-md-offset-1">
             <label class="checkbox-inline">
-                <input type="checkbox" value="hasDbTableConnection"><%=__('has-database-connection') %>
+                <input type="checkbox" name="fromDatabaseCollection" value="fromDatabaseCollection" 
+                <% if(component && component.fromDatabaseCollection) { %> checked="checked" <% } %> > <%=__('has-database-connection') %>
             </label>
         </div>
         <div class="col-md-4 col-md-offset-2">
@@ -113,11 +123,11 @@
     <div class="metadataField-row">
         <div class="metadataField-half">
             <label class="control-label"><%= __('min') %></label>
-            <input text class="form-control" name="min" placeholder="Minimum Value" value="">
+            <input text class="form-control" name="min" placeholder="Minimum Value" value="<%= component ? component.min : '' %>">
         </div>
         <div class="metadataField-half">
             <label class="control-label"><%= __('max') %></label>
-            <input text class="form-control" name="max" placeholder="Maximum Value" value="">
+            <input text class="form-control" name="max" placeholder="Maximum Value" value="<%= component ? component.max : '' %>">
         </div>
     </div>
 </div>

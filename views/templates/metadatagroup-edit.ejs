@@ -2,13 +2,14 @@
     <a class="remove-me">
         <span class="fa fa-times-circle"></span>
     </a>
-    <%= __("group") + " " + id %>
+    <%= __("group") %>
     </br>
 </h4>
 <div class="form-group row">
     <label for="groupName" class="col-xs-3 control-label"><%= __("metadata-group-name") %></label>
     <div class="col-xs-9">
-        <input text class="form-control" id="groupName" name="groupName" placeholder="Metadata Group Name">
+        <input text class="form-control" id="name" name="name" 
+        value="<%= component ? component.name : '' %>" placeholder="Metadata Group Name">
     </div>
 </div>
 <div class='metadataGroup-body'></div>
