@@ -31,7 +31,7 @@ module.exports.routes = {
         controller: 'home'
     }, 
     
-    
+   'POST /operatorGroup':{ controller: 'OperatorController',action:'addGroupToOperator'},
     /*
    '/dataTypes/new': {
         controller: 'dataType',
