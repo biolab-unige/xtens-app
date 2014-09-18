@@ -110,7 +110,7 @@
             var self = this;
             var groups= new Group.List();
            	groups.fetch({
-                success: function(operators) {
+                success: function(groups) {
                     self.$el.html(self.template({__: i18n, groups: groups.models}));
                     return self;
                 },

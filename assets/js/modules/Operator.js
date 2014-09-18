@@ -1,8 +1,8 @@
 (function(xtens, Operator) {
 
 
-
     // dependencies
+    var Group = xtens.module("group");
     var i18n = xtens.module("i18n").en;    
     var router = xtens.router; 
     // define an Operator
@@ -22,34 +22,56 @@
 
         tagName: 'div',
         className: 'operator',
+        
+  
 
         initialize: function(options) {
             $("#main").html(this.el);
             this.template = JST["views/templates/operator-edit.ejs"]; 
+            
             this.render(options);
+
+          
+
         },
 
         render: function(options)  {
             var self = this;
-            if(options.id) {
+           
+             if(options.id) {
+                
                 self.operator = new Operator.Model({id: options.id});
-                self.operator.fetch({
-                    success: function (operator) {
-                        self.$el.html(self.template({__: i18n, operator: operator}));
+                                     
+             self.groups = new Group.List();
+              self.groups.fetch();
+          
+               self.operator.fetch({
+                    success: function (operator,groups) {
+                        self.$el.html(self.template({__: i18n, operator: operator,groups : self.groups.models}));
                         return self;
+
 
                     }
                 });
+               
+            
+
+
             } else {
-                self.$el.html(self.template({__: i18n,operator:null}));
+                  var groups = new Group.List();
+                 groups.fetch({ 
+                     success:function(groups) { 
+                 self.$el.html(self.template({__: i18n,operator:null, groups : groups.models}));
                 return self;
-            }},
+                        }});
+            }
+        },
 
             events: {
                 'submit .edit-operator-form': 'saveOperator',
                 'click .delete': 'deleteOperator',
-                'click .update':'updateOperator'
-            },
+                'click .update':'updateOperator',
+                           },
 
             saveOperator: function(ev) {
 
@@ -93,7 +115,8 @@
                     }
                 });
                 return false;
-            }
+            },
+        
     });
 
     Operator.Views.List = Backbone.View.extend({

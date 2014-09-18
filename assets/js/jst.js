@@ -221,7 +221,7 @@ __p += '\n<div id="operator"> \n<form name = "Myform" class="form-horizontal edi
 ((__t = ( __("sex") )) == null ? '' : __t) +
 '</label>\n         ';
  if(!operator) { ;
-__p += '\n        \n            <select class="col-md-6" id="sex" name="sex" >\n                <option class="col-md-6" value="M" >' +
+__p += '\n        \n            <select class = "col-md-6" id="sex" name="sex" >\n                <option class="col-md-6" value="M" >' +
 ((__t = (__("m") )) == null ? '' : __t) +
 '</option>\n                <option class="col-md-6" value="F">' +
 ((__t = (__("f") )) == null ? '' : __t) +
@@ -253,11 +253,15 @@ __p += '\n\n\n    </div>\n    <div class="form-group row">\n        <label class
 ((__t = ( __("login") )) == null ? '' : __t) +
 '</label>\n        <input class="col-md-6" name="login" type="text" value="' +
 ((__t = ( operator ? operator.get('login') : '' )) == null ? '' : __t) +
-'">\n    </div>\n    <div class="form-group row">\n        <label class="col-md-3 control-label">' +
-((__t = ( __("group") )) == null ? '' : __t) +
-'</label>\n            <input class="col-md-6" name="group" type="text" value="' +
-((__t = ( operator ? operator.get('groups') : '' )) == null ? '' : __t) +
-'">\n            </div>\n            \n    ';
+'">\n    </div>\n    <div class="form-group row" id="groups">\n        <label class="col-md-3 control-label">' +
+((__t = (__("group") )) == null ? '' : __t) +
+'</label>\n\n        <select  class="col-md-6" name="group" id="groups"> ';
+ _.each(groups, function(group) { ;
+__p += ' \n\n            <option  class="col-md-6" id="groups" >' +
+((__t = ( group.get("name") )) == null ? '' : __t) +
+'</option>\n                       ';
+ }) ;
+__p += '\n        </select> \n           </div>  \n      ';
  if(!operator) { ;
 __p += '\n         <div class="form-group row">\n        <label class="col-md-3 control-label">' +
 ((__t = ( __("password") )) == null ? '' : __t) +
