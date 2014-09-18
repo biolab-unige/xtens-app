@@ -36,21 +36,29 @@
         }, */
 
         events: {
-            'click .add-metadata-field': 'addMetadataField',
-            'click .add-metadata-loop': 'addMetadataLoop',
+            'click .add-metadata-field': 'addMetadataFieldOnClick',
+            'click .add-metadata-loop': 'addMetadataLoopOnClick',
             'click .remove-me': 'removeMe'
         },
 
-        addMetadataField: function(ev) {
+        addMetadataFieldOnClick: function(ev) {
+            this.addMetadataField(null);
+        },
+
+        addMetadataLoopOnClick: function(ev) {
+            this.addMetadataLoop(null);
+        },
+
+        addMetadataField: function(field) {
             var view = new MetadataField.Views.Edit({id: this.nestedViews.length});
-            this.$('.metadataGroup-body').append(view.render().el);
+            this.$('.metadataGroup-body').append(view.render(field).el);
             this.nestedViews.push(view);
             return false;
         },
 
-        addMetadataLoop: function(ev) {
+        addMetadataLoop: function(loop) {
             var view = new MetadataLoop.Views.Edit();
-            this.$('.metadataGroup-body').append(view.render().el);
+            this.$('.metadataGroup-body').append(view.render(loop).el);
             this.nestedViews.push(view);
             return false;
         },

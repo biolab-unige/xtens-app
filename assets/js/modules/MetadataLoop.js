@@ -5,36 +5,28 @@
     var MetadataField = xtens.module("metadatafield");
 
     MetadataLoop.Views.Edit = MetadataComponent.Views.Edit.fullExtend({
-    
+
         tagName: 'div',
         className: 'metadataLoop',
-        
+
         // template: _.template($("#metadata-field-form-template").html()),
         initialize: function() {
             this.template = JST['views/templates/metadataloop-edit.ejs'];
             this.nestedViews = [];
         },
-        
-        /*
-        render: function() {
-            this.$el.html(this.template({ __: i18n }));
-            return this;
-        }, */
 
         events: {
             'click .remove-me': 'removeMe',
-            'click .add-metadata-field': 'addMetadataField'
+            'click .add-metadata-field': 'addMetadataFieldOnClick'
         },
-        
-        /*
-        removeMe: function(ev) {
-            this.remove();
-            ev.stopPropagation();
-        }, */
 
-        addMetadataField: function(ev) {
+        addMetadataFieldOnClick: function(ev) {
+            this.addMetadataField(null);
+        },
+
+        addMetadataField: function(field) {
             var view = new MetadataField.Views.Edit({id: this.nestedViews.length});
-            this.$('.metadataLoop-body').append(view.render().el);
+            this.$('.metadataLoop-body').append(view.render(field).el);
             this.nestedViews.push(view);
             ev.stopPropagation();
             return false;

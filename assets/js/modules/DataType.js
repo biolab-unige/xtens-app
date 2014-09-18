@@ -20,7 +20,7 @@
         fieldJson.possibleValues = _.isEmpty(fieldJson.possibleValues) ? [] : fieldJson.possibleValues.split(',');
         fieldJson.hasUnits = fieldJson.hasUnits ? true : false;
         fieldJson.possibleUnits = _.isEmpty(fieldJson.possibleUnits) ? [] : fieldJson.possibleUnits.split(",");
-        fieldJson.fromDatabaseEntities = fieldJson.fromDatabaseEntities ? true : false;
+        fieldJson.fromDatabaseCollection = fieldJson.fromDatabaseCollection ? true : false;
         return fieldJson;
     }
 
@@ -51,21 +51,36 @@
         tagName: 'div',
         className: 'dataType',
 
-        initialize: function() {
+        initialize: function(options) {
+            _.bindAll(this, 'fetchSuccess');
             $("#main").html(this.el);
             this.template = JST["views/templates/datatype-edit.ejs"];
             this.nestedViews = [];
-            this.render();
+            this.render(options);
         },
 
         render: function(options) {
-            this.$el.html(this.template({__: i18n}));
+            if (options.id) {
+                this.dataType = new DataType.Model({id: options.id});
+                this.dataType.fetch({
+                    success: this.fetchSuccess
+                });
+            } else {
+                this.$el.html(this.template({__: i18n, dataType: null}));
+            }
             return this;
+        },
+
+        fetchSuccess: function(dataType) {
+            this.$el.html(this.template({__: i18n, dataType: dataType}));
+            for (var i=0, len=dataType.body.length; i<len; i++) {
+                this.addMetadataGroup(dataType.body[i]);
+            }
         },
 
         events: {
             'submit .edit-datatype-form': 'saveDataType',
-            'click .add-metadata-group': 'addMetadataGroup'    // not used yet 
+            'click .add-metadata-group': 'addMetadataGroupOnClick'    // not used yet 
         },
 
         serializeMetadataBody: function() {
@@ -93,6 +108,7 @@
             try {
                 dataTypeDetails = {};
                 dataTypeDetails.header = this.$("#schemaHeader").find("select, input, textarea").serializeObject();
+                dataTypeDetails.header.fileUpload = dataTypeDetails.header.fileUpload ? true : false;
                 dataTypeDetails.body = this.serializeMetadataBody();
                 dataTypeDetails = { name: dataTypeDetails.header.schemaName, schema: dataTypeDetails };
                 var dataType = new DataType.Model();
@@ -113,13 +129,16 @@
             return false;
         },
 
-        addMetadataGroup: function() {
-            // var metadataField = new MetadataField.Model();
-            var view = new MetadataGroup.Views.Edit();
-            this.$("#schemaBody").append(view.render().el);
-            this.nestedViews.push(view);
+        addMetadataGroupOnClick: function(ev) {
+            this.addMetadataGroup(null);
             return false;
         },
+
+        addMetadataGroup: function(group) {
+            var view = new MetadataGroup.Views.Edit();
+            this.$("#schemaBody").append(view.render(group).el);
+            this.nestedViews.push(view);
+        }
 
     });
 
@@ -143,11 +162,9 @@
             dataTypes.fetch({
                 success: function(dataTypes) {
                     self.$el.html(self.template({__: i18n, dataTypes: dataTypes.models}));
-                    // return self;
                 },
                 error: function() {
                     self.$el.html(self.template({__: i18n}));
-                    // return self;    
                 }
 
             });
