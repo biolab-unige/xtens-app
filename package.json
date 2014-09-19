@@ -48,6 +48,7 @@
     "grunt-contrib-connect": "~0.8.0",
     "grunt-contrib-less": "~0.11.4",
     "supertest": "~0.13.0",
-    "express": "~4.9.1"
+    "express": "~4.9.1",
+    "select2": "~3.5.1-browserify-fix"
   }
 }

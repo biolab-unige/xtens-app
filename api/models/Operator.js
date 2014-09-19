@@ -70,12 +70,16 @@ var Operator = {
                 next();
             });
         },
-        groups:{
+       /* groups:{
             collection:'group',
             via:'operators',
             dominant:true
-        }
+        }*/
+        groups:{
+           type:'text',
+         columnName:'groups'
     }	
+}
 };
 
 module.exports = Operator;

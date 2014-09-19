@@ -33,7 +33,7 @@ var xtens = {
 // // application
 jQuery(function($) {
     // Initialise your application here (?)
-
+    var Association = xtens.module("association");
     var DataType = xtens.module("datatype");
     var Operator = xtens.module("operator");
     var Group = xtens.module("group");
