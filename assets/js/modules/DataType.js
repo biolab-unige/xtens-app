@@ -13,8 +13,8 @@
      */
     function serializeAsMetadataField(element) {
         var $element = $(element);
-        var fieldJson = $element.find("select, input, textarea").serializeObject();
-        fieldJson.label = Constants.METADATA_FIELD;
+        var fieldJson = _.extend({label: Constants.METADATA_FIELD}, $element.find("select, input, textarea").serializeObject());
+        // fieldJson.label = Constants.METADATA_FIELD;
         fieldJson.required = fieldJson.required ? true : false;
         fieldJson.isList = fieldJson.isList ? true : false;
         fieldJson.possibleValues = _.isEmpty(fieldJson.possibleValues) ? [] : fieldJson.possibleValues.split(',');
@@ -73,8 +73,9 @@
 
         fetchSuccess: function(dataType) {
             this.$el.html(this.template({__: i18n, dataType: dataType}));
-            for (var i=0, len=dataType.body.length; i<len; i++) {
-                this.addMetadataGroup(dataType.body[i]);
+            var body = dataType.get('schema').body;
+            for (var i=0, len=body.length; i<len; i++) {
+                this.addMetadataGroup(body[i]);
             }
         },
 
@@ -86,8 +87,9 @@
         serializeMetadataBody: function() {
             var metadataBody = [];
             this.$('.metadataGroup').each(function(metadataGroupIndex, metadataGroupElement) {
-                var groupJson = {label: Constants.METADATA_GROUP, content: [] };
-                $(metadataGroupElement).find('.metadataGroup-body').children().each(function(metadataComponentIndex, metadataComponentElement) {
+                var $metadataGroupElement = $(metadataGroupElement);
+                var groupJson = {label: Constants.METADATA_GROUP, name: $metadataGroupElement.find('input[name="name"]').val(), content: [] };
+                $metadataGroupElement.find('.metadataGroup-body').children().each(function(metadataComponentIndex, metadataComponentElement) {
                     if ($(metadataComponentElement).hasClass('metadataField')) {
                         groupJson.content.push(serializeAsMetadataField(metadataComponentElement));
                     }
@@ -131,7 +133,7 @@
 
         addMetadataGroupOnClick: function(ev) {
             this.addMetadataGroup(null);
-            return false;
+            ev.stopPropagation();
         },
 
         addMetadataGroup: function(group) {

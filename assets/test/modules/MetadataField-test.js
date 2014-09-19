@@ -1,5 +1,8 @@
 var should = chai.should();
+var expect = chai.expect;
 var MetadataField = xtens.module("metadatafield");
+var Constants = xtens.module("xtensconstants").Constants;
+var FieldTypes = xtens.module("xtensconstants").FieldTypes;
 
 describe('MetadataField.Views.Edit', function() {
     beforeEach(function() {
@@ -11,7 +14,7 @@ describe('MetadataField.Views.Edit', function() {
             this.view.should.be.an('object');
         });
     });
-    
+
     describe('#render()', function() {
         beforeEach(function() {
             this.view.render();
@@ -23,7 +26,8 @@ describe('MetadataField.Views.Edit', function() {
             this.view.$el.find('select:first option').should.have.length(4);
         });
     });
-
+    
+    /*
     describe('#addvalueToList', function() {
         beforeEach(function() {
             this.view.render();
@@ -39,7 +43,7 @@ describe('MetadataField.Views.Edit', function() {
         });
 
         it('should clean the value-to-add textbox after adding', function() {
-           var testString = "test string value"; 
+            var testString = "test string value"; 
             this.view.$("input.value-to-add").val(testString);
             this.view.addValueToList();
             var value = this.view.$("input.value-to-add").val();
@@ -68,10 +72,39 @@ describe('MetadataField.Views.Edit', function() {
             $valueSel.children("option").eq(1).html().should.equal(anotherTestString);
         });
 
-    });
+    }); */
 
     describe('#addUnitToList', function() {
-    
+
     });
-    
+
+    describe('#render()', function() {
+
+        beforeEach(function() {
+            this.metadataFieldJson = {label: Constants.METADATA_FIELD };
+            this.metadataFieldJson.fieldType = FieldTypes.TEXT;
+            this.metadataFieldJson.name = "Test MetadataField";
+            this.metadataFieldJson.required = true;
+            this.metadataFieldJson.isList = true;
+            this.metadataFieldJson.hasUnit = true;
+            this.metadataFieldJson.possibleValues = ["firstValue", "secondValue", "thirdValue"];
+            this.metadataFieldJson.possibleUnits = ["metre", "second", "candela"];
+            this.metadataFieldJson.fromDatabaseCollection = false;
+            this.metadataFieldJson.customValue = '';
+        });
+
+        it('should populate the template with the values contained in the MetadataField JSON object', function() {
+            this.view.render(this.metadataFieldJson);
+            this.view.$('.field-type option:selected').val().should.equal(this.metadataFieldJson.fieldType);
+            this.view.$('input[name="name"]').val().should.equal(this.metadataFieldJson.name);
+            this.view.$('input[type="checkbox"][name="isList"]').prop('checked').should.be.true;
+            var values =  this.view.$('.value-list').val().split(",");
+            expect(values).to.have.length(3);
+            for (var i=0, len=values.length; i<len; i++) {
+                values[i].should.equal(this.metadataFieldJson.possibleValues[i]);
+            } 
+        });
+
+    });
+
 });

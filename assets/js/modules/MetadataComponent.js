@@ -10,6 +10,10 @@
 
         render: function(component) { 
             this.$el.html(this.template({ __: i18n, component: component }));
+            var content = component ? component.content : [];
+            for (var i=0, len=content.length; i<len; i++) {
+                this.addSubcomponent(content[i]);
+            }
             return this;
         },
 

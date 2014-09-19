@@ -2,6 +2,7 @@
 
     // dependencies
     var i18n = xtens.module("i18n").en;
+    var Constants = xtens.module("xtensconstants").Constants;
     var MetadataComponent = xtens.module("metadatacomponent");
     var MetadataField = xtens.module("metadatafield");
     var MetadataLoop = xtens.module("metadataloop");
@@ -43,14 +44,25 @@
 
         addMetadataFieldOnClick: function(ev) {
             this.addMetadataField(null);
+            ev.stopPropagation();
         },
 
         addMetadataLoopOnClick: function(ev) {
             this.addMetadataLoop(null);
+            ev.stopPropagation();
+        },
+
+        addSubcomponent: function(subcomponent) {
+            if (subcomponent.label === Constants.METADATA_FIELD) {
+                this.addMetadataField(subcomponent);
+            }
+            else if (subcomponent.label === Constants.METADATA_LOOP) {
+                this.addMetadataLoop(subcomponent);
+            }
         },
 
         addMetadataField: function(field) {
-            var view = new MetadataField.Views.Edit({id: this.nestedViews.length});
+            var view = new MetadataField.Views.Edit();
             this.$('.metadataGroup-body').append(view.render(field).el);
             this.nestedViews.push(view);
             return false;

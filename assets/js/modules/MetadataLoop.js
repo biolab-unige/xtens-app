@@ -22,15 +22,18 @@
 
         addMetadataFieldOnClick: function(ev) {
             this.addMetadataField(null);
+            ev.stopPropagation();
+        },
+
+        addSubcomponent: function(subcomponent) {
+            this.addMetadataField(subcomponent);
         },
 
         addMetadataField: function(field) {
-            var view = new MetadataField.Views.Edit({id: this.nestedViews.length});
+            var view = new MetadataField.Views.Edit();
             this.$('.metadataLoop-body').append(view.render(field).el);
             this.nestedViews.push(view);
-            ev.stopPropagation();
             return false;
-
         }
 
     });

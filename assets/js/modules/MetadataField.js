@@ -5,13 +5,19 @@
     var MetadataComponent = xtens.module("metadatacomponent");
     var i18n = xtens.module("i18n").en;
 
+    function addChoiceToSelect2(term, data) {
+        if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+            return {id:term, text:term};
+        }
+    }
+   
     MetadataField.Model = Backbone.Model.extend({
 
         defaults: {
             label: constants.METADATA_FIELD,
             name: null,
             ontologyUri: null,
-            type: fieldTypes.STRING,
+            type: fieldTypes.TEXT,
             required: false,
             customValue: null,
             isList: false,
@@ -37,9 +43,39 @@
             this.template = JST['views/templates/metadatafield-edit.ejs'];
         },
 
-        render: function() {
-            this.el.id = this.className + "_" + this.options.id;
-            this.$el.html(this.template({__: i18n, fieldTypes: fieldTypes}));
+        render: function(field) {
+            this.$el.html(this.template({__: i18n, fieldTypes: fieldTypes, component: field}));
+            var i=0, len=0;
+            if (this.$('input[type=checkbox][name=isList]').prop('checked')) {
+                var valueData = [];
+                for (i=0, len=field.possibleValues.length; i<len; i++) {
+                    valueData.push({id:field.possibleValues[i], text: field.possibleValues[i], locked: true});
+                }
+                this.$(".value-list").select2({multiple: true, 
+                                              data: valueData,
+                                              createSearchChoice: function(term, data) {
+                                                  if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+                                                      return {id:term, text:term};
+                                                  }
+                                              },
+                                              width: 'resolve'
+                });
+            }
+            if (this.$('input[type=checkbox][name=hasUnit]').prop('checked')) {
+                var unitData = [];
+                for (i=0, len=field.possibleUnits.length; i<len; i++) {
+                    unitData.push({id:field.possibleUnits[i], text: field.possibleUnits[i], locked: true});
+                }
+                this.$(".unit-list").select2({multiple: true, 
+                                             data: unitData,
+                                             createSearchChoice: function(term, data) {
+                                                if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+                                                      return {id:term, text:term};
+                                                }
+                                             },
+                                             width: 'resolve'
+                });
+            }
             return this;
         },
 
