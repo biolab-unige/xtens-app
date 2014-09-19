@@ -15,8 +15,8 @@
             "operators/edit/:id": "operator-edit",
 	    "groups":"group",
             "groups/new":"group-edit",
-	    "groups/edit/:id":"group-edit",
-	    "groups/association/:id":"group-association"
+	    "groups/edit/:id":"group-edit"
+	   
            
         },
 

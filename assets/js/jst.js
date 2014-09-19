@@ -2,29 +2,48 @@ this["JST"] = this["JST"] || {};
 
 this["JST"]["views/templates/datatype-edit.ejs"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<h2>' +
-((__t = ( __("create-a-new-data-type") )) == null ? '' : __t) +
+__p += '<h1>' +
+((__t = ( __("data-type-manager") )) == null ? '' : __t) +
+'</h1>\n    <h2>' +
+((__t = ( dataType ? __("update-data-type") : __("create-data-type") )) == null ? '' : __t) +
 '</h2>\n\n<div id="content"> \n\n    <form class="form-horizontal edit-datatype-form" role="form">\n        <div id="schemaHeader">\n            <div class="form-group row">\n                <label for="schemaName" class="col-md-2 control-label">' +
 ((__t = ( __("name") )) == null ? '' : __t) +
-'</label>\n                <div class="col-md-6">\n                    <input text class="form-control" id="schemaName" name="schemaName" placeholder="Data Type Name">\n                </div>\n                <label for="fileUpload" class="col-md-2 control-label">' +
+'</label>\n                <div class="col-md-6">\n                    <input text class="form-control" id="schemaName" name="schemaName" \n                    value="' +
+((__t = ( dataType ? dataType.get('name') : '' )) == null ? '' : __t) +
+'" placeholder="Data Type Name">\n                </div>\n                <label for="fileUpload" class="col-md-2 control-label">' +
 ((__t = ( __("file-upload") )) == null ? '' : __t) +
-'</label>\n                <div class="col-md-2">\n                    <select class="form-control" id="fileUpload" name="fileUpload">\n                        <option value="Y" selected="true">' +
-((__t = (__("yes") )) == null ? '' : __t) +
-'</option>\n                        <option value="N">' +
-((__t = (__("no") )) == null ? '' : __t) +
-'</option>\n                    </select>\n                </div>\n            </div>\n            <div class="form-group row">\n                <label for="description" class="col-md-2 control-label">' +
+'</label>\n                <div class="col-md-2">\n                    <input type="checkbox" id="fileUpload" name="fileUpload" value="fileUpload" \n                    ';
+ if(dataType && dataType.get('schema').header.fileUpload) { ;
+__p += ' checked="checked" ';
+ } ;
+__p += ' >\n                </div>\n            </div>\n            <div class="form-group row">\n                <label for="description" class="col-md-2 control-label">' +
 ((__t = (__("description") )) == null ? '' : __t) +
-'</label>\n                <div class="col-md-10">\n                    <input text class="form-control" id="description" name="description" placeholder="Brief Description">\n                </div>\n            </div>\n            <div class="form-group row">\n                <label for="version" class="col-md-2 control-label">' +
+'</label>\n                <div class="col-md-10">\n                    <input text class="form-control" id="description" name="description" \n                    value="' +
+((__t = ( dataType ? dataType.get('schema').header.description : '' )) == null ? '' : __t) +
+'" placeholder="Brief Description">\n                </div>\n            </div>\n            <div class="form-group row">\n                <label for="version" class="col-md-2 control-label">' +
 ((__t = (__("version") )) == null ? '' : __t) +
-'</label>\n                <div class="col-md-2">\n                    <input text class="form-control" id="version" name="version" placeholder="0.0.X">\n                </div>\n                <label for="ontology" class="col-md-2 control-label">' +
+'</label>\n                <div class="col-md-2">\n                    <input text class="form-control" id="version" name="version" \n                    value="' +
+((__t = ( dataType ? dataType.get('schema').header.version : '' )) == null ? '' : __t) +
+'" placeholder="0.0.X">\n                </div>\n                <label for="ontology" class="col-md-2 control-label">' +
 ((__t = (__("ontology") )) == null ? '' : __t) +
 '</label>\n                <div class="col-md-6">\n                    <select class="form-control" id="ontology" name="ontology">\n                        <option value="" selected="true">Select an ontology to name metadata fields</option>\n                    </select>\n                </div>\n            </div>\n        </div> <!-- schemaHeader -->\n        <div id="schemaBody"></div>  \n        <div id="buttonbardiv" class="row text-center">\n            <input type="button" class="btn btn-default add-metadata-group" value="' +
 ((__t = (__('add-metadata-group') )) == null ? '' : __t) +
 '" >\n            <input type="submit" class="btn btn-primary" value="' +
 ((__t = (__('save-data-type') )) == null ? '' : __t) +
-'" >\n        </div>\n    </form>\n\n</div> <!--content -->\n';
+'" >\n            ';
+ if (dataType) { ;
+__p += '\n            <input type="hidden" name="id" value="' +
+((__t = ( dataType.id )) == null ? '' : __t) +
+'" />\n            <button data-dataType-id="' +
+((__t = ( dataType.id )) == null ? '' : __t) +
+'" class="btn btn-danger delete">' +
+((__t = ( __("delete") )) == null ? '' : __t) +
+'</button>\n            ';
+} ;
+__p += '\n\n        </div>\n    </form>\n\n</div> <!--content -->\n';
 
 }
 return __p
@@ -131,26 +150,54 @@ __p += '<h4>\n    <a class="remove-me">\n        <span class="fa fa-times-circle
                 ;
 __p += '\n                <option value="' +
 ((__t = ( fieldType )) == null ? '' : __t) +
-'">' +
+'"\n                ';
+ if (component && component.fieldType === fieldType) { ;
+__p += ' selected="selected" ';
+ } ;
+__p += ' >\n                ' +
 ((__t = ( fieldType.toUpperCase() )) == null ? '' : __t) +
 '</option>\n                ';
 
                 }) ;
 __p += '\n            </select>\n        </div>\n\n        <div class="metadataField-half">\n            <label class="control-label">' +
 ((__t = ( __('name') )) == null ? '' : __t) +
-'</label>\n            <input text class="form-control" placeholder="Field Name" name="name" value="">\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="metadataField-half">\n            <label class="control-label">' +
+'</label>\n            <input text class="form-control" placeholder="Field Name" name="name" \n            value="' +
+((__t = ( component ? component.name : '' )) == null ? '' : __t) +
+'">\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="metadataField-half">\n            <label class="control-label">' +
 ((__t = ( __('custom-value') )) == null ? '' : __t) +
-'</label>\n            <input text class="form-control" placeholder="Custom Value" name="customValue" value="">\n        </div>\n        <div class="metadataField-half">\n            <label class="checkbox-inline">\n                <input type="checkbox" name="required" value="required">' +
+'</label>\n            <input text class="form-control" placeholder="Custom Value" name="customValue" \n            value="' +
+((__t = ( component ? component.customValue : '' )) == null ? '' : __t) +
+'">\n        </div>\n        <div class="metadataField-half">\n            <label class="checkbox-inline">\n                <input type="checkbox" name="required" value="required" ';
+ if(component && component.required) { ;
+__p += ' checked="checked" ';
+ } ;
+__p += '  >\n                ' +
 ((__t = (__('required') )) == null ? '' : __t) +
-'\n            </label>\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="metadataField-half">\n            <label class="checkbox-inline">\n                <input type="checkbox" name="isList" value="isList">' +
+'\n            </label>\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="metadataField-half">\n            <label class="checkbox-inline">\n                <input type="checkbox" name="isList" value="isList" ';
+ if(component && component.isList) { ;
+__p += ' checked="checked" ';
+ } ;
+__p += '  > \n                ' +
 ((__t = (__('is-list') )) == null ? '' : __t) +
-'\n            </label>\n        </div>\n        <div class="metadataField-half">\n            <label class="checkbox-inline">\n                <input type="checkbox" name="hasUnit" value="hasUnit">' +
+'\n            </label>\n        </div>\n        <div class="metadataField-half">\n            <label class="checkbox-inline">\n                <input type="checkbox" name="hasUnit" value="hasUnit" ';
+ if(component && component.hasUnit) { ;
+__p += ' checked="checked" ';
+ } ;
+__p += '  >\n                ' +
 ((__t = (__('has-units') )) == null ? '' : __t) +
 '\n            </label>\n        </div>\n    </div>\n</div>\n<!--\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="col-md-3 col-md-offset-1">\n            <div class="text-center">\n                <input text class="form-control value-to-add" placeholder="" value="">\n            </div>\n        </div>\n        <div class="col-md-2">\n            <div class="text-center">\n                <button type="button" class="btn btn-primary btn-sm add-value-to-list">' +
 ((__t = (__('add-value') )) == null ? '' : __t) +
 '</button>\n            </div>\n        </div>\n\n        <div class="col-md-3 col-md-offset-1">\n            <div class="text-center">\n                <input text class="form-control unit-to-add" placeholder="" value="">\n            </div>\n        </div>\n        <div class="col-md-2">\n            <div class="text-center">\n                <button type="button" class="btn btn-primary btn-sm add-unit-to-list">' +
 ((__t = (__('add-unit') )) == null ? '' : __t) +
-'</button>\n            </div>\n        </div> \n    </div>\n</div>\n-->\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="col-md-3 col-md-offset-1">\n            <input type="hidden" name="possibleValues" class="form-control value-list">\n            <!--\n            <select name="possibleValues" multiple class="form-control value-list"></select>\n            -->\n        </div>\n        <div class="col-md-3 col-md-offset-3">\n            <input type="hidden" name="possibleUnits" class="form-control unit-list">\n            <!--\n            <select name="possibleUnits" multiple class="form-control unit-list"></select>\n            -->\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="col-md-4 col-md-offset-1">\n            <label class="checkbox-inline">\n                <input type="checkbox" value="hasDbTableConnection">' +
+'</button>\n            </div>\n        </div> \n    </div>\n</div>\n-->\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="col-md-3 col-md-offset-1">\n            <input type="hidden" name="possibleValues" class="form-control value-list"\n            value="' +
+((__t = ( component ? component.possibleValues.join() : '' )) == null ? '' : __t) +
+'">\n            <!--\n            <select name="possibleValues" multiple class="form-control value-list"></select>\n            -->\n        </div>\n        <div class="col-md-3 col-md-offset-3">\n            <input type="hidden" name="possibleUnits" class="form-control unit-list"\n            value="' +
+((__t = ( component ? component.possibleUnits.join() : '' )) == null ? '' : __t) +
+'">\n            <!--\n            <select name="possibleUnits" multiple class="form-control unit-list"></select>\n            -->\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="col-md-4 col-md-offset-1">\n            <label class="checkbox-inline">\n                <input type="checkbox" name="fromDatabaseCollection" value="fromDatabaseCollection" \n                ';
+ if(component && component.fromDatabaseCollection) { ;
+__p += ' checked="checked" ';
+ } ;
+__p += ' > ' +
 ((__t = (__('has-database-connection') )) == null ? '' : __t) +
 '\n            </label>\n        </div>\n        <div class="col-md-4 col-md-offset-2">\n            <label class="control-label">' +
 ((__t = (__('db-table') )) == null ? '' : __t) +
@@ -158,9 +205,13 @@ __p += '\n            </select>\n        </div>\n\n        <div class="metadataF
 ((__t = ( __('please-select') )) == null ? '' : __t) +
 '</opt>\n            </select>\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="metadataField-half">\n            <label class="control-label">' +
 ((__t = ( __('min') )) == null ? '' : __t) +
-'</label>\n            <input text class="form-control" name="min" placeholder="Minimum Value" value="">\n        </div>\n        <div class="metadataField-half">\n            <label class="control-label">' +
+'</label>\n            <input text class="form-control" name="min" placeholder="Minimum Value" value="' +
+((__t = ( component ? component.min : '' )) == null ? '' : __t) +
+'">\n        </div>\n        <div class="metadataField-half">\n            <label class="control-label">' +
 ((__t = ( __('max') )) == null ? '' : __t) +
-'</label>\n            <input text class="form-control" name="max" placeholder="Maximum Value" value="">\n        </div>\n    </div>\n</div>\n';
+'</label>\n            <input text class="form-control" name="max" placeholder="Maximum Value" value="' +
+((__t = ( component ? component.max : '' )) == null ? '' : __t) +
+'">\n        </div>\n    </div>\n</div>\n';
 
 }
 return __p
@@ -171,10 +222,12 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<h4>\n    <a class="remove-me">\n        <span class="fa fa-times-circle"></span>\n    </a>\n    ' +
-((__t = ( __("group") + " " + id )) == null ? '' : __t) +
+((__t = ( __("group") )) == null ? '' : __t) +
 '\n    </br>\n</h4>\n<div class="form-group row">\n    <label for="groupName" class="col-xs-3 control-label">' +
 ((__t = ( __("metadata-group-name") )) == null ? '' : __t) +
-'</label>\n    <div class="col-xs-9">\n        <input text class="form-control" id="groupName" name="groupName" placeholder="Metadata Group Name">\n    </div>\n</div>\n<div class=\'metadataGroup-body\'></div>\n<div class="row text-center">\n    <input type="button" class="btn btn-default add-metadata-loop" value="' +
+'</label>\n    <div class="col-xs-9">\n        <input text class="form-control" id="name" name="name" \n        value="' +
+((__t = ( component ? component.name : '' )) == null ? '' : __t) +
+'" placeholder="Metadata Group Name">\n    </div>\n</div>\n<div class=\'metadataGroup-body\'></div>\n<div class="row text-center">\n    <input type="button" class="btn btn-default add-metadata-loop" value="' +
 ((__t = (__('add-loop') )) == null ? '' : __t) +
 '">\n    <input type="button" class="btn btn-default add-metadata-field" value="' +
 ((__t = (__('add-attribute') )) == null ? '' : __t) +
@@ -203,7 +256,7 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '\n<div id="operator"> \n<form name = "Myform" class="form-horizontal edit-operator-form" role="form">\n    <legend class="legend"align="center">' +
+__p += '\n<div id="operator">\n   \n    <script>\n        $(document).ready(function() { $("select#groups").select2(); });\n    </script> \n<form name = "Myform" class="form-horizontal edit-operator-form" role="form">\n    <legend class="legend"align="center">' +
 ((__t = ( operator ? 'Edit' : 'New' )) == null ? '' : __t) +
 ' Operator</legend>\n    <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
 ((__t = ( __("first-name") )) == null ? '' : __t) +
@@ -253,15 +306,29 @@ __p += '\n\n\n    </div>\n    <div class="form-group row">\n        <label class
 ((__t = ( __("login") )) == null ? '' : __t) +
 '</label>\n        <input class="col-md-6" name="login" type="text" value="' +
 ((__t = ( operator ? operator.get('login') : '' )) == null ? '' : __t) +
-'">\n    </div>\n    <div class="form-group row" id="groups">\n        <label class="col-md-3 control-label">' +
+'">\n    </div>\n    ';
+ if(operator) { ;
+__p += '\n\n    <div class="form-group row" id="groups">\n        <label class="col-md-3 control-label">' +
 ((__t = (__("group") )) == null ? '' : __t) +
-'</label>\n\n        <select  class="col-md-6" name="group" id="groups"> ';
+'</label>\n\n        <select multiple class="col-md-4" name="group[]" id="groups"> ';
  _.each(groups, function(group) { ;
-__p += ' \n\n            <option  class="col-md-6" id="groups" >' +
+__p += ' \n         ';
+ if(operator.get('groups')==group.get('name')) { ;
+__p += ' \n         <option   id="group" selected value ="' +
+((__t = ( operator.get('groups') )) == null ? '' : __t) +
+'">' +
 ((__t = ( group.get("name") )) == null ? '' : __t) +
-'</option>\n                       ';
+'</option>\n            ';
+ } else {;
+__p += '\n            <option id ="group" >' +
+((__t = ( group.get('name') )) == null ? '' : __t) +
+'</option>\n';
+ } ;
+__p += '\n            ';
  }) ;
-__p += '\n        </select> \n           </div>  \n      ';
+__p += '\n\n        </select> \n           </div>  \n ';
+ } ;
+__p += '\n\n      ';
  if(!operator) { ;
 __p += '\n         <div class="form-group row">\n        <label class="col-md-3 control-label">' +
 ((__t = ( __("password") )) == null ? '' : __t) +
