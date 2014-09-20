@@ -9,10 +9,10 @@
     };
 
     XtensConstants.FieldTypes = {
-        TEXT: 'text',
-        INT: 'int',
-        FLOAT: 'float',
-        BOOLEAN: 'boolean',
-        DATE: 'date'
+        TEXT: 'Text',
+        INTEGER: 'Integer',
+        FLOAT: 'Float',
+        BOOLEAN: 'Boolean',
+        DATE: 'Date'
     };
 } (xtens, xtens.module("xtensconstants")));

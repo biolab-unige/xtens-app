@@ -107,27 +107,22 @@
         },
 
         saveDataType: function(ev) {
-            try {
-                dataTypeDetails = {};
-                dataTypeDetails.header = this.$("#schemaHeader").find("select, input, textarea").serializeObject();
-                dataTypeDetails.header.fileUpload = dataTypeDetails.header.fileUpload ? true : false;
-                dataTypeDetails.body = this.serializeMetadataBody();
-                dataTypeDetails = { name: dataTypeDetails.header.schemaName, schema: dataTypeDetails };
-                var dataType = new DataType.Model();
-                dataType.save(dataTypeDetails, {
-                    patch: true,
-                    success: function(dataType) {
-                        console.log(dataType);
-                        router.navigate('datatypes', {trigger: true});
-                    },
-                    error: function() {
-                        console.log("Error saving the DataType");
-                    }
-                });
-            }
-            catch(e) {
-                console.log(e);
-            }
+            var id = $('#id').val();
+            var header = this.$("#schemaHeader").find("select, input, textarea").serializeObject();
+            header.fileUpload = header.fileUpload ? true : false;
+            var body = this.serializeMetadataBody();
+            var dataTypeDetails = { id: id, name: header.schemaName, schema: {header: header, body: body} };
+            var dataType = new DataType.Model();
+            dataType.save(dataTypeDetails, {
+                // patch: true,
+                success: function(dataType) {
+                    console.log(dataType);
+                    router.navigate('datatypes', {trigger: true});
+                },
+                error: function() {
+                    console.log("Error saving the DataType");
+                }
+            });
             return false;
         },
 

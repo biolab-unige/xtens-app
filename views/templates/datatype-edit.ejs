@@ -43,7 +43,7 @@
             <input type="button" class="btn btn-default add-metadata-group" value="<%=__('add-metadata-group') %>" >
             <input type="submit" class="btn btn-primary" value="<%=__('save-data-type') %>" >
             <% if (dataType) { %>
-            <input type="hidden" name="id" value="<%= dataType.id %>" />
+            <input type="hidden" id="id" name="id" value="<%= dataType.id %>" />
             <button data-dataType-id="<%= dataType.id %>" class="btn btn-danger delete"><%= __("delete") %></button>
             <%} %>
 

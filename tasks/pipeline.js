@@ -32,6 +32,7 @@ var jsFilesToInject = [
     'dependencies/**/underscore.js',
     'dependencies/**/backbone.js',
     'dependencies/**/select2.js',
+    'dependencies/**/jquery.validate.js',
 
     // Customised client-side js files
     'js/application/utils.js',

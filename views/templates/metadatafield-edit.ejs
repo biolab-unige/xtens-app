@@ -1,7 +1,9 @@
 <h4>
+    <% if (!component) {%>
     <a class="remove-me">
         <span class="fa fa-times-circle"></span>
     </a>
+    <%} %>
     <%= __("attribute") %>
     </br>
 </h4>
@@ -33,20 +35,31 @@
 </div>
 <div class="metadataField-formgroup">
     <div class="metadataField-row">
-        <div class="metadataField-third">
+        <div class="metadataField-sixth">
             <label class="checkbox-inline">
                 <input type="checkbox" name="required" value="required" <% if(component && component.required) { %> checked="checked" <% } %>  >
                 <%=__('required') %>
             </label>
         </div>
-        <div class="metadataField-third">
+        <div class="metadataField-sixth">
+            <label class="checkbox-inline">
+                <input type="checkbox" name="sensitive" value="sensitive" <% if(component && component.sensitive) { %> checked="checked" <% } %>  >
+                <%=__('sensitive') %>
+            </label>
+        </div>
+        <div class="metadataField-range">
             <label class="control-label"><%= __('min') %></label>
             <input text class="form-control input-sm" name="min" placeholder="Minimum Value" value="<%= component ? component.min : '' %>">
         </div>
-        <div class="metadataField-third">
+        <div class="metadataField-range">
             <label class="control-label"><%= __('max') %></label>
             <input text class="form-control input-sm" name="max" placeholder="Maximum Value" value="<%= component ? component.max : '' %>">
         </div>
+        <div class="metadataField-range">
+            <label class="control-label"><%= __('step') %></label>
+            <input text class="form-control input-sm" name="max" placeholder="Step" value="<%= component ? component.step : '' %>">
+        </div>
+
     </div>
 </div>
 <div class="metadataField-formgroup">

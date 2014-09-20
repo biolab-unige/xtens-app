@@ -76,6 +76,7 @@
                                              width: 'resolve'
                 });
             }
+            this.toggleNumericalRange(this.$('select.field-type').children('option:selected').val());
             return this;
         },
 
@@ -85,7 +86,8 @@
             'click .add-value-to-list': 'addValueToList',
             'click .add-unit-to-list': 'addUnitToList',
             'change input[type=checkbox][name=isList]': 'isListOnChange',
-            'change input[type=checkbox][name=hasUnit]': 'hasUnitOnChange'
+            'change input[type=checkbox][name=hasUnit]': 'hasUnitOnChange',
+            'change select.field-type': 'fieldTypeOnChange'
         },
 
         addValueToList: function(ev) {
@@ -143,6 +145,22 @@
             else {
                 this.$('.unit-list').select2('destroy');
                 this.$(".unit-list").val("");
+            }
+        },
+
+        fieldTypeOnChange: function(ev) {
+            this.toggleNumericalRange($(ev.target).children('option:selected').val());
+            ev.stopPropagation();
+        },
+
+        toggleNumericalRange: function(selectedValue) {
+            if (selectedValue === fieldTypes.INTEGER || selectedValue === fieldTypes.FLOAT) {
+                this.$('div.metadataField-range').show();            
+            }
+            else {
+                var $range = this.$('.metadataField-range');
+                $range.children('input').val('');
+                $range.hide();
             }
         }
     });

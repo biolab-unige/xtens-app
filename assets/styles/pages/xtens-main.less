@@ -26,8 +26,7 @@
     .make-row();
 }
 #content .metadataLoop {
-    .make-xs-column(10);
-    .make-xs-column-offset(1);
+    .make-xs-column(12);
     border-color: @brand-info;
     border-width: @border-width;
     border-style: @border-style;
@@ -56,6 +55,15 @@
 }
 #content .metadataField-third {
     .make-xs-column(4);
+}
+#content .metadataField-sixth {
+    .make-sm-column(2);
+    .make-xs-column(4);
+}
+#content .metadataField-range {
+    .make-sm-column(2);
+    .make-xs-column(4);
+    display: none;
 }
 #content div.metadataField-third input, select {
 }
