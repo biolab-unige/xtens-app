@@ -11,7 +11,7 @@
     <div class="metadataField-row">
         <div class="metadataField-third">
             <label class="control-label"><%= __('type') %></label>
-            <select class="form-control input-sm field-type" name="fieldType">
+            <select class="form-control input-sm field-type no-edit" name="fieldType">
                 <% _.each(fieldTypes, function(fieldType) {
                 %>
                 <option value="<%= fieldType %>"
@@ -20,10 +20,13 @@
                 <%
                 }) %>
             </select>
+            <% if (component) {%> 
+                <input type="hidden" name="fieldType" value="<%= component.fieldType %>">
+            <%} %>
         </div>
         <div class="metadataField-third">
             <label class="control-label"><%= __('name') %></label>
-            <input text class="form-control input-sm" placeholder="Field Name" name="name" 
+            <input text class="form-control input-sm no-edit" placeholder="Field Name" name="name" 
             value="<%= component ? component.name : '' %>">
         </div>
         <div class="metadataField-third">
@@ -37,7 +40,8 @@
     <div class="metadataField-row">
         <div class="metadataField-sixth">
             <label class="checkbox-inline">
-                <input type="checkbox" name="required" value="required" <% if(component && component.required) { %> checked="checked" <% } %>  >
+                <input type="checkbox" name="required" value="required" class="no-edit" 
+                <% if(component && component.required) { %> checked="checked" <% } %>  >
                 <%=__('required') %>
             </label>
         </div>
@@ -57,7 +61,7 @@
         </div>
         <div class="metadataField-range">
             <label class="control-label"><%= __('step') %></label>
-            <input text class="form-control input-sm" name="max" placeholder="Step" value="<%= component ? component.step : '' %>">
+            <input text class="form-control input-sm" name="step" placeholder="Step" value="<%= component ? component.step : '' %>">
         </div>
 
     </div>
@@ -66,19 +70,21 @@
     <div class="metadataField-row">
         <div class="metadataField-third">
             <label class="checkbox-inline">
-                <input type="checkbox" name="isList" value="isList" <% if(component && component.isList) { %> checked="checked" <% } %>  > 
+                <input type="checkbox" name="isList" value="isList" class="no-edit" 
+                <% if(component && component.isList) { %> checked="checked" <% } %>  > 
                 <%=__('is-list') %>
             </label>
         </div>
         <div class="metadataField-third">
             <label class="checkbox-inline">
-                <input type="checkbox" name="hasUnit" value="hasUnit" <% if(component && component.hasUnit) { %> checked="checked" <% } %>  >
+                <input type="checkbox" name="hasUnit" value="hasUnit" class="no-edit" 
+                <% if(component && component.hasUnit) { %> checked="checked" <% } %>  >
                 <%=__('has-units') %>
             </label>
         </div>
         <div class="metadataField-third">
             <label class="checkbox-inline">
-                <input type="checkbox" name="fromDatabaseCollection" value="fromDatabaseCollection" 
+                <input type="checkbox" name="fromDatabaseCollection" value="fromDatabaseCollection" class="no-edit" 
                 <% if(component && component.fromDatabaseCollection) { %> checked="checked" <% } %> > <%=__('has-database-connection') %>
             </label>
         </div>
@@ -95,9 +101,12 @@
             value="<%= component ? component.possibleUnits.join() : '' %>">
         </div>
         <div class="metadataField-third">
-            <select class="form-control input-sm" name="tableConnection" name="tableConnection">
+            <select class="form-control input-sm no-edit" name="tableConnection" name="tableConnection">
                 <option selected value=""><%= __('please-select') %></opt>
             </select>
+            <% if (component) {%> 
+                <input type="hidden" name="tableConnection" value="<%= component.tableConnection %>">
+            <%} %>
         </div>
     </div>
 </div>

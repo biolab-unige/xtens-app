@@ -10,7 +10,7 @@
             return {id:term, text:term};
         }
     }
-   
+
     MetadataField.Model = Backbone.Model.extend({
 
         defaults: {
@@ -45,6 +45,14 @@
 
         render: function(field) {
             this.$el.html(this.template({__: i18n, fieldTypes: fieldTypes, component: field}));
+            if (field) {
+                this.setEditConfiguration(field);
+            }
+
+            return this;
+        },
+
+        setEditConfiguration: function(field) {
             var i=0, len=0;
             if (this.$('input[type=checkbox][name=isList]').prop('checked')) {
                 var valueData = [];
@@ -60,6 +68,7 @@
                                               },
                                               width: 'resolve'
                 });
+                this.$('input[name=customValue]').parent().hide();  // hide custom value field if the field is picked from a list 
             }
             if (this.$('input[type=checkbox][name=hasUnit]').prop('checked')) {
                 var unitData = [];
@@ -69,15 +78,15 @@
                 this.$(".unit-list").select2({multiple: true, 
                                              data: unitData,
                                              createSearchChoice: function(term, data) {
-                                                if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
-                                                      return {id:term, text:term};
-                                                }
+                                                 if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+                                                     return {id:term, text:term};
+                                                 }
                                              },
                                              width: 'resolve'
                 });
             }
             this.toggleNumericalRange(this.$('select.field-type').children('option:selected').val());
-            return this;
+            this.$('.no-edit').prop('disabled', true);
         },
 
         events: {
@@ -121,6 +130,9 @@
         },
 
         isListOnChange: function(ev) {
+            $customValue = this.$('input[name=customValue]');
+            $customValue.prop('disabled', true);
+            $customValue.parent().hide();
             if ($(ev.target).is(':checked')) {
                 this.$('.value-list').select2({
                     multiple: 'true',
