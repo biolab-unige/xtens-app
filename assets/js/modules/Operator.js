@@ -49,13 +49,13 @@
                self.operator.fetch({
                     success: function (operator,groups) {
                         self.$el.html(self.template({__: i18n, operator: operator,groups : self.groups.models}));
-                        return self;
+                                               return self;
 
 
                     }
                 });
                
-            
+        
 
 
             } else {
@@ -77,7 +77,7 @@
             saveOperator: function(ev) {
 
                 var operatorDetails = $(ev.currentTarget).serializeObject();
-                console.log(operatorDetails.group);
+              
                 operatorDetails = {firstName: operatorDetails.name,lastName:operatorDetails.surname,birthDate:operatorDetails.date,sex:operatorDetails.sex,email:operatorDetails.email,login:operatorDetails.login,password:operatorDetails.password};
                 operatorDetails.birthDate = new Date(operatorDetails.birthDate);
 
@@ -97,10 +97,21 @@
             updateOperator: function(ev) {
                 var that = this;
              that.association = new Association.Model();
-          that.operator.set({firstName: document.Myform.name.value,lastName:document.Myform.surname.value,birthDate:document.Myform.date.value,sex:document.Myform.sex.value,email:document.Myform.email.value,login:document.Myform.login.value,groups:document.Myform.group.value});
-         
-               that.association.save({ groups : document.Myform.group.value,id_operator : that.operator.id});
-                    
+             var gruppi = new Array();
+             for (var i = 0;i<document.Myform.groups.options.length;i++)
+             {
+                 if(document.Myform.groups[i].selected)
+                     {
+                         gruppi[i]=document.Myform.groups[i].value;
+                     }
+             }
+             console.log(gruppi);
+            that.operator.set({firstName: document.Myform.name.value,lastName:document.Myform.surname.value,birthDate:document.Myform.date.value,sex:document.Myform.sex.value,email:document.Myform.email.value,login:document.Myform.login.value,groups:gruppi});
+          
+              
+             
+               that.association.save({ groups: gruppi,id_operator : that.operator.id});
+                
                that.operator.save();
                              router.navigate('operators', {trigger:true});
                 window.location.reload();

@@ -3,8 +3,11 @@
    
     <script>
         $(document).ready(function() { $("select#groups").select2(); });
-    </script> 
-<form name = "Myform" class="form-horizontal edit-operator-form" role="form">
+    </script>
+    <script>
+ $(#login).validate();
+ </script>
+<form name = "Myform" id="form" class="form-horizontal edit-operator-form" role="form">
     <legend class="legend"align="center"><%= operator ? 'Edit' : 'New' %> Operator</legend>
     <div class="form-group row">
         <label  class="col-md-3 control-label"><%= __("first-name") %></label>
@@ -51,14 +54,14 @@
     </div>
     <div class="form-group row">
         <label class="col-md-3 control-label"><%= __("login") %></label>
-        <input class="col-md-6" name="login" type="text" value="<%= operator ? operator.get('login') : '' %>">
+        <input class="col-md-6" name="login" id="login" type="text" pattern = ".{3,}" value="<%= operator ? operator.get('login') : '' %>">
     </div>
     <% if(operator) { %>
 
     <div class="form-group row" id="groups">
         <label class="col-md-3 control-label"><%=__("group") %></label>
 
-        <select multiple class="col-md-4" name="group" id="groups"> <% _.each(groups, function(group) { %> 
+        <select class="col-md-4" name="group[]" id="groups" multiple="true" size="10"> <% _.each(groups, function(group) { %> 
          <% if(operator.get('groups')==group.get('name')) { %> 
          <option   id="group" selected value ="<%= operator.get('groups') %>"><%= group.get("name") %></option>
             <% } else {%>
