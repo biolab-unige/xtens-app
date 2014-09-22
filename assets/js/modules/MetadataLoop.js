@@ -3,11 +3,23 @@
     var i18n = xtens.module("i18n").en;
     var MetadataComponent = xtens.module("metadatacomponent");
     var MetadataField = xtens.module("metadatafield");
+    var constants = xtens.module("xtensconstants").Constants;
+    
+    MetadataLoop.Model = Backbone.Model.extend({
+        defaults: {
+            label: constants.METADATA_LOOP,
+            name: null
+        }
+    });
 
     MetadataLoop.Views.Edit = MetadataComponent.Views.Edit.fullExtend({
 
         tagName: 'div',
         className: 'metadataLoop',
+        
+        bindings: {
+            'input[name=name]': 'name'
+        },
 
         // template: _.template($("#metadata-field-form-template").html()),
         initialize: function() {
@@ -16,24 +28,21 @@
         },
 
         events: {
-            'click .remove-me': 'removeMe',
+            'click .remove-me': 'closeMe',
             'click .add-metadata-field': 'addMetadataFieldOnClick'
         },
 
         addMetadataFieldOnClick: function(ev) {
-            this.addMetadataField(null);
+            this.add({label: constants.METADATA_FIELD});
             ev.stopPropagation();
         },
-
-        addSubcomponent: function(subcomponent) {
-            this.addMetadataField(subcomponent);
-        },
-
-        addMetadataField: function(field) {
-            var view = new MetadataField.Views.Edit();
+        
+        add: function(field) {
+            var model = new MetadataField.Model();
+            var view = new MetadataField.Views.Edit({model: model});
             this.$('.metadataLoop-body').append(view.render(field).el);
+            this.listenTo(view, 'closeMe', this.removeChild);
             this.nestedViews.push(view);
-            return false;
         }
 
     });

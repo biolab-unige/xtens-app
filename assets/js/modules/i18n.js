@@ -19,6 +19,7 @@
         "save-data-type": "Save Data Type",
         "delete": "Delete",
         "metadata-group-name": "Metadata Group Name",
+        "metadata-loop-name": "Metadata Loop Name",
         "type": "Type",
         "required": "Required",
         "sensitive": "Sensitive",
@@ -58,7 +59,7 @@
         "new-group": "New Group",
         "associate-new-operator":"Associate An Operator",
         "save-association":"Save Association"
-};
+    };
 
     var it = {
     

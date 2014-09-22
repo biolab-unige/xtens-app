@@ -1,5 +1,5 @@
 <h4>
-    <% if (!component) {%>
+    <% if (!component.name) {%>
     <a class="remove-me">
         <span class="fa fa-times-circle"></span>
     </a>
@@ -10,12 +10,13 @@
 <div class="form-group row">
     <label for="groupName" class="col-xs-3 control-label"><%= __("metadata-group-name") %></label>
     <div class="col-xs-9">
-        <input text class="form-control" name="name" 
-        value="<%= component ? component.name : '' %>" placeholder="Metadata Group Name">
+        <input text class="form-control" name="name" placeholder="Metadata Group Name">
     </div>
 </div>
 <div class='metadataGroup-body'></div>
 <div class="row text-center">
-    <input type="button" class="btn btn-default add-metadata-loop" value="<%=__('add-loop') %>">
-    <input type="button" class="btn btn-default add-metadata-field" value="<%=__('add-attribute') %>">
+    <div class="btn-group btn-group-margin">
+        <input type="button" class="btn btn-default add-metadata-loop" value="<%=__('add-loop') %>">
+        <input type="button" class="btn btn-info add-metadata-field" value="<%=__('add-attribute') %>">
+    </div>
 </div>

@@ -3,26 +3,11 @@
     // dependencies
     var i18n = xtens.module("i18n").en;
     var Constants = xtens.module("xtensconstants").Constants;
+    var MetadataComponent = xtens.module("metadatacomponent");
     var MetadataGroup = xtens.module("metadatagroup"); 
 
     // XTENS router alias
     var router = xtens.router;   
-
-    /**
-     * Serialize a form element as a metadata field view
-     */
-    function serializeAsMetadataField(element) {
-        var $element = $(element);
-        var fieldJson = _.extend({label: Constants.METADATA_FIELD}, $element.find("select, input, textarea").serializeObject());
-        // fieldJson.label = Constants.METADATA_FIELD;
-        fieldJson.required = fieldJson.required ? true : false;
-        fieldJson.isList = fieldJson.isList ? true : false;
-        fieldJson.possibleValues = _.isEmpty(fieldJson.possibleValues) ? [] : fieldJson.possibleValues.split(',');
-        fieldJson.hasUnits = fieldJson.hasUnits ? true : false;
-        fieldJson.possibleUnits = _.isEmpty(fieldJson.possibleUnits) ? [] : fieldJson.possibleUnits.split(",");
-        fieldJson.fromDatabaseCollection = fieldJson.fromDatabaseCollection ? true : false;
-        return fieldJson;
-    }
 
     /**
      *  define a DataType model
@@ -46,7 +31,7 @@
      * This is the view to create/edit the DataType
      */
 
-    DataType.Views.Edit = Backbone.View.extend({
+    DataType.Views.Edit = MetadataComponent.Views.Edit.fullExtend({
 
         tagName: 'div',
         className: 'dataType',
@@ -75,7 +60,7 @@
             this.$el.html(this.template({__: i18n, dataType: dataType}));
             var body = dataType.get('schema').body;
             for (var i=0, len=body.length; i<len; i++) {
-                this.addMetadataGroup(body[i]);
+                this.add(body[i]);
             }
         },
 
@@ -84,25 +69,11 @@
             'click .add-metadata-group': 'addMetadataGroupOnClick'    // not used yet 
         },
 
-        serializeMetadataBody: function() {
+        serialize: function() {
             var metadataBody = [];
-            this.$('.metadataGroup').each(function(metadataGroupIndex, metadataGroupElement) {
-                var $metadataGroupElement = $(metadataGroupElement);
-                var groupJson = {label: Constants.METADATA_GROUP, name: $metadataGroupElement.find('input[name="name"]').val(), content: [] };
-                $metadataGroupElement.find('.metadataGroup-body').children().each(function(metadataComponentIndex, metadataComponentElement) {
-                    if ($(metadataComponentElement).hasClass('metadataField')) {
-                        groupJson.content.push(serializeAsMetadataField(metadataComponentElement));
-                    }
-                    else if ($(metadataComponentElement).hasClass('metadataLoop')) {
-                        var loopJson = {label: Constants.METADATA_LOOP, content: []};
-                        $(metadataComponentElement).find('.metadataLoop-body').children().each(function(metadataFieldIndex, metadataFieldElement) {
-                            loopJson.content.push(serializeAsMetadataField(metadataFieldElement));
-                        });
-                        groupJson.content.push(loopJson);
-                    } 
-                });
-                metadataBody.push(groupJson);
-            });
+                for (var i=0, len=this.nestedViews.length; i<len; i++) {
+                    metadataBody.push(this.nestedViews[i].serialize()); 
+                }
             return metadataBody;
         },
 
@@ -110,7 +81,7 @@
             var id = $('#id').val();
             var header = this.$("#schemaHeader").find("select, input, textarea").serializeObject();
             header.fileUpload = header.fileUpload ? true : false;
-            var body = this.serializeMetadataBody();
+            var body = this.serialize();
             var dataTypeDetails = { id: id, name: header.schemaName, schema: {header: header, body: body} };
             var dataType = new DataType.Model();
             dataType.save(dataTypeDetails, {
@@ -127,13 +98,16 @@
         },
 
         addMetadataGroupOnClick: function(ev) {
-            this.addMetadataGroup(null);
+            this.add({label: Constants.METADATA_GROUP});
             ev.stopPropagation();
         },
 
-        addMetadataGroup: function(group) {
-            var view = new MetadataGroup.Views.Edit();
+        add: function(group) {
+            var model = new MetadataGroup.Model();
+            model.set(group);
+            var view = new MetadataGroup.Views.Edit({model: model});
             this.$("#schemaBody").append(view.render(group).el);
+            this.listenTo(view, 'closeMe', this.removeChild);
             this.nestedViews.push(view);
         }
 
@@ -154,14 +128,14 @@
 
         render: function(options) {
 
-            var self = this;
+            var that = this;
             var dataTypes = new DataType.List();
             dataTypes.fetch({
                 success: function(dataTypes) {
-                    self.$el.html(self.template({__: i18n, dataTypes: dataTypes.models}));
+                    that.$el.html(that.template({__: i18n, dataTypes: dataTypes.models}));
                 },
                 error: function() {
-                    self.$el.html(self.template({__: i18n}));
+                    that.$el.html(that.template({__: i18n}));
                 }
 
             });

@@ -31,6 +31,7 @@ var jsFilesToInject = [
     'dependencies/**/jquery.js',
     'dependencies/**/underscore.js',
     'dependencies/**/backbone.js',
+    'dependencies/**/backbone.stickit.js',
     'dependencies/**/select2.js',
     'dependencies/**/jquery.validate.js',
 

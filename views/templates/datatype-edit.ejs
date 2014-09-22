@@ -1,5 +1,5 @@
 <h1><%= __("data-type-manager") %></h1>
-    <h2><%= dataType ? __("update-data-type") : __("create-data-type") %></h2>
+<h2><%= dataType ? __("update-data-type") : __("create-data-type") %></h2>
 
 <div id="content"> 
 
@@ -40,13 +40,14 @@
         </div> <!-- schemaHeader -->
         <div id="schemaBody"></div>  
         <div id="buttonbardiv" class="row text-center">
-            <input type="button" class="btn btn-default add-metadata-group" value="<%=__('add-metadata-group') %>" >
-            <input type="submit" class="btn btn-primary" value="<%=__('save-data-type') %>" >
-            <% if (dataType) { %>
-            <input type="hidden" id="id" name="id" value="<%= dataType.id %>" />
-            <button data-dataType-id="<%= dataType.id %>" class="btn btn-danger delete"><%= __("delete") %></button>
-            <%} %>
-
+                <div class="btn-group btn-group-margin">
+                    <input type="button" class="btn btn-info add-metadata-group" value="<%=__('add-metadata-group') %>" >
+                    <input type="submit" class="btn btn-primary" value="<%=__('save-data-type') %>" >
+                    <% if (dataType) { %>
+                    <input type="hidden" id="id" name="id" value="<%= dataType.id %>" />
+                    <button data-dataType-id="<%= dataType.id %>" class="btn btn-danger delete"><%= __("delete") %></button>
+                    <%} %>
+                </div>
         </div>
     </form>
 

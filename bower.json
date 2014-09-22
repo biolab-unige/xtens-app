@@ -28,7 +28,8 @@
     "font-awesome": "~4.2.0",
     "select2": "https://github.com/ivaynberg/select2.git#~3.5.1",
     "select2-bootstrap-css": "https://github.com/t0m/select2-bootstrap-css.git#~1.4.1",
-    "jquery-validation": "~1.13.0"
+    "jquery-validation": "~1.13.0",
+    "backbone.stickit": "~0.8.0"
   },
   "exportsOverride": {
     "jquery": {
@@ -51,7 +52,10 @@
       "": "**/select2-bootstrap.css"
     },
     "jquery-validation": {
-        "js": "dist/*.js"
+      "js": "dist/*.js"
+    },
+    "backbone.stickit": {
+        "": "backbone.stickit.js"
     }
   },
   "devDependencies": {

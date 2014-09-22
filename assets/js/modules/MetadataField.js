@@ -5,9 +5,30 @@
     var MetadataComponent = xtens.module("metadatacomponent");
     var i18n = xtens.module("i18n").en;
 
-    function addChoiceToSelect2(term, data) {
-        if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
-            return {id:term, text:term};
+    /*
+       function addChoiceToSelect2(term, data) {
+       if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+       return {id:term, text:term};
+       }
+       } */
+    function initializeSelect2Field($el, model, option) {
+        var property =  $el.attr('name'); 
+        if (_.isArray(model.get(property))) {
+            var data =[];
+            var list = model.get(property);
+            for (i=0, len=list.length; i<len; i++) {
+                data.push({id: list[i], text: list[i], locked: true});
+            }
+            $el.select2({
+                multiple: true, 
+                data: data,
+                createSearchChoice: function(term, data) {
+                    if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+                        return {id:term, text:term};
+                    }
+                },
+                width: 'resolve'
+            });
         }
     }
 
@@ -23,7 +44,7 @@
             isList: false,
             possibleValues: null,
             hasUnit: false,
-            range: null
+            possibleUnits: null
         },
 
         initialize: function() {
@@ -37,7 +58,78 @@
         tagName: 'div',
         className: 'metadataField',
 
-        // template: _.template($("#metadata-field-form-template").html()),
+        bindings: {
+            'select[name=fieldType]': {
+                observe: 'fieldType',
+                selectOptions: {
+                    collection: function() {
+                        var coll = [];
+                        _.each(fieldTypes, function(value){
+                            coll.push({label: value.toUpperCase(), value: value});
+                        });
+                        return coll;
+                    }
+                }
+            },
+            '[name=name]': 'name',
+            '[name=customValue]': 'customValue',
+            '[name=required]': {
+                observe: 'required',
+                getVal: function($el, ev, options) {
+                    return $el.prop('checked');
+                }
+            },
+            '[name=sensitive]': {
+                observe: 'sensitive',
+                getVal: function($el, ev, option) {
+                    return $el.prop('checked');
+                }
+            },
+            '[name=min]': 'min',
+            '[name=max]': 'max',
+            '[name=step]': 'step',
+            '[name=isList]': {
+                observe: 'isList',
+                getVal: function($el, ev, option) {
+                    return $el.prop('checked');
+                }
+            },
+            '[name=hasUnit]': {
+                observe: 'hasUnit',
+                getVal: function($el, ev, option) {
+                    return $el.prop('checked');
+                }
+            },
+            '[name=fromDatabaseCollection]': {
+                observe: 'fromDatabaseCollection',
+                getVal: function($el, ev, option) {
+                    return $el.prop('checked');
+                }
+            },
+            '[name=possibleValues]': {
+                observe: 'possibleValues',
+                initialize: initializeSelect2Field,
+                getVal: function($el, ev, option) {
+                    return $el.val().split(",");
+                }
+            },
+            '[name=possibleUnits]': {
+                observe: 'possibleUnits',
+                initialize: initializeSelect2Field,
+                getVal: function($el, ev, option) {
+                    return $el.val().split(",");
+                }
+            },
+            'select[name=dbCollection]': {
+                observe: 'dbCollection',
+                collection: [],
+                defaultOption: {
+                    label: i18n('please-select'),
+                    value: null
+                }
+            }
+        },
+
         initialize: function(attrs) {
             this.options = attrs;
             this.template = JST['views/templates/metadatafield-edit.ejs'];
@@ -45,88 +137,25 @@
 
         render: function(field) {
             this.$el.html(this.template({__: i18n, fieldTypes: fieldTypes, component: field}));
-            if (field) {
-                this.setEditConfiguration(field);
+            if (field.name) {
+               this.$('.no-edit').prop('disabled', true);
             }
-
+            this.stickit();
             return this;
         },
 
-        setEditConfiguration: function(field) {
-            var i=0, len=0;
-            if (this.$('input[type=checkbox][name=isList]').prop('checked')) {
-                var valueData = [];
-                for (i=0, len=field.possibleValues.length; i<len; i++) {
-                    valueData.push({id:field.possibleValues[i], text: field.possibleValues[i], locked: true});
-                }
-                this.$(".value-list").select2({multiple: true, 
-                                              data: valueData,
-                                              createSearchChoice: function(term, data) {
-                                                  if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
-                                                      return {id:term, text:term};
-                                                  }
-                                              },
-                                              width: 'resolve'
-                });
-                this.$('input[name=customValue]').parent().hide();  // hide custom value field if the field is picked from a list 
-            }
-            if (this.$('input[type=checkbox][name=hasUnit]').prop('checked')) {
-                var unitData = [];
-                for (i=0, len=field.possibleUnits.length; i<len; i++) {
-                    unitData.push({id:field.possibleUnits[i], text: field.possibleUnits[i], locked: true});
-                }
-                this.$(".unit-list").select2({multiple: true, 
-                                             data: unitData,
-                                             createSearchChoice: function(term, data) {
-                                                 if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
-                                                     return {id:term, text:term};
-                                                 }
-                                             },
-                                             width: 'resolve'
-                });
-            }
-            this.toggleNumericalRange(this.$('select.field-type').children('option:selected').val());
-            this.$('.no-edit').prop('disabled', true);
+        add: function(child) {
+            return null;
         },
 
         events: {
             'change .field-type': 'onFieldTypeChange',
-            'click .remove-me': 'removeMe',
+            'click .remove-me': 'closeMe',
             'click .add-value-to-list': 'addValueToList',
             'click .add-unit-to-list': 'addUnitToList',
             'change input[type=checkbox][name=isList]': 'isListOnChange',
             'change input[type=checkbox][name=hasUnit]': 'hasUnitOnChange',
             'change select.field-type': 'fieldTypeOnChange'
-        },
-
-        addValueToList: function(ev) {
-            var value = this.$("input.value-to-add").val();
-            var exists = false;
-            this.$("select.value-list option").each(function() {
-                if (this.value === value) {
-                    exists = true;
-                    return false;
-                }
-            });
-            if (!exists) {
-                this.$("select.value-list").append($("<option>").attr("value", value).html(value));
-            }
-            this.$("input.value-to-add").val("");
-        },
-
-        addUnitToList: function(ev) {
-            var unit = this.$("input.unit-to-add").val();
-            var exists = false;
-            this.$("select.unit-list option").each(function() {
-                if (this.value === unit) {
-                    exists = true;
-                    return false;
-                }
-            });
-            if (!exists) {
-                this.$("select.unit-list").append($("<option>").attr("value", unit).html(unit));
-            }
-            this.$("input.unit-to-add").val("");
         },
 
         isListOnChange: function(ev) {

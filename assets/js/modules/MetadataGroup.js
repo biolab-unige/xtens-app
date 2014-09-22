@@ -6,81 +6,73 @@
     var MetadataComponent = xtens.module("metadatacomponent");
     var MetadataField = xtens.module("metadatafield");
     var MetadataLoop = xtens.module("metadataloop");
-    
+
 
     // XTENS router alias
     var router = xtens.router;
 
-    MetadataGroup.Model = Backbone.Model.extend({});
+    MetadataGroup.Model = Backbone.Model.extend({
+        defaults: {
+            label: Constants.METADATA_GROUP,
+            name: null
+        }
+    });
 
     MetadataGroup.List = Backbone.Collection.extend({
         model: MetadataGroup.Model
     });
 
     MetadataGroup.Views.Edit = MetadataComponent.Views.Edit.fullExtend({
-        
+
         // model: MetadataGroup.Model,
 
         tagName: 'div',   
         className: 'metadataGroup',
-        
+
+        bindings: {
+            'input[name=name]': 'name'
+        },
+
         initialize: function() {
             this.template = JST["views/templates/metadatagroup-edit.ejs"];
             this.nestedViews = [];
         },
-        
-        /*
-        render: function(options) {
-            var id = this.id;
-            this.$el.html(this.template({__: i18n, id: 0}));
-            return this;
-        }, */
 
         events: {
             'click .add-metadata-field': 'addMetadataFieldOnClick',
             'click .add-metadata-loop': 'addMetadataLoopOnClick',
-            'click .remove-me': 'removeMe'
+            'click .remove-me': 'closeMe'
         },
 
         addMetadataFieldOnClick: function(ev) {
-            this.addMetadataField(null);
+            this.add({label: Constants.METADATA_FIELD});
             ev.stopPropagation();
         },
 
         addMetadataLoopOnClick: function(ev) {
-            this.addMetadataLoop(null);
+            this.add({label: Constants.METADATA_LOOP});
             ev.stopPropagation();
         },
 
-        addSubcomponent: function(subcomponent) {
-            if (subcomponent.label === Constants.METADATA_FIELD) {
-                this.addMetadataField(subcomponent);
+        add: function(subcomponent) {
+            var model, view;
+            switch (subcomponent.label) {
+                case Constants.METADATA_FIELD:
+                    model = new MetadataField.Model();
+                    model.set(subcomponent);
+                    view = new MetadataField.Views.Edit({model: model});
+                    break;
+                case Constants.METADATA_LOOP:
+                    model = new MetadataLoop.Model();
+                    model.set(subcomponent);
+                    view = new MetadataLoop.Views.Edit({model: model});
+                    break;
             }
-            else if (subcomponent.label === Constants.METADATA_LOOP) {
-                this.addMetadataLoop(subcomponent);
-            }
-        },
-
-        addMetadataField: function(field) {
-            var view = new MetadataField.Views.Edit();
-            this.$('.metadataGroup-body').append(view.render(field).el);
+            this.$('.metadataGroup-body').append(view.render(subcomponent).el);
+            this.listenTo(view, 'closeMe', this.removeChild);
             this.nestedViews.push(view);
-            return false;
-        },
-
-        addMetadataLoop: function(loop) {
-            var view = new MetadataLoop.Views.Edit();
-            this.$('.metadataGroup-body').append(view.render(loop).el);
-            this.nestedViews.push(view);
-            return false;
-        },
+        }
         
-        /*
-        removeMe: function(ev) {
-            this.remove();
-            ev.stopPropagation();
-        } */
-
     });
 
 } (xtens, xtens.module("metadatagroup")));
