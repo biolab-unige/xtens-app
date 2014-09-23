@@ -58,8 +58,8 @@
         "f" : "F",
 	"group-list": "Group List",
         "new-group": "New Group",
-        "associate-new-operator":"Associate An Operator",
-        "save-association":"Save Association"
+        "xtens-login":"XTENS Login"
+       
     };
 
     var it = {
