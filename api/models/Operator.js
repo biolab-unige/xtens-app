@@ -62,24 +62,22 @@ var Operator = {
             return obj;
         },
 
-        // Lifecycle Callbacks
-        beforeCreate: function(values, next) {
-            bcrypt.hash(values.password, 10, function(err, hash) {
-                if(err) return next(err);
-                values.password = hash;
-                next();
-            });
-        },
-       /* groups:{
-            collection:'group',
-            via:'operators',
-            dominant:true
-        }*/
+
         groups:{
-           type:'text',
-         columnName:'groups'
-    }	
-}
+            type:'text',
+            columnName:'groups'
+        }	
+    },
+
+    // Lifecycle Callbacks
+    beforeCreate: function(values, next) {
+        bcrypt.hash(values.password, 10, function(err, hash) {
+            if(err) return next(err);
+            values.password = hash;
+            next();
+        });
+    }
+
 };
 
 module.exports = Operator;
