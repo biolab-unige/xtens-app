@@ -1,28 +1,32 @@
 <h2><%= __("data-type-list") %></h2> 
 
 <div id="content">
-    <div class="table-responsive">
-        <table class="table striped">
-            <thead>
-                <tr>
-                    <th><%= __("name") %></th>
-                    <th><%= __("json-schema") %></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <% _.each(dataTypes, function(dataType) { %> 
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><%= __("name") %></th>
+                            <th><%= __("json-schema") %></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <% _.each(dataTypes, function(dataType) { %> 
                     <tr>
                         <td><%= dataType.get("name") %></td>
                         <td><%= JSON.stringify(dataType.get("schema")) %></td>
                         <td><a class="btn" href="#/datatypes/edit/<%= dataType.id %>"><%=__("edit") %></a></td>
                     </tr>
-                <% }) %> 
-            </tbody>
-        </table>
-    </div>
-    <div id="buttonbardiv" class="row text-center">
-        <a href="#/datatypes/new" class="btn btn-primary"><%= __("new-data-type")%></a>
-    </div>
-</div>
+                    <% }) %> 
+                    </tbody>
+                </table>
+            </div>
+            <div id="buttonbardiv" class="row text-center">
+                <a href="#/datatypes/new" class="btn btn-primary"><%= __("new-data-type")%></a>
+            </div>
+            </div>
+                </div>
+                </div>
 

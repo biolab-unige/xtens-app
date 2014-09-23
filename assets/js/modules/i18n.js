@@ -23,6 +23,7 @@
         "type": "Type",
         "required": "Required",
         "sensitive": "Sensitive",
+        "hasRange": "Has Range",
         "custom-value": "Custom Value",
         "is-list": "Is List",
         "has-units": "Has Units",

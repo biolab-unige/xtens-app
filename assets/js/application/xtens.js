@@ -67,5 +67,9 @@ jQuery(function($) {
         router.loadView(new DataType.Views.Edit({id: id}));
     });
 
+    router.on('route:data-edit', function(idDataType, id) {
+        router.loadView(new DataType.Views.Form({idDataType: idDataType, id: id}));
+    });
+
     Backbone.history.start();
 });

@@ -106,7 +106,7 @@
             var model = new MetadataGroup.Model();
             model.set(group);
             var view = new MetadataGroup.Views.Edit({model: model});
-            this.$("#schemaBody").append(view.render(group).el);
+            this.$("#schemaBody").append(view.render().el);
             this.listenTo(view, 'closeMe', this.removeChild);
             this.nestedViews.push(view);
         }
@@ -127,7 +127,6 @@
         },
 
         render: function(options) {
-
             var that = this;
             var dataTypes = new DataType.List();
             dataTypes.fetch({
@@ -137,10 +136,20 @@
                 error: function() {
                     that.$el.html(that.template({__: i18n}));
                 }
-
             });
             return this;
         }
     });
+
+    /**
+     *  This is the view to show the form generated from the selected DataType
+     *
+    DataType.Views.Form = MetadataComponent.Views.Form.fullExtend({
+        
+        tagName: div,
+        className: '.dataForm', 
+
+    }); */
+    
 } (xtens, xtens.module("datatype")));
 

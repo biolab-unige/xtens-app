@@ -32,15 +32,29 @@
         }
     }
 
+    function initializeRange($el, model, option) {
+        if (!model.isNumeric()) {
+            $el.parent().hide();
+        }
+    }
+
+    function initializeRangeInput($el, model, option) {
+        if (model.hasRange) {
+            $el.parent().show();
+        }
+    }
+
     MetadataField.Model = Backbone.Model.extend({
 
         defaults: {
             label: constants.METADATA_FIELD,
+            fieldType: fieldTypes.TEXT,
             name: null,
             ontologyUri: null,
-            type: fieldTypes.TEXT,
-            required: false,
             customValue: null,
+            required: false,
+            sensitive: false,
+            hasRange: false,
             isList: false,
             possibleValues: null,
             hasUnit: false,
@@ -50,6 +64,11 @@
         initialize: function() {
 
         },
+
+        isNumeric: function() {
+            var type = this.get("fieldType"); 
+            return (type === fieldTypes.INTEGER || type === fieldTypes.FLOAT);
+        }
 
     });
 
@@ -85,9 +104,25 @@
                     return $el.prop('checked');
                 }
             },
-            '[name=min]': 'min',
-            '[name=max]': 'max',
-            '[name=step]': 'step',
+            '[name=hasRange]': {
+                observe: 'hasRange',
+                getVal: function($el, ev, option) {
+                    return $el.prop('checked');
+                },
+                initialize: initializeRange
+            },
+            '[name=min]': {
+                observe: 'min',
+                initialize: initializeRangeInput
+            },
+            '[name=max]': {
+                observe: 'max',
+                initialize: initializeRangeInput
+            },
+            '[name=step]': {
+                observe: 'step',
+                initialize: initializeRangeInput
+            },
             '[name=isList]': {
                 observe: 'isList',
                 getVal: function($el, ev, option) {
@@ -131,16 +166,18 @@
         },
 
         initialize: function(attrs) {
-            this.options = attrs;
             this.template = JST['views/templates/metadatafield-edit.ejs'];
         },
 
-        render: function(field) {
+        render: function() {
+            var field = _.clone(this.model.attributes);
             this.$el.html(this.template({__: i18n, fieldTypes: fieldTypes, component: field}));
             if (field.name) {
-               this.$('.no-edit').prop('disabled', true);
+                this.$('.no-edit').prop('disabled', true);
             }
             this.stickit();
+            this.listenTo(this.model, 'change', this.fieldTypeOnChange);
+            this.listenTo(this.model, 'change', this.toggleRangeInputs);
             return this;
         },
 
@@ -149,13 +186,9 @@
         },
 
         events: {
-            'change .field-type': 'onFieldTypeChange',
             'click .remove-me': 'closeMe',
-            'click .add-value-to-list': 'addValueToList',
-            'click .add-unit-to-list': 'addUnitToList',
             'change input[type=checkbox][name=isList]': 'isListOnChange',
             'change input[type=checkbox][name=hasUnit]': 'hasUnitOnChange',
-            'change select.field-type': 'fieldTypeOnChange'
         },
 
         isListOnChange: function(ev) {
@@ -189,13 +222,17 @@
             }
         },
 
-        fieldTypeOnChange: function(ev) {
-            this.toggleNumericalRange($(ev.target).children('option:selected').val());
-            ev.stopPropagation();
+        fieldTypeOnChange: function() {
+            if (this.model.isNumeric()) {
+                this.$('input[name=hasRange]').parent().show();
+            }
+            else {
+                this.$('input[name=hasRange]').parent().hide();
+            }
         },
 
-        toggleNumericalRange: function(selectedValue) {
-            if (selectedValue === fieldTypes.INTEGER || selectedValue === fieldTypes.FLOAT) {
+        toggleRangeInputs: function() {
+            if (this.model.get('hasRange')) {
                 this.$('div.metadataField-range').show();            
             }
             else {

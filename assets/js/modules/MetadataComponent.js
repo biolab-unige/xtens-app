@@ -8,7 +8,8 @@
             this.template = null;   // no template implemented at this stage
         },
 
-        render: function(component) { 
+        render: function() {
+            var component = _.clone(this.model.attributes); 
             this.$el.html(this.template({ __: i18n, component: component }));
             this.stickit();
             if (_.isArray(component.content)) {
@@ -40,8 +41,14 @@
             }
         },
 
+        getChild: function(i) {
+            if (this.nestedViews) {
+                return this.nestedViews[i];
+            }
+            return null;
+        },
+
         closeMe: function(ev) {
-            console.log('close me');
             this.trigger('closeMe', this);
         },
 
@@ -57,5 +64,16 @@
         },
 
     });
+    
+    /*
+    MetadataComponent.Views.Form = Backbone.View.extend({
+        
+        initialize: function() {
+            this.template = null;   // no template implemented at this stage
+        },
+
+        render: function() {}
+
+    }); */
 
 } (xtens, xtens.module("metadatacomponent")));

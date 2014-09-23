@@ -6,12 +6,35 @@
  */
 var DataTypeController = {
     /*
-    insertnew: function(req, res) {
-        console.log(req.param("schema"));
-        console.log(req.param("name"));
-        DataType.create({name: req.param("name"), schema:req.param("schema")});
+    create: function(req, res) {
+        DataType.find()
+        .then(function(dataTypes) {
+            res.send(dataTypes);
+        }).fail(function(err) {
+            res.send(500, {error: "Database Error"});
+        });
+    },
+
+    find: function(req, res) {
+        
+    },
+
+    findOne: function(req, res) {
+
+    },
+
+    update: function(req, res) {
+
+    },
+
+    updateSelective: function(req, res) {
+
+    },
+
+    destroy: function(req, res) {
+
     } */
+
 };
 
 module.exports = DataTypeController;
-
