@@ -1,0 +1,31 @@
+<h2 class="legend" align="center"><%= __("xtens-login") %></h2> 
+<script>
+    $("#login").click(function(){
+        var username = $("#userName").val();
+        var password = $("#userPass").val();
+        
+        if (username && password) {
+            $.get(
+                '/operator',
+                {login: username, password:password},
+                function () {
+                    window.location = "/#/homepage";
+                }
+            ).fail(function(res){
+                alert("Error: " + res.getResponseHeader("error"));
+            });
+        } else {
+            alert("A username and password is required");
+        }
+    });
+</script>
+<form name = "LForm" id="form" class="form-horizontal login-form" role="form">
+
+<div id="log">
+        UserName <input name="user" type="text" id="userName" placeholder="Username"><br /><br />
+          Password : <input type="password" id="userPass" placeholder="Password"><br /><br/>   
+    </div>
+    <div id="login" class="row text-center">
+        <a href="#/homepage" class="btn btn-primary"><%= __("login")%></a>
+    </div>
+</form>

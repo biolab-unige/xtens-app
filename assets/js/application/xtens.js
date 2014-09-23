@@ -59,6 +59,10 @@ jQuery(function($) {
        
     });
 
+ router.on('route:login',function(){
+        router.loadView(new Operator.Views.Login());
+       
+    });
     router.on('route:datatype', function() {
         router.loadView(new DataType.Views.List());
     });
