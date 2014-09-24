@@ -19,11 +19,13 @@
         "js/modules/MetadataLoop.js",
         "js/modules/MetadataGroup.js",
         "js/modules/DataType.js",
+        "js/modules/Data.js",
         "js/modules/Operator.js",
         "dependencies/chai/chai.js",
         "dependencies/sinon-chai/lib/sinon-chai.js",
         "dependencies/sinon/lib/sinon.js",
         "test/application/xtens-test.js",
-        "test/modules/MetadataField-test.js"
+        "test/modules/MetadataField-test.js",
+        "test/modules/Data-test.js"
     ]
 }

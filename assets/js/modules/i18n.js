@@ -56,14 +56,18 @@
         "save-operator" : "Save Operator",
         "m" : "M",
         "f" : "F",
-	"group-list": "Group List",
+        "group-list": "Group List",
         "new-group": "New Group",
-        "xtens-login":"XTENS Login"
-       
+        "xtens-login":"XTENS Login",
+        /* views/templates/data-edit.js */
+        "data-manager": "Data Manager",
+        "select-a-data-type": "Select a Data Type",
+        "create-data": "Create Data",
+        "update-data": "Update Data" 
     };
 
     var it = {
-    
+
     };
 
     i18n.en = function(key) {

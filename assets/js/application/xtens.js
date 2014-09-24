@@ -41,39 +41,27 @@ jQuery(function($) {
 
     router.on('route:group',function() {
         router.loadView(new Group.Views.List());
-        
+
     });
 
     router.on('route:group-edit',function(id){
         router.loadView(new Group.Views.Edit({id:id}));
-       
+
     });
 
     router.on('route:operator',function() {
         router.loadView(new Operator.Views.List());
-        
+
     });
 
     router.on('route:operator-edit',function(id){
         router.loadView(new Operator.Views.Edit({id:id}));
-       
     });
 
- router.on('route:login',function(){
+    router.on('route:login',function(){
         router.loadView(new Operator.Views.Login());
-       
-    });
-    router.on('route:datatype', function() {
-        router.loadView(new DataType.Views.List());
-    });
 
-    router.on('route:datatype-edit', function(id) {
-        router.loadView(new DataType.Views.Edit({id: id}));
     });
-
-    router.on('route:data-edit', function(idDataType, id) {
-        router.loadView(new DataType.Views.Form({idDataType: idDataType, id: id}));
-    });
-
+    
     Backbone.history.start();
 });

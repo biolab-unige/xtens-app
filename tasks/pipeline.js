@@ -46,6 +46,7 @@ var jsFilesToInject = [
     'js/modules/MetadataLoop.js',
     'js/modules/MetadataGroup.js',
     'js/modules/DataType.js',
+    'js/modules/Data.js',
     'js/modules/Operator.js',
     'js/modules/Group.js',
     'js/modules/Association.js'
