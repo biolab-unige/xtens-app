@@ -59,16 +59,19 @@
         "group-list": "Group List",
         "new-group": "New Group",
         "xtens-login":"XTENS Login",
-        /* views/templates/data-edit.js */
+        /* views/templates/data-edit.ejs */
         "data-manager": "Data Manager",
         "select-a-data-type": "Select a Data Type",
         "create-data": "Create Data",
         "update-data": "Update Data",
-        /* views/templates/data-edit-partial.js */
+        /* views/templates/data-edit-partial.ejs */
         "date": "Date",
         "tags": "Tags/Keywords",
         "notes": "Notes",
-        "save": "Save"
+        "save": "Save",
+        /* views/templates/... */
+        "association":"Association",
+        "dissociation":"Dissociation"
     };
 
     var it = {

@@ -1,11 +1,46 @@
 
-<div id="group"> 
+<div id="group">
+   <script>
+        $(document).ready(function() { $("select#association").select2(); });
+        $(document).ready(function() { $("select#dissociation").select2(); });
+
+    </script>
+ 
 <form name = "Myform" class="form-horizontal edit-group-form" role="form">
     <legend class="legend"align="center"><%= group ? 'Edit' : 'New' %> Group</legend>
     <div class="form-group row">
         <label  class="col-md-3 control-label"><%= __("name") %></label>
         <input class = "col-md-6" name="name" id="first" type="text" value="<%= group ? group.get('name') : '' %>">
-    </div>
+        </div>
+        <% if(group) { %>
+        <div class="form-group row">
+        <label  class="col-md-3 control-label"><%= __("association") %></label>
+        <select multiple="true" class = "col-md-6" name="association[]" id="association" type="text" value="<%= group ? group.get('data_type') : '' %>">
+            <% _.each(datatypes, function(datatype) { %> 
+         <% if(group.get('data_type')!=datatype.get('name')) { %> 
+         <option   id="<%= datatype.get('id') %>" value ="<%= group.get('data_type') %>"><%= datatype.get("name") %></option>
+                       <% } %>
+            <% }) %>
+
+            <option >
+        </select>
+        </div>
+        <% }; %>
+         <% if(group) { %>
+        <div class="form-group row">
+        <label  class="col-md-3 control-label"><%= __("dissociation") %></label>
+        <select multiple="true" class = "col-md-6" name="dissociation[]" id="dissociation" type="text" value="<%= group ? group.get('data_type') : '' %>">
+            <% _.each(datatypes, function(datatype) { %> 
+         <% if(group.get('data_type')==datatype.get('name')) { %> 
+         <option   id="<%= datatype.get('id') %>" selected value ="<%= group.get('data_type') %>"><%= datatype.get("name") %></option>
+                       <% } %>
+            <% }) %>
+
+            <option >
+        </select>
+        </div>
+        <% }; %>
+
    
     <hr />
     <div id="buttonbardiv" class="row text-center">
