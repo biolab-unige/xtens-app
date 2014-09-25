@@ -21,6 +21,11 @@ var DataType = {
         },
         updatedAt: {
             columnName: 'updated_at'
+        },
+        // reference to Data
+        datas: {
+            collection: 'data',
+            via: 'type'
         }
     }
 };

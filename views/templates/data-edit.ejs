@@ -1,0 +1,15 @@
+<h1><%= __("data-manager") %></h1>
+<h2><%= data ? __("updata-data") : __("create-data") %></h2>
+<div id="content">
+    <form class="form-horizontal edit-data-form" role="form">
+        <div class="form-group">
+            <div id="dataTypeDiv" class="row">
+                <label for="dataType" class="col-md-3 col-xs-4"><%= __("select-a-data-type") %></label>
+                <div class="col-md-6 col-xs-8">
+                    <select class="form-control" id="dataType" name="dataType">
+                    </select>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

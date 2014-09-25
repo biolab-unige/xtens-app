@@ -1,5 +1,21 @@
 this["JST"] = this["JST"] || {};
 
+this["JST"]["views/templates/data-edit.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<h1>' +
+((__t = ( __("data-manager") )) == null ? '' : __t) +
+'</h1>\n<h2>' +
+((__t = ( data ? __("updata-data") : __("create-data") )) == null ? '' : __t) +
+'</h2>\n<div id="content">\n    <form class="form-horizontal edit-data-form" role="form">\n        <div class="form-group">\n            <div id="dataTypeDiv" class="row">\n                <label for="dataType" class="col-md-3 col-xs-4">' +
+((__t = ( __("select-a-data-type") )) == null ? '' : __t) +
+'</label>\n                <div class="col-md-6 col-xs-8">\n                    <select class="form-control" id="dataType" name="dataType">\n                    </select>\n                </div>\n            </div>\n        </div>\n    </form>\n</div>\n';
+
+}
+return __p
+};
+
 this["JST"]["views/templates/datatype-edit.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
@@ -142,7 +158,11 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<h2 class="legend" align="center">' +
 ((__t = ( __("xtens-login") )) == null ? '' : __t) +
+<<<<<<< HEAD
 '</h2> \n<script>\n    $("#login").click(function(){\n        var username = $("#userName").val();\n        var password = $("#userPass").val();\n     var router = xtens.router; \n      \n        if (username && password) {\n           $.post( \'/login\',\n                {login: username, password:password},\n                function () {\n                   router.navigate(\'operators\',{trigger: true});                }\n            ).fail(function(res){\n             alert("Error: " + res.responseJSON.error);\n            });\n        } else {\n            alert("A username and password is required");\n        }\n    });\n            </script>\n<form name = "LForm" id="form" class="form-horizontal login-form" role="form">\n\n<div id="log">\n        UserName <input name="user" type="text" id="userName" placeholder="Username"><br /><br />\n          Password : <input type="password" id="userPass" placeholder="Password"><br /><br/>   \n    </div>\n    <div id="login" class="row text-center">\n        <a href="#/homepage" class="btn btn-primary">' +
+=======
+'</h2> \n<script>\n    $("#login").click(function(){\n        var username = $("#userName").val();\n        var password = $("#userPass").val();\n        \n        if (username && password) {\n            $.get(\n                \'/operator\',\n                {login: username, password:password},\n                function () {\n                    window.location = "/#/homepage";\n                }\n            ).fail(function(res){\n                alert("Error: " + res.getResponseHeader("error"));\n            });\n        } else {\n            alert("A username and password is required");\n        }\n    });\n</script>\n<form name = "LForm" id="form" class="form-horizontal login-form" role="form">\n\n<div id="log">\n        UserName <input name="user" type="text" id="userName" placeholder="Username"><br /><br />\n          Password : <input type="password" id="userPass" placeholder="Password"><br /><br/>   \n    </div>\n    <div id="login" class="row text-center">\n        <a href="#/homepage" class="btn btn-primary">' +
+>>>>>>> f4fe6587388fa27b8b859d7c93295c7177a2c717
 ((__t = ( __("login"))) == null ? '' : __t) +
 '</a>\n    </div>\n</form>\n';
 
@@ -185,7 +205,7 @@ __p += '\n    ' +
 ((__t = (__('has-units') )) == null ? '' : __t) +
 '\n            </label>\n        </div>\n        <div class="metadataField-third">\n            <label class="checkbox-inline">\n                <input type="checkbox" name="fromDatabaseCollection" value="fromDatabaseCollection" class="no-edit"> ' +
 ((__t = (__('has-database-connection') )) == null ? '' : __t) +
-'\n            </label>\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="metadataField-third">\n            <input type="hidden" name="possibleValues" class="form-control input-sm value-list">\n        </div>\n        <div class="metadataField-third">\n            <input type="hidden" name="possibleUnits" class="form-control input-sm unit-list">\n        </div>\n        <!--\n        <div class="metadataField-third">\n            <select class="form-control input-sm no-edit" name="dbCollection" name="dbCollection">\n            </select>\n        </div>\n        -->\n    </div>\n</div>\n';
+'\n            </label>\n        </div>\n    </div>\n</div>\n<div class="metadataField-formgroup">\n    <div class="metadataField-row">\n        <div class="metadataField-third">\n            <input type="hidden" name="possibleValues" class="form-control input-sm value-list">\n        </div>\n        <div class="metadataField-third">\n            <input type="hidden" name="possibleUnits" class="form-control input-sm unit-list">\n        </div>\n        <div class="metadataField-third">\n            <select class="form-control input-sm no-edit" name="dbCollection" name="dbCollection">\n            </select>\n        </div>\n    </div>\n</div>\n';
 
 }
 return __p

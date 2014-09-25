@@ -158,6 +158,11 @@
             'select[name=dbCollection]': {
                 observe: 'dbCollection',
                 collection: [],
+                initialize: function($el, model, option) {
+                    if (!model.get("fromDatabaseCollection")) {
+                        $el.parent().hide();
+                    }
+                },
                 defaultOption: {
                     label: i18n('please-select'),
                     value: null
@@ -176,8 +181,11 @@
                 this.$('.no-edit').prop('disabled', true);
             }
             this.stickit();
-            this.listenTo(this.model, 'change', this.fieldTypeOnChange);
-            this.listenTo(this.model, 'change', this.toggleRangeInputs);
+            this.listenTo(this.model, 'change:fieldType', this.fieldTypeOnChange);
+            this.listenTo(this.model, 'change:hasRange', this.toggleRangeInputs);
+            this.listenTo(this.model, 'change:isList', this.isListOnChange);
+            this.listenTo(this.model, 'change:hasUnit', this.hasUnitOnChange);
+            this.listenTo(this.model, 'change:fromDatabaseCollection', this.fromDatabaseCollectionOnChange);
             return this;
         },
 
@@ -186,16 +194,14 @@
         },
 
         events: {
-            'click .remove-me': 'closeMe',
-            'change input[type=checkbox][name=isList]': 'isListOnChange',
-            'change input[type=checkbox][name=hasUnit]': 'hasUnitOnChange',
+            'click .remove-me': 'closeMe'
         },
 
-        isListOnChange: function(ev) {
-            $customValue = this.$('input[name=customValue]');
-            $customValue.prop('disabled', true);
-            $customValue.parent().hide();
-            if ($(ev.target).is(':checked')) {
+        isListOnChange: function() {
+            var $customValue = this.$('input[name=customValue]');
+            if (this.model.get("isList")) {
+                $customValue.prop('disabled', true);
+                $customValue.parent().hide();
                 this.$('.value-list').select2({
                     multiple: 'true',
                     tags: [],
@@ -203,13 +209,15 @@
                 });
             }
             else {
+                $customValue.prop('disabled', false);
+                $customValue.parent().show();
                 this.$('.value-list').select2('destroy');
                 this.$(".value-list").val("");
             }
         },
 
-        hasUnitOnChange: function(ev) {
-            if ($(ev.target).is(':checked')) {
+        hasUnitOnChange: function() {
+            if (this.model.get("hasUnit")) {
                 this.$('.unit-list').select2({
                     multiple: 'true',
                     tags: [],
@@ -219,6 +227,15 @@
             else {
                 this.$('.unit-list').select2('destroy');
                 this.$(".unit-list").val("");
+            }
+        },
+
+        fromDatabaseCollectionOnChange: function() {
+            if (this.model.get("fromDatabaseCollection")) {
+                this.$('select[name=dbCollection]').parent().show();
+            }
+            else {
+                this.$('select[name=dbCollection]').parent().hide();
             }
         },
 
