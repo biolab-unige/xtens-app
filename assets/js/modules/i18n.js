@@ -63,7 +63,9 @@
         "data-manager": "Data Manager",
         "select-a-data-type": "Select a Data Type",
         "create-data": "Create Data",
-        "update-data": "Update Data" 
+        "update-data": "Update Data",
+        "association":"Association",
+        "dissociation":"Dissociation"
     };
 
     var it = {

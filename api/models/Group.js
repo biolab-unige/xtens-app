@@ -15,6 +15,11 @@ var Group = {
         updatedAt: {
             columnName: 'updated_at'
         },
+        
+       data_type:{
+             type:'text',
+             columnName:'data_type'
+},
 
         operators:{
             collection:'operator',

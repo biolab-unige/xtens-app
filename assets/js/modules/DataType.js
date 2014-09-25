@@ -85,7 +85,7 @@
             var dataTypeDetails = { id: id, name: header.schemaName, schema: {header: header, body: body} };
             var dataType = new DataType.Model();
             dataType.save(dataTypeDetails, {
-                // patch: true,
+               //  patch: true,
                 success: function(dataType) {
                     console.log(dataType);
                     router.navigate('datatypes', {trigger: true});

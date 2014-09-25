@@ -101,13 +101,57 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '\n<div id="group"> \n<form name = "Myform" class="form-horizontal edit-group-form" role="form">\n    <legend class="legend"align="center">' +
+__p += '\n<div id="group">\n   <script>\n        $(document).ready(function() { $("select#association").select2(); });\n        $(document).ready(function() { $("select#dissociation").select2(); });\n\n    </script>\n \n<form name = "Myform" class="form-horizontal edit-group-form" role="form">\n    <legend class="legend"align="center">' +
 ((__t = ( group ? 'Edit' : 'New' )) == null ? '' : __t) +
 ' Group</legend>\n    <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
 ((__t = ( __("name") )) == null ? '' : __t) +
 '</label>\n        <input class = "col-md-6" name="name" id="first" type="text" value="' +
 ((__t = ( group ? group.get('name') : '' )) == null ? '' : __t) +
-'">\n    </div>\n   \n    <hr />\n    <div id="buttonbardiv" class="row text-center">\n         ';
+'">\n        </div>\n        ';
+ if(group) { ;
+__p += '\n        <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
+((__t = ( __("association") )) == null ? '' : __t) +
+'</label>\n        <select multiple="true" class = "col-md-6" name="association[]" id="association" type="text" value="' +
+((__t = ( group ? group.get('data_type') : '' )) == null ? '' : __t) +
+'">\n            ';
+ _.each(datatypes, function(datatype) { ;
+__p += ' \n         ';
+ if(group.get('data_type')!=datatype.get('name')) { ;
+__p += ' \n         <option   id="' +
+((__t = ( datatype.get('id') )) == null ? '' : __t) +
+'" value ="' +
+((__t = ( group.get('data_type') )) == null ? '' : __t) +
+'">' +
+((__t = ( datatype.get("name") )) == null ? '' : __t) +
+'</option>\n                       ';
+ } ;
+__p += '\n            ';
+ }) ;
+__p += '\n\n            <option >\n        </select>\n        </div>\n        ';
+ }; ;
+__p += '\n         ';
+ if(group) { ;
+__p += '\n        <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
+((__t = ( __("dissociation") )) == null ? '' : __t) +
+'</label>\n        <select multiple="true" class = "col-md-6" name="dissociation[]" id="dissociation" type="text" value="' +
+((__t = ( group ? group.get('data_type') : '' )) == null ? '' : __t) +
+'">\n            ';
+ _.each(datatypes, function(datatype) { ;
+__p += ' \n         ';
+ if(group.get('data_type')==datatype.get('name')) { ;
+__p += ' \n         <option   id="' +
+((__t = ( datatype.get('id') )) == null ? '' : __t) +
+'" selected value ="' +
+((__t = ( group.get('data_type') )) == null ? '' : __t) +
+'">' +
+((__t = ( datatype.get("name") )) == null ? '' : __t) +
+'</option>\n                       ';
+ } ;
+__p += '\n            ';
+ }) ;
+__p += '\n\n            <option >\n        </select>\n        </div>\n        ';
+ }; ;
+__p += '\n\n   \n    <hr />\n    <div id="buttonbardiv" class="row text-center">\n         ';
  if(!group) { ;
 __p += '\n        <button type="submit" class="btn" >Create Group</button>\n        ';
  } ;
@@ -158,11 +202,7 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<h2 class="legend" align="center">' +
 ((__t = ( __("xtens-login") )) == null ? '' : __t) +
-<<<<<<< HEAD
 '</h2> \n<script>\n    $("#login").click(function(){\n        var username = $("#userName").val();\n        var password = $("#userPass").val();\n     var router = xtens.router; \n      \n        if (username && password) {\n           $.post( \'/login\',\n                {login: username, password:password},\n                function () {\n                   router.navigate(\'operators\',{trigger: true});                }\n            ).fail(function(res){\n             alert("Error: " + res.responseJSON.error);\n            });\n        } else {\n            alert("A username and password is required");\n        }\n    });\n            </script>\n<form name = "LForm" id="form" class="form-horizontal login-form" role="form">\n\n<div id="log">\n        UserName <input name="user" type="text" id="userName" placeholder="Username"><br /><br />\n          Password : <input type="password" id="userPass" placeholder="Password"><br /><br/>   \n    </div>\n    <div id="login" class="row text-center">\n        <a href="#/homepage" class="btn btn-primary">' +
-=======
-'</h2> \n<script>\n    $("#login").click(function(){\n        var username = $("#userName").val();\n        var password = $("#userPass").val();\n        \n        if (username && password) {\n            $.get(\n                \'/operator\',\n                {login: username, password:password},\n                function () {\n                    window.location = "/#/homepage";\n                }\n            ).fail(function(res){\n                alert("Error: " + res.getResponseHeader("error"));\n            });\n        } else {\n            alert("A username and password is required");\n        }\n    });\n</script>\n<form name = "LForm" id="form" class="form-horizontal login-form" role="form">\n\n<div id="log">\n        UserName <input name="user" type="text" id="userName" placeholder="Username"><br /><br />\n          Password : <input type="password" id="userPass" placeholder="Password"><br /><br/>   \n    </div>\n    <div id="login" class="row text-center">\n        <a href="#/homepage" class="btn btn-primary">' +
->>>>>>> f4fe6587388fa27b8b859d7c93295c7177a2c717
 ((__t = ( __("login"))) == null ? '' : __t) +
 '</a>\n    </div>\n</form>\n';
 
