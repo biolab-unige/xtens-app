@@ -27,7 +27,13 @@ module.exports.routes = {
     // default view engine) your home page.
     //
     // (Alternatively, remove this and add an `index.html` file in your `assets` directory)
-    'GET /': {controller: 'home'} /*,
+    'GET /': {controller: 'home'},
+    '/login':{controller:'main',
+        action:'login'
+    },
+       
+   
+    /*,
     'GET /dataType': {controller: 'DataType', action: 'find'} 
     
     

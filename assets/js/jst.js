@@ -56,11 +56,11 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<h2>' +
 ((__t = ( __("data-type-list") )) == null ? '' : __t) +
-'</h2> \n\n<div id="content">\n    <div class="table-responsive">\n        <table class="table striped">\n            <thead>\n                <tr>\n                    <th>' +
+'</h2> \n\n<div id="content">\n    <div class="row">\n        <div class="col-sm-12">\n            <div class="table-responsive">\n                <table class="table">\n                    <thead>\n                        <tr>\n                            <th>' +
 ((__t = ( __("name") )) == null ? '' : __t) +
-'</th>\n                    <th>' +
+'</th>\n                            <th>' +
 ((__t = ( __("json-schema") )) == null ? '' : __t) +
-'</th>\n                    <th></th>\n                </tr>\n            </thead>\n            <tbody>\n                ';
+'</th>\n                            <th></th>\n                        </tr>\n                    </thead>\n                    <tbody>\n                    ';
  _.each(dataTypes, function(dataType) { ;
 __p += ' \n                    <tr>\n                        <td>' +
 ((__t = ( dataType.get("name") )) == null ? '' : __t) +
@@ -70,11 +70,11 @@ __p += ' \n                    <tr>\n                        <td>' +
 ((__t = ( dataType.id )) == null ? '' : __t) +
 '">' +
 ((__t = (__("edit") )) == null ? '' : __t) +
-'</a></td>\n                    </tr>\n                ';
+'</a></td>\n                    </tr>\n                    ';
  }) ;
-__p += ' \n            </tbody>\n        </table>\n    </div>\n    <div id="buttonbardiv" class="row text-center">\n        <a href="#/datatypes/new" class="btn btn-primary">' +
+__p += ' \n                    </tbody>\n                </table>\n            </div>\n            <div id="buttonbardiv" class="row text-center">\n                <a href="#/datatypes/new" class="btn btn-primary">' +
 ((__t = ( __("new-data-type"))) == null ? '' : __t) +
-'</a>\n    </div>\n</div>\n\n';
+'</a>\n            </div>\n            </div>\n                </div>\n                </div>\n\n';
 
 }
 return __p
@@ -142,7 +142,7 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<h2 class="legend" align="center">' +
 ((__t = ( __("xtens-login") )) == null ? '' : __t) +
-'</h2> \n<script>\n    $("#login").click(function(){\n        var username = $("#userName").val();\n        var password = $("#userPass").val();\n        console.log(\'qui\');\n        if (username && password) {\n            $.get(\n                \'/operator\',\n                {login: username, password:password},\n                function () {\n                    window.location = "/#/homepage";\n                }\n            ).fail(function(res){\n                alert("Error: " + res.getResponseHeader("error"));\n            });\n        } else {\n            alert("A username and password is required");\n        }\n    });\n</script>\n<form name = "LForm" id="form" class="form-horizontal login-form" role="form">\n\n<div id="log">\n        UserName <input name="user" type="text" id="userName" placeholder="Username"><br /><br />\n          Password : <input type="password" id="userPass" placeholder="Password"><br /><br/>   \n    </div>\n    <div id="login" class="row text-center">\n        <a href="#/homepage" class="btn btn-primary">' +
+'</h2> \n<script>\n    $("#login").click(function(){\n        var username = $("#userName").val();\n        var password = $("#userPass").val();\n     var router = xtens.router; \n      \n        if (username && password) {\n           $.post( \'/login\',\n                {login: username, password:password},\n                function () {\n                   router.navigate(\'operators\',{trigger: true});                }\n            ).fail(function(res){\n             alert("Error: " + res.responseJSON.error);\n            });\n        } else {\n            alert("A username and password is required");\n        }\n    });\n            </script>\n<form name = "LForm" id="form" class="form-horizontal login-form" role="form">\n\n<div id="log">\n        UserName <input name="user" type="text" id="userName" placeholder="Username"><br /><br />\n          Password : <input type="password" id="userPass" placeholder="Password"><br /><br/>   \n    </div>\n    <div id="login" class="row text-center">\n        <a href="#/homepage" class="btn btn-primary">' +
 ((__t = ( __("login"))) == null ? '' : __t) +
 '</a>\n    </div>\n</form>\n';
 
@@ -171,6 +171,8 @@ __p += '\n    ' +
 ((__t = (__('required') )) == null ? '' : __t) +
 '\n            </label>\n        </div>\n        <div class="metadataField-sixth">\n            <label class="checkbox-inline">\n                <input type="checkbox" name="sensitive" value="sensitive" >\n                ' +
 ((__t = (__('sensitive') )) == null ? '' : __t) +
+'\n            </label>\n        </div>\n        <div class="metadataField-sixth">\n            <label class="checkbox-inline">\n                <input type="checkbox" name="hasRange" value="hasRange" >\n                ' +
+((__t = (__('hasRange') )) == null ? '' : __t) +
 '\n            </label>\n        </div>\n        <div class="metadataField-range">\n            <label class="control-label">' +
 ((__t = ( __('min') )) == null ? '' : __t) +
 '</label>\n            <input text class="form-control input-sm" name="min" placeholder="Minimum Value" >\n        </div>\n        <div class="metadataField-range">\n            <label class="control-label">' +

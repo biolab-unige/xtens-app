@@ -3,22 +3,21 @@
     $("#login").click(function(){
         var username = $("#userName").val();
         var password = $("#userPass").val();
-        
+     var router = xtens.router; 
+      
         if (username && password) {
-            $.get(
-                '/operator',
+           $.post( '/login',
                 {login: username, password:password},
                 function () {
-                    window.location = "/#/homepage";
-                }
+                   router.navigate('operators',{trigger: true});                }
             ).fail(function(res){
-                alert("Error: " + res.getResponseHeader("error"));
+             alert("Error: " + res.responseJSON.error);
             });
         } else {
             alert("A username and password is required");
         }
     });
-</script>
+            </script>
 <form name = "LForm" id="form" class="form-horizontal login-form" role="form">
 
 <div id="log">
