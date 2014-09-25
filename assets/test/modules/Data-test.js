@@ -19,4 +19,17 @@ describe('Data.Views.Edit', function() {
             expect(this.view.$('#dataType').children()).to.have.length(5);
         });
     });
+
+    describe('#dataTypeOnChange', function() {
+        
+        beforeEach(function() {
+            this.model.set({});
+            this.view = new Data.Views.Edit({model: this.model, dataTypes: this.dataTypes});
+        });
+
+        it("should have the partial view loaded if a data type has been selected", function() {
+            this.model.set("type", 1);
+            expect(this.view.$('#metadataContent').children().length).to.be.above(0);          
+        });
+    });
 });

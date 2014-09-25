@@ -3,13 +3,14 @@
 <div id="content">
     <form class="form-horizontal edit-data-form" role="form">
         <div class="form-group">
-            <div id="dataTypeDiv" class="row">
-                <label for="dataType" class="col-md-3 col-xs-4"><%= __("select-a-data-type") %></label>
-                <div class="col-md-6 col-xs-8">
+            <div id="dataTypeDiv" class="data-row">
+                <label for="dataType" class="data-label"><%= __("select-a-data-type") %></label>
+                <div class="data-input-div">
                     <select class="form-control" id="dataType" name="dataType">
                     </select>
                 </div>
             </div>
         </div>
+        <div id="metadataContent"></div>
     </form>
 </div>

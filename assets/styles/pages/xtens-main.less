@@ -14,60 +14,74 @@
 #main {
     background-color: @main-color;
 }
-#content {
+.dataType {
     width: 100%;
 }
-#content .dataType {
+.dataType-edit .dataType {
 }
-#content .metadataGroup {
+.dataType .metadataGroup {
     .make-xs-column(10);
     .make-xs-column-offset(1);
     border-color: @brand-primary;
     border-width: @border-width;
     border-style: @border-style;
 }
-#content .metadataGroup-body {
+.dataType .metadataGroup-body {
     .make-row();
 }
-#content .metadataLoop {
+.dataType .metadataLoop {
     .make-xs-column(12);
     border-color: @brand-info;
     border-width: @border-width;
     border-style: @border-style;
 }
-#content .metadataLoop-body {
+.dataType .metadataLoop-body {
     .make-row();
 }
-#content .metadataField {
+.dataType .metadataField {
     .make-xs-column(12); 
     border-color:  @brand-primary;
     border-width: @border-width-metadatafield;
     border-style: @border-style;
    
 }
-#content .metadataField-formgroup {
+.dataType .metadataField-formgroup {
     .form-group;
 }
-#content .metadataField-row {
+.dataType .metadataField-row {
     .make-row();
 }
-#content .metadataField-half {
+.dataType .metadataField-half {
     .make-sm-column-offset(0);
     .make-sm-column(4);
     .make-xs-column-offset(0);
     .make-xs-column(10);
 }
-#content .metadataField-third {
+.dataType .metadataField-third {
     .make-xs-column(4);
 }
-#content .metadataField-sixth {
+.dataType .metadataField-sixth {
     .make-sm-column(2);
     .make-xs-column(4);
 }
-#content .metadataField-range {
+.dataType .metadataField-range {
     .make-sm-column(2);
     .make-xs-column(4);
     display: none;
 }
-#content div.metadataField-third input, select {
+.dataType div.metadataField-third input, select {
+}
+.data {
+    width:100%;
+}
+.data .data-row {
+    .make-row();
+}
+.data .data-label {
+    .make-sm-column(2);
+    .make-xs-column(4);
+}
+.data .data-input-div {
+    .make-sm-column(6);
+    .make-xs-column(8);
 }

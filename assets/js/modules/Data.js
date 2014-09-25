@@ -20,16 +20,17 @@
         url: '/data',
     });
 
-    Data.Views.Edit = MetadataComponent.Views.Edit.fullExtend({
+    Data.Views.Edit = Backbone.View.extend({
 
         tagName: 'div',
-        className: 'data',
+        className: 'data-edit',
 
         initialize: function(options) {
             $('#main').html(this.el);
             this.dataTypes = options.dataTypes || []; 
             this.template = JST["views/templates/data-edit.ejs"];
-            this.form = [];
+            this.metadataTemplate = JST["views/templates/data-edit-partial.ejs"];
+            this.metadataView = null;
             this.render(options);
         },
 
@@ -55,8 +56,32 @@
             }
         },
 
+        getSelectedSchema: function(idDataType) {
+            return _.findWhere(this.dataTypes, {id: idDataType}).schema;
+        },
+
         dataTypeOnChange: function() {
-            console.log(this.model);
+            var $metadataContent = this.$("#metadataContent");
+            var type = this.model.get('type');
+            if (type) {
+                $metadataContent.html(this.metadataTemplate({__: i18n, data: null}));
+                this.$('#tags').select2({tags: []});
+                var schema = this.getSelectedSchema(type);
+                this.createMetadataForm(schema);
+            }
+            else {
+                $metadataContent.html('');
+            }
+        },
+
+        createMetadataForm: function(metadataSchema) {
+            // TODO: to be changed!! Head for Behavioural driven design
+            /*
+            for (var i=0, len=metadataSchema.body.length; i<len; i++) {
+                var view;
+                this.$("#metadata-body").append(view.render().el);
+                this.nestedViews.push(view);
+            }*/
         }
 
     });

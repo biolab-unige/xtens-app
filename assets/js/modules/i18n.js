@@ -63,7 +63,12 @@
         "data-manager": "Data Manager",
         "select-a-data-type": "Select a Data Type",
         "create-data": "Create Data",
-        "update-data": "Update Data" 
+        "update-data": "Update Data",
+        /* views/templates/data-edit-partial.js */
+        "date": "Date",
+        "tags": "Tags/Keywords",
+        "notes": "Notes",
+        "save": "Save"
     };
 
     var it = {
