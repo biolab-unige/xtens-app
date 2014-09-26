@@ -13,7 +13,7 @@
             this.$el.html(this.template({ __: i18n, component: component }));
             this.stickit();
             if (_.isArray(component.content)) {
-                var content = component ? component.content : [];
+                var content = component.content;
                 for (var i=0, len=content.length; i<len; i++) {
                     this.add(content[i]);
                 }

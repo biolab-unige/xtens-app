@@ -6,6 +6,43 @@
     var DataTypeModel = xtens.module("datatype").Model;
     var DataTypeCollection = xtens.module("datatype").List;
 
+    Data.Views.MetadataComponent = Backbone.View.extend({
+        
+        initialize: function(options) {
+            this.template = options.template;
+            this.component = options.component;
+            this.nestedViews = [];
+        },
+
+        render: function() {
+            this.$el.html(this.template({ __:i18n, component: this.component}));
+            if (_.isArray(this.component.content)) {
+                for (var i=0, len=content.length; i<len; i++) {
+                    this.add(content[i]);
+                }
+            }
+            return this;
+        },
+        
+        add: function(child) {
+            // TODO: we must use the factory here i guess
+            this.nestedViews.push(child);
+        },
+
+        getChild: function(index) {
+            return this.nestedViews[i];
+        }
+
+    });
+
+    Data.Views.MetadataFieldInput = Data.Views.MetadataComponent.fullExtend({
+       
+        add: function() {
+            return null;
+        }
+
+    });
+
     Data.Model = Backbone.Model.extend({
         
         defaults: {
@@ -29,7 +66,8 @@
             $('#main').html(this.el);
             this.dataTypes = options.dataTypes || []; 
             this.template = JST["views/templates/data-edit.ejs"];
-            this.metadataTemplate = JST["views/templates/data-edit-partial.ejs"];
+            this.headerTemplate = JST["views/templates/data-edit-partial.ejs"];
+            this.groupTemplate = JST["views/templates/metadatagroup-form.ejs"];
             this.metadataView = null;
             this.render(options);
         },
@@ -61,27 +99,25 @@
         },
 
         dataTypeOnChange: function() {
-            var $metadataContent = this.$("#metadataContent");
+            var $metadataHeader = this.$("#metadata-header");
             var type = this.model.get('type');
             if (type) {
-                $metadataContent.html(this.metadataTemplate({__: i18n, data: null}));
+                $metadataHeader.html(this.headerTemplate({__: i18n, data: null}));
                 this.$('#tags').select2({tags: []});
                 var schema = this.getSelectedSchema(type);
                 this.createMetadataForm(schema);
             }
             else {
-                $metadataContent.html('');
+                $metadataHeader.html('');
             }
         },
 
         createMetadataForm: function(metadataSchema) {
-            // TODO: to be changed!! Head for Behavioural driven design
-            /*
             for (var i=0, len=metadataSchema.body.length; i<len; i++) {
-                var view;
+                var group = metadataSchema.body[i];
+                var view = new Data.Views.MetadataComponent({template: this.groupTemplate, component: group});
                 this.$("#metadata-body").append(view.render().el);
-                this.nestedViews.push(view);
-            }*/
+            }
         }
 
     });

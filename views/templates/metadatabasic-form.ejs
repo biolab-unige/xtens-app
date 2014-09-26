@@ -1,0 +1,13 @@
+<div class="form-group">
+    <div class="data-row">
+        <label class="metadata-label"><%= component.name %></label>
+        <div class="metadata-value-div">
+            <input text name="<%= component.name %>" class="form-control" >
+        </div>
+        <% if (component.hasUnit) {%>
+            <div class="metadata-unit-div">
+                <select data-name="<%= component.name %>" class="form-control"></div>
+            </div>
+        <%}%>
+    </div>
+</div>

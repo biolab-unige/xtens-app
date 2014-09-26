@@ -1,0 +1,35 @@
+<div class="form-group">
+    <div class="data-row">
+        <label for="date" class="data-label"><%= __('date') %></label>
+        <div class="data-input-div">
+            <input text class="form-control" id="date" name="date"></input>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="data-row">
+        <label for="tags" class="data-label"><%= __('tags') %></label>
+        <div class="data-input-div">
+            <input type="hidden" class="form-control" id="tags" name="tags"></input>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="data-row">
+        <label for="notes" class="data-label"><%= __('notes') %></label>
+        <div class="data-input-div">
+            <textarea class="form-control" id="notes" name="notes" rows="4"></textarea>
+        </div>
+    </div>
+</div>
+<div id="metadata-body"></div>
+
+<div id="buttonbardiv" class="row text-center">
+    <div class="btn-group btn-group-margin">
+        <input type="submit" class="btn btn-primary" value="<%=__('save') %>" >
+        <% if (data) { %>
+        <input type="hidden" id="id" name="id" value="<%= data.id %>" />
+        <button data-data-id="<%= data.id %>" class="btn btn-danger delete"><%= __("delete") %></button>
+        <%} %>
+    </div>
+</div>
