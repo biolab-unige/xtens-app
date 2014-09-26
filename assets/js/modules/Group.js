@@ -2,13 +2,15 @@
 
 
 
-    
+
     // dependencies
     var i18n = xtens.module("i18n").en;    
     var router = xtens.router;
-   var Datatype = xtens.module("datatype");
-  var GroupsDataType = xtens.module("groupsDataType"); 
-    
+    var Datatype = xtens.module("datatype");
+    var GroupsDataType = xtens.module("groupsDataType"); 
+    var Operator = xtens.module("operator");
+    var GroupsOperator = xtens.module("groupsOperator");
+
     Group.Model = Backbone.Model.extend({
 
         urlRoot: '/group',
@@ -20,7 +22,7 @@
         model: Group.Model
     });
 
-    
+
 
     Group.Views.Edit = Backbone.View.extend({
 
@@ -37,11 +39,17 @@
             var self = this;
             self.datatype = new Datatype.List();
             self.datatype.fetch();
+            self.operator = new Operator.List();
+            self.operator.fetch();
+            self.groupsOP = new GroupsOperator.List();
+            self.groupsOP.fetch();
+            self.groupsDT= new GroupsDataType.List();
+            self.groupsDT.fetch();
             if(options.id) {
                 self.group = new Group.Model({id: options.id});
                 self.group.fetch({
                     success: function (group) {
-                        self.$el.html(self.template({__: i18n, group: group,datatypes:self.datatype.models}));
+                        self.$el.html(self.template({__: i18n, group: group,datatypes:self.datatype.models,operators:self.operator.models}));
                         return self;
 
                     }
@@ -77,38 +85,143 @@
             updateGroup: function(ev) {
                 var that = this;
                 that.groupsDataType = new GroupsDataType.Model();
-                console.log(that.groupsDataType);
+                that.groupsOperator = new GroupsOperator.Model();
                 datat = new Array();
-                for (var i = 0;i<document.Myform.datatypes.options.length;i++)
-            {
-                if(document.Myform.datatypes[i].selected)
-                    {
-                        datat[i]=document.Myform.datatypes[i].value;
-                    }
-            }
-              
-                that.group.set({name: document.Myform.name.value,data_type:datat});
-                
-                 
-                        for(var j = 0;j<datat.length;j++)
-			{
-                    
-                               that.groupsDataType.save({ id_group : that.group.id ,id_datatype :document.Myform.datatypes[j].id});
+                diss = new Array();
+                for (var i = 0;i<document.Myform.association.options.length;i++)
+                {
+                    if(document.Myform.association[i].selected)
+                        {
+                            datat[i]=document.Myform.association[i].value;
                         }
+                }
+
+                var a = datat.length;
+                for(var l=0;l<document.Myform.dissociation.options.length;l++)
+                {
+                    if(document.Myform.dissociation[l].selected===true)
+                        {
+                            datat[a + l]=document.Myform.dissociation[l].value;
+                        }
+                        else
+                            {
+                                diss[l]=document.Myform.dissociation[l].value;
+                            }
+                }
+
+                op = new Array();
+                dissop = new Array();
+                for (var i = 0;i<document.Myform.associationop.options.length;i++)
+                {
+                    if(document.Myform.associationop[i].selected)
+                        {
+                            op[i]=document.Myform.associationop[i].value;
+                        }
+                }
+
+                var b = op.length;
+                for(var l=0;l<document.Myform.dissociationop.options.length;l++)
+                {
+                    if(document.Myform.dissociationop[l].selected===true)
+                        {
+                            op[b + l]=document.Myform.dissociationop[l].value;
+                        }
+                        else
+                            {
+                                dissop[l]=document.Myform.dissociationop[l].value;
+                            }
+                }
+
+
+                that.group.set({name: document.Myform.name.value,data_type:datat,operator:op});
+
+
+                for(var j = 0;j<a;j++)
+                {
+
+                    that.groupsDataType.save({ id_group : that.group.id ,id_datatype :document.Myform.association[j].id});
+                }
+
+                if((datat.length -a)!==0){
+
+                    for(var g=0;g<(datat.length -a);g++)
+                    {
+                        that.groupsDataType.save({ id_group : that.group.id,id_datatype:document.Myform.dissociation[g].id});
+                    }
+                }
+                if (diss.length!==0)
+                    {
+                        for(var h=0;h<diss.length;h++)
+                        {
+                            for(var p=0;p<document.Myform.dissociation.length;p++){
+                                if(diss[h]==document.Myform.dissociation[p].value){
+                                    console.log(that.groupsDT);
+                                    m = that.groupsDT.where({id_group: that.group.id,id_datatype:parseInt(document.Myform.dissociation[p].id)})[0];
+                                    console.log(m);
+                                    m.destroy();
+                                }
+                            }
+                        }
+                    }
+
+
                
-                that.group.save();
- 
-                
-                router.navigate('groups', {trigger:true});
-		window.location.reload();
-		
-                return false;
+               
+
+                for(var j = 0;j<b;j++)
+                {
+
+                    that.groupsOperator.save({ id_group : that.group.id ,id_operator :document.Myform.associationop[j].id});
+                }
+
+                if((op.length -b)!==0){
+
+                    for(var g=0;g<(op.length -b);g++)
+                    {
+                        that.groupsOperator.save({ id_group : that.group.id,id_operator:document.Myform.dissociationop[g].id});
+                    }
+                }
+                if (dissop.length!==0)
+                    {
+                        for(var h=0;h<dissop.length;h++)
+                        {
+                            for(var p=0;p<document.Myform.dissociationop.length;p++){
+                                if(dissop[h]==document.Myform.dissociationop[p].value){
+                                  
+                                    n = that.groupsOP.where({id_group: that.group.id,id_operator:parseInt(document.Myform.dissociationop[p].id)})[0];
+                                    console.log(n);
+                                    n.destroy();
+                                }
+                            }
+                        }
+                    }
+
+
+
+                    that.group.save();
+
+
+                    router.navigate('groups', {trigger:true});
+                    window.location.reload();
+
+                    return false;
 
             },
             deleteGroup: function (ev) {
                 var that = this;
+                var rif_id = that.group.id;
                 that.group.destroy({
                     success: function () {
+                        a = that.groupsDT.where({id_group:rif_id});
+                        for (var i=0;i<a.length;i++)
+                        {
+                            a[i].destroy();
+                        }
+                        b = that.groupsOP.where({ id_group:rif_id});
+                        for (var j=0;j<b.length;j++)
+                        {
+                        b[j].destroy();
+                        }
                         console.log('destroyed');
                         router.navigate('groups', {trigger:true});
                     }
@@ -132,7 +245,7 @@
 
             var self = this;
             var groups= new Group.List();
-           	groups.fetch({
+            groups.fetch({
                 success: function(groups) {
                     self.$el.html(self.template({__: i18n, groups: groups.models}));
                     return self;
