@@ -21,9 +21,9 @@ var Group = {
              columnName:'data_type'
 },
 
-        operators:{
-            collection:'operator',
-            via:'groups'
+        operator:{
+            type:'text',
+             columnName:'operator'
         }
     }
 };

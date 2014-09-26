@@ -70,8 +70,10 @@
         "notes": "Notes",
         "save": "Save",
         /* views/templates/... */
-        "association":"Association",
-        "dissociation":"Dissociation"
+        "associate-datatype":"Associate a Datatype",
+        "dissociate-datatype":"Dissociate a Datatype",
+        "associate-operator":"Associate an Operator",
+        "dissociate-operator":"Dissociate an Operator"
     };
 
     var it = {

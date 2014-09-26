@@ -50,7 +50,8 @@ var jsFilesToInject = [
     'js/modules/Operator.js',
     'js/modules/Group.js',
     'js/modules/Association.js',
-    'js/modules/GroupsDataType.js'
+    'js/modules/GroupsDataType.js',
+    'js/modules/GroupsOperator.js'
 
     // All of the rest of your client-side js files
     // will be injected here in no particular order.
