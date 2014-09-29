@@ -60,13 +60,9 @@ var Operator = {
             var obj = this.toObject();
             delete obj.password;
             return obj;
-        },
+        }
 
-
-        groups:{
-            type:'text',
-            columnName:'groups'
-        }	
+        
     },
 
     // Lifecycle Callbacks

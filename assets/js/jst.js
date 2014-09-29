@@ -1,5 +1,34 @@
 this["JST"] = this["JST"] || {};
 
+this["JST"]["views/templates/data-edit-partial.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<div class="form-group">\n    <div class="data-row">\n        <label for="date" class="data-label">' +
+((__t = ( __('date') )) == null ? '' : __t) +
+'</label>\n        <div class="data-input-div">\n            <input text class="form-control" id="date" name="date"></input>\n        </div>\n    </div>\n</div>\n<div class="form-group">\n    <div class="data-row">\n        <label for="tags" class="data-label">' +
+((__t = ( __('tags') )) == null ? '' : __t) +
+'</label>\n        <div class="data-input-div">\n            <input type="hidden" class="form-control" id="tags" name="tags"></input>\n        </div>\n    </div>\n</div>\n<div class="form-group">\n    <div class="data-row">\n        <label for="notes" class="data-label">' +
+((__t = ( __('notes') )) == null ? '' : __t) +
+'</label>\n        <div class="data-input-div">\n            <textarea class="form-control" id="notes" name="notes" rows="4"></textarea>\n        </div>\n    </div>\n</div>\n<div id="metadata-body"></div>\n\n<div id="buttonbardiv" class="row text-center">\n    <div class="btn-group btn-group-margin">\n        <input type="submit" class="btn btn-primary" value="' +
+((__t = (__('save') )) == null ? '' : __t) +
+'" >\n        ';
+ if (data) { ;
+__p += '\n        <input type="hidden" id="id" name="id" value="' +
+((__t = ( data.id )) == null ? '' : __t) +
+'" />\n        <button data-data-id="' +
+((__t = ( data.id )) == null ? '' : __t) +
+'" class="btn btn-danger delete">' +
+((__t = ( __("delete") )) == null ? '' : __t) +
+'</button>\n        ';
+} ;
+__p += '\n    </div>\n</div>\n';
+
+}
+return __p
+};
+
 this["JST"]["views/templates/data-edit.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
@@ -10,7 +39,7 @@ __p += '<h1>' +
 ((__t = ( data ? __("updata-data") : __("create-data") )) == null ? '' : __t) +
 '</h2>\n<div id="content">\n    <form class="form-horizontal edit-data-form" role="form">\n        <div class="form-group">\n            <div id="dataTypeDiv" class="data-row">\n                <label for="dataType" class="data-label">' +
 ((__t = ( __("select-a-data-type") )) == null ? '' : __t) +
-'</label>\n                <div class="data-input-div">\n                    <select class="form-control" id="dataType" name="dataType">\n                    </select>\n                </div>\n            </div>\n        </div>\n        <div id="metadataContent"></div>\n    </form>\n</div>\n';
+'</label>\n                <div class="data-input-div">\n                    <select class="form-control" id="dataType" name="dataType">\n                    </select>\n                </div>\n            </div>\n        </div>\n        <div id="metadata-header"></div>\n        <div id="metadata-body"></div>\n    </form>\n</div>\n';
 
 }
 return __p
@@ -308,6 +337,27 @@ __p += '<h2 class="legend" align="center">' +
 return __p
 };
 
+this["JST"]["views/templates/metadatabasic-form.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<div class="form-group">\n    <div class="data-row">\n        <label class="metadata-label">' +
+((__t = ( component.name )) == null ? '' : __t) +
+'</label>\n        <div class="metadata-value-div">\n            <input text name="' +
+((__t = ( component.name )) == null ? '' : __t) +
+'" class="form-control" >\n        </div>\n        ';
+ if (component.hasUnit) {;
+__p += '\n            <div class="metadata-unit-div">\n                <select data-name="' +
+((__t = ( component.name )) == null ? '' : __t) +
+'" class="form-control"></div>\n            </div>\n        ';
+};
+__p += '\n    </div>\n</div>\n';
+
+}
+return __p
+};
+
 this["JST"]["views/templates/metadatafield-edit.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
@@ -372,6 +422,18 @@ __p += '\n    ' +
 return __p
 };
 
+this["JST"]["views/templates/metadatagroup-form.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<h4>' +
+((__t = ( __('group') + ' - ' + component.name )) == null ? '' : __t) +
+'</h4>\n<div class="metadatagroup-body"></div>\n';
+
+}
+return __p
+};
+
 this["JST"]["views/templates/metadataloop-edit.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
@@ -393,12 +455,26 @@ __p += '\n    ' +
 return __p
 };
 
+this["JST"]["views/templates/metadataloop-form.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<h4>' +
+((__t = ( __('loop') + ' - ' + component.name )) == null ? '' : __t) +
+'</h4>\n<div class="metadataloop-body"></div>\n<div class="row text-center">\n    <div class="btn-group btn-group-margin">\n        <input type="button" class="btn btn-info" value="' +
+((__t = (__('add-loop') )) == null ? '' : __t) +
+'">\n    </div>\n</div>\n';
+
+}
+return __p
+};
+
 this["JST"]["views/templates/operator-edit.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '\n<div id="operator">\n   \n    <script>\n        $(document).ready(function() { $("select#groups").select2(); });\n    </script>\n    <script>\n $(#login).validate();\n </script>\n<form name = "Myform" id="form" class="form-horizontal edit-operator-form" role="form">\n    <legend class="legend"align="center">' +
+__p += '<div id="operator">\n   \n    <script>\n        $(document).ready(function() { $("select#groups").select2(); });\n    </script>\n    <script>\n $(#login).validate();\n </script>\n<form name = "Myform" id="form" class="form-horizontal edit-operator-form" role="form">\n    <legend class="legend"align="center">' +
 ((__t = ( operator ? 'Edit' : 'New' )) == null ? '' : __t) +
 ' Operator</legend>\n    <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
 ((__t = ( __("first-name") )) == null ? '' : __t) +
@@ -488,7 +564,7 @@ __p += '\n         <button type="hidden" class="btn update" name="update">Update
 ((__t = ( operator.id )) == null ? '' : __t) +
 '" class="btn btn-danger delete">Delete</button>\n        ';
  }; ;
-__p += '\n    </div>\n</form>\n</div>\n\n';
+__p += '\n    </div>\n</form>\n</div>\n\n\n\n';
 
 }
 return __p

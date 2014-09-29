@@ -88,47 +88,59 @@
                 that.groupsOperator = new GroupsOperator.Model();
                 datat = new Array();
                 diss = new Array();
+                var f=0;
                 for (var i = 0;i<document.Myform.association.options.length;i++)
                 {
                     if(document.Myform.association[i].selected)
                         {
-                            datat[i]=document.Myform.association[i].value;
+                            datat[f]=document.Myform.association[i].value;
+                            f++;
                         }
                 }
 
                 var a = datat.length;
+                var v = 0;
+                var z = 0;
                 for(var l=0;l<document.Myform.dissociation.options.length;l++)
                 {
                     if(document.Myform.dissociation[l].selected===true)
                         {
-                            datat[a + l]=document.Myform.dissociation[l].value;
+                            datat[a + v]=document.Myform.dissociation[l].value;
+                            v++;
                         }
                         else
                             {
-                                diss[l]=document.Myform.dissociation[l].value;
+                                diss[z]=document.Myform.dissociation[l].value;
+                                z++;
                             }
                 }
 
                 op = new Array();
                 dissop = new Array();
+                var c=0;
                 for (var i = 0;i<document.Myform.associationop.options.length;i++)
                 {
                     if(document.Myform.associationop[i].selected)
                         {
-                            op[i]=document.Myform.associationop[i].value;
+                            op[c]=document.Myform.associationop[i].value;
+                            c++;
                         }
                 }
 
                 var b = op.length;
+                var q=0;
+                var r=0;
                 for(var l=0;l<document.Myform.dissociationop.options.length;l++)
                 {
                     if(document.Myform.dissociationop[l].selected===true)
                         {
-                            op[b + l]=document.Myform.dissociationop[l].value;
+                            op[b + q]=document.Myform.dissociationop[l].value;
+                            q++;
                         }
                         else
                             {
-                                dissop[l]=document.Myform.dissociationop[l].value;
+                                dissop[r]=document.Myform.dissociationop[l].value;
+                                r++;
                             }
                 }
 
@@ -139,14 +151,14 @@
                 for(var j = 0;j<a;j++)
                 {
 
-                    that.groupsDataType.save({ id_group : that.group.id ,id_datatype :document.Myform.association[j].id});
+                    that.groupsDataType.save({ id_group : that.group.id ,id_datatype :document.Myform.association.selectedOptions[j].id});
                 }
 
                 if((datat.length -a)!==0){
 
                     for(var g=0;g<(datat.length -a);g++)
                     {
-                        that.groupsDataType.save({ id_group : that.group.id,id_datatype:document.Myform.dissociation[g].id});
+                        that.groupsDataType.save({ id_group : that.group.id,id_datatype:document.Myform.dissociation.selectedOptions[g].id});
                     }
                 }
                 if (diss.length!==0)
@@ -171,14 +183,14 @@
                 for(var j = 0;j<b;j++)
                 {
 
-                    that.groupsOperator.save({ id_group : that.group.id ,id_operator :document.Myform.associationop[j].id});
+                    that.groupsOperator.save({ id_group : that.group.id ,id_operator :document.Myform.associationop.selectedOptions[j].id});
                 }
 
                 if((op.length -b)!==0){
 
                     for(var g=0;g<(op.length -b);g++)
                     {
-                        that.groupsOperator.save({ id_group : that.group.id,id_operator:document.Myform.dissociationop[g].id});
+                        that.groupsOperator.save({ id_group : that.group.id,id_operator:document.Myform.dissociationop.selectedOptions[g].id});
                     }
                 }
                 if (dissop.length!==0)
