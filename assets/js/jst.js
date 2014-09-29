@@ -337,6 +337,27 @@ __p += '<h2 class="legend" align="center">' +
 return __p
 };
 
+this["JST"]["views/templates/metadatabasic-form.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<div class="form-group">\n    <div class="data-row">\n        <label class="metadata-label">' +
+((__t = ( component.name )) == null ? '' : __t) +
+'</label>\n        <div class="metadata-value-div">\n            <input text name="' +
+((__t = ( component.name )) == null ? '' : __t) +
+'" class="form-control" >\n        </div>\n        ';
+ if (component.hasUnit) {;
+__p += '\n            <div class="metadata-unit-div">\n                <select data-name="' +
+((__t = ( component.name )) == null ? '' : __t) +
+'" class="form-control"></div>\n            </div>\n        ';
+};
+__p += '\n    </div>\n</div>\n';
+
+}
+return __p
+};
+
 this["JST"]["views/templates/metadatafield-edit.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
@@ -510,7 +531,7 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '\n<div id="operator">\n   \n    <script>\n        $(document).ready(function() { $("select#groups").select2(); });\n    </script>\n    <script>\n $(#login).validate();\n </script>\n<form name = "Myform" id="form" class="form-horizontal edit-operator-form" role="form">\n    <legend class="legend"align="center">' +
+__p += '<div id="operator">\n   \n    <script>\n        $(document).ready(function() { $("select#groups").select2(); });\n    </script>\n    <script>\n $(#login).validate();\n </script>\n<form name = "Myform" id="form" class="form-horizontal edit-operator-form" role="form">\n    <legend class="legend"align="center">' +
 ((__t = ( operator ? 'Edit' : 'New' )) == null ? '' : __t) +
 ' Operator</legend>\n    <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
 ((__t = ( __("first-name") )) == null ? '' : __t) +
@@ -600,7 +621,7 @@ __p += '\n         <button type="hidden" class="btn update" name="update">Update
 ((__t = ( operator.id )) == null ? '' : __t) +
 '" class="btn btn-danger delete">Delete</button>\n        ';
  }; ;
-__p += '\n    </div>\n</form>\n</div>\n\n';
+__p += '\n    </div>\n</form>\n</div>\n\n\n\n';
 
 }
 return __p

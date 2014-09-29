@@ -49,7 +49,6 @@ var jsFilesToInject = [
     'js/modules/Data.js',
     'js/modules/Operator.js',
     'js/modules/Group.js',
-    'js/modules/Association.js',
     'js/modules/GroupsDataType.js',
     'js/modules/GroupsOperator.js'
 
