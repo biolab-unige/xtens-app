@@ -1,4 +1,3 @@
-
 <div id="group">
    <script>
         $(document).ready(function() { $("select#association").select2(); });
@@ -19,7 +18,7 @@
         <div class="form-group row">
         <label  class="col-md-3 control-label"><%= __("associate-datatype") %></label>
         <select multiple="true" class = "col-md-6" name="association[]" id="association" type="text">
-            <% if (group.get('data_type')!=null) {%> 
+            <% if (group.get('data_type')!=""&&group.get('data_type')!=null) {%> 
             <%var a = group.get('data_type').split(",");
             }else{ var a = new Array();} var dati = new Array(); %> 
              <% for(var j =0;j<datatypes.length;j++)  { 
@@ -43,7 +42,7 @@
         <div class="form-group row">
         <label  class="col-md-3 control-label"><%= __("dissociate-datatype") %></label>
         <select multiple="true" class = "col-md-6" name="dissociation[]" id="dissociation" type="text" value="<%= group ? group.get('data_type') : '' %>">
-              <% if (group.get('data_type')!=null) {%> 
+              <% if (group.get('data_type')!=""&&group.get('data_type')!=null) {%> 
             <%var a = group.get('data_type').split(",");
             }else{ var a = new Array();} var dati = new Array(); %> 
             <% for(var j =0;j<datatypes.length;j++)  { 
@@ -69,7 +68,7 @@
         <div class="form-group row">
         <label  class="col-md-3 control-label"><%= __("associate-operator") %></label>
         <select multiple="true" class = "col-md-6" name="associationop[]" id="associationop" type="text">
-            <% if (group.get('operator')!=null) {%> 
+            <% if (group.get('operator')!=""&&group.get('operator')!=null) {%> 
             <%var a = group.get('operator').split(",");
             }else{ var a = new Array();} var dati = new Array(); %> 
              <% for(var j =0;j<operators.length;j++)  { 
@@ -93,7 +92,7 @@
         <div class="form-group row">
         <label  class="col-md-3 control-label"><%= __("dissociate-operator") %></label>
         <select multiple="true" class = "col-md-6" name="dissociationop[]" id="dissociationop" type="text" >
-              <% if (group.get('operator')!=null) {%> 
+              <% if (group.get('operator')!=""&&group.get('operator')!=null) {%> 
             <%var a = group.get('operator').split(",");
             }else{ var a = new Array();} var dati = new Array(); %> 
             <% for(var j =0;j<operators.length;j++)  { 

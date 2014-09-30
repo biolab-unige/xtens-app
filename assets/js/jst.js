@@ -130,7 +130,7 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '\n<div id="group">\n   <script>\n        $(document).ready(function() { $("select#association").select2(); });\n        $(document).ready(function() { $("select#dissociation").select2(); });\n        $(document).ready(function() { $("select#associationop").select2(); });\n        $(document).ready(function() { $("select#dissociationop").select2(); });\n\n\n    </script>\n \n<form name = "Myform" class="form-horizontal edit-group-form" role="form">\n    <legend class="legend"align="center">' +
+__p += '<div id="group">\n   <script>\n        $(document).ready(function() { $("select#association").select2(); });\n        $(document).ready(function() { $("select#dissociation").select2(); });\n        $(document).ready(function() { $("select#associationop").select2(); });\n        $(document).ready(function() { $("select#dissociationop").select2(); });\n\n\n    </script>\n \n<form name = "Myform" class="form-horizontal edit-group-form" role="form">\n    <legend class="legend"align="center">' +
 ((__t = ( group ? 'Edit' : 'New' )) == null ? '' : __t) +
 ' Group</legend>\n    <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
 ((__t = ( __("name") )) == null ? '' : __t) +
@@ -141,7 +141,7 @@ __p += '\n<div id="group">\n   <script>\n        $(document).ready(function() { 
 __p += '\n        <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
 ((__t = ( __("associate-datatype") )) == null ? '' : __t) +
 '</label>\n        <select multiple="true" class = "col-md-6" name="association[]" id="association" type="text">\n            ';
- if (group.get('data_type')!=null) {;
+ if (group.get('data_type')!=""&&group.get('data_type')!=null) {;
 __p += ' \n            ';
 var a = group.get('data_type').split(",");
             }else{ var a = new Array();} var dati = new Array(); ;
@@ -178,7 +178,7 @@ __p += '\n        <div class="form-group row">\n        <label  class="col-md-3 
 '</label>\n        <select multiple="true" class = "col-md-6" name="dissociation[]" id="dissociation" type="text" value="' +
 ((__t = ( group ? group.get('data_type') : '' )) == null ? '' : __t) +
 '">\n              ';
- if (group.get('data_type')!=null) {;
+ if (group.get('data_type')!=""&&group.get('data_type')!=null) {;
 __p += ' \n            ';
 var a = group.get('data_type').split(",");
             }else{ var a = new Array();} var dati = new Array(); ;
@@ -213,7 +213,7 @@ __p += '\n\n      ';
 __p += '\n        <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
 ((__t = ( __("associate-operator") )) == null ? '' : __t) +
 '</label>\n        <select multiple="true" class = "col-md-6" name="associationop[]" id="associationop" type="text">\n            ';
- if (group.get('operator')!=null) {;
+ if (group.get('operator')!=""&&group.get('operator')!=null) {;
 __p += ' \n            ';
 var a = group.get('operator').split(",");
             }else{ var a = new Array();} var dati = new Array(); ;
@@ -248,7 +248,7 @@ __p += '\n         ';
 __p += '\n        <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
 ((__t = ( __("dissociate-operator") )) == null ? '' : __t) +
 '</label>\n        <select multiple="true" class = "col-md-6" name="dissociationop[]" id="dissociationop" type="text" >\n              ';
- if (group.get('operator')!=null) {;
+ if (group.get('operator')!=""&&group.get('operator')!=null) {;
 __p += ' \n            ';
 var a = group.get('operator').split(",");
             }else{ var a = new Array();} var dati = new Array(); ;
@@ -332,27 +332,6 @@ __p += '<h2 class="legend" align="center">' +
 '</h2> \n<script>\n    $("#login").click(function(){\n        var username = $("#userName").val();\n        var password = $("#userPass").val();\n     var router = xtens.router; \n      \n        if (username && password) {\n           $.post( \'/login\',\n                {login: username, password:password},\n                function () {\n                   router.navigate(\'operators\',{trigger: true});                }\n            ).fail(function(res){\n             alert("Error: " + res.responseJSON.error);\n            });\n        } else {\n            alert("A username and password is required");\n        }\n    });\n            </script>\n<form name = "LForm" id="form" class="form-horizontal login-form" role="form">\n\n<div id="log">\n        UserName <input name="user" type="text" id="userName" placeholder="Username"><br /><br />\n          Password : <input type="password" id="userPass" placeholder="Password"><br /><br/>   \n    </div>\n    <div id="login" class="row text-center">\n        <a href="#/homepage" class="btn btn-primary">' +
 ((__t = ( __("login"))) == null ? '' : __t) +
 '</a>\n    </div>\n</form>\n';
-
-}
-return __p
-};
-
-this["JST"]["views/templates/metadatabasic-form.ejs"] = function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-__p += '<div class="form-group">\n    <div class="data-row">\n        <label class="metadata-label">' +
-((__t = ( component.name )) == null ? '' : __t) +
-'</label>\n        <div class="metadata-value-div">\n            <input text name="' +
-((__t = ( component.name )) == null ? '' : __t) +
-'" class="form-control" >\n        </div>\n        ';
- if (component.hasUnit) {;
-__p += '\n            <div class="metadata-unit-div">\n                <select data-name="' +
-((__t = ( component.name )) == null ? '' : __t) +
-'" class="form-control"></div>\n            </div>\n        ';
-};
-__p += '\n    </div>\n</div>\n';
 
 }
 return __p
@@ -531,7 +510,7 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div id="operator">\n   \n    <script>\n        $(document).ready(function() { $("select#groups").select2(); });\n    </script>\n    <script>\n $(#login).validate();\n </script>\n<form name = "Myform" id="form" class="form-horizontal edit-operator-form" role="form">\n    <legend class="legend"align="center">' +
+__p += '<div id="operator">\n<form name = "Myform" id="form" class="form-horizontal edit-operator-form" role="form">\n    <legend class="legend"align="center">' +
 ((__t = ( operator ? 'Edit' : 'New' )) == null ? '' : __t) +
 ' Operator</legend>\n    <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
 ((__t = ( __("first-name") )) == null ? '' : __t) +
@@ -581,29 +560,7 @@ __p += '\n\n\n    </div>\n    <div class="form-group row">\n        <label class
 ((__t = ( __("login") )) == null ? '' : __t) +
 '</label>\n        <input class="col-md-6" name="login" id="login" type="text" pattern = ".{3,}" value="' +
 ((__t = ( operator ? operator.get('login') : '' )) == null ? '' : __t) +
-'">\n    </div>\n    ';
- if(operator) { ;
-__p += '\n\n    <div class="form-group row" id="groups">\n        <label class="col-md-3 control-label">' +
-((__t = (__("group") )) == null ? '' : __t) +
-'</label>\n\n        <select class="col-md-4" name="group[]" id="groups" multiple="true" size="10"> ';
- _.each(groups, function(group) { ;
-__p += ' \n         ';
- if(operator.get('groups')==group.get('name')) { ;
-__p += ' \n         <option   id="group" selected value ="' +
-((__t = ( operator.get('groups') )) == null ? '' : __t) +
-'">' +
-((__t = ( group.get("name") )) == null ? '' : __t) +
-'</option>\n            ';
- } else {;
-__p += '\n            <option id ="group" >' +
-((__t = ( group.get('name') )) == null ? '' : __t) +
-'</option>\n';
- } ;
-__p += '\n            ';
- }) ;
-__p += '\n\n        </select> \n           </div>  \n ';
- } ;
-__p += '\n\n      ';
+'">\n    </div>\n\n      ';
  if(!operator) { ;
 __p += '\n         <div class="form-group row">\n        <label class="col-md-3 control-label">' +
 ((__t = ( __("password") )) == null ? '' : __t) +

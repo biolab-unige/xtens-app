@@ -35,7 +35,7 @@
             this.render(options);
         },
 
-        render: function(options)  {
+     render: function(options)  {
             var self = this;
             self.datatype = new Datatype.List();
             self.datatype.fetch();
@@ -55,7 +55,7 @@
                     }
                 });
             } else {
-                self.$el.html(self.template({__: i18n,group:null}));
+                self.$el.html(self.template({__: i18n,group:null,datatypes:self.datatype.models,operators:self.operator.models}));
                 return self;
             }},
 
