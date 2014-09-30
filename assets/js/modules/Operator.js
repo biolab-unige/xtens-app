@@ -3,7 +3,9 @@
 
     // dependencies
     var i18n = xtens.module("i18n").en;    
-    var router = xtens.router; 
+    var router = xtens.router;
+    var Group = xtens.module("group");
+   var GroupsOperator =xtens.module("groupsOperator"); 
     // define an Operator
     Operator.Model = Backbone.Model.extend({
 
@@ -35,17 +37,20 @@
         },
 
         render: function(options)  {
-            var self = this;
-
+            var that = this;
+            that.GroupOP = new GroupsOperator.List();
+            that.GroupOP.fetch();
+            that.gr = new Group.List();
+            that.gr.fetch();
             if(options.id) {
 
-                self.operator = new Operator.Model({id: options.id});
+                that.operator = new Operator.Model({id: options.id});
 
                
-                self.operator.fetch({
+                that.operator.fetch({
                     success: function (operator) {
-                        self.$el.html(self.template({__: i18n, operator: operator}));
-                        return self;
+                    that.$el.html(that.template({__: i18n, operator: operator}));
+                        return that;
 
 
                     }
@@ -55,8 +60,9 @@
 
 
             } else {
-                 self.$el.html(self.template({__: i18n,operator:null}));
-                        return self;
+                 
+            that.$el.html(that.template({__: i18n,operator:null}));
+                        return that;
                                }
         },
 
@@ -88,7 +94,7 @@
         },
         updateOperator: function(ev) {
             var that = this;
-            that.association = new Association.Model();
+
                       that.operator.set({firstName: document.Myform.name.value,lastName:document.Myform.surname.value,birthDate:document.Myform.date.value,sex:document.Myform.sex.value,email:document.Myform.email.value,login:document.Myform.login.value});
 
 
@@ -102,8 +108,22 @@
         },
         deleteOperator: function (ev) {
             var that = this;
+            var rif_id = that.operator.id;
+            var rif_name =new Array(1);
+            rif_name[0] = that.operator.attributes.login;
             that.operator.destroy({
                 success: function () {
+                    a = that.GroupOP.where({id_operator:rif_id});
+                    for(var i =0;i<a.length;i++)
+                    { 
+                        id_gr = a[i].attributes.id_group;
+                        b = that.gr.where({id:id_gr})[0];
+                        c = b.attributes.operator.split(",");
+                        d = _.difference(c,rif_name);
+                        b.set({operator:d});
+                        b.save();
+                        a[i].destroy();
+                    }
                     console.log('destroyed');
                     router.navigate('operators', {trigger:true});
                 }
