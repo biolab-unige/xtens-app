@@ -39,6 +39,7 @@
         
         add: function(field) {
             var model = new MetadataField.Model();
+            model.set(field);
             var view = new MetadataField.Views.Edit({model: model});
             this.$('.metadataLoop-body').append(view.render(field).el);
             this.listenTo(view, 'closeMe', this.removeChild);

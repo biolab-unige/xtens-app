@@ -100,7 +100,11 @@ describe('Data.Factory', function() {
 describe('Data.Views.Edit', function() {
 
     before(function() {
-        this.dataTypes = [{id:1, name: 'Patient'}, {id:2, name: 'Cell Line'}, {id:3, name: 'Sample'}, {id:4, name: 'Clinical Info'}];
+        var schema = {};
+        schema.header = {};
+        schema.body = [];
+        this.dataTypes = [{id:1, name: 'Patient', schema: schema}, 
+            {id:2, name: 'Cell Line', schema: schema}, {id:3, name: 'Sample', schema: schema}, {id:4, name: 'Clinical Info', schema: schema}];
     });
 
     beforeEach(function() {
@@ -123,7 +127,7 @@ describe('Data.Views.Edit', function() {
         });
 
         it("should have the partial view loaded if a data type has been selected", function() {
-            this.model.set("type", 31);
+            this.model.set("type", 1);
             expect(this.view.$('#metadata-header').children().length).to.be.above(0);          
         });
     });
@@ -244,12 +248,10 @@ describe('Data.Views.Edit', function() {
             var $metadataGroups = this.view.$('#metadata-body').children();
             expect($metadataGroups).to.have.length.above(0);
             $metadataGroups.each(function(index, group) {
-                expect($(group).children(':first').html()).to.equal(schema.body[index].name);
+                expect($(group).children(':first').html()).to.equal('Group - ' + schema.body[index].name);
                 expect($(group).children().eq(1).children()).to.be.not.empty;
             });
         });
-
-
 
     }); // createMetadataForm
 });

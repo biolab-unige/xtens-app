@@ -15,17 +15,20 @@
         this.createComponentView = function(component) {
             
             var model;
+            if (component.label === Constants.METADATA_GROUP) {
+                return new Data.Views.MetadataComponent({component: component, template: JST["views/templates/metadatagroup-form.ejs"]});
+            }
             if (component.label === Constants.METADATA_LOOP) {
                 return new Data.Views.MetadataComponent({component: component, template: JST["views/templates/metadataloop-form.ejs"]});
             }
             else if (component.label === Constants.METADATA_FIELD) {
                 model = new Data.MetadataFieldModel();
-                if (component.hasRange) {
-                    return new Data.Views.MetadataFieldRange({model: model, component: component});
-                }
-                else if (component.isList) {
+                if (component.isList) {
                    return new Data.Views.MetadataFieldSelect({model: model, component: component}); 
                 }
+                /* else if (component.hasRange) {
+                    return new Data.Views.MetadataFieldRange({model: model, component: component});
+                } */
                 else {
                     return new Data.Views.MetadataFieldInput({model: model, component: component});
                 }
@@ -56,6 +59,7 @@
     Data.Views.MetadataComponent = Backbone.View.extend({
         
         tagName: 'div',
+        className: 'metadata',
 
         initialize: function(options) {
             this.template = options.template;
@@ -65,9 +69,10 @@
 
         render: function() {
             this.$el.html(this.template({ __:i18n, component: this.component}));
-            if (_.isArray(this.component.content)) {
-                var content = this.component.content;
-                for (var i=0, len=content.length; i<len; i++) {
+            if (this.component) {
+                var content = this.component.body || this.component.content;
+                var len = content && content.length;
+                for (var i=0; i<len; i++) {
                     this.add(content[i]);
                 }
             }
@@ -76,7 +81,18 @@
 
         add: function(subcomponent) {
            var view = factory.createComponentView(subcomponent);
+           this.$el.children('.metadatacomponent-body').append(view.render().el);
            this.nestedViews.push(view);
+        },
+
+        removeMe: function() {
+            var len = this.nestedViews || this.nestedViews.length;
+            for (var i=0; i<len; i++) {
+                this.nestedViews[i].removeMe();
+                delete this.nestedViews[i]; 
+            }
+            this.remove();
+            return true;
         },
 
         getChild: function(index) {
@@ -87,6 +103,8 @@
     
     Data.Views.MetadataField = Data.Views.MetadataComponent.fullExtend({
         
+        className: 'metadatafield',
+
         add: function() {},
 
         getChild: function(i) {
@@ -96,6 +114,7 @@
         render: function() {
             this.$el.html(this.template({ __:i18n, component: this.component}));
             this.stickit();
+            return this;
         },
     
     });
@@ -191,15 +210,14 @@
     Data.Views.Edit = Backbone.View.extend({
 
         tagName: 'div',
-        className: 'data-edit',
+        className: 'data',
 
         initialize: function(options) {
             $('#main').html(this.el);
             this.dataTypes = options.dataTypes || []; 
             this.template = JST["views/templates/data-edit.ejs"];
-            this.headerTemplate = JST["views/templates/data-edit-partial.ejs"];
-            this.groupTemplate = JST["views/templates/metadatagroup-form.ejs"];
-            this.metadataView = null;
+            this.schemaTemplate = JST["views/templates/data-edit-partial.ejs"];
+            this.schemaView = null;
             this.render(options);
         },
 
@@ -230,26 +248,29 @@
         },
 
         dataTypeOnChange: function() {
-            var $metadataHeader = this.$("#metadata-header");
+            if (this.schemaView) {
+                if (!this.schemaView.removeMe()) {
+                    return;
+                }
+            }
+            var $metadataSchema = this.$("#metadata-schema");
             var type = this.model.get('type');
             if (type) {
-                $metadataHeader.html(this.headerTemplate({__: i18n, data: null}));
-                this.$('#tags').select2({tags: []});
                 var schema = this.getSelectedSchema(type);
-                this.createMetadataForm(schema);
+                this.schemaView = new Data.Views.MetadataComponent({template: this.schemaTemplate, component: schema});
+                $metadataSchema.append(this.schemaView.render().el);
+                this.$('#tags').select2({tags: []});
             }
             else {
-                $metadataHeader.html('');
-            }
-        },
-
-        createMetadataForm: function(metadataSchema) {
-            for (var i=0, len=metadataSchema.body.length; i<len; i++) {
-                var group = metadataSchema.body[i];
-                var view = new Data.Views.MetadataComponent({template: this.groupTemplate, component: group});
-                this.$("#metadata-body").append(view.render().el);
+                $metadataSchema.html('');
             }
         }
+        
+        /*
+        createMetadataForm: function(metadataSchema) {
+            var view = new Data.Views.MetadataComponent({template: this.groupTemplate, component: group});
+            this.$("#metadata-body").append(view.render().el);
+        } */
 
     });
 
