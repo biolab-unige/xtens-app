@@ -7,6 +7,7 @@ var Group = {
         name: {
             type: 'string',
             required: true,
+            unique:true,
             columnName: 'name'
         },
         createdAt: {
@@ -16,15 +17,12 @@ var Group = {
             columnName: 'updated_at'
         },
         
-       data_type:{
-             type:'text',
-             columnName:'data_type'
-},
-
-        operator:{
-            type:'text',
-             columnName:'operator'
+        operators:
+            {
+            collection:'operator',
+            via:'groups',
+            dominant:true
         }
-    }
+           }
 };
 module.exports = Group;

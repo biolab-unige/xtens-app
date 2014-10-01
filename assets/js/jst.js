@@ -130,7 +130,7 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div id="group">\n   <script>\n        $(document).ready(function() { $("select#association").select2(); });\n        $(document).ready(function() { $("select#dissociation").select2(); });\n        $(document).ready(function() { $("select#associationop").select2(); });\n        $(document).ready(function() { $("select#dissociationop").select2(); });\n\n\n    </script>\n \n<form name = "Myform" class="form-horizontal edit-group-form" role="form">\n    <legend class="legend"align="center">' +
+__p += '<div id="group">\n   <script>\n        $(document).ready(function() { $("select#association").select2(); });\n        $(document).ready(function() { $("select#dissociation").select2(); });\n        $(document).ready(function() { $("select#associationop").select2(); });\n        $(document).ready(function() { $("select#dissociationop").select2(); });\n\n\n    </script>\n    \n<form name = "Myform" class="form-horizontal edit-group-form" role="form">\n    <legend class="legend"align="center">' +
 ((__t = ( group ? 'Edit' : 'New' )) == null ? '' : __t) +
 ' Group</legend>\n    <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
 ((__t = ( __("name") )) == null ? '' : __t) +
@@ -284,7 +284,7 @@ __p += '\n        <button type="submit" class="btn" >Create Group</button>\n    
  } ;
 __p += '\n\n        ';
  if(group) { ;
-__p += '\n         <button type="hidden" class="btn update" name="update">Update Group</button>\n        <input type="hidden" name="id" value="' +
+__p += '\n         <button id="update"type="hidden" class="btn update" name="update">Update Group</button>\n        <input type="hidden" name="id" value="' +
 ((__t = ( group.id )) == null ? '' : __t) +
 '" />\n        <button data-group-id="' +
 ((__t = ( group.id )) == null ? '' : __t) +

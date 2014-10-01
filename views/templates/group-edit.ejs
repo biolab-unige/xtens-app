@@ -7,7 +7,7 @@
 
 
     </script>
- 
+    
 <form name = "Myform" class="form-horizontal edit-group-form" role="form">
     <legend class="legend"align="center"><%= group ? 'Edit' : 'New' %> Group</legend>
     <div class="form-group row">
@@ -128,7 +128,7 @@
         <% } %>
 
         <% if(group) { %>
-         <button type="hidden" class="btn update" name="update">Update Group</button>
+         <button id="update"type="hidden" class="btn update" name="update">Update Group</button>
         <input type="hidden" name="id" value="<%= group.id %>" />
         <button data-group-id="<%= group.id %>" class="btn btn-danger delete">Delete</button>
         <% }; %>

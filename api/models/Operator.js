@@ -54,6 +54,11 @@ var Operator = {
             columnName: 'updated_at'
         },
 
+        groups:{
+            collection:'group',
+            via:'operators'
+        },
+
         // Override toJSON instance method
         // to remove password value
         toJSON: function() {
