@@ -2,7 +2,8 @@ var bcrypt = require('bcrypt');
 
 var Group = {
     connection:'postgresql',
-    tableName: 'groups',
+    tableName: 'group',
+    schema:true,
     attributes: {
         name: {
             type: 'string',
@@ -21,7 +22,7 @@ var Group = {
             {
             collection:'operator',
             via:'groups',
-            dominant:true
+           
         }
            }
 };
