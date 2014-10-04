@@ -1,11 +1,11 @@
-<div class="form-group">
-<label class="metadata-label"><%= component.name %></label>
-<div class="metadata-value-div">
-    <input text name="fieldValue" class="form-control" >
-</div>
-<% if (component.hasUnit) {%>
-<div class="metadata-unit-div">
-    <select name="fieldUnit" class="form-control"></div>
-</div>
-<%}%>
+<div class="form-group metadataform-group">
+    <span class="metadata-label"><%= component.name %></span>
+    <div class="metadata-value-div">
+        <input text name="fieldValue" class="form-control" >
+    </div>
+    <% if (component.hasUnit) {%>
+    <div class="metadata-unit-div">
+        <select name="fieldUnit" class="form-control"></div>
+    </div>
+    <%}%>
 </div>

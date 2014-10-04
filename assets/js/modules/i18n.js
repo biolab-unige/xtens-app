@@ -73,7 +73,11 @@
         "associate-datatype":"Associate a Datatype",
         "dissociate-datatype":"Dissociate a Datatype",
         "associate-operator":"Associate an Operator",
-        "dissociate-operator":"Dissociate an Operator"
+        "dissociate-operator":"Dissociate an Operator",
+        /* views/templates/data-list.ejs */
+        "data-list": "Data List",
+        "metadata": "Metadata",
+        "new-data": "New Data"
     };
 
     var it = {

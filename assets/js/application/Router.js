@@ -12,8 +12,9 @@
             "datatypes": "dataTypeList",
             "datatypes/new": "dataTypeEdit",
             "datatypes/edit/:id": "dataTypeEdit",
+            "data": "dataList",
             "data/new": "dataEdit",
-            "data/:idDataType/:id": "dataEdit",
+            "data/edit/:idDataType/:id": "dataEdit",
             "operators": "operator",
             "operators/new": "operator-edit",
             "operators/edit/:id": "operator-edit",
@@ -34,6 +35,10 @@
 
         dataTypeEdit: function(id) {
             this.loadView(new DataType.Views.Edit({id: id}));
+        },
+
+        dataList: function() {
+            this.loadView(new Data.Views.List());
         },
 
         dataEdit: function(idDataType, id) {

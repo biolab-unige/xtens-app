@@ -12,7 +12,7 @@
         <div id="metadata-schema"></div>
         <div id="buttonbardiv" class="row text-center">
             <div class="btn-group btn-group-margin">
-                <input type="submit" class="btn btn-primary" value="<%=__('save') %>" >
+                <input type="submit" id="save" class="btn btn-primary" value="<%=__('save') %>" >
                 <% if (data) { %>
                 <input type="hidden" id="id" name="id" value="<%= data.id %>" />
                 <button data-data-id="<%= data.id %>" class="btn btn-danger delete"><%= __("delete") %></button>

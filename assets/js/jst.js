@@ -4,11 +4,11 @@ this["JST"]["views/templates/data-edit-partial.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<div class="form-group">\n    <label for="date" class="data-label">' +
+__p += '<div class="form-group"></div>\n<div class="form-group metadataform-group">\n    <label for="date" class="data-label">' +
 ((__t = ( __('date') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="date" name="date"></input>\n    </div>\n</div>\n<div class="form-group">\n    <label for="tags" class="data-label">' +
+'</label>\n    <div class="data-input-div">\n        <input type="date" class="form-control" id="date" name="date"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="tags" class="data-label">' +
 ((__t = ( __('tags') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input type="hidden" class="form-control" id="tags" name="tags"></input>\n    </div>\n</div>\n<div class="form-group">\n    <label for="notes" class="data-label">' +
+'</label>\n    <div class="data-input-div">\n        <input type="hidden" class="form-control" id="tags" name="tags"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="notes" class="data-label">' +
 ((__t = ( __('notes') )) == null ? '' : __t) +
 '</label>\n    <div class="data-input-div">\n        <textarea class="form-control" id="notes" name="notes" rows="4"></textarea>\n    </div>\n</div>\n<div class="metadatacomponent-body"></div>\n';
 
@@ -27,7 +27,7 @@ __p += '<h1>' +
 ((__t = ( data ? __("updata-data") : __("create-data") )) == null ? '' : __t) +
 '</h2>\n<div id="content">\n    <form class="form-horizontal edit-data-form" role="form">\n        <div class="form-group">\n            <label for="dataType" class="data-label">' +
 ((__t = ( __("select-a-data-type") )) == null ? '' : __t) +
-'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="dataType" name="dataType">\n                </select>\n            </div>\n        </div>\n        <div id="metadata-schema"></div>\n        <div id="buttonbardiv" class="row text-center">\n            <div class="btn-group btn-group-margin">\n                <input type="submit" class="btn btn-primary" value="' +
+'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="dataType" name="dataType">\n                </select>\n            </div>\n        </div>\n        <div id="metadata-schema"></div>\n        <div id="buttonbardiv" class="row text-center">\n            <div class="btn-group btn-group-margin">\n                <input type="submit" id="save" class="btn btn-primary" value="' +
 ((__t = (__('save') )) == null ? '' : __t) +
 '" >\n                ';
  if (data) { ;
@@ -40,6 +40,51 @@ __p += '\n                <input type="hidden" id="id" name="id" value="' +
 '</button>\n                ';
 } ;
 __p += '\n            </div>\n        </div>\n    </form>\n</div>\n';
+
+}
+return __p
+};
+
+this["JST"]["views/templates/data-list.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<h2>' +
+((__t = ( __("data-list") )) == null ? '' : __t) +
+'</h2> \n\n<div id="content">\n    <div class="row">\n        <div class="col-sm-12">\n            <div class="table-responsive">\n                <table class="table">\n                    <thead>\n                        <tr>\n                            <th>' +
+((__t = ( __("type") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("date") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("tags") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("metadata") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("notes") )) == null ? '' : __t) +
+'</th>\n                            <th></th>\n                        </tr>\n                    </thead>\n                    <tbody>\n                    ';
+ _.each(data, function(data) { ;
+__p += ' \n                    <tr>\n                        <td>' +
+((__t = ( data.get("type").name )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( data.get("date") )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( JSON.stringify(data.get("tags")) )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( JSON.stringify(data.get("metadata")) )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( data.get("notes") )) == null ? '' : __t) +
+'</td>\n                            <td><a class="btn" href="#/data/edit/' +
+((__t = ( data.get("type").id )) == null ? '' : __t) +
+'/' +
+((__t = ( data.id )) == null ? '' : __t) +
+'">' +
+((__t = (__("edit") )) == null ? '' : __t) +
+'</a></td>\n                    </tr>\n                    ';
+ }) ;
+__p += ' \n                    </tbody>\n                </table>\n            </div>\n            <div id="buttonbardiv" class="row text-center">\n                <a href="#/data/new" class="btn btn-primary">' +
+((__t = ( __("new-data"))) == null ? '' : __t) +
+'</a>\n            </div>\n        </div>\n    </div>\n</div>\n\n';
 
 }
 return __p
@@ -119,7 +164,7 @@ __p += ' \n                    <tr>\n                        <td>' +
  }) ;
 __p += ' \n                    </tbody>\n                </table>\n            </div>\n            <div id="buttonbardiv" class="row text-center">\n                <a href="#/datatypes/new" class="btn btn-primary">' +
 ((__t = ( __("new-data-type"))) == null ? '' : __t) +
-'</a>\n            </div>\n            </div>\n                </div>\n                </div>\n\n';
+'</a>\n            </div>\n        </div>\n    </div>\n</div>\n\n';
 
 }
 return __p
@@ -378,16 +423,28 @@ __p += '\n    ' +
 return __p
 };
 
+this["JST"]["views/templates/metadatafieldcheckbox-form.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div class="form-group metadataform-group">\n    <span class="metadata-label">' +
+((__t = ( component.name )) == null ? '' : __t) +
+'</span>\n    <div class="metadata-value-div">\n        <input type="checkbox" name="fieldValue">\n    </div>\n</div>\n';
+
+}
+return __p
+};
+
 this["JST"]["views/templates/metadatafieldinput-form.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div class="form-group">\n<label class="metadata-label">' +
+__p += '<div class="form-group metadataform-group">\n    <span class="metadata-label">' +
 ((__t = ( component.name )) == null ? '' : __t) +
-'</label>\n<div class="metadata-value-div">\n    <input text name="fieldValue" class="form-control" >\n</div>\n';
+'</span>\n    <div class="metadata-value-div">\n        <input text name="fieldValue" class="form-control" >\n    </div>\n    ';
  if (component.hasUnit) {;
-__p += '\n<div class="metadata-unit-div">\n    <select name="fieldUnit" class="form-control"></div>\n</div>\n';
+__p += '\n    <div class="metadata-unit-div">\n        <select name="fieldUnit" class="form-control"></div>\n    </div>\n    ';
 };
 __p += '\n</div>\n';
 
@@ -400,7 +457,7 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div class="form-group">\n        <label class="metadata-label">' +
+__p += '<div class="metadataform-group">\n        <label class="metadata-label">' +
 ((__t = ( component.name )) == null ? '' : __t) +
 '</label>\n        <div class="metadata-value-div">\n            <input type="range" min="' +
 ((__t = ( component.min )) == null ? '' : __t) +
@@ -423,7 +480,7 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div class="form-group">\n    <label class="metadata-label">' +
+__p += '<div class="form-group metadataform-group">\n    <label class="metadata-label">' +
 ((__t = ( component.name )) == null ? '' : __t) +
 '</label>\n    <div class="metadata-value-div">\n        <select name="fieldValue" class="form-control" ></select>\n    </div>\n    ';
  if (component.hasUnit) {;
@@ -462,8 +519,8 @@ this["JST"]["views/templates/metadatagroup-form.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<h4>' +
-((__t = ( __('group') + ' - ' + component.name )) == null ? '' : __t) +
+__p += '<h4 class="metadatagroup-header">' +
+((__t = ( component.name.toUpperCase() )) == null ? '' : __t) +
 '</h4>\n<div class="metadatacomponent-body"></div>\n';
 
 }
@@ -495,8 +552,8 @@ this["JST"]["views/templates/metadataloop-form.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<h4>' +
-((__t = ( __('loop') + ' - ' + component.name )) == null ? '' : __t) +
+__p += '<h4 class="metadataloop-header">' +
+((__t = ( component.name.toUpperCase() )) == null ? '' : __t) +
 '</h4>\n<div class="metadatacomponent-body"></div>\n<div class="text-center">\n    <div class="btn-group btn-group-margin">\n        <input type="button" class="btn btn-info" value="' +
 ((__t = (__('add-loop') )) == null ? '' : __t) +
 '">\n    </div>\n</div>\n';

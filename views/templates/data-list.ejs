@@ -1,0 +1,38 @@
+<h2><%= __("data-list") %></h2> 
+
+<div id="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><%= __("type") %></th>
+                            <th><%= __("date") %></th>
+                            <th><%= __("tags") %></th>
+                            <th><%= __("metadata") %></th>
+                            <th><%= __("notes") %></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <% _.each(data, function(data) { %> 
+                    <tr>
+                        <td><%= data.get("type").name %></td>
+                        <td><%= data.get("date") %></td>
+                        <td><%= JSON.stringify(data.get("tags")) %></td>
+                        <td><%= JSON.stringify(data.get("metadata")) %></td>
+                        <td><%= data.get("notes") %></td>
+                            <td><a class="btn" href="#/data/edit/<%= data.get("type").id %>/<%= data.id %>"><%=__("edit") %></a></td>
+                    </tr>
+                    <% }) %> 
+                    </tbody>
+                </table>
+            </div>
+            <div id="buttonbardiv" class="row text-center">
+                <a href="#/data/new" class="btn btn-primary"><%= __("new-data")%></a>
+            </div>
+        </div>
+    </div>
+</div>
+
