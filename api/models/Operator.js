@@ -6,6 +6,7 @@ var bcrypt = require('bcrypt');
 var Operator = {
     connection:'postgresql',
     tableName: 'operator',
+    schema:true,
     attributes: {
 
         firstName: {
@@ -49,9 +50,17 @@ var Operator = {
         },
 
         updatedAt: { 
-            type: 'datetime', 
-            defaultsTo: function (){ return new Date(); },
+
             columnName: 'updated_at'
+        },
+
+     datatypes:{
+            collection:'dataType',
+            via:'operators'
+        },
+        groups:{
+            collection:'group',
+            via:'operators'
         },
 
         // Override toJSON instance method

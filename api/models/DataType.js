@@ -22,6 +22,10 @@ var DataType = {
         updatedAt: {
             columnName: 'updated_at'
         },
+        operators:{
+           collection:'operator',
+           via:'datatypes'
+},
         // reference to Data
         datas: {
             collection: 'data',

@@ -2,11 +2,13 @@ var bcrypt = require('bcrypt');
 
 var Group = {
     connection:'postgresql',
-    tableName: 'groups',
+    tableName: 'group',
+    schema:true,
     attributes: {
         name: {
             type: 'string',
             required: true,
+            unique:true,
             columnName: 'name'
         },
         createdAt: {
@@ -16,15 +18,12 @@ var Group = {
             columnName: 'updated_at'
         },
         
-       data_type:{
-             type:'text',
-             columnName:'data_type'
-},
-
-        operator:{
-            type:'text',
-             columnName:'operator'
+        operators:
+            {
+            collection:'operator',
+            via:'groups',
+           
         }
-    }
+           }
 };
 module.exports = Group;
