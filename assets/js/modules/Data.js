@@ -6,7 +6,7 @@
     var MetadataComponent = xtens.module("metadatacomponent");
     var DataTypeModel = xtens.module("datatype").Model;
     var DataTypeCollection = xtens.module("datatype").List;
-    
+
     /**
      *  general purpose function to retrieve the value from a field
      */
@@ -27,17 +27,19 @@
 
     Data.Factory = function() {
 
-        this.createComponentView = function(component) {
+        this.createComponentView = function(component, metadatarecord, metadatarecordIndex) {
 
             var model;
             if (component.label === Constants.METADATA_GROUP) {
-                return new Data.Views.MetadataGroup({component: component, template: JST["views/templates/metadatagroup-form.ejs"]});
+                model = new Data.MetadataGroupModel(null, {metadata: metadatarecord});
+                return new Data.Views.MetadataGroup({model: model, component: component});
             }
             if (component.label === Constants.METADATA_LOOP) {
-                return new Data.Views.MetadataLoop({component: component });
+                model = new Data.MetadataLoopModel(null, {metadata: metadatarecord});
+                return new Data.Views.MetadataLoop({model: model, component: component });
             }
             else if (component.label === Constants.METADATA_FIELD) {
-                model = new Data.MetadataFieldModel(null, {field: component});
+                model = new Data.MetadataFieldModel(null, {field: component, metadata: metadatarecord, index: metadatarecordIndex});
                 if (component.fieldType === FieldTypes.BOOLEAN) {
                     return new Data.Views.MetadataFieldCheckbox({model: model, component: component});
                 }
@@ -71,11 +73,41 @@
         initialize: function(attributes, options) {
             var field = options.field || {};
             this.set("name", field.name);
-            if (field.isList) {
-                this.set("value", field.possibleValues[0]);
+            if (options.metadata) {
+                var fieldRecord = options.metadata[field.name];
+                var index = options.index || 0;
+                this.set("value", fieldRecord.value[index]);
+                this.set("unit", fieldRecord.unit[index]);
             }
-            if (field.hasUnit) {
-                this.set("unit", field.possibleUnits[0]);
+            else {
+                if (field.isList) {
+                    this.set("value", field.possibleValues[0]);
+                }
+                if (field.hasUnit) {
+                    this.set("unit", field.possibleUnits[0]);
+                }
+            }
+        }
+    });
+
+    /**
+     *  Backbone Model for a metadata group
+     */
+    Data.MetadataGroupModel = Backbone.Model.extend({
+        initialize: function(attributes, options) {
+            if (options.metadata) {
+                this.metadata = options.metadata;
+            }
+        }
+    });
+
+    /**
+     *  Backbone Model for a metadata loop
+     */
+    Data.MetadataLoopModel = Backbone.Model.extend({
+        initialize: function(attributes, options) {
+            if (options.metadata) {
+                this.metadata = options.metadata;
             }
         }
     });
@@ -104,14 +136,14 @@
                 var content = this.component.body || this.component.content;
                 var len = content && content.length;
                 for (var i=0; i<len; i++) {
-                    this.add(content[i]);
+                    this.add(content[i], this.model.metadata);
                 }
             }
             return this;
         },
 
-        add: function(subcomponent) {
-            var view = factory.createComponentView(subcomponent);
+        add: function(subcomponent, metadatarecord, metadatarecordIndex) {
+            var view = factory.createComponentView(subcomponent, metadatarecord, metadatarecordIndex);
             this.$el.children('.metadatacomponent-body').last().append(view.render().el);
             this.nestedViews.push(view);
         },
@@ -145,13 +177,15 @@
 
     Data.MetadataSchemaModel = Backbone.Model.extend({
         initialize: function(attributes, options) {
-            if (options.data) {
+            var data = options && options.data;
+            if (data) {
+                this.metadata = data.get("metadata");
                 this.set("date", data.get("date"));
                 this.set("tags", data.get("tags"));
                 this.set("notes", data.get("notes"));
             }
         }
-        
+
     });
 
     Data.Views.MetadataSchema = Data.Views.MetadataComponent.fullExtend({
@@ -201,7 +235,13 @@
     });
 
     Data.Views.MetadataGroup = Data.Views.MetadataComponent.fullExtend({
-        className: 'metadatagroup'
+        className: 'metadatagroup',
+
+        initialize: function(options) {
+            this.template = JST["views/templates/metadatagroup-form.ejs"];
+            this.component = options.component;
+            this.nestedViews = [];
+        }
     });
 
     Data.Views.MetadataLoop = Data.Views.MetadataComponent.fullExtend({
@@ -211,19 +251,45 @@
             this.template = JST["views/templates/metadataloop-form.ejs"];
             this.component = options.component;
             this.nestedViews = [];
+            if (this.model.metadata) {
+                this.loopRecords = this.model.metadata[this.component.content[0].name].value.length;
+            }
+            else {
+                this.loopRecords = 1;
+            }
         },
+        
+        /**
+         *  overrides the basic Data.Views.MetadataComponent render() method
+         */
+        render: function() {
+            this.$el.html(this.template({ __:i18n, component: this.component}));
+            if (this.component) {
+                var content = this.component.content;
+                var i, len = content && content.length;
+                for (i=0; i<len; i++) {
+                    this.add(content[i], this.model.metadata);
+                }
+                if (this.loopRecords > 1) {
+                    for (i=1; i<this.loopRecords; i++) {
+                        this.addLoopBody(i);
+                    }
+                }
+            }
+            return this;
+        }, 
 
         events: {
             'click input[type=button]': 'addLoopBody'
         },
 
-        addLoopBody: function() {
+        addLoopBody: function(index) {
             var newLoopbody = '<div class="metadatacomponent-body"></div>'; 
             var $last = this.$el.children('.metadatacomponent-body').last();
             $last.after(newLoopbody);
             var len = this.component && this.component.content && this.component.content.length;
             for (var i=0; i<len; i++) {
-                this.add(this.component.content[i]);
+                this.add(this.component.content[i], this.model.metadata, index);
             }
         }
 
@@ -350,13 +416,7 @@
         defaults: {
             type: null
         },
-        /*
-        initialize: function(attributes) {
-            if (attributes.type) {      
-                this.set("type", type.id);  // just store the ID and not the full dataType
-            }
-        }, */
-
+        
         urlRoot: '/data'
     });
 
@@ -483,7 +543,7 @@
     });
 
     Data.Views.List = Backbone.View.extend({
-        
+
         tagName: 'div',
         className: 'data',
 
