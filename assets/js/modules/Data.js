@@ -492,9 +492,10 @@
                     this.model.set("notes", json.notes);
                     this.model.set("tags", json.tags);
                     this.model.set("metadata", json.metadata);
+                    this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
                     this.model.save({
                         success: function(data) {
-                            console.log(data);
+                            xtens.router.navigate('data', {trigger: true});
                         },
                         error: function(err) {
                             console.log(err);
