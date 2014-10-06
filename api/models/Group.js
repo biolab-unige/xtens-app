@@ -12,9 +12,11 @@ var Group = {
             columnName: 'name'
         },
         createdAt: {
+            type:'timestamp',
             columnName: 'created_at'
         },
         updatedAt: {
+            type:'timestamp',
             columnName: 'updated_at'
         },
         
