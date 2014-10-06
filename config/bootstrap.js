@@ -9,7 +9,7 @@
  * http://links.sailsjs.org/docs/config/bootstrap
  */
 
-/*module.exports.bootstrap = function(cb) {
+module.exports.bootstrap = function(cb) {
 
 
 
@@ -18,8 +18,8 @@
   // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
   cb();
 };
-*/
-module.exports.bootstrap = function (cb) {
+
+/*module.exports.bootstrap = function (cb) {
 
 // After we create our users, we will store them here to associate with our pets
 var storeGroups = []; 
@@ -80,4 +80,4 @@ var afterGroup = function(err,newGroups){
 
 Group.create(groups).exec(afterGroup)
 
-};
+};*/
