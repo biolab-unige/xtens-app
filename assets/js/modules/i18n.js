@@ -2,6 +2,7 @@
 
     var en = {
         "welcome": "Welcome",
+        // views/templates/datatype-edit.ejs
         "please-select": "Please Select",
         "data-type-manager": "Data Type Manager",
         "create-data-type": "Create data type",
@@ -11,6 +12,8 @@
         "file-upload": "File Upload",
         "yes": "YES",
         "no": "NO",
+        "class-template": "Class Template",
+        "parent": "Parent",
         "description": "Description",
         "version": "Version",
         "ontology": "Ontology",
@@ -20,6 +23,7 @@
         "delete": "Delete",
         "metadata-group-name": "Metadata Group Name",
         "metadata-loop-name": "Metadata Loop Name",
+        // views/templates/metadatafield-edit.ejs
         "type": "Type",
         "required": "Required",
         "sensitive": "Sensitive",

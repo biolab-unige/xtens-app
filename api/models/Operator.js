@@ -54,10 +54,6 @@ var Operator = {
             columnName: 'updated_at'
         },
 
-     datatypes:{
-            collection:'dataType',
-            via:'operators'
-        },
         groups:{
             collection:'group',
             via:'operators'

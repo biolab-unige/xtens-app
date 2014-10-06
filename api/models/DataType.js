@@ -13,23 +13,34 @@ var DataType = {
         },
         schema: {
             type: 'json',
-            required:true,
+            required: true,
             columnName: 'schema'
         },
+        classTemplate: {
+            type: 'string',
+            required: true,
+            enum: ['Subject', 'Sample', 'Generic'],
+            defaultsTo: 'Generic',
+            columnName: 'class_template'
+        },        
         createdAt: {
             columnName: 'created_at'
         },
         updatedAt: {
             columnName: 'updated_at'
         },
-        operators:{
-           collection:'operator',
-           via:'datatypes'
-},
         // reference to Data
         datas: {
             collection: 'data',
             via: 'type'
+        },
+        // self-reference to parent DataType
+        parent: {
+            model: 'DataType'
+        },
+        children: {
+            collection: 'DataType',
+            via: 'parent'
         }
     }
 };

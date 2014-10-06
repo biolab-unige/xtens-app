@@ -11,7 +11,7 @@
      *  general purpose function to retrieve the value from a field
      */
     function getFieldValue($el, ev, options) {
-        switch (options.view.component.type) {
+        switch (options.view.component.fieldType) {
             case FieldTypes.INTEGER:
                 return parseInt($el.val());
             case FieldTypes.FLOAT:
@@ -27,7 +27,7 @@
 
     Data.Factory = function() {
 
-        this.createComponentView = function(component, metadatarecord, metadatarecordIndex) {
+        this.createComponentView = function(component, metadatarecord, params) {
 
             var model;
             if (component.label === Constants.METADATA_GROUP) {
@@ -39,7 +39,7 @@
                 return new Data.Views.MetadataLoop({model: model, component: component });
             }
             else if (component.label === Constants.METADATA_FIELD) {
-                model = new Data.MetadataFieldModel(null, {field: component, metadata: metadatarecord, index: metadatarecordIndex});
+                model = new Data.MetadataFieldModel(null, {field: component, metadata: metadatarecord, loopParams: params});
                 if (component.fieldType === FieldTypes.BOOLEAN) {
                     return new Data.Views.MetadataFieldCheckbox({model: model, component: component});
                 }
@@ -73,9 +73,12 @@
         initialize: function(attributes, options) {
             var field = options.field || {};
             this.set("name", field.name);
+            if (options.loopParams) {
+                this.set("loop", options.loopParams.name);
+            }
             if (options.metadata) {
                 var fieldRecord = options.metadata[field.name];
-                var index = options.index || 0;
+                var index = (options.loopParams && options.loopParams.index) || 0;
                 this.set("value", fieldRecord.value[index]);
                 this.set("unit", fieldRecord.unit[index]);
             }
@@ -106,6 +109,7 @@
      */
     Data.MetadataLoopModel = Backbone.Model.extend({
         initialize: function(attributes, options) {
+            this.set("name", options.name); 
             if (options.metadata) {
                 this.metadata = options.metadata;
             }
@@ -142,8 +146,8 @@
             return this;
         },
 
-        add: function(subcomponent, metadatarecord, metadatarecordIndex) {
-            var view = factory.createComponentView(subcomponent, metadatarecord, metadatarecordIndex);
+        add: function(subcomponent, metadatarecord) {
+            var view = factory.createComponentView(subcomponent, metadatarecord);
             this.$el.children('.metadatacomponent-body').last().append(view.render().el);
             this.nestedViews.push(view);
         },
@@ -194,7 +198,10 @@
         bindings: {
 
             '#date': {
-                observe: 'date'
+                observe: 'date',
+                onGet: function(value) {
+                    return new Date(value);
+                }
             },
             '#tags': {
                 observe: 'tags',
@@ -221,7 +228,7 @@
             var metadata = {};
             for (i=0, len=serialized.length; i<len; i++) {
                 if (!metadata[serialized[i].name]){
-                    metadata[serialized[i].name] = {value: [serialized[i].value], unit: [serialized[i].unit]};
+                    metadata[serialized[i].name] = {value: [serialized[i].value], unit: [serialized[i].unit], loop: serialized[i].loop};
                 }
                 else {
                     metadata[serialized[i].name].value.push(serialized[i].value);
@@ -258,7 +265,7 @@
                 this.loopRecords = 1;
             }
         },
-        
+
         /**
          *  overrides the basic Data.Views.MetadataComponent render() method
          */
@@ -268,7 +275,7 @@
                 var content = this.component.content;
                 var i, len = content && content.length;
                 for (i=0; i<len; i++) {
-                    this.add(content[i], this.model.metadata);
+                    this.add(content[i], this.model.metadata, {name: this.component.name});
                 }
                 if (this.loopRecords > 1) {
                     for (i=1; i<this.loopRecords; i++) {
@@ -277,7 +284,17 @@
                 }
             }
             return this;
-        }, 
+        },
+        
+        /**
+         *  override  the basic Data,Views.MetadataComponent add() method
+         */
+
+        add: function(subcomponent, metadatarecord, loopParams) {
+            var view = factory.createComponentView(subcomponent, metadatarecord, loopParams);
+            this.$el.children('.metadatacomponent-body').last().append(view.render().el);
+            this.nestedViews.push(view);
+        },
 
         events: {
             'click input[type=button]': 'addLoopBody'
@@ -288,8 +305,9 @@
             var $last = this.$el.children('.metadatacomponent-body').last();
             $last.after(newLoopbody);
             var len = this.component && this.component.content && this.component.content.length;
+            var loopParams = { name: this.component.name, index: index };
             for (var i=0; i<len; i++) {
-                this.add(this.component.content[i], this.model.metadata, index);
+                this.add(this.component.content[i], this.model.metadata, loopParams);
             }
         }
 
@@ -416,7 +434,7 @@
         defaults: {
             type: null
         },
-        
+
         urlRoot: '/data'
     });
 
@@ -501,7 +519,6 @@
                             console.log(err);
                         }
                     });
-                    console.log(json); 
                 }
                 catch(err) {
                     console.log(err);

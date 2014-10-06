@@ -8,6 +8,12 @@
         STRING: 'string'
     };
 
+    XtensConstants.DataTypeClasses = {
+        SUBJECT: 'Subject',
+        SAMPLE: 'Sample',
+        GENERIC: 'Generic'
+    };
+
     XtensConstants.FieldTypes = {
         TEXT: 'Text',
         INTEGER: 'Integer',

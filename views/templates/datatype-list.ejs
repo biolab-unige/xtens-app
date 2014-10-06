@@ -8,7 +8,9 @@
                     <thead>
                         <tr>
                             <th><%= __("name") %></th>
+                            <th><%= __("class-template") %></th>
                             <th><%= __("json-schema") %></th>
+                            <th><%= __("parent") %></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -16,7 +18,9 @@
                     <% _.each(dataTypes, function(dataType) { %> 
                     <tr>
                         <td><%= dataType.get("name") %></td>
+                        <td><%= dataType.get("classTemplate") %></td>
                         <td><%= JSON.stringify(dataType.get("schema")) %></td>
+                        <td><%= dataType.get("parent") && dataType.get("parent").name %></td>
                         <td><a class="btn" href="#/datatypes/edit/<%= dataType.id %>"><%=__("edit") %></a></td>
                     </tr>
                     <% }) %> 

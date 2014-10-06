@@ -109,7 +109,11 @@ __p += '<h1>' +
  if(dataType && dataType.get('schema').header.fileUpload) { ;
 __p += ' checked="checked" ';
  } ;
-__p += ' >\n                </div>\n            </div>\n            <div class="form-group row">\n                <label for="description" class="col-md-2 control-label">' +
+__p += ' >\n                </div>\n            </div>\n            <div class="form-group row">\n                <label for="className" class="col-md-2 control-label">' +
+((__t = ( __("class-template") )) == null ? '' : __t) +
+'</label>\n                <div class="col-md-4">\n                    <select class="form-control" id="classTemplate" name="classTemplate"></select>\n                </div>\n                <label for="parent" class="col-md-2 control-label">' +
+((__t = ( __("parent") )) == null ? '' : __t) +
+'</label>\n                <div class="col-md-4">\n                    <select class="form-control" id="parent" name="parent"></select>\n                </div>\n            </div>\n            <div class="form-group row">\n                <label for="description" class="col-md-2 control-label">' +
 ((__t = (__("description") )) == null ? '' : __t) +
 '</label>\n                <div class="col-md-10">\n                    <input text class="form-control" id="description" name="description" \n                    value="' +
 ((__t = ( dataType ? dataType.get('schema').header.description : '' )) == null ? '' : __t) +
@@ -149,13 +153,21 @@ __p += '<h2>' +
 '</h2> \n\n<div id="content">\n    <div class="row">\n        <div class="col-sm-12">\n            <div class="table-responsive">\n                <table class="table">\n                    <thead>\n                        <tr>\n                            <th>' +
 ((__t = ( __("name") )) == null ? '' : __t) +
 '</th>\n                            <th>' +
+((__t = ( __("class-template") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
 ((__t = ( __("json-schema") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("parent") )) == null ? '' : __t) +
 '</th>\n                            <th></th>\n                        </tr>\n                    </thead>\n                    <tbody>\n                    ';
  _.each(dataTypes, function(dataType) { ;
 __p += ' \n                    <tr>\n                        <td>' +
 ((__t = ( dataType.get("name") )) == null ? '' : __t) +
 '</td>\n                        <td>' +
+((__t = ( dataType.get("classTemplate") )) == null ? '' : __t) +
+'</td>\n                        <td>' +
 ((__t = ( JSON.stringify(dataType.get("schema")) )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( dataType.get("parent") && dataType.get("parent").name )) == null ? '' : __t) +
 '</td>\n                        <td><a class="btn" href="#/datatypes/edit/' +
 ((__t = ( dataType.id )) == null ? '' : __t) +
 '">' +

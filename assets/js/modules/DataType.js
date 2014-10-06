@@ -3,6 +3,7 @@
     // dependencies
     var i18n = xtens.module("i18n").en;
     var Constants = xtens.module("xtensconstants").Constants;
+    var DataTypeClasses = xtens.module("xtensconstants").DataTypeClasses;
     var MetadataComponent = xtens.module("metadatacomponent");
     var MetadataGroup = xtens.module("metadatagroup"); 
 
@@ -16,10 +17,13 @@
 
         urlRoot: '/dataType',
 
-        initialize: function() {
-            // add a nested MetadataField collection
-            // this.set({ metadataFields: new MetadataField.List() });
+        defaults: {
+            classTemplate: DataTypeClasses.GENERIC
         }
+        /*
+        initialize: function() {
+            this.set("className", DataTypeClasses.GENERIC);
+        } */
     });
 
     DataType.List = Backbone.Collection.extend({
@@ -41,23 +45,56 @@
             $("#main").html(this.el);
             this.template = JST["views/templates/datatype-edit.ejs"];
             this.nestedViews = [];
+            this.existingDataTypes = options.dataTypes;
             this.render(options);
+        },
+
+        bindings: {
+            '#schemaName': {
+                observe: 'name'
+            },
+            '#classTemplate': {
+                observe: 'classTemplate',
+                selectOptions: {
+                    collection: function() {
+                        var coll = [];
+                        _.each(DataTypeClasses, function(value){
+                            coll.push({label: value.toUpperCase(), value: value});
+                        });
+                        return coll;
+                    }   
+                }
+            },
+            '#parent': {
+                observe: 'parent',
+                selectOptions: {
+                    collection: 'this.existingDataTypes',
+                    labelPath: 'name',
+                    valuePath: 'id',
+                    defaultOption: {
+                        label: i18n('please-select'),
+                        value: null
+                    }
+                }
+            }
         },
 
         render: function(options) {
             if (options.id) {
-                this.dataType = new DataType.Model({id: options.id});
-                this.dataType.fetch({
+                this.model = new DataType.Model({id: options.id});
+                this.model.fetch({
                     success: this.fetchSuccess
                 });
             } else {
                 this.$el.html(this.template({__: i18n, dataType: null}));
+                this.stickit();
             }
             return this;
         },
 
         fetchSuccess: function(dataType) {
             this.$el.html(this.template({__: i18n, dataType: dataType}));
+            this.stickit();
             var body = dataType.get('schema').body;
             for (var i=0, len=body.length; i<len; i++) {
                 this.add(body[i]);
@@ -83,8 +120,8 @@
             header.fileUpload = header.fileUpload ? true : false;
             var body = this.serialize();
             var dataTypeDetails = { id: id, name: header.schemaName, schema: {header: header, body: body} };
-            var dataType = new DataType.Model();
-            dataType.save(dataTypeDetails, {
+            //var dataType = new DataType.Model();
+            this.model.save(dataTypeDetails, {
                //  patch: true,
                 success: function(dataType) {
                     console.log(dataType);

@@ -34,7 +34,17 @@
         },
 
         dataTypeEdit: function(id) {
-            this.loadView(new DataType.Views.Edit({id: id}));
+            var _this = this;
+            var dataTypes = new DataType.List();
+            dataTypes.fetch({
+                success: function(dataTypes) {
+                    var model = new DataType.Model();
+                    _this.loadView(new DataType.Views.Edit({id: id, dataTypes: dataTypes.toJSON(), model: model}));
+                },
+                error: function(err) {
+                    console.log(err);
+                }
+            });
         },
 
         dataList: function() {

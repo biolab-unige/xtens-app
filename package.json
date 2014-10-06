@@ -5,6 +5,7 @@
   "description": "a Sails application",
   "keywords": [],
   "dependencies": {
+    "bcrypt": "~0.8.0",
     "ejs": "~0.8.4",
     "grunt": "0.4.2",
     "grunt-contrib-clean": "~0.5.0",
@@ -22,8 +23,7 @@
     "rc": "~0.3.3",
     "sails": "~0.10.5",
     "sails-disk": "~0.10.0",
-    "sails-postgresql": "^0.10.8",
-    "bcrypt": "~0.8.0"
+    "sails-postgresql": "^0.10.9"
   },
   "scripts": {
     "start": "node app.js",
