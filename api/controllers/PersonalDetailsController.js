@@ -1,7 +1,7 @@
 /**
- * GroupsOperatorController
+ * PersonalDetailsController
  *
- * @description :: Server-side logic for managing Groupsoperators
+ * @description :: Server-side logic for managing personaldetails
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 

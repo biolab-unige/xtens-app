@@ -9,7 +9,7 @@
 var Data = {
 
     attributes: {
-
+        // type one-way association to DataType
         type: {
             model: 'dataType'
         },
@@ -19,7 +19,8 @@ var Data = {
         },
         tags: {
             type: 'json',
-            columnName: 'tags'
+            columnName: 'tags',
+            array: true
         },
         notes: {
             type: 'text',
@@ -31,9 +32,11 @@ var Data = {
             columnName: 'metadata'
         },
         createdAt: {
+            type: 'datetime',
             columnName: 'created_at'
         },
         updatedAt: {
+            type: 'datetime',
             columnName: 'updated_at'
         }
 

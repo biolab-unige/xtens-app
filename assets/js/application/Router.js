@@ -1,7 +1,9 @@
 (function(xtens) {
 
     var DataType = xtens.module("datatype");
-    var Data = xtens.module("data"); 
+    var Data = xtens.module("data");
+    var Subject = xtens.module("subject");
+
     /**
      * XTENS Router for Backbone
      */
@@ -15,6 +17,8 @@
             "data": "dataList",
             "data/new": "dataEdit",
             "data/edit/:idDataType/:id": "dataEdit",
+            "subject/new": "subjectEdit",
+            "subject/edit/:idDataType/:id": "subjectEdit",
             "operators": "operator",
             "operators/new": "operator-edit",
             "operators/edit/:id": "operator-edit",
@@ -64,13 +68,33 @@
                                                        model: model
                     }));
                 },
-
                 error: function(err) {
                     console.log(err);
                     // TODO implement error handling here 
                 }
             });
         },
+
+        subjectEdit: function(idDataType, id) {
+            var dataTypes = new DataType.List();
+            var _this = this;
+            dataTypes.fetch({
+                success: function(dataTypes) {
+                    var model = new Subject.Model();
+                    var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
+                    dataTypes = _.where(dataTypes.toJSON(), {classTemplate: SUBJECT});
+                    _this.loadView(new Subject.Views.Edit({idDataType: idDataType, 
+                                                       id: id, 
+                                                       dataTypes: dataTypes,
+                                                       model: model
+                    }));
+                },
+                error: function(err) {
+                    console.log(err);
+                    // TODO implement error handling here 
+                }
+            });
+        }
 
     });
 

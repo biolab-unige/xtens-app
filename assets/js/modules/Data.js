@@ -205,15 +205,19 @@
             },
             '#tags': {
                 observe: 'tags',
-                getVal: function($el, ev, option) {
-                    return $el.val().split(",");
-                }
+                getVal: this.getTagsValue
             },
+
             '#notes': {
                 observe: 'notes'
             }
 
         },
+
+        getTagsValue: function($el, ev, option) {
+            return $el.val().split(",");
+        },
+
 
         serialize: function() {
             var json = _.clone(this.model.attributes);

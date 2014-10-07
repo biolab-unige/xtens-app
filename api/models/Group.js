@@ -1,8 +1,6 @@
-var bcrypt = require('bcrypt');
-
 var Group = {
     connection:'postgresql',
-    tableName: 'group',
+    tableName: 'xtens_group',
     schema:true,
     attributes: {
         name: {
@@ -12,20 +10,22 @@ var Group = {
             columnName: 'name'
         },
         createdAt: {
-            type:'timestamp',
+            type:'datetime',
             columnName: 'created_at'
         },
         updatedAt: {
-            type:'timestamp',
+            type:'datetime',
             columnName: 'updated_at'
         },
-        
-        operators:
-            {
+        members: {
             collection:'operator',
-            via:'groups',
-           
+            via:'groups'
+        },  
+        dataTypes: {
+            collection: 'dataType',
+            via: 'groups',
+            dominant: true
         }
-           }
+    }
 };
 module.exports = Group;

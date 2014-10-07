@@ -24,9 +24,11 @@ var DataType = {
             columnName: 'class_template'
         },        
         createdAt: {
+            type: 'datetime',
             columnName: 'created_at'
         },
         updatedAt: {
+            type: 'datetime',
             columnName: 'updated_at'
         },
         // reference to Data
@@ -36,11 +38,16 @@ var DataType = {
         },
         // self-reference to parent DataType
         parent: {
-            model: 'DataType'
+            model: 'dataType'
         },
         children: {
-            collection: 'DataType',
+            collection: 'dataType',
             via: 'parent'
+        },
+        // many-to-may association with Group
+        groups: {
+            collection: 'group',
+            via: 'dataTypes'
         }
     }
 };

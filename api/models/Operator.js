@@ -44,21 +44,19 @@ var Operator = {
             type: 'string',
             required: true
         },
-
         createdAt: {
-            type:'timestamp',
+            type:'datetime',
             columnName: 'created_at'
         },
 
         updatedAt: { 
-            type:'timestamp',
+            type:'datetime',
             columnName: 'updated_at'
         },
-
         groups:{
             collection:'group',
-            via:'operators'
-        },
+            via:'members'
+        }, 
 
         // Override toJSON instance method
         // to remove password value

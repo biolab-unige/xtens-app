@@ -699,3 +699,19 @@ __p += '\n            </tbody>\n        </table>\n    </div>\n    <div id="butto
 }
 return __p
 };
+
+this["JST"]["views/templates/subject-edit-partial.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div class="form-group"></div>\n<div class="form-group metadataform-group">\n    <label for="code" class="data-label">' +
+((__t = ( __('code') )) == null ? '' : __t) +
+'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="code" name="code"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="tags" class="data-label">' +
+((__t = ( __('tags') )) == null ? '' : __t) +
+'</label>\n    <div class="data-input-div">\n        <input type="hidden" class="form-control" id="tags" name="tags"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="notes" class="data-label">' +
+((__t = ( __('notes') )) == null ? '' : __t) +
+'</label>\n    <div class="data-input-div">\n        <textarea class="form-control" id="notes" name="notes" rows="4"></textarea>\n    </div>\n</div>\n<div class="metadatacomponent-body"></div>\n';
+
+}
+return __p
+};
