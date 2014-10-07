@@ -38,8 +38,7 @@
 
         render: function(options)  {
             var that = this;
-            that.GroupOP = new GroupsOperator.List();
-            that.GroupOP.fetch();
+            
             that.gr = new Group.List();
             that.gr.fetch();
             if(options.id) {

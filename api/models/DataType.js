@@ -24,10 +24,10 @@ var DataType = {
             columnName: 'class_template'
         },        
         createdAt: {
-            columnName: 'created_at'
+            type:'datetime'
         },
         updatedAt: {
-            columnName: 'updated_at'
+            type:'datetime'
         },
         // reference to Data
         datas: {

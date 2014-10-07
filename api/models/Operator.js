@@ -7,6 +7,7 @@ var Operator = {
     connection:'postgresql',
     tableName: 'operator',
     schema:true,
+  
     attributes: {
 
         firstName: {
@@ -46,18 +47,18 @@ var Operator = {
         },
 
         createdAt: {
-            type:'timestamp',
-            columnName: 'created_at'
+            type:'datetime'
+            
         },
 
         updatedAt: { 
-            type:'timestamp',
-            columnName: 'updated_at'
+            type:'datetime'
+           
         },
 
         groups:{
             collection:'group',
-            via:'operators'
+            via:'members'
         },
 
         // Override toJSON instance method

@@ -4,6 +4,7 @@ var Group = {
     connection:'postgresql',
     tableName: 'group',
     schema:true,
+   
     attributes: {
         name: {
             type: 'string',
@@ -12,15 +13,14 @@ var Group = {
             columnName: 'name'
         },
         createdAt: {
-            type:'timestamp',
-            columnName: 'created_at'
+            type:'datetime'
+           
         },
         updatedAt: {
-            type:'timestamp',
-            columnName: 'updated_at'
+            type:'datetime'  
         },
         
-        operators:
+        members:
             {
             collection:'operator',
             via:'groups',

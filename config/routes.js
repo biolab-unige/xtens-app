@@ -31,6 +31,8 @@ module.exports.routes = {
     '/login':{controller:'main',
         action:'login'
     },
+    
+    '/groupOperator/associate':{controller:'group', action:'addOperator'},
        
    
     /*,
