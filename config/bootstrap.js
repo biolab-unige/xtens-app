@@ -24,12 +24,11 @@ module.exports.bootstrap = function(cb) {
 // After we create our users, we will store them here to associate with our pets
 var storeGroups = []; 
 
-var groups = [{name:'Mikedisajfi'}];
+var groups = [{name:'fi'}];
 var operators = [{sex: 'M',
    email: 'nhjfhry@t5rjyi.girtj',
-   login: 'tryjrtyh',
+   login: 'fh',
    password: '$2a$10$3pOYcOpWWcU868LBB0Gki./n9nrooXyDqSNYz1NJCkvQ480KT5uxO',
-   id: 149,
    firstName: 'erierdfsuifh8',
    lastName: 'gdfgji',
    birthDate: 'Thu Sep 23 2014 00:00:00 GMT+0200 (CEST)'}]
@@ -80,3 +79,59 @@ var afterGroup = function(err,newGroups){
 
 Group.create(groups).exec(afterGroup)
 };*/
+
+/*module.exports.bootstrap = function (cb) {
+
+// After we create our users, we will store them here to associate with our pets
+var storeUsers = []; 
+
+var users = [{name:'Mike',age:'16'},{name:'Cody',age:'25'},{name:'Gabe',age:'107'}];
+var ponys = [{ name: 'Pinkie Pie', color: 'pink'},{ name: 'Rainbow Dash',color: 'blue'},{ name: 'Applejack', color: 'orange'}]
+
+// This does the actual associating.
+// It takes one Pet then iterates through the array of newly created Users, adding each one to it's join table
+var associate = function(onePony,cb){
+  var thisPony = onePony;
+  var callback = cb;
+
+  storeUsers.forEach(function(thisUser,index){
+    console.log('Associating ',thisPony.name,'with',thisUser.name);
+    thisUser.pets.add(thisPony.id);
+    thisUser.save(console.log);
+
+    if (index === storeUsers.length-1)
+      return callback(thisPony.name);
+  })
+};
+
+
+// This callback is run after all of the Pets are created.
+// It sends each new pet to 'associate' with our Users  
+var afterPony = function(err,newPonys){
+  while (newPonys.length){
+    var thisPony = newPonys.pop();
+    var callback = function(ponyID){
+      console.log('Done with pony ',ponyID)
+    }
+    associate(thisPony,callback)
+  }
+  console.log('Everyone belongs to everyone!! Exiting.');
+
+  // This callback lets us leave bootstrap.js and continue lifting our app!
+  return cb()
+};
+
+// This callback is run after all of our Users are created.
+// It takes the returned User and stores it in our storeUsers array for later.
+var afterUser = function(err,newUsers){
+  while (newUsers.length)
+    storeUsers.push(newUsers.pop())
+
+  Pet.create(ponys).exec(afterPony)
+};
+
+
+User.create(users).exec(afterUser)
+
+};
+*/

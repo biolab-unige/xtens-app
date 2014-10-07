@@ -2,6 +2,7 @@ var Group = {
     connection:'postgresql',
     tableName: 'xtens_group',
     schema:true,
+   
     attributes: {
         name: {
             type: 'string',
