@@ -90,6 +90,16 @@ __p += ' \n                    </tbody>\n                </table>\n            <
 return __p
 };
 
+this["JST"]["views/templates/datatype-association.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '';
+
+}
+return __p
+};
+
 this["JST"]["views/templates/datatype-edit.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
@@ -270,10 +280,15 @@ __p += '\n\n      ';
 __p += '\n        <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
 ((__t = ( __("associate-operator") )) == null ? '' : __t) +
 '</label>\n        <select multiple="true" class = "col-md-6" name="associationop[]" id="associationop" type="text">\n            ';
- if (group.get('operator')!=""&&group.get('operator')!=null) {;
+ if (group.get('members').length ==0) {;
 __p += ' \n            ';
-var a = group.get('operator').split(",");
-            }else{ var a = new Array();} var dati = new Array(); ;
+ var a = new Array();}
+            else{ var a = new Array();
+            for(var g = 0;g<group.get('members').length;g++){
+                a[g]=group.get('members')[g].login;
+                }
+            
+            } var dati = new Array(); ;
 __p += ' \n             ';
  for(var j =0;j<operators.length;j++)  { 
              dati[j]= operators[j].attributes.login;
@@ -298,17 +313,22 @@ __p += '\n             ';
  } ;
 __p += '\n             ';
  } ;
-__p += '\n\n\n            \n        </select>\n        </div>\n        ';
+__p += '\n             \n\n\n            \n        </select>\n        </div>\n        ';
  }; ;
 __p += '\n         ';
  if(group) { ;
 __p += '\n        <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
 ((__t = ( __("dissociate-operator") )) == null ? '' : __t) +
 '</label>\n        <select multiple="true" class = "col-md-6" name="dissociationop[]" id="dissociationop" type="text" >\n              ';
- if (group.get('operator')!=""&&group.get('operator')!=null) {;
+ if (group.get('members').length !=0) {;
 __p += ' \n            ';
-var a = group.get('operator').split(",");
-            }else{ var a = new Array();} var dati = new Array(); ;
+ var a = new Array();
+            var dati = new Array(); 
+             var a = new Array();
+            for(var g = 0;g<group.get('members').length;g++){
+                a[g]=group.get('members')[g].login;
+                }
+            ;
 __p += ' \n            ';
  for(var j =0;j<operators.length;j++)  { 
              dati[j]= operators[j].attributes.login;
@@ -333,7 +353,9 @@ __p += '\n                       ';
  } ;
 __p += '\n                       ';
  } ;
-__p += '\n\n\n           \n                  </select>\n        </div>\n        ';
+__p += '                \n                       ';
+ } ;
+__p += '\n\n           \n                  </select>\n        </div>\n        ';
  }; ;
 __p += '\n\n\n\n\n\n\n\n\n    <hr />\n    <div id="buttonbardiv" class="row text-center">\n         ';
  if(!group) { ;
@@ -370,7 +392,15 @@ __p += ' \n            <tr>\n\n\n                <td class="group_val">' +
 ((__t = ( group.id )) == null ? '' : __t) +
 '">' +
 ((__t = (__("edit") )) == null ? '' : __t) +
-'</a></td>\n            </tr>\n            ';
+'</a></td>\n                               <td><a id="edit" class="btn" href="#/groups/operator/' +
+((__t = ( group.id )) == null ? '' : __t) +
+'">' +
+((__t = (__("member") )) == null ? '' : __t) +
+'</a></td>\n                               <td><a id="edit" class="btn" href="#/groups/datatype/' +
+((__t = ( group.id )) == null ? '' : __t) +
+'">' +
+((__t = (__("data-type") )) == null ? '' : __t) +
+'</a></td>\n\n\n            </tr>\n            ';
  }) ;
 __p += '\n            </tbody>\n        </table>\n    </div>\n    <div id="buttonbardiv" class="row text-center">\n        <a href="#/groups/new" class="btn btn-primary">' +
 ((__t = ( __("new-group"))) == null ? '' : __t) +
@@ -569,6 +599,20 @@ __p += '<h4 class="metadataloop-header">' +
 '</h4>\n<div class="metadatacomponent-body"></div>\n<div class="text-center">\n    <div class="btn-group btn-group-margin">\n        <input type="button" class="btn btn-info" value="' +
 ((__t = (__('add-loop') )) == null ? '' : __t) +
 '">\n    </div>\n</div>\n';
+
+}
+return __p
+};
+
+this["JST"]["views/templates/operator-association.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div id="adminAssociation">\n\n\n    <form name = "Myform" class="form-horizontal operator-association-form" role="form">\n\n        <h2 class="legend" align="center">' +
+((__t = ( __("operator") )) == null ? '' : __t) +
+'</h2> \n\n\n\n        <label for="associated" class="col-md-3 control-label">' +
+((__t = ( __("associated-operators") )) == null ? '' : __t) +
+'</label>\n        \n        <div id="associated" class="form-group row">\n\n            <div draggable="true">Pippo</div>\n            <div draggable="true">Pluto</div>\n        </div>\n        <div id="nomember" class="form-group row">\n            <div draggable="true">1</div>\n            <div draggable="true">2</div>\n\n        </div>\n\n\n    </form>\n</div>\n';
 
 }
 return __p

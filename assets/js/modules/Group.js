@@ -28,29 +28,25 @@
         className: 'group',
 
         initialize: function(options) {
+             _.bindAll(this,'fetchSuccess');
             $("#main").html(this.el);
             this.template = JST["views/templates/group-edit.ejs"]; 
             this.render(options);
-        },
+                   },
 
      render: function(options)  {
-            var self = this;
-            self.datatype = new Datatype.List();
-            self.datatype.fetch();
-            self.operator = new Operator.List();
-            self.operator.fetch();
+            
+            this.datatype = new Datatype.List();
+            this.datatype.fetch();
+            this.operator = new Operator.List();
+            this.operator.fetch();
                  if(options.id) {
-                self.group = new Group.Model({id: options.id});
-                self.group.fetch({
-                    success: function (group) {
-                        self.$el.html(self.template({__: i18n, group: group,datatypes:self.datatype.models,operators:self.operator.models}));
-                        return self;
-
-                    }
-                });
+                this.group = new Group.Model({id: options.id});
+                this.group.fetch({
+                    success:this.fetchSuccess  });
             } else {
-                self.$el.html(self.template({__: i18n,group:null,datatypes:self.datatype.models,operators:self.operator.models}));
-                return self;
+                this.$el.html(this.template({__: i18n,group:null,datatypes:this.datatype.models,operators:this.operator.models}));
+                return this;
             }},
 
             events: {
@@ -58,6 +54,13 @@
                 'click .delete': 'deleteGroup',
                 'click .update':'updateGroup'
             },
+
+            fetchSuccess: function (group) {
+                        this.$el.html(this.template({__: i18n, group: group,datatypes:this.datatype.models,operators:this.operator.models}));
+                        return this;
+
+                    },
+
 
             saveGroup: function(ev) {
 
@@ -78,22 +81,30 @@
             },
             updateGroup: function(ev) {
                 var that = this;
-                   var id_operator = $("#associationop option:selected").attr("id");
+                   var id_operatorass = $("#associationop option:selected").attr("id");
+                 var id_operatordiss = $("#dissociationop option:not(:selected)").attr("id");
                    var id_group = that.group.id;
-                    if (id_operator && id_group) {
+                    if (id_operatorass !== undefined) {
                  $.post( '/groupOperator/associate',
-                {id_group: id_group, id_operator:id_operator},
+                {id_group: id_group, id_operator:id_operatorass},
                 function () {
                              }
-            ).fail(function(res){
-             alert("Error: " + res.responseJSON.error);
-            });
-        } else {
-            alert("A username and password is required");
-        }
+            );
+        }         
 
-                    that.group.save();
-
+       else if(id_operatordiss !== undefined)
+        {
+        $.post( '/groupOperator/dissociate',
+                {id_group: id_group, id_operator:id_operatordiss},
+                function () {
+                             }
+            );
+         
+         }
+         else{
+             that.group.save();
+         }
+                  
 
                     router.navigate('groups', {trigger:true});
                     window.location.reload();
@@ -137,16 +148,16 @@
 
         render: function(options) {
 
-            var self = this;
+            var _this = this;
             var groups= new Group.List();
             groups.fetch({
                 success: function(groups) {
-                    self.$el.html(self.template({__: i18n, groups: groups.models}));
-                    return self;
+                    _this.$el.html(_this.template({__: i18n, groups: groups.models}));
+                    return _this;
                 },
                 error: function() {
-                    self.$el.html(self.template({__: i18n}));
-                    return self;    
+                    _this.$el.html(_this.template({__: i18n}));
+                    return _this;    
                 }
 
             });

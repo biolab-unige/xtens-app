@@ -16,6 +16,10 @@
 
                 <td class="group_val"><%= group.get("name") %></td>
                                <td><a id="edit" class="btn" href="#/groups/edit/<%= group.id %>"><%=__("edit") %></a></td>
+                               <td><a id="edit" class="btn" href="#/groups/operator/<%= group.id %>"><%=__("member") %></a></td>
+                               <td><a id="edit" class="btn" href="#/groups/datatype/<%= group.id %>"><%=__("data-type") %></a></td>
+
+
             </tr>
             <% }) %>
             </tbody>

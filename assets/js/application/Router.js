@@ -25,7 +25,9 @@
             "groups":"group",
             "groups/new":"group-edit",
             "groups/edit/:id":"group-edit",
-            "login":"login"
+            "login":"login",
+            "groups/operator/:id":"operator-association",
+            "groups/datatype/:id":"datatype-association"
         },
 
         loadView: function(view) {
