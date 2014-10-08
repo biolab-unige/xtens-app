@@ -37,7 +37,17 @@ jQuery(function($) {
     var DataType = xtens.module("datatype");
     var Operator = xtens.module("operator");
     var Group = xtens.module("group");
+    var AdminAssociation = xtens.module("adminassociation");
     var router = xtens.router;
+
+    router.on('route:operator-association',function(id){
+     router.loadView(new AdminAssociation.Views.GroupOperator({id:id}));
+    });
+  
+    router.on('route:datatype-association',function(id){
+     router.loadView(new AdminAssociation.Views.GroupDatatype({id:id}));
+    });
+
 
     router.on('route:group',function() {
         router.loadView(new Group.Views.List());

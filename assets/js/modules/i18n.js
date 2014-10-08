@@ -78,6 +78,12 @@
         "dissociate-datatype":"Dissociate a Datatype",
         "associate-operator":"Associate an Operator",
         "dissociate-operator":"Dissociate an Operator",
+        /*views/templates/group-list.ejs */
+	"member":"Member",
+        /*views/templates/operator-association.ejs */
+        "operator":"Operator",
+        "associated-operators":"Associated Operators",
+        "no-members":"Not Associated Members",
         /* views/templates/data-list.ejs */
         "data-list": "Data List",
         "metadata": "Metadata",

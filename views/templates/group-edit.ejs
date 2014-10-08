@@ -68,9 +68,14 @@
         <div class="form-group row">
         <label  class="col-md-3 control-label"><%= __("associate-operator") %></label>
         <select multiple="true" class = "col-md-6" name="associationop[]" id="associationop" type="text">
-            <% if (group.get('operator')!=""&&group.get('operator')!=null) {%> 
-            <%var a = group.get('operator').split(",");
-            }else{ var a = new Array();} var dati = new Array(); %> 
+            <% if (group.get('members').length ==0) {%> 
+            <% var a = new Array();}
+            else{ var a = new Array();
+            for(var g = 0;g<group.get('members').length;g++){
+                a[g]=group.get('members')[g].login;
+                }
+            
+            } var dati = new Array(); %> 
              <% for(var j =0;j<operators.length;j++)  { 
              dati[j]= operators[j].attributes.login;
              } %> 
@@ -82,6 +87,7 @@
              <% } %>
              <% } %>
              <% } %>
+             
 
 
             
@@ -92,9 +98,14 @@
         <div class="form-group row">
         <label  class="col-md-3 control-label"><%= __("dissociate-operator") %></label>
         <select multiple="true" class = "col-md-6" name="dissociationop[]" id="dissociationop" type="text" >
-              <% if (group.get('operator')!=""&&group.get('operator')!=null) {%> 
-            <%var a = group.get('operator').split(",");
-            }else{ var a = new Array();} var dati = new Array(); %> 
+              <% if (group.get('members').length !=0) {%> 
+            <% var a = new Array();
+            var dati = new Array(); 
+             var a = new Array();
+            for(var g = 0;g<group.get('members').length;g++){
+                a[g]=group.get('members')[g].login;
+                }
+            %> 
             <% for(var j =0;j<operators.length;j++)  { 
              dati[j]= operators[j].attributes.login;
              } %>
@@ -106,8 +117,8 @@
                   <option id="<%= operators[l].attributes.id %>" selected value ="<%= c[i] %>"><%= c[i] %></option>
                        <% } %>
                        <% } %>
+                       <% } %>                
                        <% } %>
-
 
            
                   </select>

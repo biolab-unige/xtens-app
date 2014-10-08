@@ -33,6 +33,8 @@ module.exports.routes = {
     },
     
     '/groupOperator/associate':{controller:'group', action:'addOperator'},
+     
+    '/groupOperator/dissociate':{controller:'group', action:'removeOperator'},
        
    
     /*,
