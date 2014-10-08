@@ -700,6 +700,24 @@ __p += '\n            </tbody>\n        </table>\n    </div>\n    <div id="butto
 return __p
 };
 
+this["JST"]["views/templates/personaldetails-edit.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div class="form-group"></div>\n<div class="form-group metadataform-group">\n    <label for="givenName" class="data-label">' +
+((__t = ( __('given-name') )) == null ? '' : __t) +
+'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="givenName" name="givenName"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="surname" class="data-label">' +
+((__t = ( __('surname') )) == null ? '' : __t) +
+'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="surname" name="surname"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="notes" class="data-label">' +
+((__t = ( __('birth-date') )) == null ? '' : __t) +
+'</label>\n    <div class="data-input-div">\n        <input type="date" class="form-control" id="birthDate" name="birthDate"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="notes" class="data-label">' +
+((__t = ( __('sex') )) == null ? '' : __t) +
+'</label>\n    <div class="data-input-div">\n        <select class="form-control" id="sex" name="sex"></select>\n    </div>\n</div>\n';
+
+}
+return __p
+};
+
 this["JST"]["views/templates/subject-edit-partial.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
@@ -711,6 +729,37 @@ __p += '<div class="form-group"></div>\n<div class="form-group metadataform-grou
 '</label>\n    <div class="data-input-div">\n        <input type="hidden" class="form-control" id="tags" name="tags"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="notes" class="data-label">' +
 ((__t = ( __('notes') )) == null ? '' : __t) +
 '</label>\n    <div class="data-input-div">\n        <textarea class="form-control" id="notes" name="notes" rows="4"></textarea>\n    </div>\n</div>\n<div class="metadatacomponent-body"></div>\n';
+
+}
+return __p
+};
+
+this["JST"]["views/templates/subject-edit.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<h1>' +
+((__t = ( __("data-manager") )) == null ? '' : __t) +
+'</h1>\n<h2>' +
+((__t = ( data ? __("updata-data") : __("create-data") )) == null ? '' : __t) +
+'</h2>\n<div id="content">\n    <form class="form-horizontal edit-data-form" role="form">\n        <div class="form-group">\n            <label for="dataType" class="data-label">' +
+((__t = ( __("select-a-data-type") )) == null ? '' : __t) +
+'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="dataType" name="dataType">\n                </select>\n            </div>\n        </div>\n        <div id="personal-details">\n            <button id="add-personal-details" class="btn btn-info">' +
+((__t = ( __('add-personal-details') )) == null ? '' : __t) +
+'</button>\n        </div>\n        <div id="metadata-schema"></div>\n        <div id="buttonbardiv" class="row text-center">\n            <div class="btn-group btn-group-margin">\n                <input type="submit" id="save" class="btn btn-primary" value="' +
+((__t = (__('save') )) == null ? '' : __t) +
+'" >\n                ';
+ if (data) { ;
+__p += '\n                <input type="hidden" id="id" name="id" value="' +
+((__t = ( data.id )) == null ? '' : __t) +
+'" />\n                <button data-data-id="' +
+((__t = ( data.id )) == null ? '' : __t) +
+'" class="btn btn-danger delete">' +
+((__t = ( __("delete") )) == null ? '' : __t) +
+'</button>\n                ';
+} ;
+__p += '\n            </div>\n        </div>\n    </form>\n</div>\n';
 
 }
 return __p

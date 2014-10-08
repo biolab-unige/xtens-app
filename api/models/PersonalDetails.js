@@ -8,19 +8,19 @@
 module.exports = {
     tableName: 'personal_details',
     attributes: {
-        firstName: {
+        givenName: {
             type: 'string',
             required: true,
             max: 64,
             alpha: true,
-            columnName: 'first_name',
+            columnName: 'given_name',
         },
-        lastName: {
+        surname: {
             type: 'string',
             required: true,
             max: 64,
             alpha: true,
-            columnName: 'last_name'
+            columnName: 'surname'
         },
         birthDate: {
             type: 'date',
@@ -29,7 +29,7 @@ module.exports = {
         sex: {
             type: 'string',
             required: true,
-            enum: ['M', 'F', 'N.A.']
+            enum: ['MALE', 'FEMALE', 'UNKNOWN', 'UNDIFFERENTIATED']
         },
         createdAt: {
             type: 'datetime',

@@ -1,0 +1,26 @@
+<h1><%= __("data-manager") %></h1>
+<h2><%= data ? __("updata-data") : __("create-data") %></h2>
+<div id="content">
+    <form class="form-horizontal edit-data-form" role="form">
+        <div class="form-group">
+            <label for="dataType" class="data-label"><%= __("select-a-data-type") %></label>
+            <div class="data-input-div">
+                <select class="form-control" id="dataType" name="dataType">
+                </select>
+            </div>
+        </div>
+        <div id="personal-details">
+            <button id="add-personal-details" class="btn btn-info"><%= __('add-personal-details') %></button>
+        </div>
+        <div id="metadata-schema"></div>
+        <div id="buttonbardiv" class="row text-center">
+            <div class="btn-group btn-group-margin">
+                <input type="submit" id="save" class="btn btn-primary" value="<%=__('save') %>" >
+                <% if (data) { %>
+                <input type="hidden" id="id" name="id" value="<%= data.id %>" />
+                <button data-data-id="<%= data.id %>" class="btn btn-danger delete"><%= __("delete") %></button>
+                <%} %>
+            </div>
+        </div>
+    </form>
+</div>

@@ -81,7 +81,14 @@
         /* views/templates/data-list.ejs */
         "data-list": "Data List",
         "metadata": "Metadata",
-        "new-data": "New Data"
+        "new-data": "New Data",
+        /* views/templates/personal-details-edit.ejs */
+        "given-name": "Given Name",
+        "surname": "Surname",
+        /* views/templates/subject-edit.ejs */
+        "add-personal-details": "Add Personal Details",
+        /* views/templates/subject-edit-partial.ejs */
+        "code": "Code"
     };
 
     var it = {

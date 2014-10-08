@@ -21,4 +21,12 @@
         BOOLEAN: 'Boolean',
         DATE: 'Date'
     };
+    
+    XtensConstants.SexOptions = {
+        MALE: 'MALE',
+        FEMALE: 'FEMALE',
+        UNKNOWN: 'UNKNOWN',
+        UNDIFFERENTIATED: 'UNDIFFERENTIATED'
+    };
+
 } (xtens, xtens.module("xtensconstants")));
