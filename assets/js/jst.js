@@ -92,9 +92,85 @@ return __p
 
 this["JST"]["views/templates/datatype-association.ejs"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '';
+__p += '<div id="adminAssociation">\n<style>\n#associated {width:400px;height:300px;padding:10px;border:5px solid #aaaaaa;border-radius:10px;}\n#nodatatype {width:400px;height:300px;padding:15px;border:5px solid #aaaaaa;border-radius:10px;}\ndiv.datatype {width:200px;height:40px;padding:5px;border:3px solid #aaaaaa;border-radius:10px;text-align: center;line-height:25px;}\n#label {text-align:center;\nvertical-align:middle; \ndisplay:block;\ntop:120px;}\n</style>\n<script>\nvar router = xtens.router;\nfunction drag(evt)\n{\nevt.dataTransfer.setData("text",evt.target.id);\n\n}\nfunction enableDrop(evt)\n{\nevt.preventDefault();\n}\n \nfunction associate(ev) {\n\n ev.preventDefault();\n var id_datatypeass=ev.dataTransfer.getData("Text");\n ev.target.appendChild(document.getElementById(id_datatypeass));\n var id_grp = parseInt(document.URL.split("/")[6]);\n\t$.post(\'/groupDatatype/associate\',{ id_group: id_grp, id_datatype:(id_datatypeass/1000)}, \n    function(){\n           });\n        router.navigate(\'groups\', {trigger:true});\n\n\n}\nfunction dissociate(ev){\nev.preventDefault();\n var id_datatypediss=ev.dataTransfer.getData("Text");\n ev.target.appendChild(document.getElementById(id_datatypediss));\n var id_grp = parseInt(document.URL.split("/")[6]);\n $.post( \'/groupDatatype/dissociate\',\n                {id_group: id_grp, id_datatype:(id_datatypediss/1000)},\n                function () {\n                                             }\n            );\n router.navigate(\'groups\', {trigger:true});\n\t\n}\n</script>\n<form name = "Myform" class="form-horizontal operator-association-form" role="form">\n\n        <h2 class="legend" align="center">' +
+((__t = ( __("data-type") )) == null ? '' : __t) +
+'</h2> \n\n\n<div class="form-group row" >\n\n    <p> <label for="associated" class="col-md-3 control-label" id="label">' +
+((__t = ( __("associated-datatypes") )) == null ? '' : __t) +
+'</label></p>\n        \n        <div id="associated" class="col-md-6 Table" ondrop ="associate(event)" ondragover="enableDrop(event)" >\n         <div id="lista" class="col-md-6">\n        ';
+ if (group.get('dataTypes').length !=0) {;
+__p += ' \n            ';
+ var a = new Array();
+            var dati = new Array(); 
+             var a = new Array();
+            for(var g = 0;g<group.get('dataTypes').length;g++){
+                a[g]=group.get('dataTypes')[g].name;
+                }
+            ;
+__p += ' \n            ';
+ for(var j =0;j<datatypes.length;j++)  { 
+             dati[j]= datatypes[j].attributes.name;
+             } ;
+__p += '\n             ';
+ var c =_.intersection(dati,a) ;
+__p += ' \n            ';
+ for (var i=0;i<c.length;i++) { ;
+__p += ' \n                 ';
+ for(var l=0;l<datatypes.length;l++){ ;
+__p += '\n                 ';
+ if (c[i]==datatypes[l].attributes.name) {;
+__p += '\n             \n            <div class="form-group row">\n            <div class="datatype" draggable="true" ondragstart="drag(event)" id="' +
+((__t = ( (datatypes[l].attributes.id)*1000 )) == null ? '' : __t) +
+'" value ="' +
+((__t = ( c[i] )) == null ? '' : __t) +
+'">' +
+((__t = ( c[i] )) == null ? '' : __t) +
+'</div>\n            </div>\n                         ';
+ } ;
+__p += '\n                       ';
+ } ;
+__p += '\n                       ';
+ } ;
+__p += '                \n                       ';
+ } ;
+__p += '\n                       </div>\n            </div>\n        </div>\n     <div class="form-group row">\n\n        <p> <label for="nodatatype" id="label" class="col-md-3 control-label">' +
+((__t = ( __("no-datatypes") )) == null ? '' : __t) +
+'</label></p>\n      \n        <div id="nodatatype" class=" col-md-6 Table" ondrop ="dissociate(event)" ondragover="enableDrop(event)">\n             <div id="noass" class="col-md-6">\n             ';
+ if (group.get('dataTypes').length ==0) {;
+__p += ' \n            ';
+ var a = new Array();}
+            else{ var a = new Array();
+            for(var g = 0;g<group.get('dataTypes').length;g++){
+                a[g]=group.get('dataTypes')[g].name;
+                }
+            } var dati = new Array(); ;
+__p += ' \n             ';
+ for(var j =0;j<datatypes.length;j++)  { 
+             dati[j]= datatypes[j].attributes.name;
+             } ;
+__p += ' \n             ';
+ var b = _.difference(dati,a); ;
+__p += '\n             ';
+ for (var i=0;i<b.length;i++) { ;
+__p += ' \n                 ';
+ for(var l=0;l<datatypes.length;l++){ ;
+__p += '\n                 ';
+ if (b[i]==datatypes[l].attributes.name) {;
+__p += '\n                 <div class="form-group row">\n            <div class="datatype" draggable="true" ondragstart="drag(event)" id="' +
+((__t = ( (datatypes[l].attributes.id)*1000 )) == null ? '' : __t) +
+'" value ="' +
+((__t = ( b[i])) == null ? '' : __t) +
+'">' +
+((__t = ( b[i])) == null ? '' : __t) +
+'</div>\n            </div>\n            ';
+ } ;
+__p += '\n             ';
+ } ;
+__p += '\n             ';
+ } ;
+__p += '\n                  </div>\n        </div>\n        </div>\n\n    </form>\n</div>\n';
 
 }
 return __p
@@ -606,13 +682,85 @@ return __p
 
 this["JST"]["views/templates/operator-association.ejs"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div id="adminAssociation">\n\n\n    <form name = "Myform" class="form-horizontal operator-association-form" role="form">\n\n        <h2 class="legend" align="center">' +
+__p += '<div id="adminAssociation">\n    <style>\n#associated {width:400px;height:300px;padding:10px;border:5px solid #aaaaaa;border-radius:10px;}\n#nomember {width:400px;height:300px;padding:15px;border:5px solid #aaaaaa;border-radius:10px;}\ndiv.operator {width:200px;height:40px;padding:5px;border:3px solid #aaaaaa;border-radius:10px;text-align: center;line-height:25px;}\n#label {text-align:center;\n    vertical-align:middle; \n    display:block;\n    top:120px;}\n    </style>\n    <script>\nvar router = xtens.router;\nfunction drag(evt)\n{\n    evt.dataTransfer.setData("text",evt.target.id);\n\n}\nfunction enableDrop(evt)\n{\n    evt.preventDefault();\n}\n\nfunction associate(ev) {\n\n    ev.preventDefault();\n    var id_operatorass=ev.dataTransfer.getData("Text");\n    ev.target.appendChild(document.getElementById(id_operatorass));\n    var id_grp = parseInt(document.URL.split("/")[6]);\n    $.post(\'/groupOperator/associate\',{ id_group: id_grp, id_operator:(id_operatorass/1000)}, \n            function(){\n            });\n    router.navigate(\'groups\', {trigger:true});\n\n\n}\nfunction dissociate(ev){\n    ev.preventDefault();\n    var id_operatordiss=ev.dataTransfer.getData("Text");\n    ev.target.appendChild(document.getElementById(id_operatordiss));\n    var id_grp = parseInt(document.URL.split("/")[6]);\n    $.post( \'/groupOperator/dissociate\',\n            {id_group: id_grp, id_operator:(id_operatordiss/1000)},\n            function () {\n            }\n          );\n    router.navigate(\'groups\', {trigger:true});\n\n}\n    </script>\n    <form name = "Myform" class="form-horizontal operator-association-form" role="form">\n\n        <h2 class="legend" align="center">' +
 ((__t = ( __("operator") )) == null ? '' : __t) +
-'</h2> \n\n\n\n        <label for="associated" class="col-md-3 control-label">' +
+'</h2> \n\n\n        <div class="form-group row" >\n\n            <p> <label for="associated" class="col-md-3 control-label" id="label">' +
 ((__t = ( __("associated-operators") )) == null ? '' : __t) +
-'</label>\n        \n        <div id="associated" class="form-group row">\n\n            <div draggable="true">Pippo</div>\n            <div draggable="true">Pluto</div>\n        </div>\n        <div id="nomember" class="form-group row">\n            <div draggable="true">1</div>\n            <div draggable="true">2</div>\n\n        </div>\n\n\n    </form>\n</div>\n';
+'</label></p>\n\n            <div id="associated" class="col-md-6 Table" ondrop ="associate(event)" ondragover="enableDrop(event)" >\n                <div id="lista" class="col-md-6">\n                    ';
+ if (group.get('members').length !=0) {;
+__p += ' \n                    ';
+ var a = new Array();
+                    var dati = new Array(); 
+                    var a = new Array();
+                    for(var g = 0;g<group.get('members').length;g++){
+                        a[g]=group.get('members')[g].login;
+                        }
+                        ;
+__p += ' \n                        ';
+ for(var j =0;j<operators.length;j++)  { 
+                        dati[j]= operators[j].attributes.login;
+                        } ;
+__p += '\n                        ';
+ var c =_.intersection(dati,a) ;
+__p += ' \n                        ';
+ for (var i=0;i<c.length;i++) { ;
+__p += ' \n                        ';
+ for(var l=0;l<operators.length;l++){ ;
+__p += '\n                        ';
+ if (c[i]==operators[l].attributes.login) {;
+__p += '\n\n                        <div class="form-group row">\n                            <div class="operator" draggable="true" ondragstart="drag(event)" id="' +
+((__t = ( (operators[l].attributes.id)*1000 )) == null ? '' : __t) +
+'" value ="' +
+((__t = ( c[i] )) == null ? '' : __t) +
+'">' +
+((__t = ( c[i] )) == null ? '' : __t) +
+'</div>\n                        </div>\n                        ';
+ } ;
+__p += '\n                        ';
+ } ;
+__p += '\n                        ';
+ } ;
+__p += '                \n                        ';
+ } ;
+__p += '\n                    </div>\n                </div>\n            </div>\n            <div class="form-group row">\n\n                <p> <label for="nomember" id="label" class="col-md-3 control-label">' +
+((__t = ( __("no-members") )) == null ? '' : __t) +
+'</label></p>\n\n                <div id="nomember" class=" col-md-6 Table" ondrop ="dissociate(event)" ondragover="enableDrop(event)">\n                    <div id="noass" class="col-md-6">\n                        ';
+ if (group.get('members').length ==0) {;
+__p += ' \n                        ';
+ var a = new Array();}
+                        else{ var a = new Array();
+                        for(var g = 0;g<group.get('members').length;g++){
+                            a[g]=group.get('members')[g].login;
+                            }
+                            } var dati = new Array(); ;
+__p += ' \n                            ';
+ for(var j =0;j<operators.length;j++)  { 
+                            dati[j]= operators[j].attributes.login;
+                            } ;
+__p += ' \n                            ';
+ var b = _.difference(dati,a); ;
+__p += '\n                            ';
+ for (var i=0;i<b.length;i++) { ;
+__p += ' \n                                ';
+ for(var l=0;l<operators.length;l++){ ;
+__p += '\n                                ';
+ if (b[i]==operators[l].attributes.login) {;
+__p += '\n                                <div class="form-group row">\n                                    <div class="operator" draggable="true" ondragstart="drag(event)" id="' +
+((__t = ( (operators[l].attributes.id)*1000 )) == null ? '' : __t) +
+'" value ="' +
+((__t = ( b[i])) == null ? '' : __t) +
+'">' +
+((__t = ( b[i])) == null ? '' : __t) +
+'</div>\n                                </div>\n                                ';
+ } ;
+__p += '\n                                ';
+ } ;
+__p += '\n                                ';
+ } ;
+__p += '\n                            </div>\n                        </div>\n                    </div>\n\n                </form>\n            </div>\n';
 
 }
 return __p

@@ -37,35 +37,41 @@
         },
 
         render: function(options)  {
-
-            this.operator = new Operator.List();
-            this.operator.fetch();
+            var that = this;
+            that.operator = new Operator.List();
+            that.operator.fetch();
             if(options.id) {
-                this.group = new Group.Model({id: options.id});
-                this.group.fetch({
+                that.group = new Group.Model({id: options.id});
+                that.group.fetch({
                     success:this.fetchSuccess  });
             } else {
-                this.$el.html(this.template({__: i18n,group:null}));
-                return this;
+                that.$el.html(that.template({__: i18n,group:null}));
+                return that;
             }},
 
             fetchSuccess: function (group) {
                 this.$el.html(this.template({__: i18n, group: group,operators:this.operator.models}));
                 return this;
 
-            }
+            },
+
+
+
+
     });
 
     AdminAssociation.Views.GroupDatatype = Backbone.View.extend({
 
         tagName: 'div',
         className: 'adminAssociation',
-
-
-        initialize: function() {
+       
+	
+        initialize: function(options) {
+        
+             _.bindAll(this,'fetchSuccess');
             $("#main").html(this.el);
             this.template = JST["views/templates/datatype-association.ejs"];
-            this.render();
+            this.render(options);
         },
 
         render: function(options)  {
@@ -86,7 +92,9 @@
             this.$el.html(this.template({__: i18n, group: group,datatypes:this.datatype.models}));
             return this;
 
-        }
+        },
+ 
+	
 
 
     });
