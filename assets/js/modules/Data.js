@@ -205,7 +205,9 @@
             },
             '#tags': {
                 observe: 'tags',
-                getVal: this.getTagsValue
+                getVal: function($el, ev, option) {
+                    return $el.val().split(",");
+                }
             },
 
             '#notes': {
@@ -213,10 +215,10 @@
             }
 
         },
-
+        /*
         getTagsValue: function($el, ev, option) {
             return $el.val().split(",");
-        },
+        }, */
 
 
         serialize: function() {

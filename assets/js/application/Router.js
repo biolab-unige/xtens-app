@@ -3,6 +3,7 @@
     var DataType = xtens.module("datatype");
     var Data = xtens.module("data");
     var Subject = xtens.module("subject");
+    var Project = xtens.module("project");
 
     /**
      * XTENS Router for Backbone
@@ -79,7 +80,9 @@
 
         subjectEdit: function(idDataType, id) {
             var dataTypes = new DataType.List();
+            var projects = new Project.List();
             var _this = this;
+            /*
             dataTypes.fetch({
                 success: function(dataTypes) {
                     var model = new Subject.Model();
@@ -95,7 +98,22 @@
                     console.log(err);
                     // TODO implement error handling here 
                 }
-            });
+            }); */
+           $.when(dataTypes.fetch(), projects.fetch()).then(
+                function(dataTypes, projects) {
+                    var model = new Subject.Model();
+                    var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
+                    dataTypes = _.where(dataTypes[0], {classTemplate: SUBJECT});
+                    _this.loadView(new Subject.Views.Edit({idDataType: idDataType, 
+                                                       id: id, 
+                                                       dataTypes: dataTypes,
+                                                       projects: projects[0],
+                                                       model: model
+                    }));
+                }, function() {
+                    alert("Error retrieving data from the server");
+                } 
+           );
         }
 
     });

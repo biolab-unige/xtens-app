@@ -6,16 +6,45 @@
     var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
 
     Subject.Views.MetadataSchema = Data.Views.MetadataSchema.fullExtend({
+        
+        initialize: function(options) {
+            this.template = options.template;
+            this.component = options.component;
+            this.projects = options.projects;
+            this.nestedViews = [];
+        },
 
         bindings: {
+
+            '#project': {
+                observe: 'project',
+                selectOptions: {
+                    collection: 'this.projects',
+                    labelPath: 'name',
+                    valuePath: 'id',
+                    defaultOption: {
+                        label: i18n("please-select"),
+                        value: null
+                    } 
+                },
+                getVal: function($el, ev, options) {
+                    var value = parseInt($el.val());
+                    return _.findWhere(options.view.projects, {id: value });
+                }
+            },
 
             '#code': {
                 observe: 'code'
             },
+
             '#tags': {
                 observe: 'tags',
-                getVal: this.getTagsValue
+                getVal: function($el, ev, option) {
+                    return $el.val().split(",");
+                }
+
             },
+
             '#notes': {
                 observe: 'notes'
             }
@@ -35,7 +64,8 @@
         initialize: function(options) {
             _.bindAll(this, 'fetchSuccess');
             $('#main').html(this.el);
-            this.dataTypes = options.dataTypes ? _.where(options.dataTypes, {classTemplate: SUBJECT}) : []; 
+            this.dataTypes = options.dataTypes ? _.where(options.dataTypes, {classTemplate: SUBJECT}) : [];
+            this.projects = options.projects; 
             this.template = JST["views/templates/subject-edit.ejs"];
             this.personalDetailsView = null;
             this.schemaTemplate = JST["views/templates/subject-edit-partial.ejs"];
@@ -54,16 +84,17 @@
             this.model.set("notes", json.notes);
             this.model.set("tags", json.tags);
             this.model.set("metadata", json.metadata);
-            this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
-            this.model.set("personalDetails", _.clone(this.personalDetailsView.model.attributes));
-                this.model.save({
-                    success: function(subject) {
-                        xtens.router.navigate('subjects', {trigger: true});
-                    },
-                    error: function(err) {
-                        console.log(err);
-                    }
-                });
+            this.model.set("project", json.project);
+            // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
+            this.model.set("personalInfo", _.clone(this.personalDetailsView.model.attributes));
+            this.model.save({
+                success: function(subject) {
+                    xtens.router.navigate('subjects', {trigger: true});
+                },
+                error: function(err) {
+                    console.log(err);
+                }
+            });
             return false;
         },
 
@@ -75,7 +106,7 @@
             $parent.html(this.personalDetailsView.render().el);
         },
 
-       renderDataTypeSchema: function(data) {
+        renderDataTypeSchema: function(data) {
             if (this.schemaView) {
                 if (!this.schemaView.removeMe()) {
                     return;
@@ -87,8 +118,9 @@
                 var schema = type.schema;
                 var schemaModel = new Data.MetadataSchemaModel(null, {data: data});
                 this.schemaView = new Subject.Views.MetadataSchema({template: this.schemaTemplate, 
-                                                                component: schema,
-                                                                model: schemaModel
+                                                                   component: schema,
+                                                                   model: schemaModel,
+                                                                   projects: this.projects
                 });
                 $metadataSchema.append(this.schemaView.render().el);
                 this.$('#tags').select2({tags: []});

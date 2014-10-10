@@ -94,7 +94,8 @@
         /* views/templates/subject-edit.ejs */
         "add-personal-details": "Add Personal Details",
         /* views/templates/subject-edit-partial.ejs */
-        "code": "Code"
+        "code": "Code",
+        "project": "Project"
     };
 
     var it = {

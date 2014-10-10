@@ -1,3 +1,4 @@
+/*
 var Sails = require('sails');
 var operator = require('/home/valentina/workspace/xtens-app/api/models/Operator.js');
 var request = require('supertest');
@@ -20,4 +21,4 @@ describe('OperatorController', function() {
            });
   });
 
-});
+}); */

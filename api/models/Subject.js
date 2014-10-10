@@ -23,6 +23,10 @@ var Subject= {
      type: {
         model: 'dataType'
      },
+     project: {
+        model: 'project',
+        via: 'subjects'
+     },
      tags: {
         type: 'json',
         columnName: 'tags',

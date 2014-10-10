@@ -2,13 +2,9 @@
  *  @author Massimiliano Izzo
  */
 var SubjectService = {
-    
-    createWithPersonalDetails: function(subjectObj) {
-        /*
-        PersonalDetails
-        .create(subjectObj.personalDetails)
-        .then(function) */
 
+    createWithPersonalDetails: function(subject, res, next) {
+             
     },
 
     createSubject: function(subjectObj) {

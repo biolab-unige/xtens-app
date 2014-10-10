@@ -768,7 +768,9 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<div class="form-group"></div>\n<div class="form-group metadataform-group">\n    <label for="code" class="data-label">' +
 ((__t = ( __('code') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="code" name="code"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="tags" class="data-label">' +
+'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="code" name="code"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="project" class="data-label">' +
+((__t = ( __('project') )) == null ? '' : __t) +
+'</label>\n    <div class="data-input-div">\n        <select class="form-control" id="project" name="project"></select>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="tags" class="data-label">' +
 ((__t = ( __('tags') )) == null ? '' : __t) +
 '</label>\n    <div class="data-input-div">\n        <input type="hidden" class="form-control" id="tags" name="tags"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="notes" class="data-label">' +
 ((__t = ( __('notes') )) == null ? '' : __t) +
