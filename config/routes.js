@@ -35,6 +35,10 @@ module.exports.routes = {
     '/groupOperator/associate':{controller:'group', action:'addOperator'},
     
     '/groupOperator/dissociate':{controller:'group', action:'removeOperator'},
+    
+    '/groupDatatype/associate':{controller:'group', action:'addDatatype'},
+    
+    '/groupDatatype/dissociate':{controller:'group',action:'removeDatatype'},
        
     // REST API for subject (with personal info)
     'POST /subjectWithPersonalDetails': {controller: 'subject', action: 'createWithPersonalDetails'}

@@ -84,6 +84,9 @@
         "operator":"Operator",
         "associated-operators":"Associated Operators",
         "no-members":"Not Associated Members",
+	/*views/templates/datatype-association.ejs */
+        "associated-datatypes":"Associated Data Types",
+        "no-datatypes":"Not Associated Data Types",
         /* views/templates/data-list.ejs */
         "data-list": "Data List",
         "metadata": "Metadata",

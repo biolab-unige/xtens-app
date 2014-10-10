@@ -1,0 +1,118 @@
+<div id="adminAssociation">
+<style>
+#associated {width:400px;height:300px;padding:10px;border:5px solid #aaaaaa;border-radius:10px;}
+#nodatatype {width:400px;height:300px;padding:15px;border:5px solid #aaaaaa;border-radius:10px;}
+div.datatype {width:200px;height:40px;padding:5px;border:3px solid #aaaaaa;border-radius:10px;text-align: center;line-height:25px;}
+#label {text-align:center;
+vertical-align:middle; 
+display:block;
+top:120px;}
+</style>
+<script>
+var router = xtens.router;
+function drag(evt)
+{
+evt.dataTransfer.setData("text",evt.target.id);
+
+}
+function enableDrop(evt)
+{
+evt.preventDefault();
+}
+ 
+function associate(ev) {
+
+ ev.preventDefault();
+ var id_datatypeass=ev.dataTransfer.getData("Text");
+ ev.target.appendChild(document.getElementById(id_datatypeass));
+ var id_grp = parseInt(document.URL.split("/")[6]);
+	$.post('/groupDatatype/associate',{ id_group: id_grp, id_datatype:(id_datatypeass/1000)}, 
+    function(){
+           });
+        router.navigate('groups', {trigger:true});
+
+
+}
+function dissociate(ev){
+ev.preventDefault();
+ var id_datatypediss=ev.dataTransfer.getData("Text");
+ ev.target.appendChild(document.getElementById(id_datatypediss));
+ var id_grp = parseInt(document.URL.split("/")[6]);
+ $.post( '/groupDatatype/dissociate',
+                {id_group: id_grp, id_datatype:(id_datatypediss/1000)},
+                function () {
+                                             }
+            );
+ router.navigate('groups', {trigger:true});
+	
+}
+</script>
+<form name = "Myform" class="form-horizontal operator-association-form" role="form">
+
+        <h2 class="legend" align="center"><%= __("data-type") %></h2> 
+
+
+<div class="form-group row" >
+
+    <p> <label for="associated" class="col-md-3 control-label" id="label"><%= __("associated-datatypes") %></label></p>
+        
+        <div id="associated" class="col-md-6 Table" ondrop ="associate(event)" ondragover="enableDrop(event)" >
+         <div id="lista" class="col-md-6">
+        <% if (group.get('dataTypes').length !=0) {%> 
+            <% var a = new Array();
+            var dati = new Array(); 
+             var a = new Array();
+            for(var g = 0;g<group.get('dataTypes').length;g++){
+                a[g]=group.get('dataTypes')[g].name;
+                }
+            %> 
+            <% for(var j =0;j<datatypes.length;j++)  { 
+             dati[j]= datatypes[j].attributes.name;
+             } %>
+             <% var c =_.intersection(dati,a) %> 
+            <% for (var i=0;i<c.length;i++) { %> 
+                 <% for(var l=0;l<datatypes.length;l++){ %>
+                 <% if (c[i]==datatypes[l].attributes.name) {%>
+             
+            <div class="form-group row">
+            <div class="datatype" draggable="true" ondragstart="drag(event)" id="<%= (datatypes[l].attributes.id)*1000 %>" value ="<%= c[i] %>"><%= c[i] %></div>
+            </div>
+                         <% } %>
+                       <% } %>
+                       <% } %>                
+                       <% } %>
+                       </div>
+            </div>
+        </div>
+     <div class="form-group row">
+
+        <p> <label for="nodatatype" id="label" class="col-md-3 control-label"><%= __("no-datatypes") %></label></p>
+      
+        <div id="nodatatype" class=" col-md-6 Table" ondrop ="dissociate(event)" ondragover="enableDrop(event)">
+             <div id="noass" class="col-md-6">
+             <% if (group.get('dataTypes').length ==0) {%> 
+            <% var a = new Array();}
+            else{ var a = new Array();
+            for(var g = 0;g<group.get('dataTypes').length;g++){
+                a[g]=group.get('dataTypes')[g].name;
+                }
+            } var dati = new Array(); %> 
+             <% for(var j =0;j<datatypes.length;j++)  { 
+             dati[j]= datatypes[j].attributes.name;
+             } %> 
+             <% var b = _.difference(dati,a); %>
+             <% for (var i=0;i<b.length;i++) { %> 
+                 <% for(var l=0;l<datatypes.length;l++){ %>
+                 <% if (b[i]==datatypes[l].attributes.name) {%>
+                 <div class="form-group row">
+            <div class="datatype" draggable="true" ondragstart="drag(event)" id="<%= (datatypes[l].attributes.id)*1000 %>" value ="<%= b[i]%>"><%= b[i]%></div>
+            </div>
+            <% } %>
+             <% } %>
+             <% } %>
+                  </div>
+        </div>
+        </div>
+
+    </form>
+</div>
