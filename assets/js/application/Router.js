@@ -18,8 +18,9 @@
             "data": "dataList",
             "data/new": "dataEdit",
             "data/edit/:idDataType/:id": "dataEdit",
-            "subject/new": "subjectEdit",
-            "subject/edit/:idDataType/:id": "subjectEdit",
+            "subjects": "subjectList",
+            "subjects/new": "subjectEdit",
+            "subjects/edit/:idDataType/:id": "subjectEdit",
             "operators": "operator",
             "operators/new": "operator-edit",
             "operators/edit/:id": "operator-edit",
@@ -78,6 +79,10 @@
             });
         },
 
+        subjectList: function() {
+            this.loadView(new Subject.Views.List());
+        },
+
         subjectEdit: function(idDataType, id) {
             var dataTypes = new DataType.List();
             var projects = new Project.List();
@@ -100,14 +105,14 @@
                 }
             }); */
            $.when(dataTypes.fetch(), projects.fetch()).then(
-                function(dataTypes, projects) {
-                    var model = new Subject.Model();
+                function(dataTypesRes, projectsRes) {
                     var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
-                    dataTypes = _.where(dataTypes[0], {classTemplate: SUBJECT});
+                    // get the last existing SUBJECT template (there should always be only one)
+                    var subjectType = _.last(_.where(dataTypesRes[0], {classTemplate: SUBJECT}));
+                    var model = new Subject.Model({type: subjectType});
                     _this.loadView(new Subject.Views.Edit({idDataType: idDataType, 
                                                        id: id, 
-                                                       dataTypes: dataTypes,
-                                                       projects: projects[0],
+                                                       projects: projectsRes[0],
                                                        model: model
                     }));
                 }, function() {

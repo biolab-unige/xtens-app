@@ -1,0 +1,40 @@
+<h2><%= __("subject-list") %></h2> 
+
+<div id="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><%= __("code") %></th>
+                            <th><%= __("given-name") %></th>
+                            <th><%= __("surname") %></th>
+                            <th><%= __("birth-date") %></th>
+                            <th><%= __("sex") %></th>
+                            <th><%= __("project") %></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <% _.each(subject, function(subject) { %> 
+                    <tr>
+                        <td><%= subject.get("code") %></td>
+                        <td><%= subject.get("personalInfo").givenName %></td>
+                        <td><%= subject.get("personalInfo").surname %></td>
+                        <td><%= subject.get("personalInfo").birthDate %></td>
+                        <td><%= subject.get("personalInfo").sex %></td>
+                        <td><%= subject.get("project").name %></td>
+                        <td><a class="btn" href="#/subjects/edit/<%= subject.get("type").id %>/<%= subject.id %>"><%=__("edit") %></a></td>
+                    </tr>
+                    <% }) %> 
+                    </tbody>
+                </table>
+            </div>
+            <div id="buttonbardiv" class="row text-center">
+                <a href="#/subjects/new" class="btn btn-primary"><%= __("new-subject")%></a>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -56,7 +56,12 @@
         urlRoot: '/subjectWithPersonalDetails'
     });
 
-    Subject.Views.Edit = Data.Views.Edit.fullExtend({
+    Subject.List = Backbone.Collection.extend({
+        model: Subject.Model,
+        url: '/subjectWithPersonalDetails' 
+    });
+
+    Subject.Views.Edit = Backbone.View.extend({
 
         tagName: 'div',
         className: 'data',
@@ -64,21 +69,42 @@
         initialize: function(options) {
             _.bindAll(this, 'fetchSuccess');
             $('#main').html(this.el);
-            this.dataTypes = options.dataTypes ? _.where(options.dataTypes, {classTemplate: SUBJECT}) : [];
+            this.dataTypes = null;
             this.projects = options.projects; 
             this.template = JST["views/templates/subject-edit.ejs"];
             this.personalDetailsView = null;
             this.schemaTemplate = JST["views/templates/subject-edit-partial.ejs"];
             this.schemaView = null;
             this.render(options);
+            this.renderDataTypeSchema();
+        },
+
+        render: function(options) {
+            if (options.id) {
+                this.model = new Subject.Model({id: options.id});
+                this.model.fetch({
+                    success: this.fetchSuccess
+                });
+            }
+            else {
+                this.$el.html(this.template({__: i18n, data: null}));
+                this.stickit();
+            }
+            return this;
+        },
+        
+        fetchSuccess:function(subject) {
+            this.$el.html(this.template({__: i18n, data: data}));
+            this.stickit();
+            this.renderDataTypeSchema(subject);
         },
 
         events: {
-            "click #save": "saveData",
+            "click #save": "saveSubject",
             "click #add-personal-details": "addPersonalDetailsView"
         },
 
-        saveData: function() {
+        saveSubject: function() {
             var json = this.schemaView && this.schemaView.serialize();
             this.model.set("code", json.code);
             this.model.set("notes", json.notes);
@@ -130,6 +156,32 @@
             }
         } 
 
+    });
+
+    Subject.Views.List = Backbone.View.extend({
+        
+        tagName: 'div',
+        className: 'subject',
+
+        initialize: function() {
+            $("#main").html(this.el);
+            this.template = JST["views/templates/subject-list.ejs"];
+            this.render();
+        },
+
+        render: function(options) {
+            var that = this;
+            var subjects = new Subject.List();
+            subjects.fetch({
+                success: function(subject) {
+                    that.$el.html(that.template({__: i18n, subject: subject.models}));
+                },
+                error: function() {
+                    that.$el.html(that.template({__: i18n}));
+                }
+            });
+            return this;
+        } 
     });
 
 } (xtens, xtens.module("subject")));

@@ -22,31 +22,25 @@ module.exports = {
                 Subject.create(subjectRecord).exec(next);
             }]        
         }, function(error, results) {
-            if (error) {
-                Subject.query('ROLLBACK', function(err, rolledback) {
-                    if (err) {
-                        res.send(500, "Tried to rollback, but failed.");
-                    }
-                    else {
-                        res.send(400, error);
-                    }
-                });
-            }
-            else {
-                Subject.query('COMMIT', function(err, committed) {
-                    if (err) {
-                        res.send(500, "Commit failed.");
-                    }
-                    else {
-                        res.json(results.subject);
-                    }
-                });
-            }
+            SubjectService.terminateTransaction(error, results, res);
         });
 
     },
     
     findWithPersonalDetails: function(req, res) {
+        var subjectCriteria = req.allParams();
+        Subject.find().where(subjectCriteria).populate('personalInfo').populate('project')
+        .exec(function(error, result) {
+            if (error) {
+                res.send(error); 
+            }
+            else {
+                res.json(result);
+            }
+        });
+    },
+
+    updateWithPersonalDetails: function(req, res) {
         var subjectRecord = req.body;
         async.auto({
             transaction: function(next) {
@@ -59,12 +53,8 @@ module.exports = {
                 Subject.update(subject).exec(next);
             }]
         }, function(err, results) {
-            // TODO
-        });
-    },
-
-    updateWithPersonalDetails: function(req, res) {
-        // TODO
+            SubjectService.terminateTransaction(err, results, res);
+        });    
     },
     
     deleteWithPersonalDetails: function(req, res) {

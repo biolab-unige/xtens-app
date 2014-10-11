@@ -94,7 +94,13 @@
         /* views/templates/personal-details-edit.ejs */
         "given-name": "Given Name",
         "surname": "Surname",
+        /* views/templates/subject-list */
+        "subject-list": "Subject List",
+        "new-subject": "New Subject",
         /* views/templates/subject-edit.ejs */
+        "subject-manager": "Subject Manager",
+        "create-subject": "Create Subject",
+        "update-subject": "Update Subject",
         "add-personal-details": "Add Personal Details",
         /* views/templates/subject-edit-partial.ejs */
         "code": "Code",

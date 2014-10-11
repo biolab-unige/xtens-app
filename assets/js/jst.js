@@ -934,12 +934,12 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<h1>' +
-((__t = ( __("data-manager") )) == null ? '' : __t) +
+((__t = ( __("subject-manager") )) == null ? '' : __t) +
 '</h1>\n<h2>' +
-((__t = ( data ? __("updata-data") : __("create-data") )) == null ? '' : __t) +
-'</h2>\n<div id="content">\n    <form class="form-horizontal edit-data-form" role="form">\n        <div class="form-group">\n            <label for="dataType" class="data-label">' +
+((__t = ( data ? __("update-subject") : __("create-subject") )) == null ? '' : __t) +
+'</h2>\n<div id="content">\n    <form class="form-horizontal edit-data-form" role="form">\n        <!--\n        <div class="form-group">\n            <label for="dataType" class="data-label">' +
 ((__t = ( __("select-a-data-type") )) == null ? '' : __t) +
-'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="dataType" name="dataType">\n                </select>\n            </div>\n        </div>\n        <div id="personal-details">\n            <button id="add-personal-details" class="btn btn-info">' +
+'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="dataType" name="dataType">\n                </select>\n            </div>\n        </div>\n        -->\n        <div id="personal-details">\n            <button id="add-personal-details" class="btn btn-info">' +
 ((__t = ( __('add-personal-details') )) == null ? '' : __t) +
 '</button>\n        </div>\n        <div id="metadata-schema"></div>\n        <div id="buttonbardiv" class="row text-center">\n            <div class="btn-group btn-group-margin">\n                <input type="submit" id="save" class="btn btn-primary" value="' +
 ((__t = (__('save') )) == null ? '' : __t) +
@@ -954,6 +954,55 @@ __p += '\n                <input type="hidden" id="id" name="id" value="' +
 '</button>\n                ';
 } ;
 __p += '\n            </div>\n        </div>\n    </form>\n</div>\n';
+
+}
+return __p
+};
+
+this["JST"]["views/templates/subject-list.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<h2>' +
+((__t = ( __("subject-list") )) == null ? '' : __t) +
+'</h2> \n\n<div id="content">\n    <div class="row">\n        <div class="col-sm-12">\n            <div class="table-responsive">\n                <table class="table">\n                    <thead>\n                        <tr>\n                            <th>' +
+((__t = ( __("code") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("given-name") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("surname") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("birth-date") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("sex") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("project") )) == null ? '' : __t) +
+'</th>\n                            <th></th>\n                        </tr>\n                    </thead>\n                    <tbody>\n                    ';
+ _.each(subject, function(subject) { ;
+__p += ' \n                    <tr>\n                        <td>' +
+((__t = ( subject.get("code") )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( subject.get("personalInfo").givenName )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( subject.get("personalInfo").surname )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( subject.get("personalInfo").birthDate )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( subject.get("personalInfo").sex )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( subject.get("project").name )) == null ? '' : __t) +
+'</td>\n                        <td><a class="btn" href="#/subjects/edit/' +
+((__t = ( subject.get("type").id )) == null ? '' : __t) +
+'/' +
+((__t = ( subject.id )) == null ? '' : __t) +
+'">' +
+((__t = (__("edit") )) == null ? '' : __t) +
+'</a></td>\n                    </tr>\n                    ';
+ }) ;
+__p += ' \n                    </tbody>\n                </table>\n            </div>\n            <div id="buttonbardiv" class="row text-center">\n                <a href="#/subjects/new" class="btn btn-primary">' +
+((__t = ( __("new-subject"))) == null ? '' : __t) +
+'</a>\n            </div>\n        </div>\n    </div>\n</div>\n\n';
 
 }
 return __p

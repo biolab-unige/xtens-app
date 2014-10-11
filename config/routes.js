@@ -41,7 +41,10 @@ module.exports.routes = {
     '/groupDatatype/dissociate':{controller:'group',action:'removeDatatype'},
        
     // REST API for subject (with personal info)
-    'POST /subjectWithPersonalDetails': {controller: 'subject', action: 'createWithPersonalDetails'}
+    'GET /subjectWithPersonalDetails': {controller: 'subject', action: 'findWithPersonalDetails'},
+    'PUT /subjectWithPersonalDetails': {controller: 'subject', action: 'updateWithPersonalDetails'},
+    'POST /subjectWithPersonalDetails': {controller: 'subject', action: 'createWithPersonalDetails'},
+    'DELETE /subjectWithPersonalDetails': {controller: 'subject', action: 'deleteWithPersonalDetails'}
     
     /*,
     'GET /dataType': {controller: 'DataType', action: 'find'} 
