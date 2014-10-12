@@ -76,7 +76,6 @@
             this.schemaTemplate = JST["views/templates/subject-edit-partial.ejs"];
             this.schemaView = null;
             this.render(options);
-            this.renderDataTypeSchema();
         },
 
         render: function(options) {
@@ -89,12 +88,13 @@
             else {
                 this.$el.html(this.template({__: i18n, data: null}));
                 this.stickit();
+                this.renderDataTypeSchema();
             }
             return this;
         },
         
         fetchSuccess:function(subject) {
-            this.$el.html(this.template({__: i18n, data: data}));
+            this.$el.html(this.template({__: i18n, data: subject}));
             this.stickit();
             this.renderDataTypeSchema(subject);
         },

@@ -1,0 +1,41 @@
+<h1><%= __("sample-manager") %></h1>
+<h2><%= data ? __("update-sample") : __("create-sample") %></h2>
+<div id="content">
+    <form class="form-horizontal edit-data-form" role="form">
+        <div class="form-group"></div>
+        <div class="form-group metadataform-group">
+            <label for="biobank-code" class="data-label"><%= __('biobank-code') %></label>
+            <div class="data-input-div">
+                <input text class="form-control" id="biobank-code" name="biobank-code"></input>
+            </div>
+        </div>
+        <div class="form-group metadataform-group">
+            <label for="material-type" class="data-label"><%= __('material-type') %></label>
+            <div class="data-input-div">
+                <select class="form-control" id="material-type" name="material-type"></select>
+            </div>
+        </div>
+        <div class="form-group metadataform-group">
+            <label for="donor" class="data-label"><%= __('donor') %></label>
+            <div class="data-input-div">
+                <select class="form-control" id="donor" name="donor"></select>
+            </div>
+        </div>
+        <div class="form-group metadataform-group">
+            <label for="parent-sample" class="data-label"><%= __('parent-sample') %></label>
+            <div class="data-input-div">
+                <select class="form-control" id="parent-sample" name="parent-sample"></select>
+            </div>
+        </div>
+        <div id="metadata-schema"></div>
+        <div id="buttonbardiv" class="row text-center">
+            <div class="btn-group btn-group-margin">
+                <input type="submit" id="save" class="btn btn-primary" value="<%=__('save') %>" >
+                <% if (data) { %>
+                <input type="hidden" id="id" name="id" value="<%= data.id %>" />
+                <button data-data-id="<%= data.id %>" class="btn btn-danger delete"><%= __("delete") %></button>
+                <%} %>
+            </div>
+        </div>
+    </form>
+</div>

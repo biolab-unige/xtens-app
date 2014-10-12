@@ -54,6 +54,7 @@ var jsFilesToInject = [
     'js/modules/Data.js',
     'js/modules/Subject.js',
     'js/modules/Project.js',
+    'js/modules/Sample.js',
     'js/modules/AdminAssociation.js'
     // All of the rest of your client-side js files
     // will be injected here in no particular order.

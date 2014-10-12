@@ -104,7 +104,15 @@
         "add-personal-details": "Add Personal Details",
         /* views/templates/subject-edit-partial.ejs */
         "code": "Code",
-        "project": "Project"
+        "project": "Project",
+        /* views/templates/sample-edit.ejs */
+        "sample-manager": "Sample Manager",
+        "create-sample": "Create Sample",
+        "update-sample": "Update Sample",
+        "biobank-code": "Biobank Code",
+        "material-type": "Material Type",
+        "donor": "Donor",
+        "parent-sample": "Parent Sample"
     };
 
     var it = {

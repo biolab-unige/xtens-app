@@ -910,6 +910,41 @@ __p += '<div class="form-group"></div>\n<div class="form-group metadataform-grou
 return __p
 };
 
+this["JST"]["views/templates/sample-edit.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<h1>' +
+((__t = ( __("sample-manager") )) == null ? '' : __t) +
+'</h1>\n<h2>' +
+((__t = ( data ? __("update-sample") : __("create-sample") )) == null ? '' : __t) +
+'</h2>\n<div id="content">\n    <form class="form-horizontal edit-data-form" role="form">\n        <div class="form-group"></div>\n        <div class="form-group metadataform-group">\n            <label for="biobank-code" class="data-label">' +
+((__t = ( __('biobank-code') )) == null ? '' : __t) +
+'</label>\n            <div class="data-input-div">\n                <input text class="form-control" id="biobank-code" name="biobank-code"></input>\n            </div>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="material-type" class="data-label">' +
+((__t = ( __('material-type') )) == null ? '' : __t) +
+'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="material-type" name="material-type"></select>\n            </div>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="donor" class="data-label">' +
+((__t = ( __('donor') )) == null ? '' : __t) +
+'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="donor" name="donor"></select>\n            </div>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="parent-sample" class="data-label">' +
+((__t = ( __('parent-sample') )) == null ? '' : __t) +
+'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="parent-sample" name="parent-sample"></select>\n            </div>\n        </div>\n        <div id="metadata-schema"></div>\n        <div id="buttonbardiv" class="row text-center">\n            <div class="btn-group btn-group-margin">\n                <input type="submit" id="save" class="btn btn-primary" value="' +
+((__t = (__('save') )) == null ? '' : __t) +
+'" >\n                ';
+ if (data) { ;
+__p += '\n                <input type="hidden" id="id" name="id" value="' +
+((__t = ( data.id )) == null ? '' : __t) +
+'" />\n                <button data-data-id="' +
+((__t = ( data.id )) == null ? '' : __t) +
+'" class="btn btn-danger delete">' +
+((__t = ( __("delete") )) == null ? '' : __t) +
+'</button>\n                ';
+} ;
+__p += '\n            </div>\n        </div>\n    </form>\n</div>\n';
+
+}
+return __p
+};
+
 this["JST"]["views/templates/subject-edit-partial.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;

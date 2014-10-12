@@ -1,3 +1,9 @@
+/**
+ * @author  Massimiliano Izzo
+ * @description This file conatins all the Backbone classes for handling Data and
+ *              metadata instances
+ */
+
 (function(xtens, Data) {
 
     var i18n = xtens.module("i18n").en;
