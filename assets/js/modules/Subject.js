@@ -5,14 +5,16 @@
     var PersonalDetails = xtens.module("personaldetails");
     var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
 
-    Subject.Views.MetadataSchema = Data.Views.MetadataSchema.fullExtend({
-        
-        initialize: function(options) {
-            this.template = options.template;
-            this.component = options.component;
-            this.projects = options.projects;
-            this.nestedViews = [];
-        },
+    Subject.Model = Data.Model.fullExtend({
+        urlRoot: '/subjectWithPersonalDetails'
+    });
+
+    Subject.List = Backbone.Collection.extend({
+        model: Subject.Model,
+        url: '/subjectWithPersonalDetails' 
+    });
+
+    Subject.Views.Edit = Data.Views.Edit.fullExtend({
 
         bindings: {
 
@@ -49,22 +51,7 @@
                 observe: 'notes'
             }
 
-        }
-    });
-
-    Subject.Model = Data.Model.fullExtend({
-        urlRoot: '/subjectWithPersonalDetails'
-    });
-
-    Subject.List = Backbone.Collection.extend({
-        model: Subject.Model,
-        url: '/subjectWithPersonalDetails' 
-    });
-
-    Subject.Views.Edit = Backbone.View.extend({
-
-        tagName: 'div',
-        className: 'data',
+        },
 
         initialize: function(options) {
             _.bindAll(this, 'fetchSuccess');
@@ -73,7 +60,6 @@
             this.projects = options.projects; 
             this.template = JST["views/templates/subject-edit.ejs"];
             this.personalDetailsView = null;
-            this.schemaTemplate = JST["views/templates/subject-edit-partial.ejs"];
             this.schemaView = null;
             this.render(options);
         },
@@ -88,16 +74,18 @@
             else {
                 this.$el.html(this.template({__: i18n, data: null}));
                 this.stickit();
+                this.$('#tags').select2({tags: []});
                 this.renderDataTypeSchema();
             }
             return this;
         },
         
+        /*
         fetchSuccess:function(subject) {
             this.$el.html(this.template({__: i18n, data: subject}));
             this.stickit();
             this.renderDataTypeSchema(subject);
-        },
+        }, */
 
         events: {
             "click #save": "saveSubject",
@@ -105,15 +93,11 @@
         },
 
         saveSubject: function() {
-            var json = this.schemaView && this.schemaView.serialize();
-            this.model.set("code", json.code);
-            this.model.set("notes", json.notes);
-            this.model.set("tags", json.tags);
-            this.model.set("metadata", json.metadata);
-            this.model.set("project", json.project);
+            var metadata = this.schemaView && this.schemaView.serialize();
+            this.model.set("metadata", metadata);
             // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
             this.model.set("personalInfo", _.clone(this.personalDetailsView.model.attributes));
-            this.model.save({
+            this.model.save(null, {
                 success: function(subject) {
                     xtens.router.navigate('subjects', {trigger: true});
                 },
@@ -130,36 +114,12 @@
             var $parent = $(ev.currentTarget).parent();
             $parent.empty();
             $parent.html(this.personalDetailsView.render().el);
-        },
-
-        renderDataTypeSchema: function(data) {
-            if (this.schemaView) {
-                if (!this.schemaView.removeMe()) {
-                    return;
-                }
-            }
-            var $metadataSchema = this.$("#metadata-schema");
-            var type = this.model.get('type');
-            if (type) {
-                var schema = type.schema;
-                var schemaModel = new Data.MetadataSchemaModel(null, {data: data});
-                this.schemaView = new Subject.Views.MetadataSchema({template: this.schemaTemplate, 
-                                                                   component: schema,
-                                                                   model: schemaModel,
-                                                                   projects: this.projects
-                });
-                $metadataSchema.append(this.schemaView.render().el);
-                this.$('#tags').select2({tags: []});
-            }
-            else {
-                $metadataSchema.html('');
-            }
-        } 
+        }
 
     });
 
     Subject.Views.List = Backbone.View.extend({
-        
+
         tagName: 'div',
         className: 'subject',
 

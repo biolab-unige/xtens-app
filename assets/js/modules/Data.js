@@ -90,10 +90,10 @@
             }
             else {
                 if (field.isList) {
-                    this.set("value", field.possibleValues[0]);
+                    this.set("value", field.possibleValues && field.possibleValues[0]);
                 }
                 if (field.hasUnit) {
-                    this.set("unit", field.possibleUnits[0]);
+                    this.set("unit", field.possibleUnits && field.possibleUnits[0]);
                 }
             }
         }
@@ -104,7 +104,7 @@
      */
     Data.MetadataGroupModel = Backbone.Model.extend({
         initialize: function(attributes, options) {
-            if (options.metadata) {
+            if (options && options.metadata) {
                 this.metadata = options.metadata;
             }
         }
@@ -115,8 +115,8 @@
      */
     Data.MetadataLoopModel = Backbone.Model.extend({
         initialize: function(attributes, options) {
-            this.set("name", options.name); 
-            if (options.metadata) {
+            this.set("name", options && options.name); 
+            if (options && options.metadata) {
                 this.metadata = options.metadata;
             }
         }
@@ -190,45 +190,27 @@
             var data = options && options.data;
             if (data) {
                 this.metadata = data.get("metadata");
-                this.set("date", data.get("date"));
-                this.set("tags", data.get("tags"));
-                this.set("notes", data.get("notes"));
+                /*
+                   this.set("date", data.get("date"));
+                   this.set("tags", data.get("tags"));
+                   this.set("notes", data.get("notes")); */
             }
         }
 
     });
 
     Data.Views.MetadataSchema = Data.Views.MetadataComponent.fullExtend({
+
+        id: 'metadata-schema',
         className: 'metadataschema',
 
-        bindings: {
-
-            '#date': {
-                observe: 'date',
-                onGet: function(value) {
-                    return new Date(value);
-                }
-            },
-            '#tags': {
-                observe: 'tags',
-                getVal: function($el, ev, option) {
-                    return $el.val().split(",");
-                }
-            },
-
-            '#notes': {
-                observe: 'notes'
-            }
-
+        initialize: function(options) {
+            this.template = JST["views/templates/data-edit-partial.ejs"];
+            this.component = options.component;
+            this.nestedViews = [];
         },
-        /*
-        getTagsValue: function($el, ev, option) {
-            return $el.val().split(",");
-        }, */
-
 
         serialize: function() {
-            var json = _.clone(this.model.attributes);
             var arr = [];
             var i, len;
             if (this.nestedViews && this.nestedViews.length) {
@@ -247,8 +229,7 @@
                     metadata[serialized[i].name].unit.push(serialized[i].unit);
                 }
             }
-            json.metadata = metadata;
-            return json;
+            return metadata;
         }
 
     });
@@ -297,7 +278,7 @@
             }
             return this;
         },
-        
+
         /**
          *  override  the basic Data,Views.MetadataComponent add() method
          */
@@ -465,7 +446,6 @@
             $('#main').html(this.el);
             this.dataTypes = options.dataTypes || []; 
             this.template = JST["views/templates/data-edit.ejs"];
-            this.schemaTemplate = JST["views/templates/data-edit-partial.ejs"];
             this.schemaView = null;
             this.render(options);
         },
@@ -481,6 +461,7 @@
                 this.$el.html(this.template({__: i18n, data: null}));
                 this.stickit();
                 this.listenTo(this.model, 'change:type', this.dataTypeOnChange);
+                this.$('#tags').select2({tags: []});
             }
             return this;
         },
@@ -488,6 +469,7 @@
         fetchSuccess:function(data) {
             this.$el.html(this.template({__: i18n, data: data}));
             this.stickit();
+            this.$('#tags').select2({tags: []});
             this.renderDataTypeSchema(data);
         },
 
@@ -507,7 +489,25 @@
                     var value = parseInt($el.val());
                     return _.findWhere(options.view.dataTypes, {id: value });
                 }
+            },
+
+            '#date': {
+                observe: 'date',
+                onGet: function(value) {
+                    return new Date(value);
+                }
+            },
+            '#tags': {
+                observe: 'tags',
+                getVal: function($el, ev, option) {
+                    return $el.val().split(",");
+                }
+            },
+
+            '#notes': {
+                observe: 'notes'
             }
+
         },
 
         events: {
@@ -516,25 +516,17 @@
 
         saveData: function() {
             if (this.schemaView && this.schemaView.serialize) {
-                try {
-                    var json = this.schemaView.serialize();
-                    this.model.set("date", json.date);
-                    this.model.set("notes", json.notes);
-                    this.model.set("tags", json.tags);
-                    this.model.set("metadata", json.metadata);
-                    this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
-                    this.model.save({
-                        success: function(data) {
-                            xtens.router.navigate('data', {trigger: true});
-                        },
-                        error: function(err) {
-                            console.log(err);
-                        }
-                    });
-                }
-                catch(err) {
-                    console.log(err);
-                }
+                var metadata = this.schemaView.serialize();
+                this.model.set("metadata", metadata);
+                // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
+                this.model.save(null, {
+                    success: function(data) {
+                        xtens.router.navigate('data', {trigger: true});
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    }
+                });
             }
             return false;
         },
@@ -553,20 +545,18 @@
                     return;
                 }
             }
-            var $metadataSchema = this.$("#metadata-schema");
             var type = this.model.get('type');
             if (type) {
                 var schema = type.schema;
                 var schemaModel = new Data.MetadataSchemaModel(null, {data: data});
-                this.schemaView = new Data.Views.MetadataSchema({template: this.schemaTemplate, 
-                                                                component: schema,
-                                                                model: schemaModel
+                this.schemaView = new Data.Views.MetadataSchema({
+                    component: schema,
+                    model: schemaModel
                 });
-                $metadataSchema.append(this.schemaView.render().el);
-                this.$('#tags').select2({tags: []});
+                this.$("#buttonbardiv").before(this.schemaView.render().el);
             }
             else {
-                $metadataSchema.html('');
+                this.$("#buttonbardiv").before();
             }
         }
 

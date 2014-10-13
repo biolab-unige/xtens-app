@@ -14,7 +14,30 @@
         <div id="personal-details">
             <button id="add-personal-details" class="btn btn-info"><%= __('add-personal-details') %></button>
         </div>
-        <div id="metadata-schema"></div>
+        <div class="form-group metadataform-group">
+            <label for="code" class="data-label"><%= __('code') %></label>
+            <div class="data-input-div">
+                <input text class="form-control" id="code" name="code"></input>
+            </div>
+        </div>
+        <div class="form-group metadataform-group">
+            <label for="project" class="data-label"><%= __('project') %></label>
+            <div class="data-input-div">
+                <select class="form-control" id="project" name="project"></select>
+            </div>
+        </div>
+        <div class="form-group metadataform-group">
+            <label for="tags" class="data-label"><%= __('tags') %></label>
+            <div class="data-input-div">
+                <input type="hidden" class="form-control" id="tags" name="tags"></input>
+            </div>
+        </div>
+        <div class="form-group metadataform-group">
+            <label for="notes" class="data-label"><%= __('notes') %></label>
+            <div class="data-input-div">
+                <textarea class="form-control" id="notes" name="notes" rows="4"></textarea>
+            </div>
+        </div>
         <div id="buttonbardiv" class="row text-center">
             <div class="btn-group btn-group-margin">
                 <input type="submit" id="save" class="btn btn-primary" value="<%=__('save') %>" >

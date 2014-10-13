@@ -134,7 +134,8 @@ describe('Data.Views.MetadataLoop', function() {
 
     describe('#addLoopBody', function() {
         it('should add a novel loop body element to the loop', function() {
-            var view = new Data.Views.MetadataLoop({component: loop});
+            var model = new Data.MetadataLoopModel();
+            var view = new Data.Views.MetadataLoop({model: model, component: loop});
             view.render();
             view.addLoopBody();
             expect(view.$el.children('.metadatacomponent-body')).to.have.length(2);
@@ -143,7 +144,8 @@ describe('Data.Views.MetadataLoop', function() {
         });
 
         it('should add a all the metadata fields contained in the loop body', function() {
-            var view = new Data.Views.MetadataLoop({component: loop});
+            var model = new Data.MetadataLoopModel();  
+            var view = new Data.Views.MetadataLoop({model: model, component: loop});
             view.render();
             view.addLoopBody();
             var newLoopBody = view.$el.children('.metadatacomponent-body').eq(1);
@@ -256,7 +258,7 @@ describe('Data.Views.Edit', function() {
                     "isList":false,
                     "possibleValues":null,
                     "hasUnit":true,
-                    "possibleUnits":null,
+                    "possibleUnits":["degree", "radians"],
                     "min":"-180.0",
                     "max":"180.0",
                     "step":"0.5"
@@ -269,7 +271,7 @@ describe('Data.Views.Edit', function() {
         jschema.header = {};
         jschema.body = [];
         this.dataTypes = [{id:1, name: 'Patient', schema: jschema}, 
-            {id:2, name: 'Cell Line', schema: schema}, {id:3, name: 'Sample', schema: schema}, {id:4, name: 'Clinical Info', schema: schema}];
+            {id:2, name: 'Cell Line', schema: jschema}, {id:3, name: 'Sample', schema: jschema}, {id:4, name: 'Clinical Info', schema: jschema}, {id:5, name: 'Star', schema: schema}];
     });
 
     beforeEach(function() {
@@ -280,10 +282,11 @@ describe('Data.Views.Edit', function() {
         it('should have a select field with 5 options', function() {
             this.model.set({});
             this.view = new Data.Views.Edit({model: this.model, dataTypes: this.dataTypes});
-            expect(this.view.$('#dataType').children()).to.have.length(5);
+            expect(this.view.$('#dataType').children()).to.have.length(6);
         });
     });
-
+    
+    /*
     describe('#dataTypeOnChange', function() {
 
         beforeEach(function() {
@@ -295,9 +298,9 @@ describe('Data.Views.Edit', function() {
             this.model.set("type", 1);
             expect(this.view.$('#metadata-header').children().length).to.be.above(0);          
         });
-    });
+    }); */
 
-    describe('#createMetadataForm', function() {
+    describe('#dataTypeOnChange', function() {
 
         beforeEach(function() {
             this.model.set({});
@@ -306,11 +309,11 @@ describe('Data.Views.Edit', function() {
         }); // beforeEach 
 
         it('should show each metadata group within a container', function() {
-            this.view.createMetadataForm(schema);
+            this.model.set('type', this.view.dataTypes[4]);
             var $metadataGroups = this.view.$('#metadata-body').children();
             expect($metadataGroups).to.have.length.above(0);
             $metadataGroups.each(function(index, group) {
-                expect($(group).children(':first').html()).to.equal('Group - ' + schema.body[index].name);
+                expect($(group).children(':first').html()).to.equal(schema.body[index].name.toUpperCase());
                 expect($(group).children().eq(1).children()).to.be.not.empty;
             });
         });
@@ -320,10 +323,12 @@ describe('Data.Views.Edit', function() {
     describe('#serialize', function() {
        
        it('should return a json containing all the metadata fields of the schema', function() {
+            /* TODO
             this.model.set({});
             this.view = new Data.Views.Edit({model: this.model, dataTypes: this.dataTypes});
             this.view.createMetadataForm(schema);
             var serialized = this.view.serialize();
+           */
        }); 
 
     });
