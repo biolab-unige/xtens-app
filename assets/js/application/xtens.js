@@ -40,15 +40,33 @@ jQuery(function($) {
     var AdminAssociation = xtens.module("adminassociation");
     var router = xtens.router;
 
-    router.on('route:operator-association',function(id){
-     router.loadView(new AdminAssociation.Views.GroupOperator({id:id}));
+    router.on('route:association',function(id){
+        var dominant = new Group.Model({id:id});
+        var nondominant = new Operator.List();
+      $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes,dominantRes){
+        router.loadView(new AdminAssociation.Views.Edit({
+         dominant:new Group.Model(dominantRes[0]),
+         nondominant: nondominantRes[0],
+         nondominantName:'members',
+         field:'login'
+     }));
     });
-  
-    router.on('route:datatype-association',function(id){
-     router.loadView(new AdminAssociation.Views.GroupDatatype({id:id}));
     });
 
+    router.on('route:association',function(id){
+        var dominant = new Group.Model({id:id});
+        var nondominant = new DataType.List();
+      $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes,dominantRes){
+        router.loadView(new AdminAssociation.Views.Edit({
+         dominant:new Group.Model(dominantRes[0]),
+         nondominant: nondominantRes[0],
+         nondominantName:'dataTypes',
+         field:'name'
+     }));
+    });
+    });
 
+    
     router.on('route:group',function() {
         router.loadView(new Group.Views.List());
 
