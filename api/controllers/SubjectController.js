@@ -40,6 +40,19 @@ module.exports = {
         });
     },
 
+    findOneWithPersonalDetails: function(req, res) {
+        var id = parseInt(req.param("id"));
+        Subject.findOne(id).populate("personalInfo").populate("project")
+        .exec(function(error, result) {
+            if (error) {
+                res.send(error);
+            }
+            else {
+                res.json(result);
+            }
+        });
+    },
+
     updateWithPersonalDetails: function(req, res) {
         var subjectRecord = req.body;
         async.auto({

@@ -112,7 +112,10 @@
         "biobank-code": "Biobank Code",
         "material-type": "Material Type",
         "donor": "Donor",
-        "parent-sample": "Parent Sample"
+        "parent-sample": "Parent Sample",
+        /* views/templates/sample-list */
+        "samples": "Samples",
+        "new-sample": "New Sample"
     };
 
     var it = {

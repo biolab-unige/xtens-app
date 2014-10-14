@@ -1,0 +1,44 @@
+<h2><%= __("samples") %></h2> 
+
+<div id="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><%= __("biobank-code") %></th>
+                            <th><%= __("type") %></th>
+                            <th><%= __("donor") %></th>
+                            <!--
+                            <th><%= __("birth-date") %></th>
+                            <th><%= __("sex") %></th>
+                            <th><%= __("project") %></th>
+                            -->
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <% _.each(samples, function(sample) { %> 
+                    <tr>
+                        <td><%= sample.get("biobankCode") %></td>
+                        <td><%= sample.get("type").name %></td>
+                        <td><%= sample.get("donor").code %></td>
+                        <!--
+                        <td><%= sample.get("metadata")["Arrival Code"] %></td>
+                        <td><%= sample.get("metadata").diagnosis %></td>
+                        <td><%= sample.get("metadata").anatomicalPosition %></td>
+                        -->
+                        <td><a class="btn" href="#/samples/edit/<%= sample.id %>"><%=__("edit") %></a></td>
+                    </tr>
+                    <% }) %> 
+                    </tbody>
+                </table>
+            </div>
+            <div id="buttonbardiv" class="row text-center">
+                <a href="#/samples/new" class="btn btn-primary"><%= __("new-sample")%></a>
+            </div>
+        </div>
+    </div>
+</div>
+

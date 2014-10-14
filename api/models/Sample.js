@@ -11,12 +11,12 @@ module.exports = {
 
         biobankCode: {
             type: 'string',
-            column_name: 'biobank_code'
+            columnName: 'biobank_code'
         },
 
-        materialType: {
+        type: {
             model: 'dataType',
-            columnName: 'material_type'  
+            columnName: 'type'  
         },
 
         donor: {

@@ -17,7 +17,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    <% _.each(subject, function(subject) { %> 
+                    <% _.each(subjects, function(subject) { %> 
                     <tr>
                         <td><%= subject.get("code") %></td>
                         <td><%= subject.get("personalInfo").givenName %></td>
@@ -25,7 +25,7 @@
                         <td><%= subject.get("personalInfo").birthDate %></td>
                         <td><%= subject.get("personalInfo").sex %></td>
                         <td><%= subject.get("project").name %></td>
-                        <td><a class="btn" href="#/subjects/edit/<%= subject.get("type").id %>/<%= subject.id %>"><%=__("edit") %></a></td>
+                        <td><a class="btn" href="#/subjects/edit/<%= subject.id %>"><%=__("edit") %></a></td>
                     </tr>
                     <% }) %> 
                     </tbody>

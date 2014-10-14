@@ -75,8 +75,6 @@ __p += ' \n                    <tr>\n                        <td>' +
 '</td>\n                        <td>' +
 ((__t = ( data.get("notes") )) == null ? '' : __t) +
 '</td>\n                            <td><a class="btn" href="#/data/edit/' +
-((__t = ( data.get("type").id )) == null ? '' : __t) +
-'/' +
 ((__t = ( data.id )) == null ? '' : __t) +
 '">' +
 ((__t = (__("edit") )) == null ? '' : __t) +
@@ -921,13 +919,13 @@ __p += '<h1>' +
 ((__t = ( data ? __("update-sample") : __("create-sample") )) == null ? '' : __t) +
 '</h2>\n<div id="content">\n    <form class="form-horizontal edit-data-form" role="form">\n        <div class="form-group"></div>\n        <div class="form-group metadataform-group">\n            <label for="biobank-code" class="data-label">' +
 ((__t = ( __('biobank-code') )) == null ? '' : __t) +
-'</label>\n            <div class="data-input-div">\n                <input text class="form-control" id="biobank-code" name="biobank-code"></input>\n            </div>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="material-type" class="data-label">' +
-((__t = ( __('material-type') )) == null ? '' : __t) +
-'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="material-type" name="material-type"></select>\n            </div>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="donor" class="data-label">' +
+'</label>\n            <div class="data-input-div">\n                <input text class="form-control" id="biobank-code" name="biobank-code"></input>\n            </div>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="type" class="data-label">' +
+((__t = ( __('type') )) == null ? '' : __t) +
+'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="type" name="type"></select>\n            </div>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="donor" class="data-label">' +
 ((__t = ( __('donor') )) == null ? '' : __t) +
 '</label>\n            <div class="data-input-div">\n                <select class="form-control" id="donor" name="donor"></select>\n            </div>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="parent-sample" class="data-label">' +
 ((__t = ( __('parent-sample') )) == null ? '' : __t) +
-'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="parent-sample" name="parent-sample"></select>\n            </div>\n        </div>\n        <div id="metadata-schema"></div>\n        <div id="buttonbardiv" class="row text-center">\n            <div class="btn-group btn-group-margin">\n                <input type="submit" id="save" class="btn btn-primary" value="' +
+'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="parent-sample" name="parent-sample"></select>\n            </div>\n        </div>\n        <div id="buttonbardiv" class="row text-center">\n            <div class="btn-group btn-group-margin">\n                <input type="submit" id="save" class="btn btn-primary" data-target-route="samples" value="' +
 ((__t = (__('save') )) == null ? '' : __t) +
 '" >\n                ';
  if (data) { ;
@@ -940,6 +938,53 @@ __p += '\n                <input type="hidden" id="id" name="id" value="' +
 '</button>\n                ';
 } ;
 __p += '\n            </div>\n        </div>\n    </form>\n</div>\n';
+
+}
+return __p
+};
+
+this["JST"]["views/templates/sample-list.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<h2>' +
+((__t = ( __("samples") )) == null ? '' : __t) +
+'</h2> \n\n<div id="content">\n    <div class="row">\n        <div class="col-sm-12">\n            <div class="table-responsive">\n                <table class="table">\n                    <thead>\n                        <tr>\n                            <th>' +
+((__t = ( __("biobank-code") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("type") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("donor") )) == null ? '' : __t) +
+'</th>\n                            <!--\n                            <th>' +
+((__t = ( __("birth-date") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("sex") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("project") )) == null ? '' : __t) +
+'</th>\n                            -->\n                            <th></th>\n                        </tr>\n                    </thead>\n                    <tbody>\n                    ';
+ _.each(samples, function(sample) { ;
+__p += ' \n                    <tr>\n                        <td>' +
+((__t = ( sample.get("biobankCode") )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( sample.get("type").name )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( sample.get("donor").code )) == null ? '' : __t) +
+'</td>\n                        <!--\n                        <td>' +
+((__t = ( sample.get("metadata")["Arrival Code"] )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( sample.get("metadata").diagnosis )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( sample.get("metadata").anatomicalPosition )) == null ? '' : __t) +
+'</td>\n                        -->\n                        <td><a class="btn" href="#/samples/edit/' +
+((__t = ( sample.id )) == null ? '' : __t) +
+'">' +
+((__t = (__("edit") )) == null ? '' : __t) +
+'</a></td>\n                    </tr>\n                    ';
+ }) ;
+__p += ' \n                    </tbody>\n                </table>\n            </div>\n            <div id="buttonbardiv" class="row text-center">\n                <a href="#/samples/new" class="btn btn-primary">' +
+((__t = ( __("new-sample"))) == null ? '' : __t) +
+'</a>\n            </div>\n        </div>\n    </div>\n</div>\n\n';
 
 }
 return __p
@@ -974,7 +1019,7 @@ __p += '<h1>' +
 ((__t = ( data ? __("update-subject") : __("create-subject") )) == null ? '' : __t) +
 '</h2>\n<div id="content">\n    <form class="form-horizontal edit-data-form" role="form">\n        <!--\n        <div class="form-group">\n            <label for="dataType" class="data-label">' +
 ((__t = ( __("select-a-data-type") )) == null ? '' : __t) +
-'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="dataType" name="dataType">\n                </select>\n            </div>\n        </div>\n        -->\n        <div id="personal-details">\n            <button id="add-personal-details" class="btn btn-info">' +
+'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="dataType" name="dataType">\n                </select>\n            </div>\n        </div>\n        -->\n        <div id="personal-details" class="form-group text-center">\n            <button id="add-personal-details" class="btn btn-info">' +
 ((__t = ( __('add-personal-details') )) == null ? '' : __t) +
 '</button>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="code" class="data-label">' +
 ((__t = ( __('code') )) == null ? '' : __t) +
@@ -1022,7 +1067,7 @@ __p += '<h2>' +
 '</th>\n                            <th>' +
 ((__t = ( __("project") )) == null ? '' : __t) +
 '</th>\n                            <th></th>\n                        </tr>\n                    </thead>\n                    <tbody>\n                    ';
- _.each(subject, function(subject) { ;
+ _.each(subjects, function(subject) { ;
 __p += ' \n                    <tr>\n                        <td>' +
 ((__t = ( subject.get("code") )) == null ? '' : __t) +
 '</td>\n                        <td>' +
@@ -1036,8 +1081,6 @@ __p += ' \n                    <tr>\n                        <td>' +
 '</td>\n                        <td>' +
 ((__t = ( subject.get("project").name )) == null ? '' : __t) +
 '</td>\n                        <td><a class="btn" href="#/subjects/edit/' +
-((__t = ( subject.get("type").id )) == null ? '' : __t) +
-'/' +
 ((__t = ( subject.id )) == null ? '' : __t) +
 '">' +
 ((__t = (__("edit") )) == null ? '' : __t) +

@@ -1,12 +1,12 @@
+/**
+ * @author  Massimiliano Izzo
+ * @description This file conatins all the Backbone classes for handling Samples
+ */
 (function(xtens, Sample) {
 
     var i18n = xtens.module("i18n").en;
     var DataType = xtens.module("datatype");
     var Data = xtens.module("data");
-
-    Sample.Views.MetadataSchema = Data.Views.MetadataSchema.fullExtend({
-        bindings: {}
-    });
 
     Sample.Model = Backbone.Model.extend({
         urlRoot: '/sample'
@@ -17,10 +17,7 @@
         url: '/sample'
     });
 
-    Sample.Views.Edit = Backbone.View.extend({
-
-        tagName: 'div',
-        className: 'data',
+    Sample.Views.Edit = Data.Views.Edit.fullExtend({
 
         bindings: {
 
@@ -28,32 +25,45 @@
                 observe: 'biobankCode'
             },
 
-            '#material-type': {
-                observe: 'materialType',
+            '#type': {
+                observe: 'type',
 
                 selectOptions: {
-                    collection: 'this.materialTypes',
+                    collection: 'this.dataTypes',
                     labelPath: 'name',
                     valuePath: 'id',
                     defaultOption: {
                         label: i18n('please-select'),
                         value: null
                     }
+                },
+                getVal: function($el, ev, options) {
+                    var value = parseInt($el.val());
+                    return _.findWhere(options.view.dataTypes, {id: value });
+                },
+                onGet: function(val, options) {
+                    return val.id;
                 }
-
             },
 
             '#donor': {
                 observe: 'donor',
 
                 selectOptions: {
-                    collection: 'this.donors',
+                    collection: 'this.subjects',
                     labelPath: 'code',
                     valuePath: 'id',
                     defaultOption: {
                         label: i18n('please-select'),
                         value: null
                     }
+                },
+                getVal: function($el, ev, options) {
+                    var value = parseInt($el.val());
+                    return _.findWhere(options.view.subjects, {id: value });
+                },
+                onGet: function(val, options) {
+                    return val.id;
                 }
             },
 
@@ -77,8 +87,8 @@
             _.bindAll(this, 'fetchSuccess');
             $('#main').html(this.el);
             this.template = JST["views/templates/sample-edit.ejs"];
-            this.materialTypes = options.materialTypes;
-            this.donors = options.donors;
+            this.dataTypes = options.dataTypes;
+            this.subjects = options.subjects;
             this.render(options);
         },
 
@@ -92,25 +102,42 @@
             else {
                 this.$el.html(this.template({__: i18n, data: null}));
                 this.stickit();
-                this.listenTo(this.model, 'change:materialType', this.materialTypeOnChange);
+                this.listenTo(this.model, 'change:type', this.dataTypeOnChange);
             }
             return this;
         },
 
-        fetchSuccess:function(sample) {
-            this.$el.html(this.template({__: i18n, data: sample}));
-            this.stickit();
-            this.renderDataTypeSchema(subject);
-        },
-
-        materialTypeOnChange: function() {
-            this.renderDataTypeSchema();
-        },
-
-        renderDataTypeSchema: function(sample) {
-            // TODO: implement or inherit -> this must be chosen
+        events: {
+            'click #save': 'saveData'
         }
 
     });
+
+    Sample.Views.List = Backbone.View.extend({
+
+        tagName: 'div',
+        className: 'sample',
+
+        initialize: function() {
+            $("#main").html(this.el);
+            this.template = JST["views/templates/sample-list.ejs"];
+            this.render();
+        },
+
+        render: function(options) {
+            var that = this;
+            var sample = new Sample.List();
+            sample.fetch({
+                success: function(samples) {
+                    that.$el.html(that.template({__: i18n, samples: samples.models}));
+                },
+                error: function() {
+                    that.$el.html(that.template({__: i18n}));
+                }
+            });
+            return this;
+        } 
+    });
+
 
 } (xtens, xtens.module("sample")));

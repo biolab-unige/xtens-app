@@ -24,10 +24,10 @@
             "datatypes/edit/:id": "dataTypeEdit",
             "data": "dataList",
             "data/new": "dataEdit",
-            "data/edit/:idDataType/:id": "dataEdit",
+            "data/edit/:id": "dataEdit",
             "subjects": "subjectList",
             "subjects/new": "subjectEdit",
-            "subjects/edit/:idDataType/:id": "subjectEdit",
+            "subjects/edit/:id": "subjectEdit",
             "samples": "sampleList",
             "samples/new": "sampleEdit",
             "samples/edit/:id": "sampleEdit",
@@ -69,15 +69,14 @@
             this.loadView(new Data.Views.List());
         },
 
-        dataEdit: function(idDataType, id) {
+        dataEdit: function(id) {
             var dataTypes = new DataType.List();
             var _this = this;
             dataTypes.fetch({
                 success: function(dataTypes) {
                     var model = new Data.Model();
                     dataTypes = dataTypes.toJSON();
-                    _this.loadView(new Data.Views.Edit({idDataType: idDataType, 
-                                                       id: id, 
+                    _this.loadView(new Data.Views.Edit({id: id, 
                                                        dataTypes: dataTypes,
                                                        model: model
                     }));
@@ -93,7 +92,7 @@
             this.loadView(new Subject.Views.List());
         },
 
-        subjectEdit: function(idDataType, id) {
+        subjectEdit: function(id) {
             var dataTypes = new DataType.List();
             var projects = new Project.List();
             var _this = this;
@@ -120,7 +119,7 @@
                     // get the last existing SUBJECT template (there should always be only one)
                     var subjectType = _.last(_.where(dataTypesRes[0], {classTemplate: SUBJECT}));
                     var model = new Subject.Model({type: subjectType});
-                    _this.loadView(new Subject.Views.Edit({idDataType: idDataType, 
+                    _this.loadView(new Subject.Views.Edit({
                                                        id: id, 
                                                        projects: projectsRes[0],
                                                        model: model
@@ -137,17 +136,17 @@
 
         sampleEdit: function(id) {
             var dataTypes = new DataType.List();
-            var donors = new Subject.List();
+            var subjects = new Subject.List();
             var _this = this;
             var SAMPLE = xtens.module("xtensconstants").DataTypeClasses.SAMPLE;
 
-            $.when(dataTypes.fetch({ data: $.param({ classTemplate: SAMPLE }) }), donors.fetch())
-            .then(function(dataTypesRes, donorsRes) {
+            $.when(dataTypes.fetch({ data: $.param({ classTemplate: SAMPLE }) }), subjects.fetch())
+            .then(function(dataTypesRes, subjectsRes) {
                 var model = new Sample.Model();
                 _this.loadView(new Sample.Views.Edit({
                     id: id,
-                    materialTypes: dataTypesRes[0],
-                    donors: donorsRes[0],
+                    dataTypes: dataTypesRes[0],
+                    subjects: subjectsRes[0],
                     model: model
                 }));
             });

@@ -488,6 +488,9 @@
                 getVal: function($el, ev, options) {
                     var value = parseInt($el.val());
                     return _.findWhere(options.view.dataTypes, {id: value });
+                },
+                onGet: function(val, options) {
+                    return val.id;
                 }
             },
 
@@ -514,14 +517,15 @@
             "click #save": "saveData"
         },
 
-        saveData: function() {
+        saveData: function(ev) {
+            var targetRoute = $(ev.currentTarget).data('targetRoute') || 'data';
             if (this.schemaView && this.schemaView.serialize) {
                 var metadata = this.schemaView.serialize();
                 this.model.set("metadata", metadata);
                 // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
                 this.model.save(null, {
                     success: function(data) {
-                        xtens.router.navigate('data', {trigger: true});
+                        xtens.router.navigate(targetRoute, {trigger: true});
                     },
                     error: function(err) {
                         console.log(err);

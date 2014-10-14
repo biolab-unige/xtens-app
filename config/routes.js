@@ -42,6 +42,7 @@ module.exports.routes = {
        
     // REST API for subject (with personal info)
     'GET /subjectWithPersonalDetails': {controller: 'subject', action: 'findWithPersonalDetails'},
+    'GET /subjectWithPersonalDetails/:id': {controller: 'subject', action: 'findOneWithPersonalDetails'},
     'PUT /subjectWithPersonalDetails': {controller: 'subject', action: 'updateWithPersonalDetails'},
     'POST /subjectWithPersonalDetails': {controller: 'subject', action: 'createWithPersonalDetails'},
     'DELETE /subjectWithPersonalDetails': {controller: 'subject', action: 'deleteWithPersonalDetails'}

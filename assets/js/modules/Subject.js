@@ -1,3 +1,8 @@
+/**
+ * @author  Massimiliano Izzo
+ * @description This file conatins all the Backbone classes for handling  
+ */
+
 (function(xtens, Subject) {
 
     var i18n = xtens.module("i18n").en;
@@ -32,6 +37,9 @@
                 getVal: function($el, ev, options) {
                     var value = parseInt($el.val());
                     return _.findWhere(options.view.projects, {id: value });
+                },
+                onGet: function(val, options) {
+                    return val.id;
                 }
             },
 
@@ -88,11 +96,11 @@
         }, */
 
         events: {
-            "click #save": "saveSubject",
+            "click #save": "saveData",
             "click #add-personal-details": "addPersonalDetailsView"
         },
 
-        saveSubject: function() {
+        saveData: function() {
             var metadata = this.schemaView && this.schemaView.serialize();
             this.model.set("metadata", metadata);
             // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
@@ -109,7 +117,7 @@
         },
 
         addPersonalDetailsView: function(ev) {
-            var model = new PersonalDetails.Model();
+            var model = new PersonalDetails.Model(this.model.get("personalInfo"));
             this.personalDetailsView = new PersonalDetails.Views.Edit({model: model});
             var $parent = $(ev.currentTarget).parent();
             $parent.empty();
@@ -133,8 +141,8 @@
             var that = this;
             var subjects = new Subject.List();
             subjects.fetch({
-                success: function(subject) {
-                    that.$el.html(that.template({__: i18n, subject: subject.models}));
+                success: function(subjects) {
+                    that.$el.html(that.template({__: i18n, subjects: subjects.models}));
                 },
                 error: function() {
                     that.$el.html(that.template({__: i18n}));
