@@ -1,0 +1,78 @@
+<div id="adminAssociation">
+    <style>
+#associated {width:400px;height:300px;padding:10px;border:5px solid #aaaaaa;border-radius:10px;}
+#noassociated {width:400px;height:300px;padding:15px;border:5px solid #aaaaaa;border-radius:10px;}
+div.nondominant {width:200px;height:40px;padding:5px;border:3px solid #aaaaaa;border-radius:10px;text-align: center;line-height:25px;}
+#label {text-align:center;
+    vertical-align:middle; 
+    display:block;
+    top:120px;}
+    </style>
+        <form name = "Myform" class="form-horizontal association-form" role="form">
+
+        <h2 class="legend" align="center"><%= __("operator") %></h2> 
+
+
+        <div class="form-group row" >
+
+            <p> <label for="associated" class="col-md-3 control-label" id="label"><%= __("associated-operators") %></label></p>
+
+            <div id="associated" class="col-md-6 Table" >
+                <div id="lista" class="col-md-6">
+                    <% if (dominant.get(nondominantName).length !=0) {%> 
+                    <% var a = new Array();
+                    var dati = new Array(); 
+                    for(var g = 0;g<dominant.get(nondominantName).length;g++){
+                        a[g]=dominant.get(nondominantName)[g][field];
+                        }
+                        %> 
+                        <% for(var j =0;j<nondominants.length;j++)  { 
+                        dati[j]= nondominants[j][field];
+                        } %>
+                        <% var c =_.intersection(dati,a) %> 
+                        <% for (var i=0;i<c.length;i++) { %> 
+                        <% for(var l=0;l<nondominants.length;l++){ %>
+                        <% if (c[i]==nondominants[l][field]) {%>
+
+                        <div class="form-group row">
+                            <div class="nondominant" draggable="true" id="<%= (nondominants[l].id)*1000 %>" value ="<%= c[i] %>"><%= c[i] %></div>
+                        </div>
+                        <% } %>
+                        <% } %>
+                        <% } %>                
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+
+                <p> <label for="noassociated" id="label" class="col-md-3 control-label"><%= __("no-members") %></label></p>
+
+                <div id="noassociated" class=" col-md-6 Table">
+                    <div id="noass" class="col-md-6">
+                        <% if (dominant.get(nondominantName).length ==0) {%> 
+                        <% var a = new Array();}
+                        else{ var a = new Array();
+                        for(var g = 0;g<dominant.get(nondominantName).length;g++){
+                            a[g]=dominant.get(nondominantName)[g][field];
+                            }
+                            } var dati = new Array(); %> 
+                            <% for(var j =0;j<nondominants.length;j++)  { 
+                            dati[j]= nondominants[j][field];
+                            } %> 
+                            <% var b = _.difference(dati,a); %>
+                            <% for (var i=0;i<b.length;i++) { %> 
+                                <% for(var l=0;l<nondominants.length;l++){ %>
+                                <% if (b[i]==nondominants[l][field]) {%>
+                                <div class="form-group row">
+                                    <div class="nondominant" draggable="true" id="<%= (nondominants[l].id)*1000 %>" value ="<%= b[i]%>"><%= b[i]%></div>
+                                </div>
+                                <% } %>
+                                <% } %>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>

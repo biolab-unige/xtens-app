@@ -4,98 +4,78 @@
     // dependencies
     var i18n = xtens.module("i18n").en;    
     var router = xtens.router;
-    var Group = xtens.module("group");
-    var Operator = xtens.module("operator");
-    var Datatype = xtens.module("datatype");
 
- /* AdminAssociation.Model = Backbone.Model.extend({
-
-        urlRoot: '/association',
-
-    });
-
-    AdminAssociation.List = Backbone.Collection.extend({
-        url: '/association',
-        model: AdminAssociation.Model
-    });
-*/
-
-    AdminAssociation.Views.GroupOperator = Backbone.View.extend({
+       AdminAssociation.Views.Edit = Backbone.View.extend({
 
         tagName: 'div',
         className: 'adminAssociation',
 
-        initialize: function(options) {
-            _.bindAll(this,'fetchSuccess');
-            $("#main").html(this.el);
-            this.template = JST["views/templates/operator-association.ejs"]; 
-
-            this.render(options);
-
-
+        events :{'drop #associated':'associate',
+            'drop #noassociated':'dissociate',
+            'dragover #associated':'enableDrop',
+            'dragover #noassociated':'enableDrop',
+            'dragstart .nondominant':'drag'
 
         },
 
-        render: function(options)  {
-            var that = this;
-            that.operator = new Operator.List();
-            that.operator.fetch();
-            if(options.id) {
-                that.group = new Group.Model({id: options.id});
-                that.group.fetch({
-                    success:this.fetchSuccess  });
-            } else {
-                that.$el.html(that.template({__: i18n,group:null}));
-                return that;
-            }},
+        initialize: function(options) {
+             $("#main").html(this.el);
+            this.template = JST["views/templates/association.ejs"];
+            this.dominant = options.dominant;
+            this.nondominant = options.nondominant; 
+            this.nondominantName = options.nondominantName;
+            this.field = options.field;
+            this.render();
+        },
 
-            fetchSuccess: function (group) {
-                this.$el.html(this.template({__: i18n, group: group,operators:this.operator.models}));
+        render: function()  {
+               
+                this.$el.html(this.template({__: i18n, dominant:this.dominant,nondominants:this.nondominant,nondominantName:this.nondominantName,field:this.field}));
                 return this;
-
+           
             },
 
+            
+            associate : function(ev){
 
+                ev.preventDefault();
+                var idToAssociate=ev.originalEvent.dataTransfer.getData("Text");
+                ev.target.appendChild(document.getElementById(idToAssociate));
+                var nondominants = this.dominant.get(this.nondominantName);
+                nondominants.push(idToAssociate/1000);
+                this.dominant.set({nondominantName:nondominants});
+                this.dominant.save(null,{
+                    success:function(result){console.log(result);},
+                    error:function(err){console.log(err);}
+                });
+                                   
+            },
 
+            dissociate :function(ev){
 
-    });
+                ev.preventDefault();
+                var idToDissociate=ev.originalEvent.dataTransfer.getData("Text");
+                ev.target.appendChild(document.getElementById(idToDissociate));
+                var id_grp = parseInt(document.URL.split("/")[6]);
+                var nondominants = this.dominant.get(this.nondominantName);
+                nondominants.pop(idToDissociate/1000);
+                this.dominant.set({nondominantName:nondominants});
+                this.dominant.save(null,{
+                    success:function(result){console.log(result);},
+                    error:function(err){console.log(err);}
+                });
+             },
 
-    AdminAssociation.Views.GroupDatatype = Backbone.View.extend({
+            enableDrop : function(ev)
+            {
+                ev.preventDefault();
+            },
 
-        tagName: 'div',
-        className: 'adminAssociation',
-       
-	
-        initialize: function(options) {
-        
-             _.bindAll(this,'fetchSuccess');
-            $("#main").html(this.el);
-            this.template = JST["views/templates/datatype-association.ejs"];
-            this.render(options);
-        },
+            drag :function(ev)
+            {
+                ev.originalEvent.dataTransfer.setData("text",ev.target.id);
 
-        render: function(options)  {
-
-            this.datatype = new Datatype.List();
-            this.datatype.fetch();
-            if(options.id) {
-                this.group = new Group.Model({id: options.id});
-                this.group.fetch({
-                    success:this.fetchSuccess  });
-            } else {
-                this.$el.html(this.template({__: i18n,group:null}));
-                return this;
             }
-        },
-
-        fetchSuccess: function (group) {
-            this.$el.html(this.template({__: i18n, group: group,datatypes:this.datatype.models}));
-            return this;
-
-        },
- 
-	
-
 
     });
 

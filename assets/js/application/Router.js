@@ -38,8 +38,8 @@
             "groups/new":"group-edit",
             "groups/edit/:id":"group-edit",
             "login":"login",
-            "groups/operator/:id":"operator-association",
-            "groups/datatype/:id":"datatype-association"
+            "groups/operator/:id":"association",
+            "groups/datatype/:id":"association"
         },
 
         loadView: function(view) {
