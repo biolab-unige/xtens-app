@@ -40,7 +40,7 @@ jQuery(function($) {
     var AdminAssociation = xtens.module("adminassociation");
     var router = xtens.router;
 
-    router.on('route:association',function(id){
+    router.on('route:associationop',function(id){
         var dominant = new Group.Model({id:id});
         var nondominant = new Operator.List();
       $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes,dominantRes){
@@ -53,7 +53,7 @@ jQuery(function($) {
     });
     });
 
-    router.on('route:association',function(id){
+    router.on('route:associationd',function(id){
         var dominant = new Group.Model({id:id});
         var nondominant = new DataType.List();
       $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes,dominantRes){

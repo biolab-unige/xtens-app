@@ -29,7 +29,8 @@
     "select2": "https://github.com/ivaynberg/select2.git#~3.5.1",
     "select2-bootstrap-css": "https://github.com/t0m/select2-bootstrap-css.git#~1.4.1",
     "jquery-validation": "~1.13.0",
-    "backbone.stickit": "~0.8.0"
+    "backbone.stickit": "~0.8.0",
+    "parsleyjs": "~2.0.5"
   },
   "exportsOverride": {
     "jquery": {
@@ -55,7 +56,7 @@
       "js": "dist/*.js"
     },
     "backbone.stickit": {
-        "": "backbone.stickit.js"
+      "": "backbone.stickit.js"
     }
   },
   "devDependencies": {

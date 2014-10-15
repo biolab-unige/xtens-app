@@ -42,7 +42,7 @@
                 var idToAssociate=ev.originalEvent.dataTransfer.getData("Text");
                 ev.target.appendChild(document.getElementById(idToAssociate));
                 var nondominants = this.dominant.get(this.nondominantName);
-                nondominants.push(idToAssociate/1000);
+                nondominants.push(idToAssociate);
                 this.dominant.set({nondominantName:nondominants});
                 this.dominant.save(null,{
                     success:function(result){console.log(result);},
@@ -56,9 +56,8 @@
                 ev.preventDefault();
                 var idToDissociate=ev.originalEvent.dataTransfer.getData("Text");
                 ev.target.appendChild(document.getElementById(idToDissociate));
-                var id_grp = parseInt(document.URL.split("/")[6]);
                 var nondominants = this.dominant.get(this.nondominantName);
-                nondominants.pop(idToDissociate/1000);
+                nondominants.pop(idToDissociate);
                 this.dominant.set({nondominantName:nondominants});
                 this.dominant.save(null,{
                     success:function(result){console.log(result);},
