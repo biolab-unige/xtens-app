@@ -34,6 +34,7 @@ var jsFilesToInject = [
     'dependencies/**/backbone.stickit.js',
     'dependencies/**/select2.js',
     'dependencies/**/jquery.validate.js',
+    'dependencies/**/parsley.js',
 
     // Customised client-side js files
     'js/application/utils.js',

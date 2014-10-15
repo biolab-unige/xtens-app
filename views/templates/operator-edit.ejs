@@ -1,9 +1,13 @@
 <div id="operator">
-<form name = "Myform" id="form" class="form-horizontal edit-operator-form" role="form">
+<script 
+<script type = "text/javascript">
+$('#form').parsley();
+</script>
+<form name = "Myform" id="form" class="form-horizontal edit-operator-form" role="form" data-parsley-trim-value ="true">
     <legend class="legend"align="center"><%= operator ? 'Edit' : 'New' %> Operator</legend>
     <div class="form-group row">
         <label  class="col-md-3 control-label"><%= __("first-name") %></label>
-        <input class = "col-md-6" name="name" id="first" type="text" value="<%= operator ? operator.get('firstName') : '' %>">
+        <input  class = "col-md-6" name="name" id="first" type="text" value="<%= operator ? operator.get('firstName') : '' %>">
     </div>
     <div class="form-group row">
         <label class="col-md-3 control-label"><%= __("last-name") %></label>

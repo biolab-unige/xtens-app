@@ -6,9 +6,9 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<div id="adminAssociation">\n    <style>\n#associated {width:400px;height:300px;padding:10px;border:5px solid #aaaaaa;border-radius:10px;}\n#noassociated {width:400px;height:300px;padding:15px;border:5px solid #aaaaaa;border-radius:10px;}\ndiv.nondominant {width:200px;height:40px;padding:5px;border:3px solid #aaaaaa;border-radius:10px;text-align: center;line-height:25px;}\n#label {text-align:center;\n    vertical-align:middle; \n    display:block;\n    top:120px;}\n    </style>\n        <form name = "Myform" class="form-horizontal association-form" role="form">\n\n        <h2 class="legend" align="center">' +
-((__t = ( __("operator") )) == null ? '' : __t) +
+((__t = ( dominant.urlRoot.slice(1).charAt(0).toUpperCase()+dominant.urlRoot.slice(1).slice(1)+" "+dominant.get('name').charAt(0).toUpperCase()+dominant.get('name').slice(1) )) == null ? '' : __t) +
 '</h2> \n\n\n        <div class="form-group row" >\n\n            <p> <label for="associated" class="col-md-3 control-label" id="label">' +
-((__t = ( __("associated-operators") )) == null ? '' : __t) +
+((__t = ( __("associated")+" "+nondominantName.charAt(0).toUpperCase()+nondominantName.slice(1) )) == null ? '' : __t) +
 '</label></p>\n\n            <div id="associated" class="col-md-6 Table" >\n                <div id="lista" class="col-md-6">\n                    ';
  if (dominant.get(nondominantName).length !=0) {;
 __p += ' \n                    ';
@@ -31,7 +31,7 @@ __p += ' \n                        ';
 __p += '\n                        ';
  if (c[i]==nondominants[l][field]) {;
 __p += '\n\n                        <div class="form-group row">\n                            <div class="nondominant" draggable="true" id="' +
-((__t = ( (nondominants[l].id)*1000 )) == null ? '' : __t) +
+((__t = ( (nondominants[l].id) )) == null ? '' : __t) +
 '" value ="' +
 ((__t = ( c[i] )) == null ? '' : __t) +
 '">' +
@@ -45,7 +45,7 @@ __p += '\n                        ';
 __p += '                \n                        ';
  } ;
 __p += '\n                    </div>\n                </div>\n            </div>\n            <div class="form-group row">\n\n                <p> <label for="noassociated" id="label" class="col-md-3 control-label">' +
-((__t = ( __("no-members") )) == null ? '' : __t) +
+((__t = ( __("no-associated")+" "+nondominantName.charAt(0).toUpperCase()+nondominantName.slice(1) )) == null ? '' : __t) +
 '</label></p>\n\n                <div id="noassociated" class=" col-md-6 Table">\n                    <div id="noass" class="col-md-6">\n                        ';
  if (dominant.get(nondominantName).length ==0) {;
 __p += ' \n                        ';
@@ -68,7 +68,7 @@ __p += ' \n                                ';
 __p += '\n                                ';
  if (b[i]==nondominants[l][field]) {;
 __p += '\n                                <div class="form-group row">\n                                    <div class="nondominant" draggable="true" id="' +
-((__t = ( (nondominants[l].id)*1000 )) == null ? '' : __t) +
+((__t = ( (nondominants[l].id)  )) == null ? '' : __t) +
 '" value ="' +
 ((__t = ( b[i])) == null ? '' : __t) +
 '">' +
@@ -682,11 +682,11 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div id="operator">\n<form name = "Myform" id="form" class="form-horizontal edit-operator-form" role="form">\n    <legend class="legend"align="center">' +
+__p += '<div id="operator">\n<script \n<script type = "text/javascript">\n$(\'#form\').parsley();\n</script>\n<form name = "Myform" id="form" class="form-horizontal edit-operator-form" role="form" data-parsley-trim-value ="true">\n    <legend class="legend"align="center">' +
 ((__t = ( operator ? 'Edit' : 'New' )) == null ? '' : __t) +
 ' Operator</legend>\n    <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
 ((__t = ( __("first-name") )) == null ? '' : __t) +
-'</label>\n        <input class = "col-md-6" name="name" id="first" type="text" value="' +
+'</label>\n        <input  class = "col-md-6" name="name" id="first" type="text" value="' +
 ((__t = ( operator ? operator.get('firstName') : '' )) == null ? '' : __t) +
 '">\n    </div>\n    <div class="form-group row">\n        <label class="col-md-3 control-label">' +
 ((__t = ( __("last-name") )) == null ? '' : __t) +
@@ -694,7 +694,7 @@ __p += '<div id="operator">\n<form name = "Myform" id="form" class="form-horizon
 ((__t = ( operator ? operator.get('lastName') : '' )) == null ? '' : __t) +
 '">\n    </div>\n    <div class="form-group row">\n        <label class="col-md-3 control-label">' +
 ((__t = ( __("birth-date") )) == null ? '' : __t) +
-'</label>\n        <input class = "col-md-6 date" name="date" type="date" required="required" value="' +
+'</label>\n<input class = "col-md-6 date" name="date" type="date" data-date=\'{"startView":2,"openOnMouseFocus":true}\' required="required" value="' +
 ((__t = ( operator ? operator.get("birthDate").slice(0,9) +  (parseInt(operator.get("birthDate").slice(9,10))+1): '' )) == null ? '' : __t) +
 '">\n    </div>\n    <div class="form-group row">\n        <label class="col-md-3 control-label">' +
 ((__t = ( __("sex") )) == null ? '' : __t) +

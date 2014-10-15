@@ -10,12 +10,12 @@ div.nondominant {width:200px;height:40px;padding:5px;border:3px solid #aaaaaa;bo
     </style>
         <form name = "Myform" class="form-horizontal association-form" role="form">
 
-        <h2 class="legend" align="center"><%= __("operator") %></h2> 
+        <h2 class="legend" align="center"><%= dominant.urlRoot.slice(1).charAt(0).toUpperCase()+dominant.urlRoot.slice(1).slice(1)+" "+dominant.get('name').charAt(0).toUpperCase()+dominant.get('name').slice(1) %></h2> 
 
 
         <div class="form-group row" >
 
-            <p> <label for="associated" class="col-md-3 control-label" id="label"><%= __("associated-operators") %></label></p>
+            <p> <label for="associated" class="col-md-3 control-label" id="label"><%= __("associated")+" "+nondominantName.charAt(0).toUpperCase()+nondominantName.slice(1) %></label></p>
 
             <div id="associated" class="col-md-6 Table" >
                 <div id="lista" class="col-md-6">
@@ -35,7 +35,7 @@ div.nondominant {width:200px;height:40px;padding:5px;border:3px solid #aaaaaa;bo
                         <% if (c[i]==nondominants[l][field]) {%>
 
                         <div class="form-group row">
-                            <div class="nondominant" draggable="true" id="<%= (nondominants[l].id)*1000 %>" value ="<%= c[i] %>"><%= c[i] %></div>
+                            <div class="nondominant" draggable="true" id="<%= (nondominants[l].id) %>" value ="<%= c[i] %>"><%= c[i] %></div>
                         </div>
                         <% } %>
                         <% } %>
@@ -46,7 +46,7 @@ div.nondominant {width:200px;height:40px;padding:5px;border:3px solid #aaaaaa;bo
             </div>
             <div class="form-group row">
 
-                <p> <label for="noassociated" id="label" class="col-md-3 control-label"><%= __("no-members") %></label></p>
+                <p> <label for="noassociated" id="label" class="col-md-3 control-label"><%= __("no-associated")+" "+nondominantName.charAt(0).toUpperCase()+nondominantName.slice(1) %></label></p>
 
                 <div id="noassociated" class=" col-md-6 Table">
                     <div id="noass" class="col-md-6">
@@ -65,7 +65,7 @@ div.nondominant {width:200px;height:40px;padding:5px;border:3px solid #aaaaaa;bo
                                 <% for(var l=0;l<nondominants.length;l++){ %>
                                 <% if (b[i]==nondominants[l][field]) {%>
                                 <div class="form-group row">
-                                    <div class="nondominant" draggable="true" id="<%= (nondominants[l].id)*1000 %>" value ="<%= b[i]%>"><%= b[i]%></div>
+                                    <div class="nondominant" draggable="true" id="<%= (nondominants[l].id)  %>" value ="<%= b[i]%>"><%= b[i]%></div>
                                 </div>
                                 <% } %>
                                 <% } %>
