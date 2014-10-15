@@ -115,7 +115,10 @@
         "parent-sample": "Parent Sample",
         /* views/templates/sample-list */
         "samples": "Samples",
-        "new-sample": "New Sample"
+        "new-sample": "New Sample",
+        "diagnosis": "Diagnosis",
+        "arrival-code": "Arrival Code",
+        "anatomical-position": "Anatomical Position"
     };
 
     var it = {

@@ -33,16 +33,19 @@
                     labelPath: 'name',
                     valuePath: 'id',
                     defaultOption: {
-                        label: i18n('please-select'),
+                        label: "",
                         value: null
                     }
+                },
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n('please-select')});
                 },
                 getVal: function($el, ev, options) {
                     var value = parseInt($el.val());
                     return _.findWhere(options.view.dataTypes, {id: value });
                 },
                 onGet: function(val, options) {
-                    return val.id;
+                    return (val && val.id);
                 }
             },
 
@@ -50,20 +53,31 @@
                 observe: 'donor',
 
                 selectOptions: {
-                    collection: 'this.subjects',
-                    labelPath: 'code',
-                    valuePath: 'id',
+                    collection: function() {
+                        return this.subjects.map(function(subj) { 
+                            return { 
+                                label: subj.code,  //subj.personalInfo.surname + " " +  subj.personalInfo.givenName,
+                                value: subj.id
+                            }; 
+                        });
+                    },
+                        /*'this.subjects',
+                    labelPath: 'personalInfo.surname',
+                    valuePath: 'id', */
                     defaultOption: {
-                        label: i18n('please-select'),
+                        label: "",
                         value: null
-                    }
+                    } 
+                },
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n('please-select')});
                 },
                 getVal: function($el, ev, options) {
                     var value = parseInt($el.val());
                     return _.findWhere(options.view.subjects, {id: value });
                 },
                 onGet: function(val, options) {
-                    return val.id;
+                    return (val && val.id);
                 }
             },
 

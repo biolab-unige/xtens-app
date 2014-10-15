@@ -1,3 +1,8 @@
+/**
+ * @author  Massimiliano Izzo
+ * @description This file conatains the Backbone classes for handling DataType
+ *              models, collections and views  
+ */
 (function(xtens, DataType) {
 
     // dependencies

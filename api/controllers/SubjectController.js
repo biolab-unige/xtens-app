@@ -29,7 +29,7 @@ module.exports = {
     
     findWithPersonalDetails: function(req, res) {
         var subjectCriteria = req.allParams();
-        Subject.find().where(subjectCriteria).populate('personalInfo').populate('project')
+        Subject.find().where(subjectCriteria).populate('personalInfo').populate('projects')
         .exec(function(error, result) {
             if (error) {
                 res.send(error); 
@@ -42,7 +42,7 @@ module.exports = {
 
     findOneWithPersonalDetails: function(req, res) {
         var id = parseInt(req.param("id"));
-        Subject.findOne(id).populate("personalInfo").populate("project")
+        Subject.findOne(id).populate("personalInfo").populate("projects")
         .exec(function(error, result) {
             if (error) {
                 res.send(error);

@@ -24,7 +24,7 @@
                         <td><%= subject.get("personalInfo").surname %></td>
                         <td><%= subject.get("personalInfo").birthDate %></td>
                         <td><%= subject.get("personalInfo").sex %></td>
-                        <td><%= subject.get("project").name %></td>
+                        <td><%= subject.get("projects").map(function(project) {return (" " + project.name); }).toString().trim() %></td>
                         <td><a class="btn" href="#/subjects/edit/<%= subject.id %>"><%=__("edit") %></a></td>
                     </tr>
                     <% }) %> 

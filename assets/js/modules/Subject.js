@@ -1,6 +1,6 @@
 /**
  * @author  Massimiliano Izzo
- * @description This file conatins all the Backbone classes for handling  
+ * @description This file conatins all the Backbone classes for handling Subjects 
  */
 
 (function(xtens, Subject) {
@@ -9,22 +9,34 @@
     var Data = xtens.module("data");
     var PersonalDetails = xtens.module("personaldetails");
     var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
+    
+    /*
+    function initializeProjectsField($el, model, option) {
+        var data =
+    }*/
 
     Subject.Model = Data.Model.fullExtend({
-        urlRoot: '/subjectWithPersonalDetails'
+        urlRoot: '/subject',
+        
+        defaults: {
+            projects: []
+        }
     });
 
     Subject.List = Backbone.Collection.extend({
         model: Subject.Model,
-        url: '/subjectWithPersonalDetails' 
+        url: '/subject' 
     });
 
     Subject.Views.Edit = Data.Views.Edit.fullExtend({
 
         bindings: {
 
-            '#project': {
-                observe: 'project',
+            '#projects': {
+                observe: 'projects',
+                initialize: function($el, model, option) {
+                    $el.select2();
+                },
                 selectOptions: {
                     collection: 'this.projects',
                     labelPath: 'name',
@@ -33,13 +45,17 @@
                         label: i18n("please-select"),
                         value: null
                     } 
-                },
+                }, 
                 getVal: function($el, ev, options) {
+                    return $el.val().map(function(value) {
+                        return _.findWhere(options.view.projects, {id: parseInt(value)});
+                    });
+                    /*
                     var value = parseInt($el.val());
-                    return _.findWhere(options.view.projects, {id: value });
+                    return _.findWhere(options.view.projects, {id: value }); */
                 },
-                onGet: function(val, options) {
-                    return val.id;
+                onGet: function(vals, options) {
+                    return (vals && vals.map(function(val){return val.id; }));
                 }
             },
 
@@ -110,7 +126,7 @@
                     xtens.router.navigate('subjects', {trigger: true});
                 },
                 error: function(err) {
-                    console.log(err);
+                    alert(err);
                 }
             });
             return false;

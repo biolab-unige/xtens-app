@@ -27,8 +27,8 @@ var Subject= {
         model: 'dataType'
      },
 
-     project: {
-        model: 'project',
+     projects: {
+        collection: 'project',
         via: 'subjects'
      },
 

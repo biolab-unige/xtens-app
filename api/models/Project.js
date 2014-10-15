@@ -20,7 +20,8 @@ module.exports = {
 
       subjects: {
         collection: 'subject',
-        via: 'project'
+        via: 'projects',
+        dominant: true
       }
 
   }
