@@ -11,6 +11,8 @@
     var Project = xtens.module("project");
     var MaterialType = xtens.module("materialtype");
     var Sample = xtens.module("sample");
+    var Operator = xtens.module("operator");
+    var Group = xtens.module("group");
 
     /**
      * XTENS Router for Backbone
@@ -31,10 +33,10 @@
             "samples": "sampleList",
             "samples/new": "sampleEdit",
             "samples/edit/:id": "sampleEdit",
-            "operators": "operator",
+            "operators": "operatorList",
             "operators/new": "operator-edit",
             "operators/edit/:id": "operator-edit",
-            "groups":"group",
+            "groups":"groupList",
             "groups/new":"group-edit",
             "groups/edit/:id":"group-edit",
             "login":"login",
@@ -87,6 +89,15 @@
                 }
             });
         },
+
+        groupList:function(){
+        this.loadView(new Group.Views.List());
+        },
+
+        operatorList:function(){
+        this.loadView(new Operator.Views.List());
+        },
+
 
         subjectList: function() {
             this.loadView(new Subject.Views.List());
