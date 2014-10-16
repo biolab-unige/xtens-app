@@ -23,7 +23,7 @@ var Operator = {
             columnName: 'last_name'
         },
         birthDate: {
-            type: 'date',
+            type: 'datetime',
             columnName: 'birth_date'
         },
         sex: {

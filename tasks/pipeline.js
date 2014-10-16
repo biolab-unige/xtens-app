@@ -35,7 +35,9 @@ var jsFilesToInject = [
     'dependencies/**/select2.js',
     'dependencies/**/jquery.validate.js',
     'dependencies/**/parsley.js',
-
+    'dependencies/**/pikaday.js',
+    'dependencies/**/moment.js',
+    
     // Customised client-side js files
     'js/application/utils.js',
     'js/application/xtens.js',

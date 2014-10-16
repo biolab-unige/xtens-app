@@ -30,7 +30,8 @@
     "select2-bootstrap-css": "https://github.com/t0m/select2-bootstrap-css.git#~1.4.1",
     "jquery-validation": "~1.13.0",
     "backbone.stickit": "~0.8.0",
-    "parsleyjs": "~2.0.5"
+    "parsleyjs": "~2.0.5",
+    "moment": "~2.8.3"
   },
   "exportsOverride": {
     "jquery": {

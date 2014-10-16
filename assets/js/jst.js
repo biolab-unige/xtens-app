@@ -682,7 +682,7 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div id="operator">\n<script \n<script type = "text/javascript">\n$(\'#form\').parsley();\n</script>\n<form name = "Myform" id="form" class="form-horizontal edit-operator-form" role="form" data-parsley-trim-value ="true">\n    <legend class="legend"align="center">' +
+__p += '<div id="operator">\n<script \n<script type = "text/javascript">\n$(\'#form\').parsley();\n</script>\n<script>\nvar picker = new Pikaday({ field: $(\'#datepicker\')[0]});\n</script>\n<form name = "Myform" id="form" class="form-horizontal edit-operator-form" role="form" data-parsley-trim-value ="true">\n    <legend class="legend"align="center">' +
 ((__t = ( operator ? 'Edit' : 'New' )) == null ? '' : __t) +
 ' Operator</legend>\n    <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
 ((__t = ( __("first-name") )) == null ? '' : __t) +
@@ -694,9 +694,9 @@ __p += '<div id="operator">\n<script \n<script type = "text/javascript">\n$(\'#f
 ((__t = ( operator ? operator.get('lastName') : '' )) == null ? '' : __t) +
 '">\n    </div>\n    <div class="form-group row">\n        <label class="col-md-3 control-label">' +
 ((__t = ( __("birth-date") )) == null ? '' : __t) +
-'</label>\n        <input class = "col-md-6 date" name="date" type="date" required="required" value="' +
-((__t = ( operator ? operator.get("birthDate").slice(0,9) +  (parseInt(operator.get("birthDate").slice(9,10))+1): '' )) == null ? '' : __t) +
-'">\n    </div>\n    <div class="form-group row">\n        <label class="col-md-3 control-label">' +
+'</label>\n         <input class = "col-md-6 date" name="date" type="text" id="datepicker" required="required" value="' +
+((__t = ( operator ? operator.get('birthDate') :'' )) == null ? '' : __t) +
+'">\n\n           </div>\n    <div class="form-group row">\n        <label class="col-md-3 control-label">' +
 ((__t = ( __("sex") )) == null ? '' : __t) +
 '</label>\n         ';
  if(!operator) { ;
@@ -782,7 +782,7 @@ __p += ' \n            <tr>\n\n\n                <td class="oper_val">' +
 '</td>\n                <td class="oper_val">' +
 ((__t = ( operator.get("lastName") )) == null ? '' : __t) +
 '</td>\n                <td class="oper_val">' +
-((__t = ( operator.get("birthDate").slice(0,9) +  (parseInt(operator.get("birthDate").slice(9,10))+1))) == null ? '' : __t) +
+((__t = ( operator.get("birthDate") )) == null ? '' : __t) +
 '</td>\n                <td class="oper_val">' +
 ((__t = ( operator.get("sex") )) == null ? '' : __t) +
 '</td>\n                <td class="oper_val">' +

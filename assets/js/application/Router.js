@@ -11,7 +11,12 @@
     var Project = xtens.module("project");
     var MaterialType = xtens.module("materialtype");
     var Sample = xtens.module("sample");
+<<<<<<< HEAD
     var Query = xtens.module("query");
+=======
+    var Operator = xtens.module("operator");
+    var Group = xtens.module("group");
+>>>>>>> b4ebe0e12aad28a028f4d6a94345ed1163676518
 
     /**
      * XTENS Router for Backbone
@@ -32,11 +37,15 @@
             "samples": "sampleList",
             "samples/new": "sampleEdit",
             "samples/edit/:id": "sampleEdit",
+<<<<<<< HEAD
             "query": "queryBuilder",
             "operators": "operator",
+=======
+            "operators": "operatorList",
+>>>>>>> b4ebe0e12aad28a028f4d6a94345ed1163676518
             "operators/new": "operator-edit",
             "operators/edit/:id": "operator-edit",
-            "groups":"group",
+            "groups":"groupList",
             "groups/new":"group-edit",
             "groups/edit/:id":"group-edit",
             "login":"login",
@@ -89,6 +98,15 @@
                 }
             });
         },
+
+        groupList:function(){
+        this.loadView(new Group.Views.List());
+        },
+
+        operatorList:function(){
+        this.loadView(new Operator.Views.List());
+        },
+
 
         subjectList: function() {
             this.loadView(new Subject.Views.List());

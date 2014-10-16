@@ -49,6 +49,7 @@
                 that.operator.fetch({
                     success: function (operator) {
                     that.$el.html(that.template({__: i18n, operator: operator}));
+                    
                         return that;
 
 
@@ -61,7 +62,9 @@
             } else {
                  
             that.$el.html(that.template({__: i18n,operator:null}));
+           
                         return that;
+
                                }
         },
 
@@ -94,7 +97,7 @@
         updateOperator: function(ev) {
             var that = this;
 
-                      that.operator.set({firstName: document.Myform.name.value,lastName:document.Myform.surname.value,birthDate:document.Myform.date.value,sex:document.Myform.sex.value,email:document.Myform.email.value,login:document.Myform.login.value});
+                      that.operator.set({firstName: document.Myform.name.value,lastName:document.Myform.surname.value,birthDate:new Date(document.Myform.date.value),sex:document.Myform.sex.value,email:document.Myform.email.value,login:document.Myform.login.value});
 
 
 
