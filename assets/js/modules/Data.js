@@ -490,7 +490,7 @@
                     return _.findWhere(options.view.dataTypes, {id: value });
                 },
                 onGet: function(val, options) {
-                    return val.id;
+                    return (val && val.id);
                 }
             },
 

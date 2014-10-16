@@ -112,7 +112,11 @@
         "new-sample": "New Sample",
         "diagnosis": "Diagnosis",
         "arrival-code": "Arrival Code",
-        "anatomical-position": "Anatomical Position"
+        "anatomical-position": "Anatomical Position",
+        /* views/templates/query.ejs */
+        "query-builder": "Query Builder",
+        "search-for:": "Search for:"
+
     };
 
     var it = {

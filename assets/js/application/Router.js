@@ -11,6 +11,7 @@
     var Project = xtens.module("project");
     var MaterialType = xtens.module("materialtype");
     var Sample = xtens.module("sample");
+    var Query = xtens.module("query");
 
     /**
      * XTENS Router for Backbone
@@ -31,6 +32,7 @@
             "samples": "sampleList",
             "samples/new": "sampleEdit",
             "samples/edit/:id": "sampleEdit",
+            "query": "queryBuilder",
             "operators": "operator",
             "operators/new": "operator-edit",
             "operators/edit/:id": "operator-edit",
@@ -149,6 +151,20 @@
                     subjects: subjectsRes[0],
                     model: model
                 }));
+            });
+        },
+
+        queryBuilder: function(id) {
+            var dataTypes = new DataType.List();
+            var that = this;
+            dataTypes.fetch({
+                success: function(dataTypes) {
+                    that.loadView(new Query.Views.Builder({
+                        id:id,
+                        dataTypes: dataTypes.models,
+                        model: new Query.Model()
+                    }));    
+                }
             });
         }
 

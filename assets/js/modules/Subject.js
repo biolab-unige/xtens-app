@@ -35,16 +35,16 @@
             '#projects': {
                 observe: 'projects',
                 initialize: function($el, model, option) {
-                    $el.select2();
+                    $el.select2({ placeholder: i18n("please-select") });
                 },
                 selectOptions: {
                     collection: 'this.projects',
                     labelPath: 'name',
                     valuePath: 'id',
-                    defaultOption: {
-                        label: i18n("please-select"),
-                        value: null
-                    } 
+                   defaultOption: {
+                       label: "",
+                       value: null
+                   } 
                 }, 
                 getVal: function($el, ev, options) {
                     return $el.val().map(function(value) {

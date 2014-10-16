@@ -694,7 +694,7 @@ __p += '<div id="operator">\n<script \n<script type = "text/javascript">\n$(\'#f
 ((__t = ( operator ? operator.get('lastName') : '' )) == null ? '' : __t) +
 '">\n    </div>\n    <div class="form-group row">\n        <label class="col-md-3 control-label">' +
 ((__t = ( __("birth-date") )) == null ? '' : __t) +
-'</label>\n<input class = "col-md-6 date" name="date" type="date" data-date=\'{"startView":2,"openOnMouseFocus":true}\' required="required" value="' +
+'</label>\n        <input class = "col-md-6 date" name="date" type="date" required="required" value="' +
 ((__t = ( operator ? operator.get("birthDate").slice(0,9) +  (parseInt(operator.get("birthDate").slice(9,10))+1): '' )) == null ? '' : __t) +
 '">\n    </div>\n    <div class="form-group row">\n        <label class="col-md-3 control-label">' +
 ((__t = ( __("sex") )) == null ? '' : __t) +
@@ -821,6 +821,20 @@ __p += '<div class="form-group"></div>\n<div class="form-group metadataform-grou
 return __p
 };
 
+this["JST"]["views/templates/query-builder.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<h2>' +
+((__t = ( __("query-builder") )) == null ? '' : __t) +
+'</h2>\n<div id="content">\n    <form class="form-horizontal query-form" role="form">\n        <div class="form-group">\n            <span class="query-label">' +
+((__t = ( __("search-for:") )) == null ? '' : __t) +
+'</span>\n            <div class="query-field-div">\n                <select id="pivot-data-type" name="pivot-data-type" class="form-control"></select>\n            </div>\n        </div>\n    </form>\n</div>\n';
+
+}
+return __p
+};
+
 this["JST"]["views/templates/sample-edit.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
@@ -864,11 +878,17 @@ with (obj) {
 __p += '<h2>' +
 ((__t = ( __("samples") )) == null ? '' : __t) +
 '</h2> \n\n<div id="content">\n    <div class="row">\n        <div class="col-sm-12">\n            <div class="table-responsive">\n                <table class="table">\n                    <thead>\n                        <tr>\n                            <th>' +
+((__t = ( __("arrival-code") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
 ((__t = ( __("biobank-code") )) == null ? '' : __t) +
 '</th>\n                            <th>' +
 ((__t = ( __("type") )) == null ? '' : __t) +
 '</th>\n                            <th>' +
 ((__t = ( __("donor") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("diagnosis") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("anatomical-position"))) == null ? '' : __t) +
 '</th>\n                            <!--\n                            <th>' +
 ((__t = ( __("birth-date") )) == null ? '' : __t) +
 '</th>\n                            <th>' +
@@ -876,20 +896,21 @@ __p += '<h2>' +
 '</th>\n                            <th>' +
 ((__t = ( __("project") )) == null ? '' : __t) +
 '</th>\n                            -->\n                            <th></th>\n                        </tr>\n                    </thead>\n                    <tbody>\n                    ';
- _.each(samples, function(sample) { ;
+ _.each(samples, function(sample) { 
+                        var metadata = sample.get("metadata") ;
 __p += ' \n                    <tr>\n                        <td>' +
+((__t = ( metadata["Arrival Code"].value[0] )) == null ? '' : __t) +
+'</td>\n                        <td>' +
 ((__t = ( sample.get("biobankCode") )) == null ? '' : __t) +
 '</td>\n                        <td>' +
 ((__t = ( sample.get("type").name )) == null ? '' : __t) +
 '</td>\n                        <td>' +
 ((__t = ( sample.get("donor").code )) == null ? '' : __t) +
-'</td>\n                        <!--\n                        <td>' +
-((__t = ( sample.get("metadata")["Arrival Code"] )) == null ? '' : __t) +
 '</td>\n                        <td>' +
-((__t = ( sample.get("metadata").diagnosis )) == null ? '' : __t) +
-'</td>\n                        <td>' +
-((__t = ( sample.get("metadata").anatomicalPosition )) == null ? '' : __t) +
-'</td>\n                        -->\n                        <td><a class="btn" href="#/samples/edit/' +
+((__t = ( metadata.Diagnosis.value[0] )) == null ? '' : __t) +
+'\n                        <td>' +
+((__t = ( metadata["Anatomical Position"] && metadata["Anatomical Position"].value[0] )) == null ? '' : __t) +
+'</td>\n                        <td><a class="btn" href="#/samples/edit/' +
 ((__t = ( sample.id )) == null ? '' : __t) +
 '">' +
 ((__t = (__("edit") )) == null ? '' : __t) +
@@ -938,7 +959,7 @@ __p += '<h1>' +
 ((__t = ( __('code') )) == null ? '' : __t) +
 '</label>\n            <div class="data-input-div">\n                <input text class="form-control" id="code" name="code"></input>\n            </div>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="project" class="data-label">' +
 ((__t = ( __('project') )) == null ? '' : __t) +
-'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="project" name="project"></select>\n            </div>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="tags" class="data-label">' +
+'</label>\n            <div class="data-input-div">\n                <select multiple class="form-control" id="projects" name="projects"></select>\n            </div>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="tags" class="data-label">' +
 ((__t = ( __('tags') )) == null ? '' : __t) +
 '</label>\n            <div class="data-input-div">\n                <input type="hidden" class="form-control" id="tags" name="tags"></input>\n            </div>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="notes" class="data-label">' +
 ((__t = ( __('notes') )) == null ? '' : __t) +
@@ -992,7 +1013,7 @@ __p += ' \n                    <tr>\n                        <td>' +
 '</td>\n                        <td>' +
 ((__t = ( subject.get("personalInfo").sex )) == null ? '' : __t) +
 '</td>\n                        <td>' +
-((__t = ( subject.get("project").name )) == null ? '' : __t) +
+((__t = ( subject.get("projects").map(function(project) {return (" " + project.name); }).toString().trim() )) == null ? '' : __t) +
 '</td>\n                        <td><a class="btn" href="#/subjects/edit/' +
 ((__t = ( subject.id )) == null ? '' : __t) +
 '">' +

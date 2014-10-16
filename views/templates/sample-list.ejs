@@ -12,6 +12,7 @@
                             <th><%= __("type") %></th>
                             <th><%= __("donor") %></th>
                             <th><%= __("diagnosis") %></th>
+                            <th><%= __("anatomical-position")%></th>
                             <!--
                             <th><%= __("birth-date") %></th>
                             <th><%= __("sex") %></th>
@@ -29,6 +30,7 @@
                         <td><%= sample.get("type").name %></td>
                         <td><%= sample.get("donor").code %></td>
                         <td><%= metadata.Diagnosis.value[0] %>
+                        <td><%= metadata["Anatomical Position"] && metadata["Anatomical Position"].value[0] %></td>
                         <td><a class="btn" href="#/samples/edit/<%= sample.id %>"><%=__("edit") %></a></td>
                     </tr>
                     <% }) %> 

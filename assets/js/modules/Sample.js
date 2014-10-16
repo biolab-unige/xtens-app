@@ -56,14 +56,11 @@
                     collection: function() {
                         return this.subjects.map(function(subj) { 
                             return { 
-                                label: subj.code,  //subj.personalInfo.surname + " " +  subj.personalInfo.givenName,
+                                label: subj.personalInfo.surname + " " +  subj.personalInfo.givenName,
                                 value: subj.id
                             }; 
                         });
                     },
-                        /*'this.subjects',
-                    labelPath: 'personalInfo.surname',
-                    valuePath: 'id', */
                     defaultOption: {
                         label: "",
                         value: null
