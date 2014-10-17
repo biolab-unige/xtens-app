@@ -39,8 +39,7 @@
         render: function(options)  {
             var that = this;
             
-            that.gr = new Group.List();
-            that.gr.fetch();
+            
             if(options.id) {
 
                 that.operator = new Operator.Model({id: options.id});
@@ -79,8 +78,7 @@
             var operatorDetails = $(ev.currentTarget).serializeObject();
 
             operatorDetails = {firstName: operatorDetails.name,lastName:operatorDetails.surname,birthDate:operatorDetails.date,sex:operatorDetails.sex,email:operatorDetails.email,login:operatorDetails.login,password:operatorDetails.password};
-            operatorDetails.birthDate = new Date(operatorDetails.birthDate);
-
+          
             var operator = new Operator.Model();
 
             operator.save(operatorDetails, {
@@ -97,7 +95,7 @@
         updateOperator: function(ev) {
             var that = this;
 
-                      that.operator.set({firstName: document.Myform.name.value,lastName:document.Myform.surname.value,birthDate:new Date(document.Myform.date.value),sex:document.Myform.sex.value,email:document.Myform.email.value,login:document.Myform.login.value});
+                      that.operator.set({firstName: document.Myform.name.value,lastName:document.Myform.surname.value,birthDate:document.Myform.date.value,sex:document.Myform.sex.value,email:document.Myform.email.value,login:document.Myform.login.value});
 
 
 

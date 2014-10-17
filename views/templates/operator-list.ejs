@@ -20,15 +20,15 @@
 
 
                 <td class="oper_val"><%= operator.get("firstName") %></td>
-                <td class="oper_val"><%= operator.get("lastName") %></td>
-                <td class="oper_val"><%= operator.get("birthDate") %></td>
+                <td class="oper_val"><%= operator.get("lastName") %></td>  
+                <td class="oper_val"><%= moment(operator.get("birthDate")).format("DD/MM/YYYY") %></td>
                 <td class="oper_val"><%= operator.get("sex") %></td>
                 <td class="oper_val"><%= operator.get("email") %></td>
                 <td class="oper_val"><%= operator.get("login") %></td>
                 <td><a id="edit" class="btn" href="#/operators/edit/<%= operator.id %>"><%=__("edit") %></a></td>
 
-
-
+            
+          
 
             </tr>
             <% }) %>

@@ -14,6 +14,8 @@
     var Query = xtens.module("query");
     var Operator = xtens.module("operator");
     var Group = xtens.module("group");
+    var AdminAssociation = xtens.module("adminassociation");
+
 
     /**
      * XTENS Router for Backbone
@@ -35,21 +37,48 @@
             "samples/new": "sampleEdit",
             "samples/edit/:id": "sampleEdit",
             "query": "queryBuilder",
-            // "operators": "operator",
             "operators": "operatorList",
-            "operators/new": "operator-edit",
-            "operators/edit/:id": "operator-edit",
+            "operators/new": "operatorEdit",
+            "operators/edit/:id": "operatorEdit",
             "groups":"groupList",
-            "groups/new":"group-edit",
-            "groups/edit/:id":"group-edit",
-            "login":"login",
-            "groups/operator/:id":"associationop",
-            "groups/datatype/:id":"associationd"
+            "groups/new":"groupEdit",
+            "groups/edit/:id":"groupEdit",
+            "login":"loginView",
+            "groups/operator/:id":"associationOperator",
+            "groups/datatype/:id":"associationDataType"
         },
 
         loadView: function(view) {
             this.view && this.view.remove();
             this.view = view; 
+        },
+
+        associationDataType:function(id){
+            var _this = this;
+            var dominant = new Group.Model({id:id});
+            var nondominant = new DataType.List();
+            $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes,dominantRes){
+                _this.loadView(new AdminAssociation.Views.Edit({
+                    dominant:new Group.Model(dominantRes[0]),
+                    nondominant: nondominantRes[0],
+                    nondominantName:'dataTypes',
+                    field:'name'
+                }));
+            });
+        },
+
+        associationOperator: function(id){
+            var _this = this;
+            var dominant = new Group.Model({id:id});
+            var nondominant = new Operator.List();
+            $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes,dominantRes){
+                _this.loadView(new AdminAssociation.Views.Edit({
+                    dominant:new Group.Model(dominantRes[0]),
+                    nondominant: nondominantRes[0],
+                    nondominantName:'members',
+                    field:'login'
+                }));
+            });
         },
 
         dataTypeList: function() {
@@ -94,13 +123,24 @@
         },
 
         groupList:function(){
-        this.loadView(new Group.Views.List());
+            this.loadView(new Group.Views.List());
+        },
+
+        groupEdit:function(id){
+            this.loadView(new Group.Views.Edit({id:id}));
+        },
+
+        loginView:function(){
+            this.loadView(new Operator.Views.Login());
         },
 
         operatorList:function(){
-        this.loadView(new Operator.Views.List());
+            this.loadView(new Operator.Views.List());
         },
 
+        operatorEdit:function(id){
+            this.loadView(new Operator.Views.Edit({id:id}));
+        },
 
         subjectList: function() {
             this.loadView(new Subject.Views.List());
@@ -111,37 +151,37 @@
             var projects = new Project.List();
             var _this = this;
             /*
-            dataTypes.fetch({
-                success: function(dataTypes) {
-                    var model = new Subject.Model();
-                    var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
-                    dataTypes = _.where(dataTypes.toJSON(), {classTemplate: SUBJECT});
-                    _this.loadView(new Subject.Views.Edit({idDataType: idDataType, 
-                                                       id: id, 
-                                                       dataTypes: dataTypes,
-                                                       model: model
-                    }));
-                },
-                error: function(err) {
-                    console.log(err);
-                    // TODO implement error handling here 
-                }
+               dataTypes.fetch({
+success: function(dataTypes) {
+var model = new Subject.Model();
+var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
+dataTypes = _.where(dataTypes.toJSON(), {classTemplate: SUBJECT});
+_this.loadView(new Subject.Views.Edit({idDataType: idDataType, 
+id: id, 
+dataTypes: dataTypes,
+model: model
+}));
+},
+error: function(err) {
+console.log(err);
+            // TODO implement error handling here 
+            }
             }); */
-           $.when(dataTypes.fetch(), projects.fetch()).then(
+            $.when(dataTypes.fetch(), projects.fetch()).then(
                 function(dataTypesRes, projectsRes) {
-                    var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
-                    // get the last existing SUBJECT template (there should always be only one)
-                    var subjectType = _.last(_.where(dataTypesRes[0], {classTemplate: SUBJECT}));
-                    var model = new Subject.Model({type: subjectType});
-                    _this.loadView(new Subject.Views.Edit({
-                                                       id: id, 
-                                                       projects: projectsRes[0],
-                                                       model: model
-                    }));
-                }, function() {
-                    alert("Error retrieving data from the server");
-                } 
-           );
+                var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
+                // get the last existing SUBJECT template (there should always be only one)
+                var subjectType = _.last(_.where(dataTypesRes[0], {classTemplate: SUBJECT}));
+                var model = new Subject.Model({type: subjectType});
+                _this.loadView(new Subject.Views.Edit({
+                    id: id, 
+                    projects: projectsRes[0],
+                    model: model
+                }));
+            }, function() {
+                alert("Error retrieving data from the server");
+            } 
+            );
         },
 
         sampleList: function() {

@@ -276,161 +276,7 @@ __p += '<div id="group">\n   <script>\n        $(document).ready(function() { $(
 ((__t = ( __("name") )) == null ? '' : __t) +
 '</label>\n        <input class = "col-md-6" name="name" id="first" type="text" value="' +
 ((__t = ( group ? group.get('name') : '' )) == null ? '' : __t) +
-'">\n        </div>\n        ';
- if(group) { ;
-__p += '\n        <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
-((__t = ( __("associate-datatype") )) == null ? '' : __t) +
-'</label>\n        <select multiple="true" class = "col-md-6" name="association[]" id="association" type="text">\n            ';
- if (group.get('data_type')!=""&&group.get('data_type')!=null) {;
-__p += ' \n            ';
-var a = group.get('data_type').split(",");
-            }else{ var a = new Array();} var dati = new Array(); ;
-__p += ' \n             ';
- for(var j =0;j<datatypes.length;j++)  { 
-             dati[j]= datatypes[j].attributes.name;
-             } ;
-__p += ' \n             ';
- var b = _.difference(dati,a); ;
-__p += '\n             ';
- for (var i=0;i<b.length;i++) { ;
-__p += ' \n                 ';
- for(var l=0;l<datatypes.length;l++){ ;
-__p += '\n                 ';
- if (b[i]==datatypes[l].attributes.name) {;
-__p += '\n                 <option  id="' +
-((__t = ( datatypes[l].attributes.id )) == null ? '' : __t) +
-'" value ="' +
-((__t = ( b[i])) == null ? '' : __t) +
-'">' +
-((__t = ( b[i])) == null ? '' : __t) +
-'</option>\n             ';
- } ;
-__p += '\n             ';
- } ;
-__p += '\n             ';
- } ;
-__p += '\n\n\n            \n        </select>\n        </div>\n        ';
- }; ;
-__p += '\n         ';
- if(group) { ;
-__p += '\n        <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
-((__t = ( __("dissociate-datatype") )) == null ? '' : __t) +
-'</label>\n        <select multiple="true" class = "col-md-6" name="dissociation[]" id="dissociation" type="text" value="' +
-((__t = ( group ? group.get('data_type') : '' )) == null ? '' : __t) +
-'">\n              ';
- if (group.get('data_type')!=""&&group.get('data_type')!=null) {;
-__p += ' \n            ';
-var a = group.get('data_type').split(",");
-            }else{ var a = new Array();} var dati = new Array(); ;
-__p += ' \n            ';
- for(var j =0;j<datatypes.length;j++)  { 
-             dati[j]= datatypes[j].attributes.name;
-             } ;
-__p += '\n             ';
- var c =_.intersection(dati,a) ;
-__p += ' \n            ';
- for (var i=0;i<c.length;i++) { ;
-__p += ' \n                 ';
- for(var l=0;l<datatypes.length;l++){ ;
-__p += '\n                 ';
- if (c[i]==datatypes[l].attributes.name) {;
-__p += '\n\n                  <option id="' +
-((__t = ( datatypes[l].attributes.id )) == null ? '' : __t) +
-'" selected value ="' +
-((__t = ( c[i] )) == null ? '' : __t) +
-'">' +
-((__t = ( c[i] )) == null ? '' : __t) +
-'</option>\n                       ';
- } ;
-__p += '\n                       ';
- } ;
-__p += '\n                       ';
- } ;
-__p += '\n\n\n           \n                  </select>\n        </div>\n        ';
- }; ;
-__p += '\n\n      ';
- if(group) { ;
-__p += '\n        <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
-((__t = ( __("associate-operator") )) == null ? '' : __t) +
-'</label>\n        <select multiple="true" class = "col-md-6" name="associationop[]" id="associationop" type="text">\n            ';
- if (group.get('members').length ==0) {;
-__p += ' \n            ';
- var a = new Array();}
-            else{ var a = new Array();
-            for(var g = 0;g<group.get('members').length;g++){
-                a[g]=group.get('members')[g].login;
-                }
-            
-            } var dati = new Array(); ;
-__p += ' \n             ';
- for(var j =0;j<operators.length;j++)  { 
-             dati[j]= operators[j].attributes.login;
-             } ;
-__p += ' \n             ';
- var b = _.difference(dati,a); ;
-__p += '\n             ';
- for (var i=0;i<b.length;i++) { ;
-__p += ' \n                 ';
- for(var l=0;l<operators.length;l++){ ;
-__p += '\n                 ';
- if (b[i]==operators[l].attributes.login) {;
-__p += '\n                 <option  id="' +
-((__t = ( operators[l].attributes.id )) == null ? '' : __t) +
-'" value ="' +
-((__t = ( b[i])) == null ? '' : __t) +
-'">' +
-((__t = ( b[i])) == null ? '' : __t) +
-'</option>\n             ';
- } ;
-__p += '\n             ';
- } ;
-__p += '\n             ';
- } ;
-__p += '\n             \n\n\n            \n        </select>\n        </div>\n        ';
- }; ;
-__p += '\n         ';
- if(group) { ;
-__p += '\n        <div class="form-group row">\n        <label  class="col-md-3 control-label">' +
-((__t = ( __("dissociate-operator") )) == null ? '' : __t) +
-'</label>\n        <select multiple="true" class = "col-md-6" name="dissociationop[]" id="dissociationop" type="text" >\n              ';
- if (group.get('members').length !=0) {;
-__p += ' \n            ';
- var a = new Array();
-            var dati = new Array(); 
-             var a = new Array();
-            for(var g = 0;g<group.get('members').length;g++){
-                a[g]=group.get('members')[g].login;
-                }
-            ;
-__p += ' \n            ';
- for(var j =0;j<operators.length;j++)  { 
-             dati[j]= operators[j].attributes.login;
-             } ;
-__p += '\n             ';
- var c =_.intersection(dati,a) ;
-__p += ' \n            ';
- for (var i=0;i<c.length;i++) { ;
-__p += ' \n                 ';
- for(var l=0;l<operators.length;l++){ ;
-__p += '\n                 ';
- if (c[i]==operators[l].attributes.login) {;
-__p += '\n\n                  <option id="' +
-((__t = ( operators[l].attributes.id )) == null ? '' : __t) +
-'" selected value ="' +
-((__t = ( c[i] )) == null ? '' : __t) +
-'">' +
-((__t = ( c[i] )) == null ? '' : __t) +
-'</option>\n                       ';
- } ;
-__p += '\n                       ';
- } ;
-__p += '\n                       ';
- } ;
-__p += '                \n                       ';
- } ;
-__p += '\n\n           \n                  </select>\n        </div>\n        ';
- }; ;
-__p += '\n\n\n\n\n\n\n\n\n    <hr />\n    <div id="buttonbardiv" class="row text-center">\n         ';
+'">\n        </div>\n        \n    <hr />\n    <div id="buttonbardiv" class="row text-center">\n         ';
  if(!group) { ;
 __p += '\n        <button type="submit" class="btn" >Create Group</button>\n        ';
  } ;
@@ -781,8 +627,8 @@ __p += ' \n            <tr>\n\n\n                <td class="oper_val">' +
 ((__t = ( operator.get("firstName") )) == null ? '' : __t) +
 '</td>\n                <td class="oper_val">' +
 ((__t = ( operator.get("lastName") )) == null ? '' : __t) +
-'</td>\n                <td class="oper_val">' +
-((__t = ( operator.get("birthDate") )) == null ? '' : __t) +
+'</td>  \n                <td class="oper_val">' +
+((__t = ( moment(operator.get("birthDate")).format("DD/MM/YYYY") )) == null ? '' : __t) +
 '</td>\n                <td class="oper_val">' +
 ((__t = ( operator.get("sex") )) == null ? '' : __t) +
 '</td>\n                <td class="oper_val">' +
@@ -793,7 +639,7 @@ __p += ' \n            <tr>\n\n\n                <td class="oper_val">' +
 ((__t = ( operator.id )) == null ? '' : __t) +
 '">' +
 ((__t = (__("edit") )) == null ? '' : __t) +
-'</a></td>\n\n\n\n\n            </tr>\n            ';
+'</a></td>\n\n            \n          \n\n            </tr>\n            ';
  }) ;
 __p += '\n            </tbody>\n        </table>\n    </div>\n    <div id="buttonbardiv" class="row text-center">\n        <a href="#/operators/new" class="btn btn-primary">' +
 ((__t = ( __("new-operator"))) == null ? '' : __t) +

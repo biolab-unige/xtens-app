@@ -34,54 +34,7 @@ var xtens = {
 jQuery(function($) {
     // Initialise your application here (?)
 
-    var DataType = xtens.module("datatype");
-    var Operator = xtens.module("operator");
-    var Group = xtens.module("group");
-    var AdminAssociation = xtens.module("adminassociation");
-    var router = xtens.router;
 
-    router.on('route:associationop',function(id){
-        var dominant = new Group.Model({id:id});
-        var nondominant = new Operator.List();
-      $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes,dominantRes){
-        router.loadView(new AdminAssociation.Views.Edit({
-         dominant:new Group.Model(dominantRes[0]),
-         nondominant: nondominantRes[0],
-         nondominantName:'members',
-         field:'login'
-     }));
-    });
-    });
-
-    router.on('route:associationd',function(id){
-        var dominant = new Group.Model({id:id});
-        var nondominant = new DataType.List();
-      $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes,dominantRes){
-        router.loadView(new AdminAssociation.Views.Edit({
-         dominant:new Group.Model(dominantRes[0]),
-         nondominant: nondominantRes[0],
-         nondominantName:'dataTypes',
-         field:'name'
-     }));
-    });
-    });
-
-
-
-    router.on('route:group-edit',function(id){
-        router.loadView(new Group.Views.Edit({id:id}));
-
-    });
-
-   
-    router.on('route:operator-edit',function(id){
-        router.loadView(new Operator.Views.Edit({id:id}));
-    });
-
-    router.on('route:login',function(){
-        router.loadView(new Operator.Views.Login());
-
-    });
-    
+       
     Backbone.history.start();
 });
