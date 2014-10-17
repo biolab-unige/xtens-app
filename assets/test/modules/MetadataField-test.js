@@ -6,15 +6,21 @@ var FieldTypes = xtens.module("xtensconstants").FieldTypes;
 
 describe('MetadataField.Views.Edit', function() {
     beforeEach(function() {
-        this.model = new MetadataField.Model();
+        this.model = new MetadataField.Model({
+            name: "prova",
+            customValue: "testValue",
+            required: true,
+            isList: true,
+            possibleValues: ["value_1", "value_2", "value_3"],
+            hasUnit: true,
+            possibleUnits: ["m"]
+        });
     });
 
     describe('#initialize()', function() {
         beforeEach(function() {
-            this.model.set({label: Constants.METADATA_FIELD});
             this.view = new MetadataField.Views.Edit({model: this.model});
         });
-
 
         it('should be an initialized object', function() {
             this.view.should.be.an('object');
@@ -25,11 +31,30 @@ describe('MetadataField.Views.Edit', function() {
         beforeEach(function() {
             this.view.render();
         });
-        it('should have a remove-me icon', function() {
-            this.view.$el.find("a.remove-me").should.have.length(1);
+        it('should not have a remove-me icon, since the model is not empty', function() {
+            this.view.$el.find("a.remove-me").should.have.length(0);
         });
         it('should contain first a HTML select with all the fields types', function() {
             this.view.$el.find('select:first option').should.have.length(5);
+        });
+        
+        it('should show each property with the right value', function() {
+            var that = this;
+            _.each(this.view.bindings, function(value, key) {
+                if (typeof value === 'string'){
+                    if (val) {
+                        expect(that.view.$(key).val()).to.equal(that.view.model.get(value));
+                    }
+                }
+                else {
+                    var property = value.observe;
+                    var val = value.getVal ? value.getVal(that.view.$(key)) : that.view.$(key).val();
+                    if (val) {
+                        expect(that.view.model.get(property)).to.eql(val);
+                    }
+
+                }
+            });
         });
     });
 

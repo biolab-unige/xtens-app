@@ -24,11 +24,38 @@
 
         defaults: {
             classTemplate: DataTypeClasses.GENERIC
+        },
+
+        /**
+         * @description flattens the metadata schema returning a 1D array containing all the metadata fields
+         */
+        getFlattenedFields: function() {
+            var flattened = [];
+            var body = this.get("schema") && this.get("schema").body;
+            for (var i=0, len=body.length; i<len; i++){
+                var groupContent = body[i] && body[i].content;
+                for (var j=0, l=groupContent.length; j<l; j++) {
+                    if (groupContent[j].label === Constants.METADATA_FIELD) {
+                        flattened.push(groupContent[j]);
+                    }
+                    else if (groupContent[j].label === Constants.METADATA_LOOP) {
+                        var loopContent = groupContent[j] && groupContent[j].content;
+                        for (var k=0; k<loopContent.length; k++) {
+                            if (loopContent[k].label === Constants.METADATA_FIELD) {
+                                flattened.push(loopContent[k]);
+                            }
+                        }
+                    }
+
+                }
+            }
+            return flattened;
         }
+
         /*
-        initialize: function() {
-            this.set("className", DataTypeClasses.GENERIC);
-        } */
+initialize: function() {
+this.set("className", DataTypeClasses.GENERIC);
+} */
     });
 
     DataType.List = Backbone.Collection.extend({
@@ -36,9 +63,9 @@
         model: DataType.Model
     });
 
-    /**
-     * This is the view to create/edit the DataType
-     */
+/**
+ * This is the view to create/edit the DataType
+ */
 
     DataType.Views.Edit = MetadataComponent.Views.Edit.fullExtend({
 
@@ -113,9 +140,9 @@
 
         serialize: function() {
             var metadataBody = [];
-                for (var i=0, len=this.nestedViews.length; i<len; i++) {
-                    metadataBody.push(this.nestedViews[i].serialize()); 
-                }
+            for (var i=0, len=this.nestedViews.length; i<len; i++) {
+                metadataBody.push(this.nestedViews[i].serialize()); 
+            }
             return metadataBody;
         },
 
@@ -127,7 +154,7 @@
             var dataTypeDetails = { id: id, name: header.schemaName, schema: {header: header, body: body} };
             //var dataType = new DataType.Model();
             this.model.save(dataTypeDetails, {
-               //  patch: true,
+                //  patch: true,
                 success: function(dataType) {
                     console.log(dataType);
                     router.navigate('datatypes', {trigger: true});
@@ -153,11 +180,12 @@
             this.nestedViews.push(view);
         }
 
+
     });
 
-    /**
-     *  This is the view to show in a table the full list of existing datatypes
-     */
+/**
+ *  This is the view to show in a table the full list of existing datatypes
+ */
     DataType.Views.List = Backbone.View.extend({
         tagName: 'div',
         className: 'dataTypes',
@@ -183,15 +211,15 @@
         }
     });
 
-    /**
-     *  This is the view to show the form generated from the selected DataType
-     *
-    DataType.Views.Form = MetadataComponent.Views.Form.fullExtend({
-        
-        tagName: div,
-        className: '.dataForm', 
+/**
+ *  This is the view to show the form generated from the selected DataType
+ *
+ DataType.Views.Form = MetadataComponent.Views.Form.fullExtend({
 
-    }); */
-    
+tagName: div,
+className: '.dataForm', 
+
+}); */
+
 } (xtens, xtens.module("datatype")));
 

@@ -115,7 +115,8 @@
         "anatomical-position": "Anatomical Position",
         /* views/templates/query.ejs */
         "query-builder": "Query Builder",
-        "search-for:": "Search for:"
+        "search-for:": "Search for:",
+        "field-name": "Field Name"
 
     };
 
