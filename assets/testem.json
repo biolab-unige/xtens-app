@@ -21,12 +21,14 @@
         "js/modules/DataType.js",
         "js/modules/Data.js",
         "js/modules/Operator.js",
+        "js/modules/Group.js",
         "dependencies/chai/chai.js",
         "dependencies/sinon-chai/lib/sinon-chai.js",
         "dependencies/sinon/lib/sinon.js",
         "test/application/xtens-test.js",
         "test/modules/MetadataField-test.js",
         "test/modules/DataType-test.js",
-        "test/modules/Data-test.js"
+        "test/modules/Data-test.js",
+        "test/modules/Group-test.js"
     ]
 }
