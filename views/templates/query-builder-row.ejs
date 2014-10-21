@@ -1,6 +1,12 @@
-<div class="form-group">
-    <span class="query-label"><%= __("field-name") %></span>
-    <div class="query-field-div">
-        <select name="field-name" class="form-control"></select>
-    </div>
+<span class="query-label"><%= __("field-name") %></span>
+<div class="query-field-div">
+    <select name="field-name" class="form-control"></select>
 </div>
+<div class="query-comparator">
+    <input name="comparator" type="hidden" class="form-control">
+</div>
+<div name="query-value-div"></div>
+<div class="query-junction">
+    <input name="junction" type="hidden" class="form-control">
+</div>
+
