@@ -1,7 +1,8 @@
 (function(xtens, MetadataComponent) {
 
     var i18n = xtens.module("i18n").en;
-
+    
+    // TODO: refactor this class together with Query.Views.Component
     MetadataComponent.Views.Edit = Backbone.View.extend({
 
         initialize: function() {

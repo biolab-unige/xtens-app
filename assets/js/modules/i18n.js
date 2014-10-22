@@ -117,7 +117,8 @@
         "query-builder": "Query Builder",
         "search-for:": "Search for:",
         "field-name": "Field Name",
-        "add-condition": "Add Condition"
+        "add-condition": "Add Condition",
+        "search": "Search"
 
     };
 

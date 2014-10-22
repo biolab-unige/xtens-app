@@ -2,40 +2,18 @@
 
     var i18n = xtens.module("i18n").en;
     var FieldTypes = xtens.module("xtensconstants").FieldTypes;
+    var QueryStrategy = xtens.module("querystrategy");
 
     // constant to define the field-value HTML element
     var FIELD_VALUE = 'field-value';
 
     var checkboxTemplate = _.template("<div class='checkbox'><input type='checkbox'></div>");
 
-    function QueryElementFactory() {}
-
-    QueryElementFactory.prototype = {
-    
-        createCheckbox: function() {
-            var template = _.template("<div class='checkbox'><input type='checkbox'></div>");
-        },
-        
-        createListChoice: function(list) {
-            var div = document.createElement("div");
-            div.className = 'query-value-div';
-            var selector = document.createElement("input");
-            selector.type = 'hidden';
-            selector.name = FIELD_VALUE;
-            var data = list.map(function(elem) { return {"id":elem, "text":elem}; });
-            div.appendChild(selector);
-            return div;
-        }
-
-
-    };
-
-    var factory = new QueryElementFactory();
-
     Query.Model = Backbone.Model.extend({
         urlRoot: 'query'
     });
-
+    
+    // TODO: refactor this class together with MetadataComponent class
     Query.Views.Component = Backbone.View.extend({
 
         add: function(child) {
@@ -67,6 +45,17 @@
 
         closeMe: function(ev) {
             this.trigger('closeMe', this);
+        },
+
+        serialize: function() {
+            var res = _.clone(this.model.attributes);
+            if (_.isArray(this.nestedViews)) {
+                res.content = [];
+                for (var i=0, len=this.nestedViews.length; i<len; i++) {
+                    res.content.push(this.nestedViews[i].serialize());
+                }
+            }
+            return res;
         }
 
 
@@ -111,17 +100,19 @@
             this.$el.html(this.template({ __: i18n}));
             this.stickit();
             this.$comparator = this.$("input[name=comparator]");
+            this.$unit = this.$("input[name=unit]");
             this.$junction = this.$("input[name=junction]");
             return this;
         },
 
         fieldNameOnChange: function(model, selectedField) {
-            this.$comparator.select2('destroy');
-            this.$junction.select2('destroy');
+            this.$("input[type=hidden]").select2('destroy');
             this.generateComparisonItem(selectedField);
             this.generateComparedValueItem(selectedField);
+            if (selectedField.hasUnit) {
+                this.generateComparedUnitItem();
+            }
             this.generateJunctionItem();
-            //this.generateComparedUnitItem(selectedField);
         },
 
         generateComparisonItem: function(metadataField) {
@@ -156,15 +147,18 @@
         },
 
         appendComparedBoolean: function() {
-            var $container = this.$("[name='query-value-div']").empty().removeClass().addClass("checkbox");
-            var checkbox = document.createElement("input");
-            checkbox.type = 'checkbox';
-            checkbox.name = FIELD_VALUE;
-            $container.append(checkbox);
+            var $container = this.$("[name='query-value-div']").empty().removeClass().addClass("query-value-div");
+            var selector = document.createElement("input");
+            selector.type = 'hidden';
+            selector.className = 'form-control';
+            selector.name = FIELD_VALUE;
+            $container.append(selector);
             this.addBinding(null, "input[name='"+FIELD_VALUE+"']", { 
                 observe: 'fieldValue',
-                getVal: function($el) {
-                    return $el.prop('checked');
+                initialize: function($el) {
+                    $el.select2({
+                        data: [{id: true, text: i18n('yes')}, {id: false, text: i18n('no')}]
+                    });
                 }
             });
         },
@@ -177,7 +171,7 @@
             selector.className = 'form-control';
             var data = list.map(function(elem) { return {"id":elem, "text":elem}; });
             $container.append(selector);
-            this.addBinding(null, "input[name='"+FIELD_VALUE+"']",{ 
+            this.addBinding(null, "input[name='"+FIELD_VALUE+"']", { 
                 observe: 'fieldValue',
                 initialize: function($el) {
                     $el.select2({
@@ -196,6 +190,20 @@
             $container.append(textField);
             this.addBinding(null, "input[name='"+FIELD_VALUE+"']", {
                 observe: 'findValue'
+            });
+        },
+
+        generateComparedUnitItem:function() {
+            var data = this.model.get('fieldName').possibleUnits.map(function(unit) {
+                return { id: unit, text: unit };
+            });
+            this.addBinding(null, "input[name='unit']", { 
+                observe: 'fieldUnit',
+                initialize: function($el) {
+                    $el.select2({
+                        data: data, 
+                        placeholder: i18n("please-select")});
+                }  
             });
         },
 
@@ -245,6 +253,7 @@
             $('#main').html(this.el);
             this.nestedViews = [];
             this.dataTypes = options.dataTypes || [];
+            this.queryStrategy = new QueryStrategy.PostgresJSON();
             this.render(options);
             this.$addConditionButton = this.$("#add-condition");
             this.listenTo(this.model, 'change:pivotDataType', this.pivotDataTypeOnChange);
@@ -252,7 +261,8 @@
         },
 
         events: {
-            'click #add-condition': 'addQueryRow'
+            'click #add-condition': 'addQueryRow',
+            'click #search': 'sendQuery'
         },
 
         addQueryRow: function() {
@@ -263,10 +273,7 @@
         },
 
         pivotDataTypeOnChange: function(model, selectedDataType) {
-            var len = this.nestedViews.length; 
-            for(var i=0; i<len; i++){
-                this.removeChild(this.nestedViews[i]);
-            }
+            this.clear();
             if (!selectedDataType) {
                this.$addConditionButton.addClass('hidden');
                 return;
@@ -278,6 +285,13 @@
 
         },
 
+        clear: function() {
+            var len = this.nestedViews.length; 
+            for(var i=len-1; i>=0; i--) {
+                this.removeChild(this.nestedViews[i]);
+            }
+        },
+
         render: function(options) {
             if (options.id) {} // load an existing query TODO
             else {
@@ -285,6 +299,11 @@
                 this.stickit();
             }
             return this;
+        },
+
+        sendQuery: function() {
+            var queryObj = this.serialize();
+            var query = this.queryStrategy(queryObj);
         }
 
     });

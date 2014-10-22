@@ -4,7 +4,6 @@
  * @description :: Server-side logic for managing subjects
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
-var async = require('async');
 
 module.exports = {
 
