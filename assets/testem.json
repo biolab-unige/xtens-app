@@ -19,7 +19,9 @@
         "js/modules/MetadataLoop.js",
         "js/modules/MetadataGroup.js",
         "js/modules/DataType.js",
-        "js/modules/Data.js",
+        "js/modules/Data.js", 
+        "js/modules/QueryStrategy.js",
+        "js/modules/Query.js",
         "js/modules/Operator.js",
         "js/modules/Group.js",
         "dependencies/chai/chai.js",
@@ -29,6 +31,7 @@
         "test/modules/MetadataField-test.js",
         "test/modules/DataType-test.js",
         "test/modules/Data-test.js",
-        "test/modules/Group-test.js"
+        "test/modules/Group-test.js",
+        "test/modules/QueryStrategy-test.js"
     ]
 }

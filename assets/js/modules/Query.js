@@ -12,7 +12,7 @@
     Query.Model = Backbone.Model.extend({
         urlRoot: 'query'
     });
-    
+
     // TODO: refactor this class together with MetadataComponent class
     Query.Views.Component = Backbone.View.extend({
 
@@ -67,7 +67,7 @@
     Query.Views.Row = Query.Views.Component.fullExtend({
 
         className: 'form-group',
-        
+
         bindings: {
             '[name="field-name"]': {
                 observe: 'fieldName',
@@ -82,14 +82,14 @@
                         label: "",
                         value: null
                     }
-                },
+                }/*,
                 getVal: function($el, ev, options) {
                     return _.findWhere(options.view.fieldList, {name: $el.val()});
-                }
+                }*/
 
             }
         },
-        
+
         initialize: function(options) {
             this.template = JST['views/templates/query-builder-row.ejs'];
             this.fieldList = options.fieldList;
@@ -105,12 +105,15 @@
             return this;
         },
 
-        fieldNameOnChange: function(model, selectedField) {
+        fieldNameOnChange: function(model, fieldName) {
             this.$("input[type=hidden]").select2('destroy');
+            var selectedField = _.findWhere(this.fieldList, {name: fieldName});
+            this.model.set("fieldType", selectedField.fieldType.toLowerCase());
+            this.model.set("isList", selectedField.isList);
             this.generateComparisonItem(selectedField);
             this.generateComparedValueItem(selectedField);
-            if (selectedField.hasUnit) {
-                this.generateComparedUnitItem();
+            if (selectedField.hasUnit && selectedField.possibleUnits) {
+                this.generateComparedUnitItem(selectedField.possibleUnits);
             }
             this.generateJunctionItem();
         },
@@ -122,14 +125,19 @@
             }
             if (fieldType === FieldTypes.INTEGER || fieldType === FieldTypes.FLOAT) {
                 data = [ { id: '=', text: '=' }, { id: '<=', text: '≤' },
-                         { id: '>=', text: '≥' }, { id: '<', text: '<' },
-                         { id: '>', text: '>' }, { id: '<>', text: '≠' }];
+                    { id: '>=', text: '≥' }, { id: '<', text: '<' },
+                    { id: '>', text: '>' }, { id: '<>', text: '≠' }];
             }
             else {
                 data = [ { id: '=', text: '=' }, { id: '<>', text: '≠' }];
             }
-            this.$comparator.select2({
-               data: data 
+            this.addBinding(null, 'input[name=comparator]', {
+                observe: 'comparator',
+                initialize: function($el) {
+                    $el.select2({
+                        data: data 
+                    });
+                }
             });
         },
 
@@ -175,6 +183,7 @@
                 observe: 'fieldValue',
                 initialize: function($el) {
                     $el.select2({
+                        multiple: true,
                         data: data, 
                         placeholder: i18n("please-select")});
                 }  
@@ -189,12 +198,12 @@
             textField.className = 'form-control';
             $container.append(textField);
             this.addBinding(null, "input[name='"+FIELD_VALUE+"']", {
-                observe: 'findValue'
+                observe: 'fieldValue'
             });
         },
 
-        generateComparedUnitItem:function() {
-            var data = this.model.get('fieldName').possibleUnits.map(function(unit) {
+        generateComparedUnitItem:function(possibleUnits) {
+            var data = possibleUnits.map(function(unit) {
                 return { id: unit, text: unit };
             });
             this.addBinding(null, "input[name='unit']", { 
@@ -268,14 +277,14 @@
         addQueryRow: function() {
             var childView = new Query.Views.Row({fieldList: this.model.get('pivotDataType').getFlattenedFields(),
                                                 model: new Query.RowModel()});
-            this.$("#query-form").append(childView.render().el);
-            this.add(childView);
+                                                this.$("#query-form").append(childView.render().el);
+                                                this.add(childView);
         },
 
         pivotDataTypeOnChange: function(model, selectedDataType) {
             this.clear();
             if (!selectedDataType) {
-               this.$addConditionButton.addClass('hidden');
+                this.$addConditionButton.addClass('hidden');
                 return;
             }
             this.$addConditionButton.removeClass('hidden');
@@ -303,7 +312,15 @@
 
         sendQuery: function() {
             var queryObj = this.serialize();
-            var query = this.queryStrategy(queryObj);
+            var query = this.queryStrategy.compose(queryObj);
+            $.ajax({
+                method: 'POST',
+                url: 'query/advanced',
+                data: {
+                    query: query
+                }
+            });
+            console.log(queryObj);
         }
 
     });

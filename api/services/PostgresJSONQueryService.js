@@ -25,7 +25,7 @@ var PostgresJSONQueryService = {
                 if(err) {
                     return console.error('error running query', err);
                 }
-                result.rows.forEach(function(row){
+                result.rows.forEach(function(row) {
                     console.log(row.metadata);
                 });
             });
