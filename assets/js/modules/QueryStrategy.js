@@ -31,7 +31,7 @@
             }
             query += ");";
             console.log(query);
-            return {query: query, parameters: parameters}; 
+            return {statement: query, parameters: parameters}; 
         }; 
     };
 

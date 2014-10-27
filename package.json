@@ -25,7 +25,8 @@
     "rc": "~0.3.3",
     "sails": "~0.10.5",
     "sails-disk": "~0.10.0",
-    "sails-postgresql": "^0.10.9"
+    "sails-postgresql": "^0.10.9",
+    "xtens-query": "git+https://github.com/biolab-unige/xtens-query.git"
   },
   "scripts": {
     "start": "node app.js",

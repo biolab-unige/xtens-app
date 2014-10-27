@@ -58,7 +58,7 @@ describe("QueryStrategy.PostgresJSON", function() {
                 criteriaObj.content[3].fieldName, criteriaObj.content[3].fieldValue, criteriaObj.content[3].fieldUnit ];
             expect(parameteredQuery).to.have.property('query');
             expect(parameteredQuery).to.have.property('parameters');
-            expect(parameteredQuery.query).to.equal(statement);
+            expect(parameteredQuery.statement).to.equal(statement);
             expect(parameteredQuery.parameters).to.eql(parameters);
         });
 

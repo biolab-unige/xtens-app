@@ -45,7 +45,10 @@ module.exports.routes = {
     'GET /subjectWithPersonalDetails/:id': {controller: 'subject', action: 'findOneWithPersonalDetails'},
     'PUT /subjectWithPersonalDetails': {controller: 'subject', action: 'updateWithPersonalDetails'},
     'POST /subjectWithPersonalDetails': {controller: 'subject', action: 'createWithPersonalDetails'},
-    'DELETE /subjectWithPersonalDetails': {controller: 'subject', action: 'deleteWithPersonalDetails'}
+    'DELETE /subjectWithPersonalDetails': {controller: 'subject', action: 'deleteWithPersonalDetails'},
+
+    // Advanced Search API
+    'POST /query/dataSearch': {controller: 'query', action: 'dataSearch'}
     
     /*,
     'GET /dataType': {controller: 'DataType', action: 'find'} 

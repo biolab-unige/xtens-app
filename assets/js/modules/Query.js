@@ -3,6 +3,7 @@
     var i18n = xtens.module("i18n").en;
     var FieldTypes = xtens.module("xtensconstants").FieldTypes;
     var QueryStrategy = xtens.module("querystrategy");
+    var Data = xtens.module("data");
 
     // constant to define the field-value HTML element
     var FIELD_VALUE = 'field-value';
@@ -82,10 +83,7 @@
                         label: "",
                         value: null
                     }
-                }/*,
-                getVal: function($el, ev, options) {
-                    return _.findWhere(options.view.fieldList, {name: $el.val()});
-                }*/
+                }
 
             }
         },
@@ -123,7 +121,10 @@
             if (fieldType === FieldTypes.BOOLEAN) {
                 return;
             }
-            if (fieldType === FieldTypes.INTEGER || fieldType === FieldTypes.FLOAT) {
+            if (metadataField.isList) {
+                data = [ { id: 'IN', text: '=' }, { id: 'NOT IN', text: '≠' }];
+            }
+            else if (fieldType === FieldTypes.INTEGER || fieldType === FieldTypes.FLOAT) {
                 data = [ { id: '=', text: '=' }, { id: '<=', text: '≤' },
                     { id: '>=', text: '≥' }, { id: '<', text: '<' },
                     { id: '>', text: '>' }, { id: '<>', text: '≠' }];
@@ -252,7 +253,7 @@
                     }
                 },
                 getVal: function($el, ev, options) {
-                    return _.findWhere(options.view.dataTypes, {id: parseInt($el.val())});
+                    return parseInt($el.val());
                 }
             } 
         },
@@ -281,12 +282,13 @@
                                                 this.add(childView);
         },
 
-        pivotDataTypeOnChange: function(model, selectedDataType) {
+        pivotDataTypeOnChange: function(model, idDataType) {
             this.clear();
-            if (!selectedDataType) {
+            if (!idDataType) {
                 this.$addConditionButton.addClass('hidden');
                 return;
             }
+            var selectedDataType = _.findWhere(this.dataTypes, {id: idDataType});
             this.$addConditionButton.removeClass('hidden');
             var childView = new Query.Views.Row({fieldList: selectedDataType.getFlattenedFields(), model: new Query.RowModel()});
             this.$("#query-form").append(childView.render().el);
@@ -311,16 +313,30 @@
         },
 
         sendQuery: function() {
-            var queryObj = this.serialize();
-            var query = this.queryStrategy.compose(queryObj);
+            var queryParameters = JSON.stringify({queryArgs: this.serialize()});
             $.ajax({
                 method: 'POST',
-                url: 'query/advanced',
-                data: {
-                    query: query
+                contentType: 'application/json;charset:utf-8',
+                url: '/query/dataSearch',
+                data: queryParameters,
+                success: function(data) {
+                    var dataList = new Data.List(data);
+                    console.log(dataList);
+                },
+                error: function(jqXHR, textStatus, err) {
+                    alert(err);
                 }
+
             });
-            console.log(queryObj);
+            return false;
+            /* .done(function(data) {
+                var dataList = new Data.List(data);
+                console.log(dataList);
+            }).fail(function(err) {
+                alert(err);
+            }).always(function() {
+                console.log('complete!');
+            }); */
         }
 
     });
