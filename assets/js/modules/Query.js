@@ -4,6 +4,7 @@
     var FieldTypes = xtens.module("xtensconstants").FieldTypes;
     var QueryStrategy = xtens.module("querystrategy");
     var Data = xtens.module("data");
+    var DataType = xtens.module("datatype");
 
     // constant to define the field-value HTML element
     var FIELD_VALUE = 'field-value';
@@ -65,6 +66,8 @@
 
     Query.RowModel = Backbone.Model.extend({});
 
+    Query.LoopModel = Backbone.Model.extend({});
+
     Query.Views.Row = Query.Views.Component.fullExtend({
 
         className: 'form-group',
@@ -100,10 +103,17 @@
             this.$comparator = this.$("input[name=comparator]");
             this.$unit = this.$("input[name=unit]");
             this.$junction = this.$("input[name=junction]");
+            if (this.model.get("fieldName")) {
+                this.generateStatementOptions(this.model, this.model.get("fieldName"));
+            }
             return this;
         },
 
         fieldNameOnChange: function(model, fieldName) {
+           this.generateStatementOptions(model, fieldName);
+        },
+
+        generateStatementOptions: function(model, fieldName) {
             this.$("input[type=hidden]").select2('destroy');
             var selectedField = _.findWhere(this.fieldList, {name: fieldName});
             this.model.set("fieldType", selectedField.fieldType.toLowerCase());
@@ -227,6 +237,55 @@
 
     });
 
+    Query.Views.Loop = Query.Views.Component.fullExtend({
+        
+        className: 'query-loop',
+
+        initialize: function(options) {
+            this.template = JST['views/templates/query-builder-loop.ejs'];
+            this.loopList = options.loopList;
+            this.nestedViews = [];
+            this.listenTo(this.model, 'change:loopName', this.loopNameOnChange);
+        },
+
+        render: function() {
+            this.$el.html(this.template({ __: i18n}));
+            this.stickit();
+            this.$loopBody = this.$(".query-loop-body");
+            return this;
+        },
+
+        bindings: {
+            '[name="loop-name"]': {
+                observe: 'loopName',
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select")});
+                },
+                selectOptions: {
+                    collection: 'this.loopList',
+                    labelPath: 'name',
+                    valuePath: 'name',
+                    defaultOption: {
+                        label: "",
+                        value: null
+                    }
+                }
+
+            }
+        },
+
+        loopNameOnChange: function() {
+            var selectedLoop = _.findWhere(this.loopList, {name: this.model.get('loopName')});
+            var childView;
+            for (var i=0, len=selectedLoop.content.length; i<len; i++) {
+                childView = new Query.Views.Row({fieldList: [selectedLoop.content[i]], 
+                                                model: new Query.RowModel({fieldName: selectedLoop.content[i].name})});
+                this.$loopBody.append(childView.render().el);
+                this.add(childView);
+            }
+        }
+    });
+
 
     Query.Views.Builder = Query.Views.Component.fullExtend({
 
@@ -265,31 +324,45 @@
             this.dataTypes = options.dataTypes || [];
             this.queryStrategy = new QueryStrategy.PostgresJSON();
             this.render(options);
-            this.$addConditionButton = this.$("#add-condition");
+            this.$addFieldButton = this.$("#add-field");
+            this.$addLoopButton = this.$("#add-loop");
+            this.$queryForm = this.$("#query-form");
             this.listenTo(this.model, 'change:pivotDataType', this.pivotDataTypeOnChange);
 
         },
 
         events: {
-            'click #add-condition': 'addQueryRow',
+            'click #add-field': 'addQueryRow',
+            'click #add-loop': 'addLoopQuery',
             'click #search': 'sendQuery'
         },
 
         addQueryRow: function() {
-            var childView = new Query.Views.Row({fieldList: this.model.get('pivotDataType').getFlattenedFields(),
+            var childView = new Query.Views.Row({fieldList: this.dataTypes.get(this.model.get('pivotDataType')).getFlattenedFields(),
                                                 model: new Query.RowModel()});
-                                                this.$("#query-form").append(childView.render().el);
+                                                this.$queryForm.append(childView.render().el);
                                                 this.add(childView);
+        },
+
+        addLoopQuery: function() {
+            var childView = new Query.Views.Loop({loopList: this.dataTypes.get(this.model.get('pivotDataType')).getLoops(),
+                                                 model: new Query.LoopModel()});
+                                                 this.$queryForm.append(childView.render().el);
+                                                 this.add(childView);
         },
 
         pivotDataTypeOnChange: function(model, idDataType) {
             this.clear();
             if (!idDataType) {
-                this.$addConditionButton.addClass('hidden');
+                this.$addFieldButton.addClass('hidden');
+                this.$addLoopButton.addClass('hidden');
                 return;
             }
-            var selectedDataType = _.findWhere(this.dataTypes, {id: idDataType});
-            this.$addConditionButton.removeClass('hidden');
+            var selectedDataType = this.dataTypes.get(idDataType);
+            if (selectedDataType.hasLoops()) {
+                this.$addLoopButton.removeClass('hidden');
+            } 
+            this.$addFieldButton.removeClass('hidden');
             var childView = new Query.Views.Row({fieldList: selectedDataType.getFlattenedFields(), model: new Query.RowModel()});
             this.$("#query-form").append(childView.render().el);
             this.add(childView);
@@ -329,14 +402,6 @@
 
             });
             return false;
-            /* .done(function(data) {
-                var dataList = new Data.List(data);
-                console.log(dataList);
-            }).fail(function(err) {
-                alert(err);
-            }).always(function() {
-                console.log('complete!');
-            }); */
         }
 
     });

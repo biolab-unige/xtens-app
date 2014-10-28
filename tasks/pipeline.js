@@ -29,7 +29,8 @@ var jsFilesToInject = [
     // are brought in here
     'js/dependencies/sail.io.js',
     'dependencies/**/jquery.js',
-    'dependencies/**/underscore.js',
+    // 'dependencies/**/underscore.js',
+    'dependencies/**/lodash.js',
     'dependencies/**/backbone.js',
     'dependencies/**/backbone.stickit.js',
     'dependencies/**/select2.js',

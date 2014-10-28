@@ -82,7 +82,7 @@
             if (options.loopParams) {
                 this.set("loop", options.loopParams.name);
             }
-            if (options.metadata) {
+            if (options.metadata && options.metadata[field.name]) {
                 var fieldRecord = options.metadata[field.name];
                 var index = (options.loopParams && options.loopParams.index) || 0;
                 this.set("value", fieldRecord.value[index]);
@@ -252,7 +252,8 @@
             this.component = options.component;
             this.nestedViews = [];
             if (this.model.metadata) {
-                this.loopRecords = this.model.metadata[this.component.content[0].name].value.length;
+                var loopInstance = this.model.metadata[this.component.content[0].name];
+                this.loopRecords = loopInstance ? loopInstance.value.length : 1;
             }
             else {
                 this.loopRecords = 1;

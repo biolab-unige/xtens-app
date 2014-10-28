@@ -50,12 +50,32 @@
                 }
             }
             return flattened;
+        },
+
+        /**
+         * @description returns true if the DataType contains at least a loop
+         */
+        hasLoops: function() {
+            var body = this.get("schema") && this.get("schema").body;
+            for (var i=0, len=body.length; i<len; i++){
+                var groupContent = body[i] && body[i].content;
+                if (_.where(groupContent, {label: Constants.METADATA_LOOP}).length > 0) {
+                    return true;
+                }
+            }
+            return false;
+        },
+
+        getLoops: function() {
+            var body = this.get("schema") && this.get("schema").body;
+            var res = [];
+            for (var i=0, len=body.length; i<len; i++) {
+                var groupContent = body[i] && body[i].content;
+                res.push(_.where(groupContent, {label: Constants.METADATA_LOOP}));
+            }
+            return _.flatten(res, true);
         }
 
-        /*
-initialize: function() {
-this.set("className", DataTypeClasses.GENERIC);
-} */
     });
 
     DataType.List = Backbone.Collection.extend({

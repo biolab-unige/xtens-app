@@ -4,6 +4,7 @@
 @border-width: 3px;
 @border-width-sm: 2px;
 @border-width-metadatafield: 2px;
+@border-width-query: 2px;
 @border-style: solid solid;
 .hidden {
     display: none;
@@ -188,4 +189,12 @@ div.metadataloop > div.metadatacomponent-body {
     .make-sm-column(2);
     .make-xs-column(2);
 }
-
+.query .query-loop {
+    .make-row();
+    border-color: @brand-primary;
+    border-width: @border-width-query;
+    border-style: @border-style;
+}
+.query .query-loop-body {
+    .make-xs-column(12);
+}

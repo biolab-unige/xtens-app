@@ -1,6 +1,7 @@
 var expect = chai.expect;
 var should = chai.should();
 var DataType = xtens.module("datatype");
+var Constants = xtens.module("xtensconstants").Constants;
 
 describe('DataType', function() {
 
@@ -123,11 +124,37 @@ describe('DataType', function() {
             expect(flattened[3].name).to.equal('Class');
             expect(flattened[4].name).to.equal('Planet');
             expect(flattened[5].name).to.equal('Declination');
-
-
-
         });
 
+    });
+
+    describe('#hasLoops', function() {
+
+        it('returns true if the DataType schema contains at least one loop', function() {
+            var model = new DataType.Model({schema: schema});
+            var hasLoop = model.hasLoops();
+            expect(hasLoop).to.be.true;
+        });
+
+        it('returns false if the DataType schema does not contain loops', function() {
+            var schemaNoLoop = _.cloneDeep(schema);
+            schemaNoLoop.body[1].content.splice(0,1); // remove the loop item from the schema
+            var model = new DataType.Model({schema: schemaNoLoop});
+            expect(model.hasLoops()).to.be.false;
+        });
+
+    });
+
+    describe('#getLoops', function() {
+        it('returns the loop contained in the schema', function() {
+            var model = new DataType.Model({schema: schema});
+            var loops = model.getLoops();
+            expect(loops).to.be.instanceof(Array);
+            expect(loops).to.have.length(1);
+            expect(loops[0].label).to.eql(Constants.METADATA_LOOP);
+            expect(loops[0].content[0].label).to.eql(Constants.METADATA_FIELD);
+            expect(loops[0].content[0].name).to.equal(schema.body[1].content[0].content[0].name);
+        });
     });
 
 });

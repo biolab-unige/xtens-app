@@ -150,23 +150,6 @@
             var dataTypes = new DataType.List();
             var projects = new Project.List();
             var _this = this;
-            /*
-               dataTypes.fetch({
-success: function(dataTypes) {
-var model = new Subject.Model();
-var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
-dataTypes = _.where(dataTypes.toJSON(), {classTemplate: SUBJECT});
-_this.loadView(new Subject.Views.Edit({idDataType: idDataType, 
-id: id, 
-dataTypes: dataTypes,
-model: model
-}));
-},
-error: function(err) {
-console.log(err);
-            // TODO implement error handling here 
-            }
-            }); */
             $.when(dataTypes.fetch(), projects.fetch()).then(
                 function(dataTypesRes, projectsRes) {
                 var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
@@ -213,7 +196,7 @@ console.log(err);
                 success: function(dataTypes) {
                     that.loadView(new Query.Views.Builder({
                         id:id,
-                        dataTypes: dataTypes.models,
+                        dataTypes: dataTypes,
                         model: new Query.Model()
                     }));    
                 }
