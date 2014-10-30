@@ -13,7 +13,13 @@ a [Sails](http://sailsjs.org) application
 
 Two methods:
 
-* Dowmload the file 
+* Download the file .zip;
+
+* Clone the repository:
+
+        git clone 
+
+    
 
 
 ## To Start:
