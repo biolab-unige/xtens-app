@@ -25,6 +25,36 @@ To load the bower packages:
 
 ##Database Configuration:
 
+You must create the local.js file in xtens-app/config/. This config file should include any settings specifically for your development computer (db passwords, etc.)
+
+e.g:
+
+        module.exports {
+        
+            port: process.env.PORT || #port;
+        
+            environment: process.env.NODE_ENV || 'development',
+
+            connections: {
+
+                'default': 'postgresql',                //your default database connection
+
+                postgresql: {                           //your database connection
+                
+                    adapter: 'sails-postgresql',        //sails adapter
+                    host: '127.0.0.1'                   //ip host
+                    port: '0000'                        //port
+                    user: 'user',                       //db user
+                    password: 'password',               //db user password
+                    database: 'xtens',                  //db name
+                    schema: true 
+                },
+
+            }
+
+        };
+
+
 
 
 
