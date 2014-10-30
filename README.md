@@ -9,6 +9,13 @@ a [Sails](http://sailsjs.org) application
 * [Bower](http://bower.io/);
 * [PostgreSQL](http://www.postgresql.org/).
 
+##Download:
+
+Two methods:
+
+* Dowmload the file 
+
+
 ## To Start:
 
 You need to install the npm (node.js) packages:
@@ -53,6 +60,10 @@ e.g:
             }
 
         };
+
+##Starting Application:
+
+
 
 
 
