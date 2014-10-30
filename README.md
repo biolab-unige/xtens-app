@@ -21,17 +21,21 @@ Two methods:
 
 ## To Start:
 
+You need to go in the xtens-app directory:
+
+        cd xtens-app/
+
 You need to install the npm (node.js) packages:
 
-    npm install
+        npm install
 
 and then you need to install bower packages:
 
-    bower install
+        bower install
 
 To load the bower packages:
 
-    grunt bower
+        grunt bower
 
 ##Database Configuration:
 
