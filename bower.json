@@ -1,73 +1,74 @@
 {
-    "name": "xtens-app",
-    "version": "0.0.0",
-    "description": "a digital repository for heterogeneous biomedical data",
-    "main": "app.js",
-    "keywords": [
-        "data",
-        "metadata",
-        "data model"
-    ],
-    "authors": [
-        "Massimiliano Izzo"
-    ],
-    "license": "BSD 3-clause",
-    "homepage": "www.xtens.org",
-    "ignore": [
-        "**/.*",
-"node_modules",
-"bower_components",
-"test",
-"tests"
-    ],
-    "dependencies": {
-        "jquery": "1.11.1",
-        "bootstrap": "3.2.0",
-        "underscore": null,
-        "backbone": null,
-        "font-awesome": "~4.2.0",
-        "select2": "https://github.com/ivaynberg/select2.git#~3.5.1",
-        "select2-bootstrap-css": "https://github.com/t0m/select2-bootstrap-css.git#~1.4.1",
-        "jquery-validation": "~1.13.0",
-        "backbone.stickit": "~0.8.0",
-        "parsleyjs": "~2.0.5",
-        "moment": "~2.8.3",
-        "lodash": "~2.4.1"
+  "name": "xtens-app",
+  "version": "0.0.0",
+  "description": "a digital repository for heterogeneous biomedical data",
+  "main": "app.js",
+  "keywords": [
+    "data",
+    "metadata",
+    "data model"
+  ],
+  "authors": [
+    "Massimiliano Izzo"
+  ],
+  "license": "BSD 3-clause",
+  "homepage": "www.xtens.org",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "1.11.1",
+    "bootstrap": "3.2.0",
+    "underscore": null,
+    "backbone": null,
+    "font-awesome": "~4.2.0",
+    "select2": "https://github.com/ivaynberg/select2.git#~3.5.1",
+    "select2-bootstrap-css": "https://github.com/t0m/select2-bootstrap-css.git#~1.4.1",
+    "jquery-validation": "~1.13.0",
+    "backbone.stickit": "~0.8.0",
+    "parsleyjs": "~2.0.5",
+    "moment": "~2.8.3",
+    "lodash": "~2.4.1"
+  },
+  "exportsOverride": {
+    "jquery": {
+      "js": "dist/jquery.js"
     },
-    "exportsOverride": {
-        "jquery": {
-            "js": "dist/jquery.js"
-        },
-        "bootstrap": {
-            "less": "less"
-        },
-        "underscore": {
-            "js": "**/underscore.js"
-        },
-        "lodash": {
-            "js": "dist/lodash.js"
-        },
-        "backbone": {
-            "js": "**/backbone.js"
-        },
-        "font-awesome": {
-            "styles": "css/font-awesome.css",
-            "fonts": "fonts/*.*"
-        },
-        "select2-bootstrap": {
-            "": "**/select2-bootstrap.css"
-        },
-        "jquery-validation": {
-            "js": "dist/*.js"
-        },
-        "backbone.stickit": {
-            "": "backbone.stickit.js"
-        }
+    "bootstrap": {
+      "less": "less"
     },
-    "devDependencies": {
-        "chai": "~1.9.2",
-        "sinon": "~1.10.3",
-        "sinon-chai": "~2.5.0",
-        "chai-jquery": "~1.2.2"
+    "underscore": {
+      "js": "**/underscore.js"
+    },
+    "lodash": {
+      "js": "dist/lodash.js"
+    },
+    "backbone": {
+      "js": "**/backbone.js"
+    },
+    "font-awesome": {
+      "styles": "css/font-awesome.css",
+      "fonts": "fonts/*.*"
+    },
+    "select2-bootstrap": {
+      "": "**/select2-bootstrap.css"
+    },
+    "jquery-validation": {
+      "js": "dist/*.js"
+    },
+    "backbone.stickit": {
+      "": "backbone.stickit.js"
     }
+  },
+  "devDependencies": {
+    "chai": "~1.9.2",
+    "sinon": "~1.10.3",
+    "sinon-chai": "~2.5.0",
+    "chai-jquery": "~1.2.2",
+    "lodash": "~2.4.1"
+  }
 }

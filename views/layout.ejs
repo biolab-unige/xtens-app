@@ -32,11 +32,91 @@
 <link rel="stylesheet" href="/styles/importer.css">
 <link rel="stylesheet" href="/dependencies/select2/select2.css">
 <link rel="stylesheet" href="/dependencies/font-awesome/styles/font-awesome.css">
+<link rel="stylesheet" href="/dependencies/pikaday/pikaday.css">
 <link rel="stylesheet" href="/dependencies/select2-bootstrap-css/select2-bootstrap.css">
 <!--STYLES END-->
 </head>
+<style type="text/css">
+nav ul li:hover ul {
+    background-color:#87CEFA;
+    display: block;
+    width:200px;
+    padding:5px;
+    height:auto;
+   
+}
+.navbar-default{
+background-color: #00BFFF;
+}
 
+
+
+.footer { 
+
+height: 30px;
+    position:fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+   padding:1rem;
+   text-align:center;
+}
+
+.footer p{
+margin:0;
+font-size:9pt;
+background-color: #1E90FF;
+}
+nav ul li{
+    text-align:center;
+    color:blue;
+   
+
+}
+</style>
 <body>
+
+ <nav class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <p class="navbar-text" data-toggle="collapse">XTENS</p>
+
+        </div>
+        <ul class ="nav navbar-nav navbar-right ">
+            <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" >Admin  <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li><a href="http://127.0.0.1:1337/#/groups">Groups</a></li>
+                <li><a href="http://127.0.0.1:1337/#/operators">Operators</a></li>
+            </ul>
+            </li>
+
+            <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" >DataType Management  <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li><a href="#"></a></li>
+                </ul>
+
+            </li>
+
+            <li class="dropdown">
+            <a  href="#" class="dropdown-toggle" data-toggle="dropdown" data-toggle="collapse">Search <span class="caret"></span></a>
+             <ul class="dropdown-menu">
+                <li><a href="http://127.0.0.1:1337/#/query">Data Search</a></li>
+                <li><a href="http://127.0.0.1:1337/#/data/new">New Data</a></li>
+            </ul>
+
+
+            </li>
+
+        </ul>
+    </nav>
+
+
+
+<div class="footer">
+        <p class="footer-text">Copyright (C)</p>
+        </div>    
+
 <%- body %>
 
 
@@ -98,6 +178,7 @@
 <script src="/dependencies/select2/select2.js"></script>
 <script src="/dependencies/jquery-validation/js/jquery.validate.js"></script>
 <script src="/dependencies/parsleyjs/parsley.js"></script>
+<script src="/dependencies/pikaday/pikaday.js"></script>
 <script src="/dependencies/moment/moment.js"></script>
 <script src="/js/application/utils.js"></script>
 <script src="/js/application/xtens.js"></script>
