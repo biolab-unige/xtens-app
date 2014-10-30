@@ -17,10 +17,7 @@ Two methods:
 
 * Clone the repository:
 
-        git clone 
-
-    
-
+        git clone https://github.com/biolab-unige/xtens-app.git
 
 ## To Start:
 
