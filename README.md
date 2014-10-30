@@ -70,6 +70,16 @@ e.g:
 
 ##Starting Application:
 
+You need to be in xtens-app directory:
+
+        cd xtens-app
+
+You need to start sails (and the application):
+
+        sails lift
+
+Now you can go to the application page http://host:port/#/. (the host is the ip address that you set in local.js and port is the "port: process.env.PORT || #port;" that you set in local.js).
+
 
 
 
