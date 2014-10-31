@@ -43,79 +43,92 @@ nav ul li:hover ul {
     width:200px;
     padding:5px;
     height:auto;
-   
+
 }
-.navbar-default{
-background-color: #00BFFF;
+body{
+
+background-color:#309898;
 }
-
-
-
+.navbar{
+    background-color: #00BFFF;
+    color:white;
+}
 .footer { 
 
-height: 30px;
+    height: 30px;
     position:fixed;
     bottom: 0;
     left: 0;
     right: 0;
-   padding:1rem;
-   text-align:center;
+    padding:1rem;
+    text-align:center;
 }
 
 .footer p{
-margin:0;
-font-size:9pt;
-background-color: #1E90FF;
+    margin:0;
+    font-size:9pt;
+    background-color: #1E90FF;
+    color:white;
 }
 nav ul li{
     text-align:center;
-    color:blue;
-   
-
 }
+.dropdown a{
+color:white;
+}
+.dropdown a:hover{
+color:black;
+}
+
 </style>
 <body>
 
- <nav class="navbar navbar-default" role="navigation">
-        <div class="navbar-header">
-            <p class="navbar-text" data-toggle="collapse">XTENS</p>
+<nav class="navbar" role="navigation">
+    <div class="navbar-header">
+        <p class="navbar-text" data-toggle="collapse"><%= __("xtens") %></p>
 
-        </div>
-        <ul class ="nav navbar-nav navbar-right ">
-            <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" >Admin  <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-                <li><a href="http://127.0.0.1:1337/#/groups">Groups</a></li>
-                <li><a href="http://127.0.0.1:1337/#/operators">Operators</a></li>
-            </ul>
-            </li>
-
-            <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" >DataType Management  <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-                <li><a href="#"></a></li>
-                </ul>
-
-            </li>
-
-            <li class="dropdown">
-            <a  href="#" class="dropdown-toggle" data-toggle="dropdown" data-toggle="collapse">Search <span class="caret"></span></a>
-             <ul class="dropdown-menu">
-                <li><a href="http://127.0.0.1:1337/#/query">Data Search</a></li>
-                <li><a href="http://127.0.0.1:1337/#/data/new">New Data</a></li>
-            </ul>
-
-
-            </li>
-
+    </div>
+    <ul class ="nav navbar-nav navbar-right ">
+        <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><%= __("admin") %><span class="caret"></span></a>
+        <ul class="dropdown-menu">
+            <li><a href="#/groups"><%= __("groups") %></a></li>
+            <li><a href="#/operators"><%= __("operators") %></a></li>
         </ul>
-    </nav>
+        </li>
+
+        <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><%= __("data-type-management") %><span class="caret"></span></a>
+        <ul class="dropdown-menu">
+            <li><a href="#"></a></li>
+        </ul>
+
+        </li>
+
+        <li class="dropdown">
+        <a  href="#" class="dropdown-toggle" data-toggle="dropdown" data-toggle="collapse"><%= __("search") %><span class="caret"></span></a>
+        <ul class="dropdown-menu">
+            <li><a href="#/query"><%= __("data-search") %></a></li>
+            <li><a href="#/data/new"><%= __("new-data") %></a></li>
+        </ul>
+
+
+        </li>
+
+    </ul>
+</nav>
 
 
 
 <div class="footer">
-        <p class="footer-text">Copyright (C)</p>
-        </div>    
+    <p class="footer-text">&copy <%= __("copyright") %>
+    <script language="JavaScript">
+    var d=new Date();
+    var yr=d.getFullYear();
+    document.write(" "+yr);
+    </script>
+    </p>
+</div>    
 
 <%- body %>
 
@@ -167,7 +180,7 @@ nav ul li{
           + Change the order of your scripts
           + Import scripts from other directories
           + Use a different preprocessor, like TypeScript
-
+=
     -->
 
 <!--SCRIPTS-->

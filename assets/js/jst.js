@@ -301,9 +301,9 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<h2 class="legend" align="center">' +
 ((__t = ( __("group-list") )) == null ? '' : __t) +
-'</h2> \n\n<div id="list">\n    <div class="table-responsive">\n        <table class="table striped">\n            <thead> \n               \n                <tr>\n                    <th>' +
+'</h2> \n<div id="list">\n    <div class="table-responsive">\n        <table class="table striped">\n            <thead> \n               \n                <tr>\n                    <th>' +
 ((__t = ( __("name") )) == null ? '' : __t) +
-'</th>\n                                      <th></th>\n                </tr>\n            </thead>\n            <tbody>  ';
+'</th>\n                                      <th></th>\n                </tr>\n            </thead>\n            <script type="text/css">\ntbody{\nbackground-color:blue;\n}\n</script>\n\n\n            <tbody>  ';
  _.each(groups, function(group) { ;
 __p += ' \n            <tr>\n\n\n                <td class="group_val">' +
 ((__t = ( group.get("name") )) == null ? '' : __t) +

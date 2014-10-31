@@ -14,5 +14,14 @@
     "type": "Type",
     "required": "Required",
     "is-list": "Is List",
-    "has Units": "Has Units"
+    "has Units": "Has Units",
+    "xtens" : "XTENS",
+    "admin" : "Admin",
+    "groups" : "Groups",
+    "operators" : "Operators",
+    "data-type-management" :"DataType Management",
+    "data-search" : "Data Search",
+    "search": "Search",
+    "new-data": "New Data",
+    "copyright":"Copyright"
 }
