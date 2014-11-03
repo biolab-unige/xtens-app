@@ -122,6 +122,8 @@
         "add-loop-condition": "Add Loop Condition",
         "add-nested-condition": "Add Nested Condition",
         "search": "Search"
+	
+	
 
     };
 

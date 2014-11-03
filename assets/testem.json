@@ -32,6 +32,7 @@
         "test/modules/DataType-test.js",
         "test/modules/Data-test.js",
         "test/modules/Group-test.js",
-        "test/modules/QueryStrategy-test.js"
+        "test/modules/QueryStrategy-test.js",
+        "test/modules/Operator-test.js"
     ]
 }
