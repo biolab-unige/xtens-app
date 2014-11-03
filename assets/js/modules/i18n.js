@@ -120,6 +120,7 @@
         "loop-name": "Loop Name",
         "add-field-condition": "Add Field Condition",
         "add-loop-condition": "Add Loop Condition",
+        "add-nested-condition": "Add Nested Condition",
         "search": "Search"
 
     };

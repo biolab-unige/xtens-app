@@ -196,8 +196,7 @@
                 success: function(dataTypes) {
                     that.loadView(new Query.Views.Builder({
                         id:id,
-                        dataTypes: dataTypes,
-                        model: new Query.Model()
+                        dataTypes: dataTypes
                     }));    
                 }
             });

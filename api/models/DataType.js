@@ -36,13 +36,15 @@ var DataType = {
             collection: 'data',
             via: 'type'
         },
-        // self-reference to parent DataType
-        parent: {
-            model: 'dataType'
+        // self-reference to parent DataType(s)
+        parents: {
+            collection: 'dataType',
+            via: 'children'
         },
+        // self-reference to children DataType(s)
         children: {
             collection: 'dataType',
-            via: 'parent'
+            via: 'parents'
         },
         // many-to-may association with Group
         groups: {
