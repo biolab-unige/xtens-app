@@ -1,5 +1,5 @@
 <h1><%= __("sample-manager") %></h1>
-<h2><%= data ? __("update-sample") : __("create-sample") %></h2>
+<h2><%= data.id ? __("update-sample") : __("create-sample") %></h2>
 <div id="content">
     <form class="form-horizontal edit-data-form" role="form">
         <div class="form-group"></div>
@@ -15,18 +15,28 @@
                 <select class="form-control" id="type" name="type"></select>
             </div>
         </div>
+        <% if (data.get("donor")) {%>
         <div class="form-group metadataform-group">
             <label for="donor" class="data-label"><%= __('donor') %></label>
+            <span class="data-span"><%= data.get("donor").code %></span>
+            <!--
             <div class="data-input-div">
                 <select class="form-control" id="donor" name="donor"></select>
             </div>
+            -->
         </div>
+        <%} %>
+        <% if (data.get("parentSample")) {%>
         <div class="form-group metadataform-group">
             <label for="parent-sample" class="data-label"><%= __('parent-sample') %></label>
+            <span class="data-span"><%= data.get("parentSample").biobankCode %></span>
+            <!--
             <div class="data-input-div">
                 <select class="form-control" id="parent-sample" name="parent-sample"></select>
             </div>
+            -->
         </div>
+        <%} %>
         <div id="buttonbardiv" class="row text-center">
             <div class="btn-group btn-group-margin">
                 <input type="submit" id="save" class="btn btn-primary" data-target-route="samples" value="<%=__('save') %>" >

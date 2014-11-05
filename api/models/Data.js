@@ -31,6 +31,21 @@ var Data = {
             required: true,
             columnName: 'metadata'
         },
+        // if the parent is a patient
+        parentSubject: {
+            model: 'subject',
+            columnName: 'parent_subject'
+        },
+        // if the "parent" is a sample
+        parentSample: {
+            model: 'sample',
+            columnName: 'parent_sample'
+        },
+        // if the "parent" is a generic data
+        parentData: {
+            model: 'data',
+            column_name: 'parent_data'
+        },
         createdAt: {
             type: 'datetime',
             columnName: 'created_at'

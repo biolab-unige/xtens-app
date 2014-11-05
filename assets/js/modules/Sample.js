@@ -7,6 +7,7 @@
     var i18n = xtens.module("i18n").en;
     var DataType = xtens.module("datatype");
     var Data = xtens.module("data");
+    var Classes = xtens.module("xtensconstants").DataTypeClasses;
 
     Sample.Model = Backbone.Model.extend({
         urlRoot: '/sample'
@@ -59,7 +60,7 @@
                                 label: subj.personalInfo.surname + " " +  subj.personalInfo.givenName,
                                 value: subj.id
                             }; 
-                        });
+                        }); 
                     },
                     defaultOption: {
                         label: "",
@@ -78,31 +79,63 @@
                 }
             },
 
-            '#parentSample': {
+            '#parent-sample': {
                 observe: 'parentSample',
-
+                
                 selectOptions: {
-                    collection: [],
-                    label: '',
-                    value: '',
+                    collection: function() {
+                        return this.parentSamples.map(function(sample) { 
+                            return { 
+                                label: sample.biobankCode,
+                                value: sample.id
+                            }; 
+                        });
+                    },
                     defaultOption: {
-                        label: i18n('please-select'),
+                        label: "",
                         value: null
-                    }
+                    } 
+                },
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n('please-select')});
+                },
+                getVal: function($el, ev, options) {
+                    var value = parseInt($el.val());
+                    return _.findWhere(options.view.parentSamples, {id: value });
+                },
+                onGet: function(val, options) {
+                    return (val && val.id);
                 }
+
             }
 
         },
 
         initialize: function(options) {
-            _.bindAll(this, 'fetchSuccess');
+            // _.bindAll(this, 'fetchSuccess');
             $('#main').html(this.el);
             this.template = JST["views/templates/sample-edit.ejs"];
-            this.dataTypes = options.dataTypes;
-            this.subjects = options.subjects;
-            this.render(options);
+            this.schemaView = null;
+            this.dataTypes = options.dataTypes || [];
+            // _.extend(this, options);
+            if (options.sample) {
+                this.model = new Sample.Model(this.options);
+            }
+            else {
+                this.model = new Sample.Model();
+            }
+            _.each(["donor","parentSample"], function(parent) {
+                if(options[parent]) {
+                    this.model.set(parent, options[parent]);
+                }
+            }, this);
+            /*
+            this.dataTypes = options.dataTypes.toJSON();
+            this.subjects = options.subjects.toJSON();
+            this.parentSamples = options.samples.toJSON(); */
+            this.render();
         },
-
+        /*
         render: function(options) {
             if (options.id) {
                 this.model = new Sample.Model({id: options.id});
@@ -116,7 +149,7 @@
                 this.listenTo(this.model, 'change:type', this.dataTypeOnChange);
             }
             return this;
-        },
+        }, */
 
         events: {
             'click #save': 'saveData'
@@ -129,23 +162,37 @@
         tagName: 'div',
         className: 'sample',
 
-        initialize: function() {
+        initialize: function(options) {
             $("#main").html(this.el);
+            this.dataTypes = options.dataTypes;
+            this.samples = options.samples;
             this.template = JST["views/templates/sample-list.ejs"];
+            this.addLinksToModels();
             this.render();
         },
 
-        render: function(options) {
-            var that = this;
-            var sample = new Sample.List();
-            sample.fetch({
-                success: function(samples) {
-                    that.$el.html(that.template({__: i18n, samples: samples.models}));
-                },
-                error: function() {
-                    that.$el.html(that.template({__: i18n}));
+        addLinksToModels: function() {
+            _.each(this.samples.models, function(sample) {
+                var typeId = sample.get("type").id;
+                var type = this.dataTypes.get(typeId);
+                sample.set("editLink", "#/samples/edit/" + sample.id);
+                if (type.get("children") && type.get("children").length > 0) {
+                    var sampleTypeChildren = _.where(type.get("children"), {"classTemplate": Classes.SAMPLE});
+                    if (sampleTypeChildren.length > 0) {
+                        var sids = _.pluck(sampleTypeChildren, 'id').join();
+                        sample.set("newDerivativeLink", "#/samples/new/0?idDataTypes="+sids+"&parentSample="+sample.id+"&donor="+sample.get("donor").id);
+                    }
+                    var dataTypeChildren = _.where(type.get("children"), {"classTemplate": Classes.GENERIC});
+                    if (dataTypeChildren.length > 0) {
+                        var dids = _.pluck(dataTypeChildren, 'id').join();
+                        sample.set("newDataLink", "#/data/new/0?idDataTypes="+dids+"&parentSample="+sample.id);
+                    }
                 }
-            });
+            }, this);
+        },
+
+        render: function() {
+            this.$el.html(this.template({__: i18n, samples: this.samples.models}));
             return this;
         } 
     });

@@ -12,7 +12,7 @@ var SubjectService = {
     },
 
     anonymize: function() {},
-    
+
     /**
      * Terminate a transaction during CRUD operations
      */
@@ -36,6 +36,15 @@ var SubjectService = {
                     res.json(results.subject);
                 }
             });
+        }
+    },
+
+    getOneAsync: function(next, id) {
+        if (!id) {
+            next(null, null);
+        }
+        else {
+            Subject.findOne(_.parseInt(id)).populateAll().exec(next);
         }
     }
 
