@@ -44,7 +44,7 @@ var Data = {
         // if the "parent" is a generic data
         parentData: {
             model: 'data',
-            column_name: 'parent_data'
+            columnName: 'parent_data'
         },
         createdAt: {
             type: 'datetime',

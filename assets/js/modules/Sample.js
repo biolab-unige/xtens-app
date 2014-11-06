@@ -119,7 +119,7 @@
             this.dataTypes = options.dataTypes || [];
             // _.extend(this, options);
             if (options.sample) {
-                this.model = new Sample.Model(this.options);
+                this.model = new Sample.Model(options.sample);
             }
             else {
                 this.model = new Sample.Model();

@@ -8,8 +8,7 @@
     var i18n = xtens.module("i18n").en;
     var Data = xtens.module("data");
     var PersonalDetails = xtens.module("personaldetails");
-    var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
-
+    var Classes = xtens.module("xtensconstants").DataTypeClasses;
     /*
        function initializeProjectsField($el, model, option) {
        var data =
@@ -166,11 +165,14 @@ this.renderDataTypeSchema(subject);
             _.each(this.subjects.models, function(subject) {
                 var type = this.dataTypes.get(subject.get("type").id);
                 subject.set("editLink", "#/subjects/edit/" + subject.id);
-                if (type.children && type.children.length > 0) {
-                    if (_.findWhere(type.children, {"classTemplate": Classes.SAMPLE})) {
-                        subject.set("newSampleLink", "#/samples/new/0?donor=" + subject.id);
+                if (type.get("children") && type.get("children").length > 0) {
+                    var sampleTypeChildren = _.where(type.get("children"), {"classTemplate": Classes.SAMPLE});
+                    if (sampleTypeChildren.length) {
+                        var sids = _.pluck(sampleTypeChildren, 'id').join();
+                        subject.set("newSampleLink", "#/samples/new/0?idDataTypes="+sids+"&donor=" + subject.id);
                     }
-                    if (_.findWhere(type.children, {"classTemplate": Classes.GENERIC})) {
+                    var dataTypeChildren = _.where(type.get("children"), {"classTemplate": Classes.GENERIC});
+                    if (dataTypeChildren.length) {
                         subject.set("newDataLink", "#/data/new/0?parentSubject=" + subject.id);
                     }
                 }

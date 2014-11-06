@@ -27,8 +27,12 @@
                         <td><%= subject.get("projects").map(function(project) {return (" " + project.name); }).toString().trim() %></td>
                         <td>
                             <a class="btn" href="<%= subject.get("editLink") %>" ><%=__("edit") %></a>
-                            <a class="btn" href="<%= subject.get("newSampleLink") %>"><%=__("new-sample") %></a>
-                            <a class="btn" href="<%= subject.get("newDataLink") %>"><%=__("new-data") %></a>
+                            <% if (subject.get("newSampleLink") && subject.get("newSampleLink").length) {%>
+                                <a class="btn" href="<%= subject.get("newSampleLink") %>"><%=__("new-sample") %></a>
+                            <%} %>
+                            <% if (subject.get("newDataLink") && subject.get("newDataLink").length) {%>
+                                <a class="btn" href="<%= subject.get("newDataLink") %>"><%=__("new-data") %></a>
+                            <%} %>   
                         </td>
                     </tr>
                     <% }) %> 
