@@ -38,20 +38,22 @@
 </head>
 <style type="text/css">
 nav ul li:hover ul {
-    background-color:#87CEFA;
-    display: block;
+       display: block;
     width:200px;
     padding:5px;
     height:auto;
+    
 
 }
-body{
 
-background-color:#309898;
+.dropdown a{
+color:black;
+font-size: 13px;
+font-weight: bold;
 }
-.navbar{
-    background-color: #00BFFF;
-    color:white;
+.site-footer-link{
+position:absolute;
+bottom:0;
 }
 .footer { 
 
@@ -73,17 +75,13 @@ background-color:#309898;
 nav ul li{
     text-align:center;
 }
-.dropdown a{
-color:white;
-}
-.dropdown a:hover{
-color:black;
-}
+
+
 
 </style>
 <body>
 
-<nav class="navbar" role="navigation">
+<nav class="navbar navbar-default" role="navigation">
     <div class="navbar-header">
         <p class="navbar-text" data-toggle="collapse"><%= __("xtens") %></p>
 
@@ -120,15 +118,14 @@ color:black;
 
 
 
-<div class="footer">
-    <p class="footer-text">&copy <%= __("copyright") %>
-    <script language="JavaScript">
-    var d=new Date();
-    var yr=d.getFullYear();
-    document.write(" "+yr);
-    </script>
-    </p>
-</div>    
+    <ul class="site-footer-links">
+      <li>© 2014 <span title="0.12416s from github-fe134-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
+        <li><a href="/site/terms">Terms</a></li>
+        <li><a href="/site/privacy">Privacy</a></li>
+        <li><a href="/security">Security</a></li>
+        <li><a href="/contact">Contact</a></li>
+    </ul>
+      
 
 <%- body %>
 
