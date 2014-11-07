@@ -21,6 +21,7 @@ module.exports = {
 
         donor: {
             model: 'subject',
+            columnName: 'parent_subject'
         },
 
         parentSample: {

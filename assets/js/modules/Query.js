@@ -139,6 +139,9 @@
                     { id: '>=', text: '≥' }, { id: '<', text: '<' },
                     { id: '>', text: '>' }, { id: '<>', text: '≠' }];
             }
+            else if (fieldType === FieldTypes.TEXT) {
+                data = [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }];
+            }
             else {
                 data = [ { id: '=', text: '=' }, { id: '<>', text: '≠' }];
             }
@@ -286,13 +289,12 @@
         }
     });
 
+    Query.Views.Composite = Query.Views.Component.fullExtend({
 
-    Query.Views.Builder = Query.Views.Component.fullExtend({
-
-        className: 'query',
+        className: 'query-composite',
 
         bindings: {
-            '#pivot-data-type': {
+            '[name="pivot-data-type"]': {
                 observe: 'pivotDataType',
                 initialize: function($el) {
                     $el.select2({placeholder: i18n('please-select')});
@@ -318,37 +320,44 @@
         },
 
         initialize: function(options) {
-            this.template = JST["views/templates/query-builder.ejs"];
-            $('#main').html(this.el);
+            this.template = JST["views/templates/query-composite.ejs"];
             this.nestedViews = [];
             this.dataTypes = options.dataTypes || [];
-            this.queryStrategy = new QueryStrategy.PostgresJSON();
-            this.render(options);
-            this.$addFieldButton = this.$("#add-field");
-            this.$addLoopButton = this.$("#add-loop");
-            this.$queryForm = this.$("#query-form");
-            this.listenTo(this.model, 'change:pivotDataType', this.pivotDataTypeOnChange);
-
+            this.dataTypesComplete = options.dataTypesComplete || [];
         },
 
         events: {
-            'click #add-field': 'addQueryRow',
-            'click #add-loop': 'addLoopQuery',
-            'click #search': 'sendQuery'
+            'click [name="add-field"]': 'addQueryRow',
+            'click [name="add-loop"]': 'addLoopQuery',
+            'click [name="add-nested"]': 'addNestedQuery'
         },
 
-        addQueryRow: function() {
+        addQueryRow: function(ev) {
+            ev.stopPropagation();
             var childView = new Query.Views.Row({fieldList: this.dataTypes.get(this.model.get('pivotDataType')).getFlattenedFields(),
                                                 model: new Query.RowModel()});
-                                                this.$queryForm.append(childView.render().el);
+                                                this.$el.append(childView.render().el);
                                                 this.add(childView);
         },
 
-        addLoopQuery: function() {
+        addLoopQuery: function(ev) {
+            ev.stopPropagation();
             var childView = new Query.Views.Loop({loopList: this.dataTypes.get(this.model.get('pivotDataType')).getLoops(),
                                                  model: new Query.LoopModel()});
-                                                 this.$queryForm.append(childView.render().el);
+                                                 this.$el.append(childView.render().el);
                                                  this.add(childView);
+        },
+
+        addNestedQuery: function(ev) {
+            ev.stopPropagation();
+            var childrenIds = _.pluck(this.selectedDataType.get("children"), 'id');
+            var childrenDataTypes = new DataType.List(_.filter(this.dataTypesComplete.models, function(dataType) {
+                return childrenIds.indexOf(dataType.id) > -1;
+            }));
+            if (!childrenDataTypes.length) return;
+            var childView = new Query.Views.Composite({dataTypes: childrenDataTypes, dataTypesComplete: this.dataTypesComplete, model: new Query.Model()});
+            this.$el.append(childView.render({}).el);
+            this.add(childView);
         },
 
         pivotDataTypeOnChange: function(model, idDataType) {
@@ -356,15 +365,19 @@
             if (!idDataType) {
                 this.$addFieldButton.addClass('hidden');
                 this.$addLoopButton.addClass('hidden');
+                this.$addNestedButton.removeClass('hidden');
+                this.selectedDataType = null;
                 return;
             }
-            var selectedDataType = this.dataTypes.get(idDataType);
+            this.selectedDataType = this.dataTypes.get(idDataType);
+            /*  // removed "improved loop search"
             if (selectedDataType.hasLoops()) {
                 this.$addLoopButton.removeClass('hidden');
-            } 
+            } */
             this.$addFieldButton.removeClass('hidden');
-            var childView = new Query.Views.Row({fieldList: selectedDataType.getFlattenedFields(), model: new Query.RowModel()});
-            this.$("#query-form").append(childView.render().el);
+            this.$addNestedButton.removeClass('hidden');
+            var childView = new Query.Views.Row({fieldList: this.selectedDataType.getFlattenedFields(), model: new Query.RowModel()});
+            this.$el.append(childView.render().el);
             this.add(childView);
 
         },
@@ -382,11 +395,39 @@
                 this.$el.html(this.template({__: i18n }));
                 this.stickit();
             }
+            this.$addFieldButton = this.$("[name='add-field']");
+            this.$addLoopButton = this.$("[name='add-loop']");
+            this.$addNestedButton = this.$("[name='add-nested']");
+            this.listenTo(this.model, 'change:pivotDataType', this.pivotDataTypeOnChange);
             return this;
+        }
+
+    });
+
+    Query.Views.Builder = Backbone.View.extend({
+
+        className: 'query',
+
+        initialize: function(options) {
+            this.template = JST["views/templates/query-builder.ejs"];
+            $('#main').html(this.el);
+            this.dataTypes = options.dataTypes || [];
+            this.render(options);
+            this.queryView = new Query.Views.Composite({dataTypes: this.dataTypes, dataTypesComplete: this.dataTypes, model: new Query.Model()});
+            this.$("#query-form").append(this.queryView.render({}).el);
+        },
+
+        render: function() {
+            this.$el.html(this.template({__: i18n }));
+            return this;
+        },
+        
+        events : {
+            'click #search': 'sendQuery'
         },
 
         sendQuery: function() {
-            var queryParameters = JSON.stringify({queryArgs: this.serialize()});
+            var queryParameters = JSON.stringify({queryArgs: this.queryView.serialize()});
             $.ajax({
                 method: 'POST',
                 contentType: 'application/json;charset:utf-8',
@@ -403,7 +444,7 @@
             });
             return false;
         }
-
+    
     });
 
 } (xtens, xtens.module("query")));

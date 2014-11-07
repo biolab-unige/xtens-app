@@ -71,6 +71,36 @@ module.exports = {
     
     deleteWithPersonalDetails: function(req, res) {
         // TODO
+    },
+
+    edit: function(req, res) {
+        
+        var id = req.param("id");
+
+        async.parallel({
+            
+            projects: function(callback) {
+                Project.find().exec(callback);
+            },
+
+            dataTypes: function(callback) {
+                DataTypeService.getAsync(callback, { classTemplate: 'Subject'});
+            },
+
+            subject: function(callback) {
+                SubjectService.getOneAsync(callback, id);
+            }
+
+        }, function(err, results) {
+            if (err) {
+                return res.serverError(err);
+            }
+            return res.json(results);
+            
+        });
+
+
+
     }
     
 

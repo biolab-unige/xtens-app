@@ -68,6 +68,8 @@
         "select-a-data-type": "Select a Data Type",
         "create-data": "Create Data",
         "update-data": "Update Data",
+        "subject": "Subject",
+        "sample": "Sample",
         /* views/templates/data-edit-partial.ejs */
         "date": "Date",
         "tags": "Tags/Keywords",
@@ -113,6 +115,7 @@
         "diagnosis": "Diagnosis",
         "arrival-code": "Arrival Code",
         "anatomical-position": "Anatomical Position",
+        "new-derivative-sample": "New Derivative Sample",
         /* views/templates/query.ejs */
         "query-builder": "Query Builder",
         "search-for:": "Search for:",
@@ -120,6 +123,7 @@
         "loop-name": "Loop Name",
         "add-field-condition": "Add Field Condition",
         "add-loop-condition": "Add Loop Condition",
+        "add-nested-condition": "Add Nested Condition",
         "search": "Search"
 	
 	

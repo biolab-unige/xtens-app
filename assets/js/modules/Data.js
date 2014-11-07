@@ -9,6 +9,7 @@
     var i18n = xtens.module("i18n").en;
     var Constants = xtens.module("xtensconstants").Constants;
     var FieldTypes = xtens.module("xtensconstants").FieldTypes;
+    var Classes = xtens.module("xtensconstants").DataTypeClasses;
     var MetadataComponent = xtens.module("metadatacomponent");
     var DataTypeModel = xtens.module("datatype").Model;
     var DataTypeCollection = xtens.module("datatype").List;
@@ -443,36 +444,43 @@
         className: 'data',
 
         initialize: function(options) {
-            _.bindAll(this, 'fetchSuccess');
+            // _.bindAll(this, 'fetchSuccess');
             $('#main').html(this.el);
-            this.dataTypes = options.dataTypes || []; 
             this.template = JST["views/templates/data-edit.ejs"];
             this.schemaView = null;
-            this.render(options);
-        },
-
-        render: function(options) {
-            if (options.id) {
-                this.model = new Data.Model({id: options.id});
-                this.model.fetch({
-                    success: this.fetchSuccess
-                });
+            this.dataTypes = options.dataTypes || [];
+            // _.extend(this, options);
+            if (options.data) {
+                this.model = new Data.Model(options.data);
             }
             else {
-                this.$el.html(this.template({__: i18n, data: null}));
-                this.stickit();
-                this.listenTo(this.model, 'change:type', this.dataTypeOnChange);
-                this.$('#tags').select2({tags: []});
+                this.model = new Data.Model();
+            }
+            _.each(["parentSubject","parentSample", "parentData"], function(parent) {
+                if(options[parent]) {
+                    this.model.set(parent, options[parent]);
+                }
+            }, this);
+            this.render();
+        },
+
+        render: function() {
+            this.$el.html(this.template({__: i18n, data: this.model}));
+            this.stickit();
+            this.listenTo(this.model, 'change:type', this.dataTypeOnChange);
+            this.$('#tags').select2({tags: []});
+            if (this.model.get("type")) {
+                this.renderDataTypeSchema(this.model);
             }
             return this;
         },
-
+        /*
         fetchSuccess:function(data) {
             this.$el.html(this.template({__: i18n, data: data}));
             this.stickit();
             this.$('#tags').select2({tags: []});
             this.renderDataTypeSchema(data);
-        },
+        }, */
 
         bindings: {
             '#dataType': {
@@ -572,23 +580,29 @@
         tagName: 'div',
         className: 'data',
 
-        initialize: function() {
+        initialize: function(options) {
             $("#main").html(this.el);
+            this.dataTypes = options.dataTypes;
+            this.data = options.data;
             this.template = JST["views/templates/data-list.ejs"];
+            this.addLinksToModels();
             this.render();
         },
 
-        render: function(options) {
-            var that = this;
-            var data = new Data.List();
-            data.fetch({
-                success: function(data) {
-                    that.$el.html(that.template({__: i18n, data: data.models}));
-                },
-                error: function() {
-                    that.$el.html(that.template({__: i18n}));
+        addLinksToModels: function() {
+            _.each(this.data.models, function(data) {
+                var type = this.dataTypes.get(data.get("type").id);
+                data.set("editLink", "#/data/edit/" + data.id);
+                var dataTypeChildren = _.where(type.get("children"), {"classTemplate": Classes.GENERIC});
+                if (dataTypeChildren.length > 0) { 
+                    var dids = _.pluck(dataTypeChildren, 'id').join();
+                    data.set("newDataLink", "#/data/new/0?idDataTypes="+dids+"&parentData="+data.id);
                 }
-            });
+            }, this);
+        },
+
+        render: function(options) {
+            this.$el.html(this.template({__: i18n, data: this.data.models}));
             return this;
         }
 

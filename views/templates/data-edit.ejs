@@ -1,7 +1,17 @@
 <h1><%= __("data-manager") %></h1>
-<h2><%= data ? __("updata-data") : __("create-data") %></h2>
+<h2><%= data.id ? __("update-data") : __("create-data") %></h2>
 <div id="content">
     <form class="form-horizontal edit-data-form" role="form">
+        <div class="form-group">
+            <% if (data.get("parentSubject")) {%>
+            <label for="parentSubject" class="data-label"><%= __("subject") %>: </label>
+            <span class="data-span"><%= data.get("parentSubject").code %></span>
+            <%} %>
+            <% if (data.get("parentSample")) {%>
+            <label for="parentSample" class="data-label"><%= __("sample") %>: </label>
+            <span class="data-span"><%= data.get("parentSample").biobankCode %></span>
+            <%} %>
+        </div>
         <div class="form-group">
             <label for="dataType" class="data-label"><%= __("select-a-data-type") %></label>
             <div class="data-input-div">

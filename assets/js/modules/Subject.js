@@ -8,16 +8,15 @@
     var i18n = xtens.module("i18n").en;
     var Data = xtens.module("data");
     var PersonalDetails = xtens.module("personaldetails");
-    var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
-    
+    var Classes = xtens.module("xtensconstants").DataTypeClasses;
     /*
-    function initializeProjectsField($el, model, option) {
-        var data =
-    }*/
+       function initializeProjectsField($el, model, option) {
+       var data =
+       }*/
 
     Subject.Model = Data.Model.fullExtend({
         urlRoot: '/subject',
-        
+
         defaults: {
             projects: []
         }
@@ -41,18 +40,18 @@
                     collection: 'this.projects',
                     labelPath: 'name',
                     valuePath: 'id',
-                   defaultOption: {
-                       label: "",
-                       value: null
-                   } 
+                    defaultOption: {
+                        label: "",
+                        value: null
+                    } 
                 }, 
                 getVal: function($el, ev, options) {
                     return $el.val().map(function(value) {
                         return _.findWhere(options.view.projects, {id: parseInt(value)});
                     });
                     /*
-                    var value = parseInt($el.val());
-                    return _.findWhere(options.view.projects, {id: value }); */
+                       var value = parseInt($el.val());
+                       return _.findWhere(options.view.projects, {id: value }); */
                 },
                 onGet: function(vals, options) {
                     return (vals && vals.map(function(val){return val.id; }));
@@ -78,16 +77,22 @@
         },
 
         initialize: function(options) {
-            _.bindAll(this, 'fetchSuccess');
+            // _.bindAll(this, 'fetchSuccess');
             $('#main').html(this.el);
             this.dataTypes = null;
-            this.projects = options.projects; 
             this.template = JST["views/templates/subject-edit.ejs"];
             this.personalDetailsView = null;
             this.schemaView = null;
-            this.render(options);
+            this.projects = options.projects;
+            if (options.subject) {
+                this.model = new Subject.Model(options.subject);
+            }
+            else {
+                this.model = new Subject.Model({type: _.last(options.dataTypes)});
+            }
+            this.render();
         },
-
+        /*
         render: function(options) {
             if (options.id) {
                 this.model = new Subject.Model({id: options.id});
@@ -102,14 +107,14 @@
                 this.renderDataTypeSchema();
             }
             return this;
-        },
-        
-        /*
-        fetchSuccess:function(subject) {
-            this.$el.html(this.template({__: i18n, data: subject}));
-            this.stickit();
-            this.renderDataTypeSchema(subject);
         }, */
+
+        /*
+fetchSuccess:function(subject) {
+this.$el.html(this.template({__: i18n, data: subject}));
+this.stickit();
+this.renderDataTypeSchema(subject);
+}, */
 
         events: {
             "click #save": "saveData",
@@ -147,25 +152,48 @@
         tagName: 'div',
         className: 'subject',
 
-        initialize: function() {
+        initialize: function(options) {
             $("#main").html(this.el);
+            this.dataTypes = options.dataTypes;
+            this.subjects = options.subjects;
             this.template = JST["views/templates/subject-list.ejs"];
+            this.addLinksToModels();
             this.render();
         },
 
-        render: function(options) {
-            var that = this;
-            var subjects = new Subject.List();
-            subjects.fetch({
-                success: function(subjects) {
-                    that.$el.html(that.template({__: i18n, subjects: subjects.models}));
-                },
-                error: function() {
-                    that.$el.html(that.template({__: i18n}));
+        addLinksToModels: function() {
+            _.each(this.subjects.models, function(subject) {
+                var type = this.dataTypes.get(subject.get("type").id);
+                subject.set("editLink", "#/subjects/edit/" + subject.id);
+                if (type.get("children") && type.get("children").length > 0) {
+                    var sampleTypeChildren = _.where(type.get("children"), {"classTemplate": Classes.SAMPLE});
+                    if (sampleTypeChildren.length) {
+                        var sids = _.pluck(sampleTypeChildren, 'id').join();
+                        subject.set("newSampleLink", "#/samples/new/0?idDataTypes="+sids+"&donor=" + subject.id);
+                    }
+                    var dataTypeChildren = _.where(type.get("children"), {"classTemplate": Classes.GENERIC});
+                    if (dataTypeChildren.length) {
+                        subject.set("newDataLink", "#/data/new/0?parentSubject=" + subject.id);
+                    }
                 }
-            });
-            return this;
+            }, this);
+        },
+
+        render: function() {
+            /*
+               var that = this;
+               var subjects = new Subject.List();
+               subjects.fetch({
+success: function(subjects) {
+that.$el.html(that.template({__: i18n, subjects: subjects.models}));
+},
+error: function() {
+that.$el.html(that.template({__: i18n}));
+}
+}); */
+        this.$el.html(this.template({__: i18n, subjects: this.subjects.models}));
+        return this;
         } 
-    });
+});
 
 } (xtens, xtens.module("subject")));

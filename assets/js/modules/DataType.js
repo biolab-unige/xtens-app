@@ -117,16 +117,27 @@
                     }   
                 }
             },
-            '#parent': {
-                observe: 'parent',
+            '#parents': {
+                observe: 'parents',
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
                 selectOptions: {
                     collection: 'this.existingDataTypes',
                     labelPath: 'name',
                     valuePath: 'id',
                     defaultOption: {
-                        label: i18n('please-select'),
+                        label: "",
                         value: null
                     }
+                },
+                getVal: function($el, ev, options) {
+                    return $el.val().map(function(value) {
+                        return _.findWhere(options.view.existingDataTypes, {id: parseInt(value)});
+                    });
+                },
+                onGet: function(vals, options) {
+                    return (vals && vals.map(function(val) {return val.id; }));
                 }
             }
         },

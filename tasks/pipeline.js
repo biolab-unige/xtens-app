@@ -38,6 +38,7 @@ var jsFilesToInject = [
     'dependencies/**/parsley.js',
     'dependencies/**/pikaday.js',
     'dependencies/**/moment.js',
+    'dependencies/**/d3.js',
     
     
     // Customised client-side js files
