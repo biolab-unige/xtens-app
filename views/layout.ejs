@@ -32,45 +32,40 @@
 <link rel="stylesheet" href="/styles/importer.css">
 <link rel="stylesheet" href="/dependencies/select2/select2.css">
 <link rel="stylesheet" href="/dependencies/font-awesome/styles/font-awesome.css">
+<link rel="stylesheet" href="/dependencies/pikaday/pikaday.css">
 <link rel="stylesheet" href="/dependencies/select2-bootstrap-css/select2-bootstrap.css">
 <!--STYLES END-->
 </head>
+
 <style type="text/css">
 nav ul li:hover ul {
-       display: block;
+    display: block;
     width:200px;
     padding:5px;
     height:auto;
-    
+
 
 }
 
 .dropdown a{
-color:black;
-font-size: 13px;
-font-weight: bold;
+    color:black;
+    font-size: 13px;
+    font-weight: bold;
 }
-.site-footer-link{
-position:absolute;
-bottom:0;
-}
-.footer { 
-
-    height: 30px;
-    position:fixed;
-    bottom: 0;
+.site-footer-links{
+    position:absolute;
+    bottom:0;
+    vertical-align:bottom;
     left: 0;
     right: 0;
-    padding:1rem;
     text-align:center;
+    top:1500px;
+    height:50px;
+    clear:both;
+
+
 }
 
-.footer p{
-    margin:0;
-    font-size:9pt;
-    background-color: #1E90FF;
-    color:white;
-}
 nav ul li{
     text-align:center;
 }
@@ -117,14 +112,12 @@ nav ul li{
 
 
 
-    <ul class="site-footer-links">
-      <li>© 2014 <span title="0.12416s from github-fe134-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
-        <li><a href="/site/terms">Terms</a></li>
-        <li><a href="/site/privacy">Privacy</a></li>
-        <li><a href="/security">Security</a></li>
-        <li><a href="/contact">Contact</a></li>
-    </ul>
-      
+
+<footer class="site-footer-links">
+    <p>© 2014</p>
+</footer>
+
+
 
 <%- body %>
 
@@ -187,8 +180,8 @@ nav ul li{
 <script src="/dependencies/select2/select2.js"></script>
 <script src="/dependencies/jquery-validation/js/jquery.validate.js"></script>
 <script src="/dependencies/parsleyjs/parsley.js"></script>
+<script src="/dependencies/pikaday/pikaday.js"></script>
 <script src="/dependencies/moment/moment.js"></script>
-<script src="/dependencies/d3/d3.js"></script>
 <script src="/js/application/utils.js"></script>
 <script src="/js/application/xtens.js"></script>
 <script src="/js/application/Router.js"></script>
