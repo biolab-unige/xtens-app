@@ -43,8 +43,6 @@ nav ul li:hover ul {
     width:200px;
     padding:5px;
     height:auto;
-
-
 }
 
 .dropdown a{
@@ -52,19 +50,13 @@ nav ul li:hover ul {
     font-size: 13px;
     font-weight: bold;
 }
-.site-footer-links{
-    position:absolute;
-    bottom:0;
-    vertical-align:bottom;
-    left: 0;
-    right: 0;
-    text-align:center;
-    top:1500px;
-    height:50px;
-    clear:both;
+div#footer{position: relative; 
+bottom:0; 
+z-index:0;
+width: 100%;
+margin-top:50%;
 
-
-}
+    background-color: #69c; color: #000;text-align:center;}
 
 nav ul li{
     text-align:center;
@@ -113,9 +105,6 @@ nav ul li{
 
 
 
-<footer class="site-footer-links">
-    <p>© 2014</p>
-</footer>
 
 
 
@@ -203,5 +192,10 @@ nav ul li{
 <script src="/js/modules/QueryStrategy.js"></script>
 <script src="/js/modules/Query.js"></script>
 <!--SCRIPTS END-->
+
+<div id="spacer"></div>
+<div id="footer">
+    <p>© 2014</p>
+</div>
 </body>
 </html>

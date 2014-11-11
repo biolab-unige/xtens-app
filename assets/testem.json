@@ -24,6 +24,7 @@
         "js/modules/Query.js",
         "js/modules/Operator.js",
         "js/modules/Group.js",
+        "js/modules/FileManager.js",
         "dependencies/chai/chai.js",
         "dependencies/sinon-chai/lib/sinon-chai.js",
         "dependencies/sinon/lib/sinon.js",
@@ -33,6 +34,7 @@
         "test/modules/Data-test.js",
         "test/modules/Group-test.js",
         "test/modules/QueryStrategy-test.js",
-        "test/modules/Operator-test.js"
+        "test/modules/Operator-test.js",
+	"test/modules/FileManager-test.js"
     ]
 }
