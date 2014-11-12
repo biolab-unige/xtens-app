@@ -63,7 +63,8 @@ var jsFilesToInject = [
     'js/modules/Sample.js',
     'js/modules/AdminAssociation.js',
     'js/modules/QueryStrategy.js',
-    'js/modules/Query.js'
+    'js/modules/Query.js',
+     'js/modules/FileManger.js'
     // All of the rest of your client-side js files
     // will be injected here in no particular order.
 ];
