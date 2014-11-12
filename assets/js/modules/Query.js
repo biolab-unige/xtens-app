@@ -99,6 +99,7 @@
 
         render: function() {
             this.$el.html(this.template({ __: i18n}));
+            this.$el.addClass("query-row");
             this.stickit();
             this.$comparator = this.$("input[name=comparator]");
             this.$unit = this.$("input[name=unit]");
@@ -200,7 +201,11 @@
                         multiple: true,
                         data: data, 
                         placeholder: i18n("please-select")});
-                }  
+                },
+                getVal: function($el) {
+                    return $el.val().split(",");
+                }
+
             });
         },
 
@@ -316,7 +321,19 @@
                 getVal: function($el, ev, options) {
                     return parseInt($el.val());
                 }
-            } 
+            },
+            '[name="junction"]': {
+                observe: 'junction',
+                initialize: function($el) {
+                    $el.select2();
+                },
+                selectOptions: {
+                    collection: function() {
+                        return [{value:'AND', label:i18n("all-conditions")}, {value:'OR', label:i18n("any-of-the-conditions")}];
+                    }
+                }
+            }
+
         },
 
         initialize: function(options) {
@@ -324,6 +341,7 @@
             this.nestedViews = [];
             this.dataTypes = options.dataTypes || [];
             this.dataTypesComplete = options.dataTypesComplete || [];
+            // this.listenTo(this.model, 'change:pivotDataType', this.pivotDataTypeOnChange);
         },
 
         events: {
@@ -367,6 +385,7 @@
                 this.$addLoopButton.addClass('hidden');
                 this.$addNestedButton.removeClass('hidden');
                 this.selectedDataType = null;
+                this.model.set("classTemplate", null);
                 return;
             }
             this.selectedDataType = this.dataTypes.get(idDataType);
@@ -378,6 +397,7 @@
             this.$addNestedButton.removeClass('hidden');
             var childView = new Query.Views.Row({fieldList: this.selectedDataType.getFlattenedFields(), model: new Query.RowModel()});
             this.$el.append(childView.render().el);
+            this.model.set("classTemplate", this.selectedDataType.get("classTemplate"));
             this.add(childView);
 
         },

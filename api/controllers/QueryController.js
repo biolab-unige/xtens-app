@@ -8,9 +8,21 @@
 module.exports = {
     
     dataSearch: function(req, res) {
-        var queryBuilder = sails.config.xtens.queryBuilder;
         var queryArgs = req.param('queryArgs');
-        var query = queryBuilder.compose(queryArgs);
+        async.waterfall([
+            function(callback) {
+                DataService.advancedQueryAsync(callback, queryArgs);
+            },
+            function(results, callback) {
+                DataService.queryAndPopulateItemsById(callback, results.rows, queryArgs.classTemplate); 
+            }
+        ], function(err, result) {
+            if (err) {
+                return res.serverError("error");
+            }
+            return res.json(result); 
+        });
+        /*
         Data.query(query.statement, query.parameters, function(err, results) {
             if (err) {
                 res.badRequest('Invalid parameters submitted.');
@@ -19,6 +31,7 @@ module.exports = {
                 res.json(results.rows);
             }
         });
+       */
 
     } 
 	

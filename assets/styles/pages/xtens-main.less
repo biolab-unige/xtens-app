@@ -170,7 +170,11 @@ div.metadataloop > div.metadatacomponent-body {
     width: 100%;
 }
 .query .query-composite {
-    .make-row();
+    .make-xs-column(12);
+    padding: 6px 3px;
+    border-color: @brand-primary;
+    border-width: @border-width;
+    border-style: @border-style;
 }
 .query .query-label {
     .make-md-column(1);
@@ -208,4 +212,7 @@ div.metadataloop > div.metadatacomponent-body {
 }
 .query .query-loop-body {
     .make-xs-column(12);
+}
+.query .query-row {
+    margin-bottom: 2px;
 }
