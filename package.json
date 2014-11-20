@@ -26,9 +26,12 @@
     "sails": "~0.10.5",
     "sails-disk": "~0.10.0",
     "sails-postgresql": "^0.10.9",
+    "skipper": "^0.5.3",
     "xtens-query": "git+https://github.com/biolab-unige/xtens-query.git"
   },
+
   "scripts": {
+    "start":"nodewebkit",
     "start": "node app.js",
     "debug": "node debug app.js"
   },
@@ -54,6 +57,7 @@
     "grunt-open": "~0.2.3",
     "matchdep": "~0.3.0",
     "mocha": "^1.21.4",
+    "nodewebkit": "^0.11.0",
     "select2": "~3.5.1-browserify-fix",
     "sinon": "^1.10.3",
     "supertest": "~0.13.0"

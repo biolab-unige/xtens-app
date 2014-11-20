@@ -39,6 +39,7 @@ var jsFilesToInject = [
     'dependencies/**/pikaday.js',
     'dependencies/**/moment.js',
     'dependencies/**/d3.js',
+    'dependencies/**/dropzone.js',
     
     
     // Customised client-side js files
@@ -64,7 +65,7 @@ var jsFilesToInject = [
     'js/modules/AdminAssociation.js',
     'js/modules/QueryStrategy.js',
     'js/modules/Query.js',
-     'js/modules/FileManger.js'
+    'js/modules/FileManager.js'
     // All of the rest of your client-side js files
     // will be injected here in no particular order.
 ];

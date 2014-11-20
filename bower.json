@@ -32,12 +32,8 @@
     "backbone.stickit": "~0.8.0",
     "parsleyjs": "~2.0.5",
     "moment": "~2.8.3",
-<<<<<<< HEAD
     "lodash": "~2.4.1",
     "d3": "~3.4.13"
-=======
-    "lodash": "~2.4.1"
->>>>>>> b0b8d0b7e350c78f132ba3def5fefbfbd2de4815
   },
   "exportsOverride": {
     "jquery": {
@@ -67,23 +63,19 @@
     },
     "backbone.stickit": {
       "": "backbone.stickit.js"
-<<<<<<< HEAD
     },
     "d3": {
       "": "d3.js"
-=======
->>>>>>> b0b8d0b7e350c78f132ba3def5fefbfbd2de4815
+    },
+    "sinon": {
+      "js": "index.js"
     }
   },
   "devDependencies": {
     "chai": "~1.9.2",
-    "sinon": "~1.10.3",
     "sinon-chai": "~2.5.0",
-<<<<<<< HEAD
-    "chai-jquery": "~1.2.2"
-=======
     "chai-jquery": "~1.2.2",
-    "lodash": "~2.4.1"
->>>>>>> b0b8d0b7e350c78f132ba3def5fefbfbd2de4815
+    "lodash": "~2.4.1",
+    "sinon": "http://sinonjs.org/releases/sinon-1.12.1.js"
   }
 }

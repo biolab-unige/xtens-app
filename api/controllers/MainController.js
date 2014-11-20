@@ -33,6 +33,18 @@ var MainController = {
                  
         } 
         });
+  },
+
+upload: function  (req, res) {
+    req.file('uploadFile').upload(function (err, files) {
+      if (err)
+        return res.serverError(err);
+        console.log(err);
+
+      return res.json({
+        message: files.length + ' file(s) uploaded successfully!',
+});
+});
   }
 
 };

@@ -15,6 +15,7 @@
     var Operator = xtens.module("operator");
     var Group = xtens.module("group");
     var AdminAssociation = xtens.module("adminassociation");
+    var FileManager= xtens.module("FileManager");
 
     function parseQueryString(queryString){
         var params = {};
@@ -69,7 +70,10 @@
             "groups/edit/:id":"groupEdit",
             "login":"loginView",
             "groups/operator/:id":"associationOperator",
-            "groups/datatype/:id":"associationDataType"
+            "groups/datatype/:id":"associationDataType",
+            "upload-file":"uploadView",
+            "download-file":"downloadView"
+
         },
 
         loadView: function(view) {
@@ -163,7 +167,9 @@
         },
 
 
-
+        downloadView:function(){
+        this.loadView(new FileManager.Views.Download());
+        },
         groupList:function(){
             this.loadView(new Group.Views.List());
         },
@@ -275,6 +281,10 @@
                     alert(err);
                 }
             });
+        },
+
+ uploadView:function(){
+            this.loadView(new FileManager.Views.Upload());
         },
         /*
         sampleEdit: function(id, queryParams) {

@@ -31,6 +31,9 @@ module.exports.routes = {
     '/login':{controller:'main',
         action:'login'
     },
+    '/upload-file':{controller:'file',action:'upload'},
+    
+    'POST /download-file':{controller:'file',action:'download'},
     
     '/groupOperator/associate':{controller:'group', action:'addOperator'},
     
@@ -49,6 +52,8 @@ module.exports.routes = {
 
     // Advanced Search API
     'POST /query/dataSearch': {controller: 'query', action: 'dataSearch'}
+
+   
     
     /*,
     'GET /dataType': {controller: 'DataType', action: 'find'} 

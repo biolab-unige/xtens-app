@@ -27,7 +27,7 @@
         "js/modules/FileManager.js",
         "dependencies/chai/chai.js",
         "dependencies/sinon-chai/lib/sinon-chai.js",
-        "dependencies/sinon/lib/sinon.js",
+        "dependencies/sinon/js/index.js",
         "test/application/xtens-test.js",
         "test/modules/MetadataField-test.js",
         "test/modules/DataType-test.js",
