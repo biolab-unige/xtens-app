@@ -127,10 +127,11 @@
         "add-field": "Add Field",
         "add-loop-condition": "Add Loop Condition",
         "add-nested-condition": "Add Nested Condition",
-        "search": "Search"
-	
-	
-
+        "search": "Search",
+        /* views/templates/data-table.ejs */
+	"overall-status": "Overall Status",
+        "diagnosis-age": "Diagnosis Age",
+        "diagnosis-age-unit": "D.A. Unit"
     };
 
     var it = {

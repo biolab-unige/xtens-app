@@ -5,6 +5,7 @@
     var QueryStrategy = xtens.module("querystrategy");
     var Data = xtens.module("data");
     var DataType = xtens.module("datatype");
+    var XtensTable = xtens.module("xtenstable");
 
     // constant to define the field-value HTML element
     var FIELD_VALUE = 'field-value';
@@ -429,11 +430,14 @@
         className: 'query',
 
         initialize: function(options) {
+            _.bindAll(this, 'queryOnSuccess');
             this.template = JST["views/templates/query-builder.ejs"];
             $('#main').html(this.el);
             this.dataTypes = options.dataTypes || [];
             this.render(options);
             this.queryView = new Query.Views.Composite({dataTypes: this.dataTypes, dataTypesComplete: this.dataTypes, model: new Query.Model()});
+            this.$tableCnt = this.$("#result-table");
+            this.tableView = null;
             this.$("#query-form").append(this.queryView.render({}).el);
         },
 
@@ -453,16 +457,21 @@
                 contentType: 'application/json;charset:utf-8',
                 url: '/query/dataSearch',
                 data: queryParameters,
-                success: function(data) {
-                    var dataList = new Data.List(data);
-                    console.log(dataList);
-                },
+                success: this.queryOnSuccess,
                 error: function(jqXHR, textStatus, err) {
                     alert(err);
                 }
 
             });
             return false;
+        },
+
+        queryOnSuccess: function(data) {
+            if (this.tableView) {
+                this.tableView.remove();
+            }
+            this.tableView = new XtensTable.Views.HtmlTable({ data: data});
+            this.$tableCnt.append(this.tableView.render().el);
         }
     
     });

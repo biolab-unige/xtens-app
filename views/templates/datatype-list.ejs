@@ -9,7 +9,9 @@
                         <tr>
                             <th><%= __("name") %></th>
                             <th><%= __("class-template") %></th>
+                            <!--
                             <th><%= __("json-schema") %></th>
+                            -->
                             <th><%= __("parent") %></th>
                             <th></th>
                         </tr>
@@ -19,7 +21,9 @@
                     <tr>
                         <td><%= dataType.get("name") %></td>
                         <td><%= dataType.get("classTemplate") %></td>
+                        <!--
                         <td><%= JSON.stringify(dataType.get("schema")) %></td>
+                        -->
                         <td><%= dataType.get("parents").map(function(parent) { return (" " + parent.name); }).toString().trim() %></td>
                         <td><a class="btn" href="#/datatypes/edit/<%= dataType.id %>"><%=__("edit") %></a></td>
                     </tr>
