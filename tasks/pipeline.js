@@ -34,12 +34,16 @@ var jsFilesToInject = [
     'dependencies/**/backbone.js',
     'dependencies/**/backbone.stickit.js',
     'dependencies/**/select2.js',
-    'dependencies/**/jquery.validate.js',
     'dependencies/**/parsley.js',
     'dependencies/**/pikaday.js',
     'dependencies/**/moment.js',
+<<<<<<< HEAD
     'dependencies/**/d3.js',
     'dependencies/**/dropzone.js',
+=======
+    'dependencies/**/jquery.dataTables.js',
+    // 'dependencies/**/d3.js',
+>>>>>>> 9ee0bca71f72681766f9920ffc5498d9065f5bf9
     
     
     // Customised client-side js files
@@ -48,6 +52,7 @@ var jsFilesToInject = [
     'js/application/Router.js',
     'js/modules/i18n.js',
     'js/modules/XtensConstants.js',
+    'js/modules/XtensTable.js',
     'js/modules/MetadataComponent.js',
     'js/modules/MetadataField.js',
     'js/modules/MetadataLoop.js',
@@ -65,7 +70,11 @@ var jsFilesToInject = [
     'js/modules/AdminAssociation.js',
     'js/modules/QueryStrategy.js',
     'js/modules/Query.js',
+<<<<<<< HEAD
     'js/modules/FileManager.js'
+=======
+    'js/modules/FileManger.js',
+>>>>>>> 9ee0bca71f72681766f9920ffc5498d9065f5bf9
     // All of the rest of your client-side js files
     // will be injected here in no particular order.
 ];

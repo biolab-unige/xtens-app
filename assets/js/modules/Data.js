@@ -29,6 +29,13 @@
     }
 
     /**
+     *  general purpose function to capitalize a string (i.e. MetadataField names)
+     */
+    function replaceUnderscoreAndCapitalize(str) {
+        return str.replace("_", " ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    }
+
+    /**
      * Factory Method implementation for the Data.Views.* components
      */
 
@@ -319,7 +326,7 @@
         },
 
         render: function() {
-            this.$el.html(this.template({ __:i18n, component: this.component}));
+            this.$el.html(this.template({ __:i18n, component: this.component, format: replaceUnderscoreAndCapitalize}));
             this.stickit();
             return this;
         },

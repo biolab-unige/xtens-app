@@ -5,6 +5,7 @@
     var QueryStrategy = xtens.module("querystrategy");
     var Data = xtens.module("data");
     var DataType = xtens.module("datatype");
+    var XtensTable = xtens.module("xtenstable");
 
     // constant to define the field-value HTML element
     var FIELD_VALUE = 'field-value';
@@ -99,6 +100,7 @@
 
         render: function() {
             this.$el.html(this.template({ __: i18n}));
+            this.$el.addClass("query-row");
             this.stickit();
             this.$comparator = this.$("input[name=comparator]");
             this.$unit = this.$("input[name=unit]");
@@ -200,7 +202,11 @@
                         multiple: true,
                         data: data, 
                         placeholder: i18n("please-select")});
-                }  
+                },
+                getVal: function($el) {
+                    return $el.val().split(",");
+                }
+
             });
         },
 
@@ -316,7 +322,19 @@
                 getVal: function($el, ev, options) {
                     return parseInt($el.val());
                 }
-            } 
+            },
+            '[name="junction"]': {
+                observe: 'junction',
+                initialize: function($el) {
+                    $el.select2();
+                },
+                selectOptions: {
+                    collection: function() {
+                        return [{value:'AND', label:i18n("all-conditions")}, {value:'OR', label:i18n("any-of-the-conditions")}];
+                    }
+                }
+            }
+
         },
 
         initialize: function(options) {
@@ -324,6 +342,7 @@
             this.nestedViews = [];
             this.dataTypes = options.dataTypes || [];
             this.dataTypesComplete = options.dataTypesComplete || [];
+            // this.listenTo(this.model, 'change:pivotDataType', this.pivotDataTypeOnChange);
         },
 
         events: {
@@ -367,6 +386,7 @@
                 this.$addLoopButton.addClass('hidden');
                 this.$addNestedButton.removeClass('hidden');
                 this.selectedDataType = null;
+                this.model.set("classTemplate", null);
                 return;
             }
             this.selectedDataType = this.dataTypes.get(idDataType);
@@ -378,6 +398,7 @@
             this.$addNestedButton.removeClass('hidden');
             var childView = new Query.Views.Row({fieldList: this.selectedDataType.getFlattenedFields(), model: new Query.RowModel()});
             this.$el.append(childView.render().el);
+            this.model.set("classTemplate", this.selectedDataType.get("classTemplate"));
             this.add(childView);
 
         },
@@ -409,11 +430,14 @@
         className: 'query',
 
         initialize: function(options) {
+            _.bindAll(this, 'queryOnSuccess');
             this.template = JST["views/templates/query-builder.ejs"];
             $('#main').html(this.el);
             this.dataTypes = options.dataTypes || [];
             this.render(options);
             this.queryView = new Query.Views.Composite({dataTypes: this.dataTypes, dataTypesComplete: this.dataTypes, model: new Query.Model()});
+            this.$tableCnt = this.$("#result-table");
+            this.tableView = null;
             this.$("#query-form").append(this.queryView.render({}).el);
         },
 
@@ -433,16 +457,21 @@
                 contentType: 'application/json;charset:utf-8',
                 url: '/query/dataSearch',
                 data: queryParameters,
-                success: function(data) {
-                    var dataList = new Data.List(data);
-                    console.log(dataList);
-                },
+                success: this.queryOnSuccess,
                 error: function(jqXHR, textStatus, err) {
                     alert(err);
                 }
 
             });
             return false;
+        },
+
+        queryOnSuccess: function(data) {
+            if (this.tableView) {
+                this.tableView.remove();
+            }
+            this.tableView = new XtensTable.Views.HtmlTable({ data: data});
+            this.$tableCnt.append(this.tableView.render().el);
         }
     
     });

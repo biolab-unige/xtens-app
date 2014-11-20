@@ -119,15 +119,19 @@
         /* views/templates/query.ejs */
         "query-builder": "Query Builder",
         "search-for:": "Search for:",
+        "matching:": "Matching:",
+        "all-conditions": "All Conditions",
+        "any-of-the-conditions": "Any of the Conditions",
         "field-name": "Field Name",
         "loop-name": "Loop Name",
-        "add-field-condition": "Add Field Condition",
+        "add-field": "Add Field",
         "add-loop-condition": "Add Loop Condition",
         "add-nested-condition": "Add Nested Condition",
-        "search": "Search"
-	
-	
-
+        "search": "Search",
+        /* views/templates/data-table.ejs */
+	"overall-status": "Overall Status",
+        "diagnosis-age": "Diagnosis Age",
+        "diagnosis-age-unit": "D.A. Unit"
     };
 
     var it = {
