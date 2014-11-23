@@ -114,7 +114,7 @@ describe('MetadataField.Views.Edit', function() {
         beforeEach(function() {
             this.metadataFieldJson = {label: Constants.METADATA_FIELD };
             this.metadataFieldJson.fieldType = FieldTypes.TEXT;
-            this.metadataFieldJson.name = "Test MetadataField";
+            this.metadataFieldJson.name = "test_metadata_field";
             this.metadataFieldJson.required = true;
             this.metadataFieldJson.isList = true;
             this.metadataFieldJson.hasUnit = true;
@@ -129,7 +129,7 @@ describe('MetadataField.Views.Edit', function() {
         it('should populate the template with the values contained in the MetadataField JSON object', function() {
             this.view.render();
             this.view.$('.field-type option:selected').val().should.equal(this.metadataFieldJson.fieldType);
-            this.view.$('input[name="name"]').val().should.equal(this.metadataFieldJson.name);
+            this.view.$('input[name="name"]').val().should.equal(this.metadataFieldJson.name.replace("_"," "));
             this.view.$('input[type="checkbox"][name="isList"]').prop('checked').should.be.true;
             var values =  this.view.$('input[type="hidden"].value-list').val().split(",");
             expect(values).to.have.length(3);

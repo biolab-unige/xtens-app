@@ -6,7 +6,8 @@
     var Data = xtens.module("data");
     var DataType = xtens.module("datatype");
     var XtensTable = xtens.module("xtenstable");
-
+    var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
+    
     // constant to define the field-value HTML element
     var FIELD_VALUE = 'field-value';
 
@@ -79,10 +80,15 @@
                 initialize: function($el) {
                     $el.select2({placeholder: i18n("please-select")});
                 },
-                selectOptions: {
+                selectOptions: { /*
                     collection: 'this.fieldList',
                     labelPath: 'name',
-                    valuePath: 'name',
+                    valuePath: 'name', */
+                    collection: function() {
+                        return this.fieldList.map(function(field) {
+                            return {value: field.name, label: replaceUnderscoreAndCapitalize(field.name)};
+                        });
+                    },
                     defaultOption: {
                         label: "",
                         value: null

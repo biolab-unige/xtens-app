@@ -13,6 +13,7 @@
     var MetadataComponent = xtens.module("metadatacomponent");
     var DataTypeModel = xtens.module("datatype").Model;
     var DataTypeCollection = xtens.module("datatype").List;
+    var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
 
     /**
      *  general purpose function to retrieve the value from a field
@@ -26,13 +27,6 @@
             default:
                 return $el.val();
         }
-    }
-
-    /**
-     *  general purpose function to capitalize a string (i.e. MetadataField names)
-     */
-    function replaceUnderscoreAndCapitalize(str) {
-        return str.replace("_", " ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     }
 
     /**

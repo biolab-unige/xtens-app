@@ -47,6 +47,7 @@ var jsFilesToInject = [
     'js/application/Router.js',
     'js/modules/i18n.js',
     'js/modules/XtensConstants.js',
+    'js/modules/Utils.js',
     'js/modules/XtensTable.js',
     'js/modules/MetadataComponent.js',
     'js/modules/MetadataField.js',
@@ -63,7 +64,7 @@ var jsFilesToInject = [
     'js/modules/Project.js',
     'js/modules/Sample.js',
     'js/modules/AdminAssociation.js',
-    'js/modules/QueryStrategy.js',
+    // 'js/modules/QueryStrategy.js',
     'js/modules/Query.js',
     'js/modules/FileManger.js',
     // All of the rest of your client-side js files

@@ -23,10 +23,10 @@
     };
     
     XtensConstants.SexOptions = {
-        MALE: 'MALE',
-        FEMALE: 'FEMALE',
-        UNKNOWN: 'UNKNOWN',
-        UNDIFFERENTIATED: 'UNDIFFERENTIATED'
+        MALE: 'M',
+        FEMALE: 'F',
+        UNKNOWN: 'N.D.' /*,
+        UNDIFFERENTIATED: 'UNDIFFERENTIATED' */
     };
 
 } (xtens, xtens.module("xtensconstants")));
