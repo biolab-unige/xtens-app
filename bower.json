@@ -73,7 +73,8 @@
     },
     "datatables": {
         "js": "media/js/jquery.dataTables.js",
-        "styles": "media/css/jquery.dataTables.css"
+        "styles": "media/css/jquery.dataTables.css",
+        "images": "media/images/*"
     }
   },
   "devDependencies": {

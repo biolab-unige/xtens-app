@@ -476,7 +476,8 @@
             if (this.tableView) {
                 this.tableView.remove();
             }
-            this.tableView = new XtensTable.Views.HtmlTable({ data: data});
+            // this.tableView = new XtensTable.Views.HtmlTable({ data: data});
+            this.tableView = new XtensTable.Views.DataTable({data: data});
             this.$tableCnt.append(this.tableView.render().el);
         }
     
