@@ -8,22 +8,24 @@ function MyFunc()
 $.ajax({
             type: "GET",
 
-            url:"http://10.186.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/biolab/pippo.txt",
+            url:"http://130.251.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/biolab/pippo.txt",
             beforeSend: function (xhr) {
-                xhr.withCredentials = true;
+                // xhr.withCredentials = true;
                 
-                xhr.setRequestHeader("Authorization", "Basic " + btoa("biolab" + ":" + "superbio05!"));
-                xhr.setRequestHeader("Access-Control-Allow-Origin","*");
+                xhr.setRequestHeader("Authorization", "Basic " + btoa("superbiorods" + ":" + "superbio05!"));
+                // xhr.setRequestHeader("Access-Control-Allow-Origin","*");
             },
 
             xhrFields: { withCredentials: true },
             crossDomain: true,
             
-            headers: { 'Authorization': "Basic " + btoa("biolab" + ":" + "superbio05!") },
+            //headers: { 'Authorization': "Basic " + btoa("biolab" + ":" + "superbio05!") },
             processData:false,
             contentType:false,
             
-        });
+            }).done(function(data) {
+                console.log(data);
+            });
        
    
 }
