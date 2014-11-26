@@ -81,6 +81,7 @@
     "chai": "~1.9.2",
     "sinon-chai": "~2.5.0",
     "chai-jquery": "~1.2.2",
+    "lodash": "~2.4.1",
     "sinon": "http://sinonjs.org/releases/sinon-1.12.1.js"
   }
 }
