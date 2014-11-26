@@ -100,7 +100,7 @@
 
         initialize:function(){
             $("#main").html(this.el);
-            this.template = JST["views/templates/downloadFile.ejs"];
+            this.template = JST["views/templates/DownloadFileIrods.ejs"];
             this.render();
         },
         render: function(options) {
