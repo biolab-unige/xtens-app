@@ -13,6 +13,7 @@
     var MetadataComponent = xtens.module("metadatacomponent");
     var DataTypeModel = xtens.module("datatype").Model;
     var DataTypeCollection = xtens.module("datatype").List;
+    var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
 
     /**
      *  general purpose function to retrieve the value from a field
@@ -26,13 +27,6 @@
             default:
                 return $el.val();
         }
-    }
-
-    /**
-     *  general purpose function to capitalize a string (i.e. MetadataField names)
-     */
-    function replaceUnderscoreAndCapitalize(str) {
-        return str.replace("_", " ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     }
 
     /**
@@ -229,12 +223,15 @@
             var serialized = _.flatten(arr);
             var metadata = {};
             for (i=0, len=serialized.length; i<len; i++) {
-                if (!metadata[serialized[i].name]){
-                    metadata[serialized[i].name] = {value: [serialized[i].value], unit: [serialized[i].unit], loop: serialized[i].loop};
+                var unit = serialized[i].unit ? [serialized[i].unit] : undefined;
+                if (!metadata[serialized[i].name]) {    
+                    metadata[serialized[i].name] = {value: [serialized[i].value], unit: unit, loop: serialized[i].loop};
                 }
                 else {
                     metadata[serialized[i].name].value.push(serialized[i].value);
-                    metadata[serialized[i].name].unit.push(serialized[i].unit);
+                    if (unit && _.isArray(metadata[serialized[i].name].unit)) {
+                        metadata[serialized[i].name].unit.push(serialized[i].unit);
+                    }
                 }
             }
             return metadata;
@@ -328,6 +325,16 @@
         render: function() {
             this.$el.html(this.template({ __:i18n, component: this.component, format: replaceUnderscoreAndCapitalize}));
             this.stickit();
+            if (!_.isEmpty(this.component.possibleUnits)) {
+                this.addBinding(null, 'select[name=fieldUnit]', {
+                    observe: 'unit',
+                    selectOptions: {
+                        collection: 'this.component.possibleUnits',
+                        labelPath: '',
+                        valuePath: ''
+                    }
+                });
+            }
             return this;
         },
 
@@ -343,7 +350,7 @@
             ':text[name=fieldValue]': {
                 observe: 'value',
                 getVal: getFieldValue
-            },
+            }/*,
             'select[name=fieldUnit]': {
                 observe: 'unit',
                 selectOptions: {
@@ -351,7 +358,7 @@
                     labelPath: '',
                     valuePath: ''
                 }
-            }
+            }*/
         },
 
         initialize: function(options) {
@@ -390,7 +397,7 @@
                     labelPath: '',
                     valuePath: ''
                 }
-            },
+            }/*,
             'select[name=fieldUnit]': {
                 observe: 'unit',
                 selectOptions: {
@@ -398,7 +405,7 @@
                     labelPath: '',
                     valuePath: ''
                 }
-            }
+            }*/
         },
 
         initialize: function(options) {
@@ -413,7 +420,7 @@
         bindings: {
             'input[name=fieldValue]': {
                 observe: 'value'
-            },
+            }/*,
             'select[name=fieldUnit]': {
                 observe: 'unit',
                 selectOptions: {
@@ -421,7 +428,7 @@
                     labelPath: '',
                     valuePath: ''
                 }
-            }
+            }*/
         },
 
         initialize: function(options) {

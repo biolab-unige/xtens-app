@@ -36,7 +36,10 @@
     "d3": "~3.4.13",
 
     "datatables": "~1.10.4"
+<<<<<<< HEAD
 
+=======
+>>>>>>> 27569cd48c707f369f23fdfd86f851ad75d92168
   },
   "exportsOverride": {
     "jquery": {
@@ -72,22 +75,34 @@
     },
     "sinon": {
       "js": "index.js"
+<<<<<<< HEAD
 },
     "datatables": {
         "js": "media/js/jquery.dataTables.js",
         "styles": "media/css/jquery.dataTables.css"
 
+=======
+    },
+    "datatables": {
+        "js": "media/js/jquery.dataTables.js",
+        "styles": "media/css/jquery.dataTables.css",
+        "images": "media/images/*"
+>>>>>>> 27569cd48c707f369f23fdfd86f851ad75d92168
     }
   },
   "devDependencies": {
     "chai": "~1.9.2",
     "sinon-chai": "~2.5.0",
     "chai-jquery": "~1.2.2",
+<<<<<<< HEAD
 
     "lodash": "~2.4.1",
     "sinon": "http://sinonjs.org/releases/sinon-1.12.1.js",
 
     "lodash": "~2.4.1"
 
+=======
+    "sinon": "http://sinonjs.org/releases/sinon-1.12.1.js"
+>>>>>>> 27569cd48c707f369f23fdfd86f851ad75d92168
   }
 }

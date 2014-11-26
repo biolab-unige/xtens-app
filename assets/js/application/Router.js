@@ -168,8 +168,9 @@
 
 
         downloadView:function(){
-        this.loadView(new FileManager.Views.Download());
+            this.loadView(new FileManager.Views.Download());
         },
+
         groupList:function(){
             this.loadView(new Group.Views.List());
         },

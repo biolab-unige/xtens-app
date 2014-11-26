@@ -300,16 +300,17 @@ describe('Data.Views.Edit', function() {
         });
     }); */
 
-    describe('#dataTypeOnChange', function() {
+    describe('#renderDataTypeSchema', function() {
 
         beforeEach(function() {
-            this.model.set({});
+            // this.model.set('type', this.view.dataTypes[4]);
             this.view = new Data.Views.Edit({model: this.model, dataTypes: this.dataTypes});
-
+            this.view.model.set('type', this.view.dataTypes[4]); // I have to se the model DataType
+            this.view.schemaView.remove();                       // and to remove the generated schemaView
         }); // beforeEach 
 
         it('should show each metadata group within a container', function() {
-            this.model.set('type', this.view.dataTypes[4]);
+            this.view.renderDataTypeSchema();
             var $metadataGroups = this.view.$('#metadata-body').children();
             expect($metadataGroups).to.have.length.above(0);
             $metadataGroups.each(function(index, group) {

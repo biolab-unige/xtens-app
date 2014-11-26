@@ -71,6 +71,5 @@ describe("FileManager", function() {
       assert.equal("not implemented yet",result);
       });
       });
-      */
 });
 

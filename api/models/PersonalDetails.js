@@ -29,7 +29,7 @@ module.exports = {
         sex: {
             type: 'string',
             required: true,
-            enum: ['MALE', 'FEMALE', 'UNKNOWN', 'UNDIFFERENTIATED']
+            enum: ['M', 'F', 'N.D.', 'UNKNOWN', 'UNDIFFERENTIATED']
         },
         createdAt: {
             type: 'datetime',
