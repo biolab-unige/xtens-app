@@ -5,13 +5,29 @@
     var QueryStrategy = xtens.module("querystrategy");
     var Data = xtens.module("data");
     var DataType = xtens.module("datatype");
+    var DataTypeClasses = xtens.module("xtensconstants").DataTypeClasses;
+    var sexOptions = xtens.module("xtensconstants").SexOptions;
     var XtensTable = xtens.module("xtenstable");
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
-    
+
     // constant to define the field-value HTML element
     var FIELD_VALUE = 'field-value';
 
     var checkboxTemplate = _.template("<div class='checkbox'><input type='checkbox'></div>");
+
+    // Factory method class to create specialized query views
+    function QueryViewFactory() {
+        this.createClassTemplateQueryView = function(classTemplate) {
+            switch(classTemplate) {
+                case DataTypeClasses.SUBJECT:
+                    return new Query.Views.Subject({ model: new Query.SubjectModel({ classTemplateQuery: DataTypeClasses.SUBJECT }) });
+                case DataTypeClasses.SAMPLE:
+                    return new Query.Views.Sample({ model: new Query.SampleModel({ classTemplateQuery: DataTypeClasses.SAMPLE }) });
+            }
+        };
+    }
+
+    var factory = new QueryViewFactory();
 
     Query.Model = Backbone.Model.extend({
         urlRoot: 'query'
@@ -66,6 +82,10 @@
 
     });
 
+    Query.SubjectModel = Backbone.Model.extend({});
+
+    Query.SampleModel = Backbone.Model.extend({});
+
     Query.RowModel = Backbone.Model.extend({});
 
     Query.LoopModel = Backbone.Model.extend({});
@@ -81,25 +101,25 @@
                     $el.select2({placeholder: i18n("please-select")});
                 },
                 selectOptions: { /*
-                    collection: 'this.fieldList',
-                    labelPath: 'name',
-                    valuePath: 'name', */
-                    collection: function() {
-                        return this.fieldList.map(function(field) {
-                            return {value: field.name, label: replaceUnderscoreAndCapitalize(field.name)};
-                        });
-                    },
-                    defaultOption: {
-                        label: "",
-                        value: null
-                    }
+collection: 'this.fieldList',
+labelPath: 'name',
+valuePath: 'name', */
+                collection: function() {
+                    return this.fieldList.map(function(field) {
+                        return {value: field.name, label: replaceUnderscoreAndCapitalize(field.name)};
+                    });
+                },
+                defaultOption: {
+                    label: "",
+                    value: null
+                }
                 }
 
             }
         },
 
         initialize: function(options) {
-            this.template = JST['views/templates/query-builder-row.ejs'];
+            this.template = JST['views/templates/query-generic-row.ejs'];
             this.fieldList = options.fieldList;
             this.listenTo(this.model, 'change:fieldName', this.fieldNameOnChange);
         },
@@ -118,7 +138,7 @@
         },
 
         fieldNameOnChange: function(model, fieldName) {
-           this.generateStatementOptions(model, fieldName);
+            this.generateStatementOptions(model, fieldName);
         },
 
         generateStatementOptions: function(model, fieldName) {
@@ -252,8 +272,98 @@
 
     });
 
+    Query.Views.Subject = Query.Views.Component.fullExtend({
+
+        className: 'query-subject',
+
+        bindings: {
+            '[name="code-comparator"]': {
+                observe: 'codeComparator',
+                initialize: function($el) {
+                    $el.select2({
+                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }] 
+                    });
+                }
+            },
+            '[name="code"]': {
+                observe: 'code'
+            },
+            '[name="surname-comparator"]': {
+                observe: 'surnameComparator',
+                initialize: function($el) {
+                    $el.select2({
+                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }] 
+                    });
+                }
+            },
+            '[name="surname"]': {
+                observe: 'surname'
+            },
+            '[name="given-name-comparator"]': {
+                observe: 'givenNameComparator',
+                initialize: function($el) {
+                    $el.select2({
+                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }] 
+                    });
+                }
+            },
+            '[name="given-name"]': {
+                observe: 'givenName'
+            },
+            '[name="birth-date-comparator"]': {
+                observe: 'birthDateComparator',
+                initialize: function($el) {
+                    $el.select2({
+                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' }] 
+                    });
+                }
+            },
+            '[name="birth-date"]': {
+                observe: 'birthDate'
+            },
+            '[name="sex-comparator"]': {
+                observe: 'sexComparator',
+                initialize: function($el) {
+                    $el.select2({
+                        data: [ { id: 'IN', text: '=' }, { id: 'NOT IN', text: '≠' }]
+                    });
+                }
+            },
+            '[name="sex"]': {
+                observe: 'sex',
+                initialize: function($el) {
+                    var data = []; 
+                    _.each(sexOptions, function(sexOption) {
+                        data.push({id: sexOption, text: sexOption});
+                    });
+                    $el.select2({
+                        multiple: true,
+                        placeholder: i18n("please-select"),
+                        data: data
+                    });
+                },
+                getVal: function($el) {
+                    return $el.val().split(",");
+                }
+            }
+        },
+
+        initialize: function(options) {
+            this.template = JST['views/templates/query-subject-fields.ejs'];
+        },
+
+        render: function() {
+            this.$el.html(this.template({ __: i18n, canViewPersonalInfo: true})); // TODO implement canViewPersonalInfo policy (server side)
+            this.$el.addClass("query-row");
+            this.stickit();
+            return this;
+        },
+    });
+
+    Query.Views.Sample = Query.Views.Component.fullExtend({});
+
     Query.Views.Loop = Query.Views.Component.fullExtend({
-        
+
         className: 'query-loop',
 
         initialize: function(options) {
@@ -295,8 +405,8 @@
             for (var i=0, len=selectedLoop.content.length; i<len; i++) {
                 childView = new Query.Views.Row({fieldList: [selectedLoop.content[i]], 
                                                 model: new Query.RowModel({fieldName: selectedLoop.content[i].name})});
-                this.$loopBody.append(childView.render().el);
-                this.add(childView);
+                                                this.$loopBody.append(childView.render().el);
+                                                this.add(childView);
             }
         }
     });
@@ -396,17 +506,27 @@
                 return;
             }
             this.selectedDataType = this.dataTypes.get(idDataType);
+            this.model.set("classTemplate", this.selectedDataType.get("classTemplate"));
+            var classTemplateQueryView = factory.createClassTemplateQueryView(this.model.get("classTemplate"));
+            if (classTemplateQueryView) {
+                this.addClassTemplateQueryView(classTemplateQueryView);
+            }
             /*  // removed "improved loop search"
-            if (selectedDataType.hasLoops()) {
+                if (selectedDataType.hasLoops()) {
                 this.$addLoopButton.removeClass('hidden');
-            } */
+                } */
             this.$addFieldButton.removeClass('hidden');
             this.$addNestedButton.removeClass('hidden');
             var childView = new Query.Views.Row({fieldList: this.selectedDataType.getFlattenedFields(), model: new Query.RowModel()});
             this.$el.append(childView.render().el);
-            this.model.set("classTemplate", this.selectedDataType.get("classTemplate"));
+            // this.model.set("classTemplate", this.selectedDataType.get("classTemplate"));
             this.add(childView);
 
+        },
+
+        addClassTemplateQueryView: function(classTemplateQueryView) {
+            this.$el.append(classTemplateQueryView.render().el);
+            this.add(classTemplateQueryView);
         },
 
         clear: function() {
@@ -451,13 +571,14 @@
             this.$el.html(this.template({__: i18n }));
             return this;
         },
-        
+
         events : {
             'click #search': 'sendQuery'
         },
 
         sendQuery: function() {
             var queryParameters = JSON.stringify({queryArgs: this.queryView.serialize()});
+            return false;
             $.ajax({
                 method: 'POST',
                 contentType: 'application/json;charset:utf-8',
@@ -480,7 +601,7 @@
             this.tableView = new XtensTable.Views.DataTable({data: data});
             this.$tableCnt.append(this.tableView.render().el);
         }
-    
+
     });
 
 } (xtens, xtens.module("query")));

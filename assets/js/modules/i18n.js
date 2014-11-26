@@ -131,7 +131,9 @@
         /* views/templates/data-table.ejs */
 	"overall-status": "Overall Status",
         "diagnosis-age": "Diagnosis Age",
-        "diagnosis-age-unit": "D.A. Unit"
+        "diagnosis-age-unit": "D.A. Unit",
+        /* views/templates/query-subject-fields.ejs */
+        "subject-code": "Subject Code"
     };
 
     var it = {
