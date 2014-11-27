@@ -40,11 +40,10 @@ var jsFilesToInject = [
     'dependencies/**/d3.js',
     'dependencies/**/dropzone.js',
     'dependencies/**/jquery.dataTables.js',
-<<<<<<< HEAD
+
     // 'dependencies/**/d3.js',
 
-=======
->>>>>>> 27569cd48c707f369f23fdfd86f851ad75d92168
+
     
     // Customised client-side js files
     'js/application/utils.js',
@@ -71,13 +70,12 @@ var jsFilesToInject = [
     'js/modules/AdminAssociation.js',
     // 'js/modules/QueryStrategy.js',
     'js/modules/Query.js',
-<<<<<<< HEAD
+
+
     
-'js/modules/FileManager.js'
-    
-=======
+
     'js/modules/FileManager.js',
->>>>>>> 27569cd48c707f369f23fdfd86f851ad75d92168
+
     // All of the rest of your client-side js files
     // will be injected here in no particular order.
 ];

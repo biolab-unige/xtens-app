@@ -5,33 +5,39 @@
 
 function MyFunc()
 {
-$.ajax({
+var xhr = new XMLHttpRequest();
+
+xhr.open('GET', 'http://10.186.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/superbiorods/pippo.txt');
+xhr.setRequestHeader("Authorization", "Basic " + btoa("superbiorods" + ":" + "superbio05!"));
+xhr.setRequestHeader("Access-Control-Allow-Origin","*");
+xhr.setRequestHeader("Access-Control-Request-Headers", "x-requested-with");
+xhr.onreadystatechange = function () {
+  if (this.status == 200 && this.readyState == 4) {
+    console.log('response: ' + this.responseText);
+  }
+};
+xhr.send();
+/*$.ajax({
             type: "GET",
 
-<<<<<<< HEAD
+
             url:"http://10.186.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/superbiorods/pippo.txt",
-=======
-            url:"http://130.251.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/biolab/pippo.txt",
->>>>>>> 27569cd48c707f369f23fdfd86f851ad75d92168
+
+         
             beforeSend: function (xhr) {
-                // xhr.withCredentials = true;
+                 xhr.withCredentials = true;
                 
                 xhr.setRequestHeader("Authorization", "Basic " + btoa("superbiorods" + ":" + "superbio05!"));
-<<<<<<< HEAD
+
                xhr.setRequestHeader("Access-Control-Allow-Origin","*");
-=======
-                // xhr.setRequestHeader("Access-Control-Allow-Origin","*");
->>>>>>> 27569cd48c707f369f23fdfd86f851ad75d92168
+
             },
 
             xhrFields: { withCredentials: true },
             crossDomain: true,
             
-<<<<<<< HEAD
-           
-=======
-            //headers: { 'Authorization': "Basic " + btoa("biolab" + ":" + "superbio05!") },
->>>>>>> 27569cd48c707f369f23fdfd86f851ad75d92168
+
+
             processData:false,
             contentType:false,
             
@@ -39,7 +45,7 @@ $.ajax({
                 console.log(data);
             });
        
-   
+   */
 }
 
 </script>
