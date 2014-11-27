@@ -5,74 +5,30 @@
 
 function MyFunc()
 {
-<<<<<<< HEAD
-var xhr = new XMLHttpRequest();
-
-xhr.open('GET', 'http://10.186.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/superbiorods/pippo.txt');
-xhr.setRequestHeader("Authorization", "Basic " + btoa("superbiorods" + ":" + "superbio05!"));
-xhr.setRequestHeader("Access-Control-Allow-Origin","*");
-xhr.setRequestHeader("Access-Control-Request-Headers", "x-requested-with");
-xhr.onreadystatechange = function () {
-  if (this.status == 200 && this.readyState == 4) {
-    console.log('response: ' + this.responseText);
-  }
-};
-xhr.send();
-/*$.ajax({
-            type: "GET",
-
-
-            url:"http://10.186.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/superbiorods/pippo.txt",
-
-         
-            beforeSend: function (xhr) {
-                 xhr.withCredentials = true;
-                
-                xhr.setRequestHeader("Authorization", "Basic " + btoa("superbiorods" + ":" + "superbio05!"));
-
-               xhr.setRequestHeader("Access-Control-Allow-Origin","*");
-
-            },
-
-            xhrFields: { withCredentials: true },
-            crossDomain: true,
-            
-
-
-            processData:false,
-            contentType:false,
-            
-            }).done(function(data) {
-                console.log(data);
-            });
-       
-   */
-=======
     $.ajax({
-type: "GET",
+type: "POST",
 
-url:"http://130.251.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/superbiorods/pippo.txt",
+url:"http://130.251.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/superbiorods/prova",
 //url:"http://10.186.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/superbiorods/pippo.txt",
 beforeSend: function (xhr) {
 // xhr.withCredentials = true;
 
 xhr.setRequestHeader("Authorization", "Basic " + btoa("superbiorods" + ":" + "superbio05!"));
-// xhr.setRequestHeader("Access-Control-Allow-Origin","*");
+xhr.setRequestHeader("Access-Control-Allow-Origin","*");
 },
 
 xhrFields: { withCredentials: true },
+acceptEncoding:'multipart/form-data',
 crossDomain: true,
-
-
 processData:false,
-contentType:false,
+contentType:"multipart/form-data",
+uploadFile:"app.js"
 
 }).done(function(data) {
     console.log(data);
     });
 
 
->>>>>>> b58630a817361f604e464eab6b5088a7f5bb4c3d
 }
 
 </script>
