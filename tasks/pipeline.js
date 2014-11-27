@@ -40,11 +40,16 @@ var jsFilesToInject = [
     'dependencies/**/d3.js',
     'dependencies/**/dropzone.js',
     'dependencies/**/jquery.dataTables.js',
+<<<<<<< HEAD
 
     // 'dependencies/**/d3.js',
 
 
     
+=======
+    // 'dependencies/**/d3.js',
+
+>>>>>>> b58630a817361f604e464eab6b5088a7f5bb4c3d
     // Customised client-side js files
     'js/application/utils.js',
     'js/application/xtens.js',
@@ -52,12 +57,12 @@ var jsFilesToInject = [
     'js/modules/i18n.js',
     'js/modules/XtensConstants.js',
     'js/modules/Utils.js',
-    'js/modules/XtensTable.js',
     'js/modules/MetadataComponent.js',
     'js/modules/MetadataField.js',
     'js/modules/MetadataLoop.js',
     'js/modules/MetadataGroup.js',
     'js/modules/DataType.js',
+    'js/modules/XtensTable.js',
     'js/modules/Operator.js',
     'js/modules/Group.js',
     'js/modules/GroupsDataType.js',
@@ -70,12 +75,17 @@ var jsFilesToInject = [
     'js/modules/AdminAssociation.js',
     // 'js/modules/QueryStrategy.js',
     'js/modules/Query.js',
+<<<<<<< HEAD
 
 
     
 
     'js/modules/FileManager.js',
 
+=======
+    'js/modules/FileManager.js'
+    
+>>>>>>> b58630a817361f604e464eab6b5088a7f5bb4c3d
     // All of the rest of your client-side js files
     // will be injected here in no particular order.
 ];

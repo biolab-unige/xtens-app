@@ -1,6 +1,6 @@
 /**
  * @author  Massimiliano Izzo
- * @description This file conatains the Backbone classes for handling DataType
+ * @description This file contains the Backbone classes for handling DataType
  *              models, collections and views  
  */
 (function(xtens, DataType) {
@@ -27,9 +27,22 @@
         },
 
         /**
+         *  @description returns a list of the fields that are not contained in loop
+         *
+        getFlattenedFieldsNotInLoops: function() {
+            var flattened = [];
+            var body = this.get("schema") && this.get("schema").body;
+            for (var i=0, len=body.length; i<len; i++) {
+            
+            }
+
+        }; */
+
+        /**
          * @description flattens the metadata schema returning a 1D array containing all the metadata fields
+         * @param skipFieldsWithinLoops if true skips all the metadatafields that are contained within metadata loops
          */
-        getFlattenedFields: function() {
+        getFlattenedFields: function(skipFieldsWithinLoops) {
             var flattened = [];
             var body = this.get("schema") && this.get("schema").body;
             for (var i=0, len=body.length; i<len; i++){
@@ -38,7 +51,7 @@
                     if (groupContent[j].label === Constants.METADATA_FIELD) {
                         flattened.push(groupContent[j]);
                     }
-                    else if (groupContent[j].label === Constants.METADATA_LOOP) {
+                    else if (groupContent[j].label === Constants.METADATA_LOOP && !skipFieldsWithinLoops) {
                         var loopContent = groupContent[j] && groupContent[j].content;
                         for (var k=0; k<loopContent.length; k++) {
                             if (loopContent[k].label === Constants.METADATA_FIELD) {
