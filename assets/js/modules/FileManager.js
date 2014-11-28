@@ -93,6 +93,24 @@
 
     });
 
+    FileManager.Views.UploadIrods = Backbone.View.extend({
+        tagName:'div',
+        className:'fileManager',
+        initialize:function(){
+            $("#main").html(this.el);
+            this.template = JST["views/templates/UploadFileIrods.ejs"];
+            this.render();
+        },
+        render: function(options) {
+
+            var self = this;
+
+            self.$el.html(self.template({__: i18n}));
+            return self;    
+        }
+
+    });
+
     FileManager.Views.Download = Backbone.View.extend({
         tagName:'div',
         className:'fileManager',

@@ -75,7 +75,7 @@ var jsFilesToInject = [
 
     
 
-    'js/modules/FileManager.js',
+ 
 
     'js/modules/FileManager.js'
     
