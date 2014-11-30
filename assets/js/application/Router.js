@@ -72,7 +72,8 @@
             "groups/operator/:id":"associationOperator",
             "groups/datatype/:id":"associationDataType",
             "upload-file":"uploadView",
-            "download-file":"downloadView"
+            "download-file":"downloadView",
+	    "upload-irods-file":"uploadIrodsView"
 
         },
 
@@ -287,6 +288,9 @@
  uploadView:function(){
             this.loadView(new FileManager.Views.Upload());
         },
+ uploadIrodsView:function(){
+ this.loadView(new FileManager.Views.UploadIrods());
+},
         /*
         sampleEdit: function(id, queryParams) {
             var dataTypes = new DataType.List(), subjects = new Subject.List(), samples = new Sample.List();

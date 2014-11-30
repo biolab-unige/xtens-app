@@ -40,8 +40,12 @@ var jsFilesToInject = [
     'dependencies/**/d3.js',
     'dependencies/**/dropzone.js',
     'dependencies/**/jquery.dataTables.js',
+
     // 'dependencies/**/d3.js',
 
+
+
+    // 'dependencies/**/d3.js',
     // Customised client-side js files
     'js/application/utils.js',
     'js/application/xtens.js',
@@ -67,6 +71,12 @@ var jsFilesToInject = [
     'js/modules/AdminAssociation.js',
     // 'js/modules/QueryStrategy.js',
     'js/modules/Query.js',
+
+
+    
+
+ 
+
     'js/modules/FileManager.js'
     
     // All of the rest of your client-side js files
