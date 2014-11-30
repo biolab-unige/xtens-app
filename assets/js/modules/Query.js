@@ -1,6 +1,7 @@
 (function(xtens, Query) {
 
     var i18n = xtens.module("i18n").en;
+    var Constants = xtens.module("xtensconstants").Constants; 
     var FieldTypes = xtens.module("xtensconstants").FieldTypes;
     var QueryStrategy = xtens.module("querystrategy");
     var Data = xtens.module("data");
@@ -20,9 +21,9 @@
         this.createClassTemplateQueryView = function(classTemplate) {
             switch(classTemplate) {
                 case DataTypeClasses.SUBJECT:
-                    return new Query.Views.Subject({ model: new Query.SubjectModel({ classTemplateQuery: DataTypeClasses.SUBJECT }) });
+                    return new Query.Views.Subject({ model: new Query.SubjectModel() });
                 case DataTypeClasses.SAMPLE:
-                    return new Query.Views.Sample({ model: new Query.SampleModel({ classTemplateQuery: DataTypeClasses.SAMPLE }) });
+                    return new Query.Views.Sample({ model: new Query.SampleModel() });
             }
         };
     }
@@ -74,17 +75,30 @@
                 for (var i=0, len=this.nestedViews.length; i<len; i++) {
                     res.content.push(this.nestedViews[i].serialize());
                 }
+                res.content = _.flatten(res.content, true);
             }
             return res;
         }
 
-
-
     });
 
-    Query.SubjectModel = Backbone.Model.extend({});
+    Query.PersonalInfoModel = Backbone.Model.extend({
+        defaults: {
+            "personalDetails":  true   
+        }
+    });
 
-    Query.SampleModel = Backbone.Model.extend({});
+    Query.SubjectModel = Backbone.Model.extend({
+        defaults: {
+            "specializedQuery": DataTypeClasses.SUBJECT
+        }
+    });
+
+    Query.SampleModel = Backbone.Model.extend({
+        defaults: {
+            "specializedQuery": DataTypeClasses.SAMPLE
+        }
+    });
 
     Query.RowModel = Backbone.Model.extend({});
 
@@ -272,22 +286,16 @@ valuePath: 'name', */
 
     });
 
-    Query.Views.Subject = Query.Views.Component.fullExtend({
+    /**
+     * @description subview to query PersonalInfo/Personal Details fields 
+     */
 
-        className: 'query-subject',
+    Query.Views.PersonalInfo = Query.Views.Component.fullExtend({
+
+        className: 'query-personalinfo',
 
         bindings: {
-            '[name="code-comparator"]': {
-                observe: 'codeComparator',
-                initialize: function($el) {
-                    $el.select2({
-                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }] 
-                    });
-                }
-            },
-            '[name="code"]': {
-                observe: 'code'
-            },
+
             '[name="surname-comparator"]': {
                 observe: 'surnameComparator',
                 initialize: function($el) {
@@ -320,6 +328,38 @@ valuePath: 'name', */
             },
             '[name="birth-date"]': {
                 observe: 'birthDate'
+            }
+
+        },
+
+        initialize: function(options) {
+            this.template = JST['views/templates/query-personalinfo-fields.ejs'];
+        },
+
+        render: function() {
+            this.$el.html(this.template({ __: i18n})); // TODO implement canViewPersonalInfo policy (server side)
+            // this.$el.addClass("query-row");
+            this.stickit();
+            return this;
+        }
+
+    });
+
+    Query.Views.Subject = Query.Views.Component.fullExtend({
+
+        className: 'query-subject',
+
+        bindings: {
+            '[name="code-comparator"]': {
+                observe: 'codeComparator',
+                initialize: function($el) {
+                    $el.select2({
+                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }] 
+                    });
+                }
+            },
+            '[name="code"]': {
+                observe: 'code'
             },
             '[name="sex-comparator"]': {
                 observe: 'sexComparator',
@@ -353,14 +393,58 @@ valuePath: 'name', */
         },
 
         render: function() {
-            this.$el.html(this.template({ __: i18n, canViewPersonalInfo: true})); // TODO implement canViewPersonalInfo policy (server side)
-            this.$el.addClass("query-row");
+            this.$el.html(this.template({ __: i18n })); // TODO implement canViewPersonalInfo policy (server side)
+            // this.$el.addClass("query-row");
             this.stickit();
             return this;
         },
+
+        serialize: function() {
+            var serialized = [];
+            _.each(Constants.SUBJECT_PROPERTIES, function(property) {
+                serialized.push(_.pick(_.clone(this.model.attributes), [property, property+'Comparator', 'specializedQuery']));
+            }, this);
+            return serialized;
+        }
     });
 
-    Query.Views.Sample = Query.Views.Component.fullExtend({});
+    Query.Views.Sample = Query.Views.Component.fullExtend({
+        
+        className: 'query-sample',
+
+        bindings: {
+            '[name="biobank-code-comparator"]': {
+                observe: 'biobankCodeComparator',
+                initialize: function($el) {
+                    $el.select2({
+                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }] 
+                    });
+                }
+            },
+            '[name="biobank-code"]': {
+                observe: 'biobankCode'
+            }
+        },
+
+        initialize: function(options) {
+            this.template = JST['views/templates/query-sample-fields.ejs'];
+        },
+
+        render: function() {
+            this.$el.html(this.template({ __: i18n }));             
+            this.stickit();
+            return this;
+        },
+
+        serialize: function() {
+            var serialized = [];
+            _.each(Constants.SAMPLE_PROPERTIES, function(property) {
+                serialized.push(_.pick(_.clone(this.model.attributes), [property, property+'Comparator', 'specializedQuery']));
+            }, this);
+            return serialized;
+        }
+
+    });
 
     Query.Views.Loop = Query.Views.Component.fullExtend({
 
@@ -507,9 +591,13 @@ valuePath: 'name', */
             }
             this.selectedDataType = this.dataTypes.get(idDataType);
             this.model.set("classTemplate", this.selectedDataType.get("classTemplate"));
+            if (this.model.get("classTemplate") === DataTypeClasses.SUBJECT) {      //TODO add policy to filter those not allowed to see personal info 
+                var personalInfoQueryView = new Query.Views.PersonalInfo({ model: new Query.PersonalInfoModel() });
+                this.addSubqueryView(personalInfoQueryView);
+            }
             var classTemplateQueryView = factory.createClassTemplateQueryView(this.model.get("classTemplate"));
             if (classTemplateQueryView) {
-                this.addClassTemplateQueryView(classTemplateQueryView);
+                this.addSubqueryView(classTemplateQueryView);
             }
             /*  // removed "improved loop search"
                 if (selectedDataType.hasLoops()) {
@@ -524,9 +612,9 @@ valuePath: 'name', */
 
         },
 
-        addClassTemplateQueryView: function(classTemplateQueryView) {
-            this.$el.append(classTemplateQueryView.render().el);
-            this.add(classTemplateQueryView);
+        addSubqueryView: function(subqueryView) {
+            this.$el.append(subqueryView.render().el);
+            this.add(subqueryView);
         },
 
         clear: function() {
@@ -578,7 +666,7 @@ valuePath: 'name', */
 
         sendQuery: function() {
             var queryParameters = JSON.stringify({queryArgs: this.queryView.serialize()});
-            return false;
+            console.log(this.queryView.serialize());
             $.ajax({
                 method: 'POST',
                 contentType: 'application/json;charset:utf-8',

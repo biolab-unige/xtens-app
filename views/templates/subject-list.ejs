@@ -23,7 +23,7 @@
                         <td><%= subject.get("personalInfo").givenName %></td>
                         <td><%= subject.get("personalInfo").surname %></td>
                         <td><%= subject.get("personalInfo").birthDate %></td>
-                        <td><%= subject.get("personalInfo").sex %></td>
+                        <td><%= subject.get("sex") %></td>
                         <td><%= subject.get("projects").map(function(project) {return (" " + project.name); }).toString().trim() %></td>
                         <td>
                             <a class="btn" href="<%= subject.get("editLink") %>" ><%=__("edit") %></a>

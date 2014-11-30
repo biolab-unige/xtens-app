@@ -1,67 +1,73 @@
 /**
-* Subject.js
-*
-* @description :: TODO: You might write a short summary of how this model works and what it represents here.
-* @docs        :: http://sailsjs.org/#!documentation/models
-*/
+ * Subject.js
+ *
+ * @description :: TODO: You might write a short summary of how this model works and what it represents here.
+ * @docs        :: http://sailsjs.org/#!documentation/models
+ */
 
 var Subject= {
 
-  attributes: {
+    attributes: {
 
-     code: {
-        type:'string',
-        required: true,
-        unique: true,
-        alphanumeric: true
-     },
+        code: {
+            type:'string',
+            required: true,
+            unique: true,
+            alphanumeric: true
+        },
 
-     // one-way association to PersonalDetails model
-     personalInfo: {
-        model: 'personalDetails',
-        columnName: 'personal_info'
-     },
+        sex: {
+            type: 'string',
+            required: true,
+            enum: ['M', 'F', 'N.D.', 'UNKNOWN', 'UNDIFFERENTIATED']
+        },
 
-     // one-way association to DataType model
-     type: {
-        model: 'dataType'
-     },
+        // one-way association to PersonalDetails model
+        personalInfo: {
+            model: 'personalDetails',
+            columnName: 'personal_info'
+        },
 
-     projects: {
-        collection: 'project',
-        via: 'subjects'
-     },
+        // one-way association to DataType model
+        type: {
+            model: 'dataType'
+        },
 
-     samples: {
-        collection: 'sample',
-        via: 'donor'
-     },
+        projects: {
+            collection: 'project',
+            via: 'subjects'
+        },
 
-     tags: {
-        type: 'json',
-        columnName: 'tags',
-        array: true
-     },
+        samples: {
+            collection: 'sample',
+            via: 'donor'
+        },
 
-     notes: {
-        type: 'text',
-        columnName: 'notes'
-     },
+        tags: {
+            type: 'json',
+            columnName: 'tags',
+            array: true
+        },
 
-     metadata: {
-        type: 'json',
-        required: false
-     },
+        notes: {
+            type: 'text',
+            columnName: 'notes'
+        },
 
-     createdAt: {
-        type: 'datetime',
-        columnName: 'created_at'
-     },
+        metadata: {
+            type: 'json',
+            required: false
+        },
 
-     updatedAt: {
-        type: 'datetime',
-        columnName: 'updated_at'
-     }
-  }
+        createdAt: {
+            type: 'datetime',
+            columnName: 'created_at'
+        },
+
+        updatedAt: {
+            type: 'datetime',
+            columnName: 'updated_at'
+        }
+    }
 };
 module.exports = Subject;

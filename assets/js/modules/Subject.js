@@ -9,6 +9,8 @@
     var Data = xtens.module("data");
     var PersonalDetails = xtens.module("personaldetails");
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
+    var sexOptions = xtens.module("xtensconstants").SexOptions;
+
     /*
        function initializeProjectsField($el, model, option) {
        var data =
@@ -18,6 +20,9 @@
         urlRoot: '/subject',
 
         defaults: {
+            defaults: {
+                sex: sexOptions.UNKNOWN
+            },
             projects: []
         }
     });
@@ -60,6 +65,20 @@
 
             '#code': {
                 observe: 'code'
+            },
+            
+            '#sex': {
+                observe: 'sex',
+                initialize: function($el) {
+                    var data = []; 
+                    _.each(sexOptions, function(sexOption) {
+                        data.push({id: sexOption, text: sexOption});
+                    });
+                    $el.select2({
+                        placeholder: i18n("please-select"),
+                        data: data
+                    });
+                }
             },
 
             '#tags': {

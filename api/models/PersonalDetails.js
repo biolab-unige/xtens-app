@@ -26,11 +26,6 @@ module.exports = {
             type: 'date',
             columnName: 'birth_date'
         },
-        sex: {
-            type: 'string',
-            required: true,
-            enum: ['M', 'F', 'N.D.', 'UNKNOWN', 'UNDIFFERENTIATED']
-        },
         createdAt: {
             type: 'datetime',
             columnName: 'created_at'

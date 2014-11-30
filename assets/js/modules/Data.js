@@ -88,7 +88,9 @@
                 var fieldRecord = options.metadata[field.name];
                 var index = (options.loopParams && options.loopParams.index) || 0;
                 this.set("value", fieldRecord.value[index]);
-                this.set("unit", fieldRecord.unit[index]);
+                if (field.hasUnit) {
+                    this.set("unit", fieldRecord.unit[index]);
+                }
             }
             else {
                 if (field.isList) {

@@ -1,13 +1,8 @@
 (function(xtens, PersonalDetails) {
     
-    var sexOptions = xtens.module("xtensconstants").SexOptions;
     var i18n = xtens.module("i18n").en;
 
-    PersonalDetails.Model = Backbone.Model.extend({
-        defaults: {
-            sex: sexOptions.UNKNOWN
-        }
-    });
+    PersonalDetails.Model = Backbone.Model.extend({});
 
     PersonalDetails.List = Backbone.Collection.extend({});
 
@@ -25,6 +20,7 @@
             '#givenName': 'givenName',
             '#surname': 'surname',
             '#birthDate': 'birthDate',
+            /** SEX moved to the subject interface
             '#sex': {
                 observe: 'sex',
                 selectOptions: {
@@ -36,7 +32,7 @@
                         return res;
                     }
                 }
-            }
+            } */
 
         },
 

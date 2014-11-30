@@ -88,16 +88,15 @@
             return [
                 {"title": i18n("surname"), "data": "personalInfo.surname"},
                 {"title": i18n("given-name"), "data": "personalInfo.givenName"},
-                {"title": i18n("birth-date"), "data": "personalInfo.birthDate"},
-                {"title": i18n("sex"), "data": "personalInfo.sex"}
+                {"title": i18n("birth-date"), "data": "personalInfo.birthDate"}
             ];
         },
 
         insertSubjectColumns: function() {
-            return [{
-                "title": i18n("code"),
-                "data": "code"
-            }];        
+            return [
+                {"title": i18n("code"),"data": "code"},
+                {"title": i18n("sex"),"data": "sex"}
+            ];        
         },
 
         insertSampleColumns: function() {

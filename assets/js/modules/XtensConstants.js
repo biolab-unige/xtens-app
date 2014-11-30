@@ -5,7 +5,10 @@
         METADATA_FIELD: 'METADATA FIELD',
         METADATA_LOOP: 'METADATA LOOP',
         METADATA_GROUP: 'METADATA GROUP',
-        STRING: 'string'
+        STRING: 'string',
+        PERSONAL_DETAILS: 'Personal Details',
+        SUBJECT_PROPERTIES: ['code', 'sex'],
+        SAMPLE_PROPERTIES: ['biobankCode']
     };
 
     XtensConstants.DataTypeClasses = {

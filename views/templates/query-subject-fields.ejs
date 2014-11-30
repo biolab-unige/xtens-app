@@ -6,32 +6,6 @@
     <div name="code-div" class="query-value-div">
         <input text name="code" class="form-control">
     </div>
-</div>
-<% if(canViewPersonalInfo) {%>
-<div class="query-row form-group">
-    <span class="query-label"><%= __("surname") %></span>
-    <div class="query-comparator">
-        <input type="hidden" name="surname-comparator" class="form-control">
-    </div>
-    <div name="query-value-div" class="query-value-div">
-        <input text name="surname" class="form-control">
-    </div>
-    <span class="query-label"><%= __("given-name") %></span>
-    <div class="query-comparator">
-        <input type="hidden" name="given-name-comparator" class="form-control">
-    </div>
-    <div name="query-value-div" class="query-value-div">
-        <input text name="given-name" class="form-control">
-    </div>
-</div>
-<div class="query-row form-group">
-    <span class="query-label"><%= __("birth-date") %></span>
-    <div class="query-comparator">
-        <input type="hidden" name="birth-date-comparator" class="form-control">
-    </div>
-    <div name="bith-date-div" class="query-value-div">
-        <input text name="birth-date" class="form-control">
-    </div>
     <span class="query-label"><%= __("sex") %></span>
     <div class="query-comparator">
         <input type="hidden" name="sex-comparator" class="form-control">
@@ -40,10 +14,3 @@
         <input type="hidden" name="sex" class="form-control">
     </div>
 </div>
-<%} %>
-
-<!--
-<div class="query-junction">
-    <input name="junction" type="hidden" class="form-control">
-</div>
--->
