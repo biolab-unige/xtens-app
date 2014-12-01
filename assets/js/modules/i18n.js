@@ -133,7 +133,9 @@
         "diagnosis-age": "Diagnosis Age",
         "diagnosis-age-unit": "D.A. Unit",
         /* views/templates/query-subject-fields.ejs */
-        "subject-code": "Subject Code"
+        "subject-code": "Subject Code",
+        /* views/templates/filemanager-dropzone.ejs */
+        "drop-files-here": "Drop files here"
     };
 
     var it = {

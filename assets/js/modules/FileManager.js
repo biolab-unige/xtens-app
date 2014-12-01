@@ -1,141 +1,69 @@
 (function(xtens,FileManager){
     var i18n = xtens.module("i18n").en;    
     var router = xtens.router;
+    
+    // TODO: move this to server side config
+    var baseUri = "http://130.251.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/superbiorods/";
+    Dropzone.autoDiscover = false;
 
-    function IrodsFileManager(uri){
-        this.basePath = uri;
-
-    }
-
-    IrodsFileManager.prototype.upload = function(source,destination) {
-        var fd = new FormData();
-        fd.append('uploadFile',source);
-        var deferred = $.ajax({
-            type: "POST",
-
-            url: this.basePath + destination,
-            beforeSend: function (xhr) {
-                xhr.withCredentials = true;
-                xhr.setRequestHeader("Authorization", "Basic " + btoa("biolab" + ":" + "superbio05!"));
-            },
-
-            xhrFields: { withCredentials: true },
-            crossDomain: true,
-            
-            headers: { 'Authorization': "Basic " + btoa("biolab" + ":" + "superbio05!") },
-            processData:false,
-            contentType:false,
-            data:fd
-        });
-
-        return deferred;
-
+    
+    /**
+     * options for the dropzone plugin
+     */
+    var dropzoneOpts = {
+        url: baseUri,
+        paramName: "uploadFile",
+        maxFileSize: 2048, // max 2 GiB
+        uploadMultiple: false,
+        method: "POST",
+        withCredentials: true
     };
 
-    IrodsFileManager.prototype.download= function(destination){
-	$.ajax({
-            type: "GET",
+    /**
+     * @description Backbone view for the Dropzone element
+     */
 
-            url: this.basePath + destination,
-            beforeSend: function (xhr) {
-                xhr.withCredentials = true;
-                xhr.setRequestHeader("Authorization", "Basic " + btoa("biolab" + ":" + "superbio05!"));
-            },
+    FileManager.Views.Dropzone = Backbone.View.extend({
 
-            xhrFields: { withCredentials: true },
-            crossDomain: true,
-            
-            headers: { 'Authorization': "Basic " + btoa("biolab" + ":" + "superbio05!") },
-            processData:false,
-            contentType:false,
-            
-        });
-       
-    };
+        tagName: 'div',
+        className: 'dropzone',
 
-    IrodsFileManager.prototype.delete = function(){
-        throw new Error("not implemented yet");
-    };
-
-
-    function FileSystemFileManager(){
-    }
-
-    FileSystemFileManager.prototype.upload = function(){
-    };
-
-    FileSystemFileManager.prototype.download = function(){
-
-    };
-
-    FileSystemFileManager.prototype.delete = function(){
-
-    };
-
-
-    FileManager.Views.Upload = Backbone.View.extend({
-        tagName:'div',
-        className:'fileManager',
-
-
-        initialize:function(){
-            $("#main").html(this.el);
-            this.template = JST["views/templates/uploadFile.ejs"];
-            this.render();
+        initialize: function(options) {
+            this.template = JST['views/templates/filemanager-dropzone.ejs'];
+            // this.baseUri = options.baseUri;
+            // var _id = '#' + this.id;
+            /*
+            this.dropzone = new Dropzone('#xtens-dropzone', dropzoneOpts);
+            this.dropzone.on("processing", function(file) {
+                this.options.url = options.baseUri + options.dataTypeName + '/' + file.name;
+            });
+            this.dropzone.on("addedfile", function(file) {
+                // TODO create collections on iRODS if necessary
+            });
+            this.dropzone.on("sending", function(file, xhr, formData) {
+               xhr.setRequestHeader("Authorization", "Basic " + btoa("superbiorods" + ":" + "superbio05!"));
+            }); */
         },
-        render: function(options) {
 
-            var self = this;
+        render: function() {
+            this.$el.html(this.template({__:i18n}));
+            return this;
+        },
 
-            self.$el.html(self.template({__: i18n}));
-            return self;    
+        initializeDropzone: function() {
+            this.dropzone = new Dropzone(this.el, dropzoneOpts);
+            this.dropzone.on("processing", function(file) {
+                this.options.url = baseUri + file.name;
+            });
+            this.dropzone.on("addedfile", function(file) {
+                // TODO create collections on iRODS if necessary
+            });
+            this.dropzone.on("sending", function(file, xhr, formData) {
+               xhr.setRequestHeader("Authorization", "Basic " + btoa("superbiorods" + ":" + "superbio05!"));
+            });
         }
-
+    
     });
 
-    FileManager.Views.UploadIrods = Backbone.View.extend({
-        tagName:'div',
-        className:'fileManager',
-        initialize:function(){
-            $("#main").html(this.el);
-            this.template = JST["views/templates/UploadFileIrods.ejs"];
-            this.render();
-        },
-        render: function(options) {
-
-            var self = this;
-
-            self.$el.html(self.template({__: i18n}));
-            return self;    
-        }
-
-    });
-
-    FileManager.Views.Download = Backbone.View.extend({
-        tagName:'div',
-        className:'fileManager',
-
-
-        initialize:function(){
-            $("#main").html(this.el);
-            this.template = JST["views/templates/DownloadFileIrods.ejs"];
-            this.render();
-        },
-        render: function(options) {
-
-            var self = this;
-
-            self.$el.html(self.template({__: i18n}));
-            return self;    
-        }
-
-    });
-
-
-
-
-
-    FileManager.Irods = IrodsFileManager;
-
-}(xtens,xtens.module("FileManager")));
+}(xtens,xtens.module("filemanager")));
 

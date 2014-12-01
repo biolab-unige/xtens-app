@@ -37,15 +37,11 @@ var jsFilesToInject = [
     'dependencies/**/parsley.js',
     'dependencies/**/pikaday.js',
     'dependencies/**/moment.js',
-    'dependencies/**/d3.js',
     'dependencies/**/dropzone.js',
     'dependencies/**/jquery.dataTables.js',
-
+    'dependencies/**/async.js',
     // 'dependencies/**/d3.js',
-
-
-
-    // 'dependencies/**/d3.js',
+    
     // Customised client-side js files
     'js/application/utils.js',
     'js/application/xtens.js',
@@ -64,20 +60,14 @@ var jsFilesToInject = [
     'js/modules/GroupsDataType.js',
     'js/modules/GroupsOperator.js',
     'js/modules/PersonalDetails.js',
+    'js/modules/FileManager.js',
     'js/modules/Data.js',
     'js/modules/Subject.js',
     'js/modules/Project.js',
     'js/modules/Sample.js',
     'js/modules/AdminAssociation.js',
     // 'js/modules/QueryStrategy.js',
-    'js/modules/Query.js',
-
-
-    
-
- 
-
-    'js/modules/FileManager.js'
+    'js/modules/Query.js'
     
     // All of the rest of your client-side js files
     // will be injected here in no particular order.

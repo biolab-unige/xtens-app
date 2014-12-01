@@ -28,13 +28,13 @@
     "font-awesome": "~4.2.0",
     "select2": "https://github.com/ivaynberg/select2.git#~3.5.1",
     "select2-bootstrap-css": "https://github.com/t0m/select2-bootstrap-css.git#~1.4.1",
-    "jquery-validation": "~1.13.0",
     "backbone.stickit": "~0.8.0",
     "parsleyjs": "~2.0.5",
     "moment": "~2.8.3",
     "lodash": "~2.4.1",
     "d3": "~3.4.13",
-    "datatables": "~1.10.4"
+    "datatables": "~1.10.4",
+    "dropzone": "~3.12.0"
   },
   "exportsOverride": {
     "jquery": {
@@ -59,9 +59,6 @@
     "select2-bootstrap": {
       "": "**/select2-bootstrap.css"
     },
-    "jquery-validation": {
-      "js": "dist/*.js"
-    },
     "backbone.stickit": {
       "": "backbone.stickit.js"
     },
@@ -72,9 +69,14 @@
       "js": "index.js"
     },
     "datatables": {
-        "js": "media/js/jquery.dataTables.js",
-        "styles": "media/css/jquery.dataTables.css",
-        "images": "media/images/*"
+      "js": "media/js/jquery.dataTables.js",
+      "styles": "media/css/jquery.dataTables.css",
+      "images": "media/images/*"
+    },
+    "dropzone": {
+      "js": "downloads/dropzone.js",
+      "styles": "downloads/css/basic.css",
+      "images": "downloads/images/*"
     }
   },
   "devDependencies": {

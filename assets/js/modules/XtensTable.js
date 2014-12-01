@@ -46,6 +46,9 @@
 
         prepareDataForRendering: function(data, headers) {
             var dataType = data[0] && data[0].type;
+            if (!dataType) {
+                return; //TODO add alert box
+            }
             dataType = new DataTypeModel(dataType);
             var fieldsToShow = dataType.getFlattenedFields(true); // get the names of all the madatafields but those within loops;
             var columns = this.insertClassTemplateSpecificColumns(dataType.get("classTemplate"), true);  // TODO manage permission for personalDetails
