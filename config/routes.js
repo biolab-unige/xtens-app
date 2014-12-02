@@ -31,9 +31,9 @@ module.exports.routes = {
     '/login':{controller:'main',
         action:'login'
     },
-    '/upload-file':{controller:'file',action:'upload'},
+    '/upload-file':{controller:'dataFile',action:'upload'},
     
-    'POST /download-file':{controller:'file',action:'download'},
+    'POST /download-file':{controller:'dataFile',action:'download'},
     
     '/groupOperator/associate':{controller:'group', action:'addOperator'},
     

@@ -73,7 +73,7 @@
                xhr.setRequestHeader("Authorization", "Basic " + btoa("superbiorods" + ":" + "superbio05!"));
             });
             this.dropzone.on("success", function(file, xhr, formData) {
-                _this.fileList.add(new FileManager.Model({uri: this.options.url}));
+                _this.fileList.add(new FileManager.Model({name: _.last(this.options.url.split("/"))}));
             });
         }
     

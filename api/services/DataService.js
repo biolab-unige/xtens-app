@@ -3,16 +3,18 @@
  */
 var http = require('http');
 var queryBuilder = sails.config.xtens.queryBuilder;
-var irodsRestUrl = sails.config.xtens.irods.irodsRest;
+var irodsConf = sails.config.xtens.irods;
 
 var rule = [
     'xtensFileMove {',
     'msiCollCreate(str(*irodsHome)++"/"++str(*repoColl)++"/"++str(*dataTypeName)++"/"++str(*idData), "1", *status) ::: msiRollback;',
+    '*source = str(*irodsHome)++"/"++str(*landingColl)++"/"++str(*fileName)',
+    'writeLine("serverLog", "source is *source")',
     '*destination = str(*irodsHome)++"/"++str(*repoColl)++"/"++str(*dataTypeName)++"/"++str(*idData)++"/"++str(*fileName);',
     'writeLine("serverLog", "destination is *destination");',
     'msiDataObjRename(*source, *destination, "0", *status);',
     '}',
-    'INPUT *irodsHome = "/biolabZone/home/superbiorods", *source="void.txt", *fileName = "void.txt", *dataTypeName = "none", *repoColl="test-repo", *idData = 0',
+    'INPUT *irodsHome = "/biolabZone/home/superbiorods", *landingColl="land", *fileName = "void.txt", *dataTypeName = "none", *repoColl="test-repo", *idData = 0',
     'OUTPUT *ruleExecOut'
 ].join('\r\n');
 
@@ -46,10 +48,9 @@ var DataService = {
         }
     },
 
-    moveFiles:function(files, next) {
-        var url = irodsRestUrl + "/rule";
+    moveFiles:function(files, id, dataTypeName, next) {
         async.each(files,function(file, callback){ 
-            this.moveFile(file, callback);
+            DataService.moveFile(file, id, dataTypeName, callback);
         }, function(err) {
             if (err) {
                 next(err);
@@ -60,26 +61,23 @@ var DataService = {
     },
 
     moveFile: function(file, idData, dataTypeName, callback) {
-        // console.log(file.uri);
-        // var file.uri.split("/"));
-        var fileName = _.last(file.uri.split("/"));
-        console.log(fileName);
+        console.log(file.name);
 
         var irodsRuleInputParameters = [
-            {name: "*irodsHome", value: sails.config.xtens.irods.irodsHome},
-            {name: "*repoColl", value: sails.config.xtens.irods.repoColl},
+            {name: "*irodsHome", value: irodsConf.irodsHome},
             {name: "*dataTypeName", value: dataTypeName},
             {name: "*idData", value: idData},
-            {name: "*fileName", value: fileName},
-            {name: "*source", value: file.uri}
+            {name: "*fileName", value: file.name},
+            {name: "*landingColl", value: irodsConf.landingColl},
+            {name: "*repoColl", value: irodsConf.repoColl}
         ];
 
         var postOptions = {
-            hostname:'130.251.10.60',
-            port:8080,
-            path:'/irods-rest-4.0.2.1-SNAPSHOT/rest/rule',
-            method:'POST', 
-            auth:'superbiorods:superbio05!',
+            hostname: irodsConf.irodsRest.hostname,
+            port: irodsConf.irodsRest.port,
+            path: irodsConf.irodsRest.path + '/rule',
+            method: 'POST', 
+            auth: irodsConf.username+':'+irodsConf.password,
             headers: {
                 'Content-Type': 'application/json'
             } 
@@ -100,7 +98,8 @@ var DataService = {
                 file.data = [];
             }
             file.data.add(idData); 
-            file.uri = sails.config.xtens.irods.irodsHome + "/" + sails.config.xtens.irods.repoColl + "/" + dataTypeName + "/" + idData + "/" + fileName;
+            file.uri = irodsConf.irodsHome + "/" + irodsConf.repoColl + "/" + dataTypeName + "/" + idData + "/" + file.name;
+            delete file.name;
             /* end TODO */
             callback();
         });

@@ -55,9 +55,12 @@ module.exports = {
             datum: ['begin_transaction',function(callback) {
                 Data.create(data).exec(callback);
             }],
-            moved_files: ['begin_transaction','datum',function(callback, results) {
+            moved_files: ['begin_transaction','datum', function(callback, results) {
                 var id = results.datum.id;
-                var dataTypeName = results.datum.type && results.datum.type.name;
+                var dataTypeName = data.type && data.type.name;
+                if (!dataTypeName) {
+                    throw new Error("missing DataType name");
+                }
                 DataService.moveFiles(files, id, dataTypeName, callback);
             }],
             saved_files: ['begin_transaction','datum', 'moved_files', function(callback, results) {
@@ -69,7 +72,7 @@ module.exports = {
         }, function(err, results) {
             if (err) {
                 Data.query('ROLLBACK', next);
-                return next(err);
+                return res.serverError(err.message);
             }
             Data.query('COMMIT', next);
             return res.json(results.created_data);
