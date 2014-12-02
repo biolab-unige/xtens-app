@@ -544,6 +544,10 @@
                 var metadata = this.schemaView.serialize();
                 this.model.set("metadata", metadata);
                 // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
+                if (this.fileUploadView) {
+                    this.model.set("files", this.fileUploadView.fileList.toJSON());
+                }
+                console.log(this.model);
                 this.model.save(null, {
                     success: function(data) {
                         xtens.router.navigate(targetRoute, {trigger: true});
