@@ -17,6 +17,10 @@ module.exports = {
             columnName: 'uri'
         },
 
+        details: {
+            type: 'json'
+        },
+
         data: {
             collection: 'data',
             via: 'files'

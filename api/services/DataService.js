@@ -53,8 +53,10 @@ var DataService = {
             DataService.moveFile(file, id, dataTypeName, callback);
         }, function(err) {
             if (err) {
+                console.log("moving to next(error)");
                 next(err);
             } else {
+                console.log("DataService.moveFiles - moving to next()");
                 next();
             }
         });
@@ -79,29 +81,34 @@ var DataService = {
             method: 'POST', 
             auth: irodsConf.username+':'+irodsConf.password,
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             } 
         };
 
         var postRequest = http.request(postOptions,function(res) {
             res.setEncoding('utf8');
+
+            var resBody = '';
+
+            res.on('data', function(chunk) {
+                resBody += chunk;
+            });
+
+            res.on('end', function() {
+                console.log('res.end');
+                console.log(resBody); 
+                file.uri = irodsConf.irodsHome + "/" + irodsConf.repoColl + "/" + dataTypeName + "/" + idData + "/" + file.name;
+                delete file.name;
+                console.log(file);
+                console.log("irods.moveFile: success...calling callback");
+                callback();
+            });
         });
 
         postRequest.on('error',function(err) {
-            console.log('problem with request: ' + err.message);
+            console.log('irods.moveFile: problem with request: ' + err.message);
             callback(err);
-        });
-
-        postRequest.on('success', function(res) {
-            /* TODO see if this works this way */
-            if (!file.data) {
-                file.data = [];
-            }
-            file.data.add(idData); 
-            file.uri = irodsConf.irodsHome + "/" + irodsConf.repoColl + "/" + dataTypeName + "/" + idData + "/" + file.name;
-            delete file.name;
-            /* end TODO */
-            callback();
         });
 
         var body = {
@@ -125,8 +132,74 @@ var DataService = {
             }
             next();
         });
-    
-    }
+
+    },
+
+    retrieveFiles: function(files, next) {
+        
+        async.each(files, function(file, callback) {
+            DataService.retrieveFile(file).exec(callback);
+        }, function(next) {
+            if(err) {
+                next(err);
+            }
+            next();
+        });
+
+    },
+
+    retrieveFile: function(file, callback) {
+        
+        var postOptions = {
+            hostname: irodsConf.irodsRest.hostname,
+            port: irodsConf.irodsRest.port,
+            path: irodsConf.irodsRest.path + '/dataObject' + file.uri,
+            method: 'GET', 
+            auth: irodsConf.username+':'+irodsConf.password,
+            headers: {
+                'Accept': 'application/json'
+            } 
+        };
+
+        var postRequest = http.request(postOptions,function(res) {
+            
+            console.log("method path: " + postOptions.path);
+            res.setEncoding('utf8');
+            var resBody = '';
+
+            res.on('data', function(chunk) {
+                resBody += chunk;
+            });
+
+            res.on('end', function() {
+                console.log('res.end');
+                console.log(resBody); 
+                file.details = resBody;
+                console.log(file);
+                console.log("irods.retrieveFile: success...calling callback");
+                callback();
+            });
+        });
+
+        postRequest.on('error',function(err) {
+            console.log('irods.retrieveFile: problem with request: ' + err.message);
+            callback(err);
+        });
+
+        postRequest.end();
+
+
+    },
+
+    /* test function for update with populate 
+    testUpdate: function(id) {
+        Data.findOne(3).populateAll().exec(function(err, res) {
+            if (err) {
+                console.log(err);
+            }
+            
+        });
+    } */
 
 };
 module.exports = DataService;

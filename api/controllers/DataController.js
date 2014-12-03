@@ -50,32 +50,53 @@ module.exports = {
         var files = req.param('files');
         async.auto({
             begin_transaction: function(callback) {
-                Data.query('BEGIN TRANSACTION', callback);
+                Data.query('BEGIN TRANSACTION;', callback);
             },
             datum: ['begin_transaction',function(callback) {
                 Data.create(data).exec(callback);
             }],
-            moved_files: ['begin_transaction','datum', function(callback, results) {
+            data_type: ['begin_transaction', 'datum', function(callback, results) {
+                DataType.findOne({id: results.datum.type}).exec(callback);
+            }],
+            renamed_files: ['data_type','datum', function(callback, results) {
                 var id = results.datum.id;
-                var dataTypeName = data.type && data.type.name;
+                var dataTypeName = results.data_type && results.data_type.name;
                 if (!dataTypeName) {
                     throw new Error("missing DataType name");
                 }
                 DataService.moveFiles(files, id, dataTypeName, callback);
             }],
-            saved_files: ['begin_transaction','datum', 'moved_files', function(callback, results) {
-                DataService.saveFileEntities(files, callback);
+            saved_files: ['datum', 'renamed_files', function(callback, results) {
+                console.log(files);
+                DataFile.create(files).exec(callback);
             }],
-            created_data: ['begin_transaction','datum', 'moved_files', 'saved_files', function(callback, results) {
-                Data.findOne(results.datum.id).populateAll().exec(callback);
+            populated_data: ['datum', 'saved_files', function(callback, results) {
+                Data.findOne(results.datum.id).populateAll().exec(function(err, found) {
+                    results.saved_files.forEach(function(file) {
+                        found.files.add(file);
+                    });
+                    console.log(found);
+                    Data.update(found.id, found).exec(function(e,r) {
+                        if (e) {
+                            callback(e);
+                        }
+                        Data.findOne(found.id).populateAll().exec(callback);
+                    });
+                });
             }]
-        }, function(err, results) {
-            if (err) {
-                Data.query('ROLLBACK', next);
-                return res.serverError(err.message);
+        }, function(error, results) {
+            if (error) {
+                console.log(error.message);
+                Data.query('ROLLBACK;', function(e, r) {
+                    return res.serverError(err.message);
+                });
             }
-            Data.query('COMMIT', next);
-            return res.json(results.created_data);
+            Data.query('COMMIT;', function(e, r) {
+                if (e) {
+                    return res.serverError("Error during commit");
+                }
+                return res.json(results.populated_data);
+            });
         });
 
     }
