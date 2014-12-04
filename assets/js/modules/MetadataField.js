@@ -93,10 +93,10 @@
             '[name=name]': {
                 observe: 'name',
                 onGet: function(value) {
-                    return value.toLowerCase().replace("_"," ");
+                    return value && value.toLowerCase().replace("_"," ");
                 },
                 onSet: function(value) {
-                    return value.toLowerCase().replace(" ","_");
+                    return value && value.toLowerCase().replace(" ","_");
                 }
             },
             '[name=customValue]': 'customValue',

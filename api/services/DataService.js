@@ -7,16 +7,23 @@ var irodsConf = sails.config.xtens.irods;
 
 var rule = [
     'xtensFileMove {',
-    'msiCollCreate(str(*irodsHome)++"/"++str(*repoColl)++"/"++str(*dataTypeName)++"/"++str(*idData), "1", *status) ::: msiRollback;',
-    '*source = str(*irodsHome)++"/"++str(*landingColl)++"/"++str(*fileName)',
-    'writeLine("serverLog", "source is *source")',
-    '*destination = str(*irodsHome)++"/"++str(*repoColl)++"/"++str(*dataTypeName)++"/"++str(*idData)++"/"++str(*fileName);',
+    '*destColl = str(*irodsHome)++"/"++str(*repoColl)++"/"++str(*dataTypeName);',
+    'writeLine("serverLog", "idData is *idData");',
+    'if (int(*idData) > 0) then {',
+    '*destColl = *destColl ++ "/" ++ str(*idData);',
+    '}',
+    'writeLine("serverLog", "destColl is *destColl");',
+    'msiCollCreate(str(*destColl), "1", *status) ::: msiRollback;',
+    '*source = str(*irodsHome)++"/"++str(*landingColl)++"/"++str(*fileName);',
+    'writeLine("serverLog", "source is *source");',
+    '*destination = str(*destColl)++"/"++str(*fileName);',
     'writeLine("serverLog", "destination is *destination");',
     'msiDataObjRename(*source, *destination, "0", *status);',
     '}',
-    'INPUT *irodsHome = "/biolabZone/home/superbiorods", *landingColl="land", *fileName = "void.txt", *dataTypeName = "none", *repoColl="test-repo", *idData = 0',
+    'INPUT *irodsHome = "/biolabZone/home/superbiorods", *landingColl="land", *fileName = "void.txt", *dataTypeName = "none", *repoColl="test-repo", *idData =0',
     'OUTPUT *ruleExecOut'
 ].join('\r\n');
+
 
 var DataService = {
 
@@ -68,11 +75,15 @@ var DataService = {
         var irodsRuleInputParameters = [
             {name: "*irodsHome", value: irodsConf.irodsHome},
             {name: "*dataTypeName", value: dataTypeName},
-            {name: "*idData", value: idData},
             {name: "*fileName", value: file.name},
             {name: "*landingColl", value: irodsConf.landingColl},
             {name: "*repoColl", value: irodsConf.repoColl}
         ];
+
+        if (idData) {
+            console.log("adding idData...");
+            irodsRuleInputParameters.push({name: "*idData", value: idData});
+        }
 
         var postOptions = {
             hostname: irodsConf.irodsRest.hostname,
@@ -98,9 +109,10 @@ var DataService = {
             res.on('end', function() {
                 console.log('res.end');
                 console.log(resBody); 
-                file.uri = irodsConf.irodsHome + "/" + irodsConf.repoColl + "/" + dataTypeName + "/" + idData + "/" + file.name;
+                file.uri = irodsConf.irodsHome + "/" + irodsConf.repoColl + "/" + dataTypeName + "/" + 
+                    (idData ? idData + "/" : "") + file.name; 
                 delete file.name;
-                console.log(file);
+                console.log("irods.moveFile: uri = " + file.uri);
                 console.log("irods.moveFile: success...calling callback");
                 callback();
             });
