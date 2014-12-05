@@ -13,8 +13,10 @@
     var MetadataComponent = xtens.module("metadatacomponent");
     var DataTypeModel = xtens.module("datatype").Model;
     var DataTypeCollection = xtens.module("datatype").List;
+    var FileManager = xtens.module("filemanager");
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
 
+   
     /**
      *  general purpose function to retrieve the value from a field
      */
@@ -478,6 +480,7 @@
                 }
             }, this);
             this.render();
+            this.$fileCnt = this.$("#data-header-row");
         },
 
         render: function() {
@@ -490,14 +493,7 @@
             }
             return this;
         },
-        /*
-        fetchSuccess:function(data) {
-            this.$el.html(this.template({__: i18n, data: data}));
-            this.stickit();
-            this.$('#tags').select2({tags: []});
-            this.renderDataTypeSchema(data);
-        }, */
-
+        
         bindings: {
             '#dataType': {
                 observe: 'type',
@@ -548,6 +544,10 @@
                 var metadata = this.schemaView.serialize();
                 this.model.set("metadata", metadata);
                 // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
+                if (this.fileUploadView) {
+                    this.model.set("files", this.fileUploadView.fileList.toJSON());
+                }
+                console.log(this.model);
                 this.model.save(null, {
                     success: function(data) {
                         xtens.router.navigate(targetRoute, {trigger: true});
@@ -583,12 +583,22 @@
                     model: schemaModel
                 });
                 this.$("#buttonbardiv").before(this.schemaView.render().el);
+                if (schema.header.fileUpload) {
+                    this.enableFileUpload();
+                }
             }
             else {
                 this.$("#buttonbardiv").before();
             }
-        }
+        },
 
+        enableFileUpload: function() {
+            this.fileUploadView = new FileManager.Views.Dropzone({
+                dataTypeName: this.model.get("type").name
+            });
+            this.$fileCnt.append(this.fileUploadView.render().el);
+            this.fileUploadView.initializeDropzone();
+        }
     });
 
     Data.Views.List = Backbone.View.extend({

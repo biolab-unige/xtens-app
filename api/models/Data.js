@@ -31,6 +31,11 @@ var Data = {
             required: true,
             columnName: 'metadata'
         },
+        // associated data files
+        files: {
+            collection: 'dataFile',
+            via: 'data'
+        },
         // if the parent is a patient
         parentSubject: {
             model: 'subject',

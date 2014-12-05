@@ -42,6 +42,98 @@ module.exports = {
 
         });
 
+    },
+    /*
+create: function(req, res) {
+
+var data = _.omit(req.allParams(), 'files');
+var files = req.param('files');
+async.auto({
+          // TODO transaction does not work
+begin_transaction: function(callback) {
+Data.query('BEGIN TRANSACTION;', callback);
+}, 
+datum: ['begin_transaction',function(callback) {
+Data.create(data).exec(callback);
+}],
+data_type: ['begin_transaction', 'datum', function(callback, results) {
+DataType.findOne({id: results.datum.type}).exec(callback);
+}],
+renamed_files: ['data_type','datum', function(callback, results) {
+var id = results.datum.id;
+var dataTypeName = results.data_type && results.data_type.name;
+if (!dataTypeName) {
+throw new Error("missing DataType name");
+}
+DataService.moveFiles(files, id, dataTypeName, callback);
+}],
+saved_files: ['datum', 'renamed_files', function(callback, results) {
+console.log(files);
+DataFile.create(files).exec(callback);
+}],
+populated_data: ['datum', 'saved_files', function(callback, results) {
+Data.findOne(results.datum.id).populateAll().exec(function(err, found) {
+results.saved_files.forEach(function(file) {
+found.files.add(file);
+});
+console.log(found);
+Data.update(found.id, found).exec(function(e,r) {
+if (e) {
+callback(e);
+}
+Data.findOne(found.id).populateAll().exec(callback);
+});
+});
+}]
+}, function(error, results) {
+if (error) {
+console.log(error.message);
+Data.query('ROLLBACK;', function(e, r) {
+return res.serverError(err.message);
+});
+}
+Data.query('COMMIT;', function(e, r) {
+if (e) {
+return res.serverError("Error during commit");
+}
+return res.json(results.populated_data);
+});
+});
+
+} */
+
+    create: function(req, res) {
+
+        var data = req.body;
+        var files = data.files;
+        async.auto({  
+            data_type: function(callback, results) {
+                var type = data.type;
+                if (type.name) {
+                    callback(null, type);
+                }
+                else {
+                    DataType.findOne(_.pick(data.type, 'id')).exec(callback);
+                }
+            },
+            renamed_files: ['data_type', function(callback, results) {
+                var dataTypeName = results.data_type && results.data_type.name;
+                if (!dataTypeName) {
+                    throw new Error("missing DataType name");
+                }
+                DataService.moveFiles(files, null, dataTypeName, callback);
+            }],
+            data: ['renamed_files', function(callback, results) {
+                Data.create(data).exec(callback);            
+            }]
+        }, function(error, results) {
+            if (error) {
+                console.log(error.message);
+                return res.serverError(err.message);
+            }
+            return res.json(results.data);
+        });
+
     }
 
 };

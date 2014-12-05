@@ -73,7 +73,7 @@
             "groups/datatype/:id":"associationDataType",
             "upload-file":"uploadView",
             "download-file":"downloadView",
-	    "upload-irods-file":"uploadIrodsView"
+            "upload-irods-file":"uploadIrodsView"
 
         },
 
@@ -213,26 +213,26 @@
         },
 
         /*
-        subjectEdit: function(id) {
-            var dataTypes = new DataType.List();
-            var projects = new Project.List();
-            var _this = this;
-            $.when(dataTypes.fetch(), projects.fetch()).then(
-                function(dataTypesRes, projectsRes) {
-                var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
-                // get the last existing SUBJECT template (there should always be only one)
-                var subjectType = _.last(_.where(dataTypesRes[0], {classTemplate: SUBJECT}));
-                var model = new Subject.Model({type: subjectType});
-                _this.loadView(new Subject.Views.Edit({
-                    id: _.parseInt(id), 
-                    projects: projectsRes[0],
-                    model: model
-                }));
-            }, function() {
-                alert("Error retrieving data from the server");
-            });
-        }, */
-        
+subjectEdit: function(id) {
+var dataTypes = new DataType.List();
+var projects = new Project.List();
+var _this = this;
+$.when(dataTypes.fetch(), projects.fetch()).then(
+function(dataTypesRes, projectsRes) {
+var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
+        // get the last existing SUBJECT template (there should always be only one)
+        var subjectType = _.last(_.where(dataTypesRes[0], {classTemplate: SUBJECT}));
+        var model = new Subject.Model({type: subjectType});
+        _this.loadView(new Subject.Views.Edit({
+id: _.parseInt(id), 
+projects: projectsRes[0],
+model: model
+}));
+}, function() {
+alert("Error retrieving data from the server");
+});
+}, */
+
         subjectEdit: function(id) {
             var params = {};
             if (id && _.parseInt(id) > 0) {
@@ -289,47 +289,47 @@
             });
         },
 
- uploadView:function(){
+        uploadView:function(){
             this.loadView(new FileManager.Views.Upload());
         },
- uploadIrodsView:function(){
- this.loadView(new FileManager.Views.UploadIrods());
-},
+        uploadIrodsView:function(){
+            this.loadView(new FileManager.Views.UploadIrods());
+        },
         /*
-        sampleEdit: function(id, queryParams) {
-            var dataTypes = new DataType.List(), subjects = new Subject.List(), samples = new Sample.List();
-            var param = parseQueryString(queryParams);
-            var SAMPLE = xtens.module("xtensconstants").DataTypeClasses.SAMPLE;
-            var dataTypeParams = { classTemplate: SAMPLE };
-            var sampleParams, subjectParams;
-            if (param.hasOwnProperty('parentSample')) {
-                sampleParams = {id: param.parentSample};
-            }
-            if (param.hasOwnProperty('donor')) {
-                subjectParams = {id: param.donor};
-            }
-            var _this = this;
-            var $dataTypesDeferred = dataTypes.fetch({ data: dataTypeParams ? $.param(dataTypeParams) : null });
-            var $subjectsDeferred = subjects.fetch({ data: subjectParams ? $.param(subjectParams) : null });
-            var $samplesDeferred = samples.fetch({ data: sampleParams ? $.param(sampleParams) : null });
-            $.when($dataTypesDeferred, $subjectsDeferred, $samplesDeferred)
-            .then(function(dataTypesRes, subjectsRes, samplesRes) {
-                var model = new Sample.Model();
-                if (param.hasOwnProperty('idDataTypes')) {
-                    var ids = _.map(param.idDataTypes.split(","), function(el) { return _.parseInt(el); });
-                    dataTypesRes[0] = _.filter(dataTypesRes[0], function(dataType) {
-                        return ids.indexOf(dataType.id) > -1;
-                    });
-                }
-                _this.loadView(new Sample.Views.Edit({
-                    id: _.parseInt(id),
-                    dataTypes: new Data.List(dataTypesRes[0]),
-                    subjects: new Subject.List(subjectsRes[0]),
-                    samples: new Sample.List(samplesRes[0]),
-                    model: model
-                }));
-            });
-        }, */
+sampleEdit: function(id, queryParams) {
+var dataTypes = new DataType.List(), subjects = new Subject.List(), samples = new Sample.List();
+var param = parseQueryString(queryParams);
+var SAMPLE = xtens.module("xtensconstants").DataTypeClasses.SAMPLE;
+var dataTypeParams = { classTemplate: SAMPLE };
+var sampleParams, subjectParams;
+if (param.hasOwnProperty('parentSample')) {
+sampleParams = {id: param.parentSample};
+}
+if (param.hasOwnProperty('donor')) {
+subjectParams = {id: param.donor};
+}
+var _this = this;
+var $dataTypesDeferred = dataTypes.fetch({ data: dataTypeParams ? $.param(dataTypeParams) : null });
+var $subjectsDeferred = subjects.fetch({ data: subjectParams ? $.param(subjectParams) : null });
+var $samplesDeferred = samples.fetch({ data: sampleParams ? $.param(sampleParams) : null });
+$.when($dataTypesDeferred, $subjectsDeferred, $samplesDeferred)
+.then(function(dataTypesRes, subjectsRes, samplesRes) {
+var model = new Sample.Model();
+if (param.hasOwnProperty('idDataTypes')) {
+var ids = _.map(param.idDataTypes.split(","), function(el) { return _.parseInt(el); });
+dataTypesRes[0] = _.filter(dataTypesRes[0], function(dataType) {
+return ids.indexOf(dataType.id) > -1;
+});
+}
+_this.loadView(new Sample.Views.Edit({
+id: _.parseInt(id),
+dataTypes: new Data.List(dataTypesRes[0]),
+subjects: new Subject.List(subjectsRes[0]),
+samples: new Sample.List(samplesRes[0]),
+model: model
+}));
+});
+}, */
 
         queryBuilder: function(id) {
             var dataTypes = new DataType.List();

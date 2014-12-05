@@ -85,6 +85,25 @@
 .data {
     width:100%;
 }
+.data .data-header-cnt {
+    display: table;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+.data .data-header-row {
+    display: table-row;
+}
+.data .data-header-col {
+    .make-xs-column(8);
+    display: table-cell;
+    float: none;
+}
+.data .dropzone {
+    .make-xs-column(4);
+    display: table-cell;
+    vertical-align: middle;
+    float: none;
+}
 .data .data-row {
     .make-row();
 }
@@ -98,15 +117,15 @@
     .make-xs-column(12);  
 }
 .data .data-label {
-    .make-sm-column(2);
+    /* .make-sm-column(2); */
     .make-xs-column(3);
 }
 .data .data-span {
-    .make-sm-column(2);
+    /* .make-sm-column(2); */
     .make-xs-column(3);
 }
 .data .data-input-div {
-    .make-sm-column(6);
+    /* .make-sm-column(6); */
     .make-xs-column(9);
 }
 .data .metadata {

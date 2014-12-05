@@ -2,39 +2,45 @@
 <h2><%= data.id ? __("update-data") : __("create-data") %></h2>
 <div id="content">
     <form class="form-horizontal edit-data-form" role="form">
-        <div class="form-group">
-            <% if (data.get("parentSubject")) {%>
-            <label for="parentSubject" class="data-label"><%= __("subject") %>: </label>
-            <span class="data-span"><%= data.get("parentSubject").code %></span>
-            <%} %>
-            <% if (data.get("parentSample")) {%>
-            <label for="parentSample" class="data-label"><%= __("sample") %>: </label>
-            <span class="data-span"><%= data.get("parentSample").biobankCode %></span>
-            <%} %>
-        </div>
-        <div class="form-group">
-            <label for="dataType" class="data-label"><%= __("select-a-data-type") %></label>
-            <div class="data-input-div">
-                <select class="form-control" id="dataType" name="dataType">
-                </select>
-            </div>
-        </div>
-        <div class="form-group metadataform-group">
-            <label for="date" class="data-label"><%= __('date') %></label>
-            <div class="data-input-div">
-                <input type="date" class="form-control" id="date" name="date"></input>
-            </div>
-        </div>
-        <div class="form-group metadataform-group">
-            <label for="tags" class="data-label"><%= __('tags') %></label>
-            <div class="data-input-div">
-                <input type="hidden" class="form-control" id="tags" name="tags"></input>
-            </div>
-        </div>
-        <div class="form-group metadataform-group">
-            <label for="notes" class="data-label"><%= __('notes') %></label>
-            <div class="data-input-div">
-                <textarea class="form-control" id="notes" name="notes" rows="4"></textarea>
+        <div class="container data-header-cnt">
+            <div id="data-header-row" class="row data-header-row">
+                <div id="data-header" class="data-header-col">
+                    <div class="form-group">
+                        <% if (data.get("parentSubject")) {%>
+                        <label for="parentSubject" class="data-label"><%= __("subject") %>: </label>
+                        <span class="data-span"><%= data.get("parentSubject").code %></span>
+                        <%} %>
+                        <% if (data.get("parentSample")) {%>
+                        <label for="parentSample" class="data-label"><%= __("sample") %>: </label>
+                        <span class="data-span"><%= data.get("parentSample").biobankCode %></span>
+                        <%} %>
+                    </div>
+                    <div class="form-group">
+                        <label for="dataType" class="data-label"><%= __("select-a-data-type") %></label>
+                        <div class="data-input-div">
+                            <select class="form-control" id="dataType" name="dataType">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group metadataform-group">
+                        <label for="date" class="data-label"><%= __('date') %></label>
+                        <div class="data-input-div">
+                            <input type="date" class="form-control" id="date" name="date"></input>
+                        </div>
+                    </div>
+                    <div class="form-group metadataform-group">
+                        <label for="tags" class="data-label"><%= __('tags') %></label>
+                        <div class="data-input-div">
+                            <input type="hidden" class="form-control" id="tags" name="tags"></input>
+                        </div>
+                    </div>
+                    <div class="form-group metadataform-group">
+                        <label for="notes" class="data-label"><%= __('notes') %></label>
+                        <div class="data-input-div">
+                            <textarea class="form-control" id="notes" name="notes" rows="4"></textarea>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="buttonbardiv" class="row text-center">
