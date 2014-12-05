@@ -21,6 +21,10 @@
 
 module.exports.connections = {
 
+    test: {
+        adapter: 'sails-memory'
+    },
+
     // Local disk storage for DEVELOPMENT ONLY
     //
     // Installed by default.

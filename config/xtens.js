@@ -16,6 +16,26 @@ module.exports.xtens = {
         landingColl: 'landing',
         username: 'superbiorods',
         password: 'superbio05!'
+    },
+    
+    /***
+     * constants of the XTENS platform
+     */
+    constants: {
+
+        SexOptions: {
+            MALE: 'M',
+            FEMALE: 'F',
+            UNKNOWN: 'N.A.',
+            UNDIFFERENTIATED: 'N.D'
+        },
+
+        DataTypeClasses: {
+            SUBJECT: 'Subject',
+            SAMPLE: 'Sample',
+            GENERIC: 'Generic'
+        }
+    
     }
     
 };

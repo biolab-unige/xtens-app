@@ -4,6 +4,7 @@
 var http = require('http');
 var queryBuilder = sails.config.xtens.queryBuilder;
 var irodsConf = sails.config.xtens.irods;
+var DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
 
 var rule = [
     'xtensFileMove {',
@@ -44,13 +45,16 @@ var DataService = {
     queryAndPopulateItemsById: function(next, foundRows, classTemplate) {
         var ids = _.pluck(foundRows, 'id');
         switch(classTemplate) {
-            case "Subject":
+            case DataTypeClasses.SUBJECT:
+                console.log("calling Subject.find");
                 Subject.find({id: ids}).populateAll().exec(next);
             break;
-            case "Sample":
+            case DataTypeClasses.SAMPLE:
+                console.log("calling Sample.find");
                 Sample.find({id: ids}).populateAll().exec(next);
             break;
             default:
+                console.log("calling Data.find");
                 Data.find({id: ids}).populateAll().exec(next);
         }
     },
