@@ -11,11 +11,17 @@
 
         urlRoot: '/operator',
 
+        
+
     });
 
     Operator.List = Backbone.Collection.extend({
         url: '/operator',
-        model: Operator.Model
+        model: Operator.Model,
+        
+
+
+
     });
 
 
@@ -52,7 +58,8 @@
                         return that;
 
 
-                    }
+                    },
+ 		error: that.operator.error,                 
                 });
 
 
@@ -151,14 +158,13 @@
             var operators= new Operator.List();
             operators.fetch({
                 success: function(operators) {
+                  
                     self.$el.html(self.template({__: i18n, operators: operators.models}));
                     return self;
-                },
-                error: function() {
-                    self.$el.html(self.template({__: i18n}));
-                    return self;    
-                }
 
+                },
+                error: operators.error,
+                
             });
 
         }

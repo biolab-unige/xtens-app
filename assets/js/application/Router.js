@@ -77,7 +77,10 @@
 
         },
 
+        
+     
         loadView: function(view) {
+            
             this.view && this.view.remove();
             this.view = view; 
         },
@@ -185,8 +188,9 @@
         },
 
         operatorList:function(){
+	
             this.loadView(new Operator.Views.List());
-        },
+                    },
 
         operatorEdit:function(id){
             this.loadView(new Operator.Views.Edit({id:id}));

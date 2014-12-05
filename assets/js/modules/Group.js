@@ -12,12 +12,15 @@
     Group.Model = Backbone.Model.extend({
 
         urlRoot: '/group',
+	
+	
 
     });
 
     Group.List = Backbone.Collection.extend({
         url: '/group',
-        model: Group.Model
+        model: Group.Model,
+	
     });
 
 
@@ -40,8 +43,9 @@
                  if(options.id) {
                 this.group = new Group.Model({id: options.id});
                 this.group.fetch({
-                    success:this.fetchSuccess  });
+                    success:this.fetchSuccess, error:this.group.error  });
             } else {
+		
                 this.$el.html(this.template({__: i18n,group:null}));
                 return this;
             }},
@@ -121,10 +125,12 @@
                     _this.$el.html(_this.template({__: i18n, groups: groups.models}));
                     return _this;
                 },
-                error: function() {
-                    _this.$el.html(_this.template({__: i18n}));
-                    return _this;    
-                }
+                error: 	groups.error,
+		/*function() {
+
+                    // _this.$el.html(_this.template({__: i18n}));
+                   // return _this;    
+                }*/
 
             });
 

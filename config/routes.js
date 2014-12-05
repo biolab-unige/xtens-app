@@ -1,5 +1,5 @@
 /**
- * Route Mappings
+ Route Mappings
  * (sails.config.routes)
  *
  * Your routes map URLs to views and controllers.
@@ -28,9 +28,10 @@ module.exports.routes = {
     //
     // (Alternatively, remove this and add an `index.html` file in your `assets` directory)
     'GET /': {controller: 'home'},
-    '/login':{controller:'main',
+    'POST /login':{controller:'main',
         action:'login'
     },
+    
     '/upload-file':{controller:'dataFile',action:'upload'},
     
     'POST /download-file':{controller:'dataFile',action:'download'},
