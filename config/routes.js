@@ -28,9 +28,11 @@ module.exports.routes = {
     //
     // (Alternatively, remove this and add an `index.html` file in your `assets` directory)
     'GET /': {controller: 'home'},
-    '/login':{controller:'main',
+    'POST /login':{controller:'main',
         action:'login'
     },
+    
+    'GET /operators/new':{controller:'main',action:'login'},
     '/upload-file':{controller:'file',action:'upload'},
     
     'POST /download-file':{controller:'file',action:'download'},

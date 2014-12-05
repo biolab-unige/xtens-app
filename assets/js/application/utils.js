@@ -3,9 +3,31 @@
  * Mutuated from: https://coderwall.com/p/xj81ua
  */
 
+function handleError(err,res){
+    if(res.status === 403){
+        window.location.replace('/#login');
+    }
+    if(res.status === 401){
+        alert("error");
+    }
+}
+
+
+   Backbone.Collection = Backbone.Collection.extend({
+        error:handleError
+    });
+
+
+Backbone.Model = Backbone.Model.extend({
+        error: handleError   
+    });
+
+
 (function(Model){
     'use strict';
     // Additional extension layer for Models
+    //
+    
     Model.fullExtend = function (protoProps, staticProps) {
         // Call default extend method
         var extended = Model.extend.call(this, protoProps, staticProps);
@@ -52,18 +74,19 @@
 
 
 (function($) {
-    
+
     /**
      *  Ajax prefilters are useful for hooking into all AJAX request
      */
 
-  /*  $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
+    /*  $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
         options.url = 'http://localhost:1337' + options.url;
-    });    
+        });    
 
-    /*
-     *  jQuery serializeObject plugin
-     */
+ /*
+  *  jQuery serializeObject plugin
+  */
+
     $.fn.serializeObject = function() {
         var o = {};
         var a = this.serializeArray();
@@ -79,15 +102,17 @@
         });
         return o;
     };
-    
+
     /**
      * Method to prevent undesired key-related events (ENTER, ...)
      */
     $("html").on('keypress', function(ev) {
-            if (ev.keyCode === 13) { // The ENTER keycode is 13
-                return false;
-            }
+        if (ev.keyCode === 13) { // The ENTER keycode is 13
+            return false;
+        }
     });
+
+
 
 })(jQuery);
 

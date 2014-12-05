@@ -8,7 +8,7 @@ var MainController = {
     login:function(req,res){
     var login = req.param("login");
     var password = req.param("password");
-
+   
   Operator.findOneByLogin(login).exec(function(err, op) {
         if (err) {
             res.status(500).send({ error: "DB Error" });
@@ -23,8 +23,12 @@ var MainController = {
                   res.status(400).json({error:"Wrong Password"});
                                                   }
                     else{
+                   
                     req.session.operator = op;
+		    req.session.authenticated = true;
                     res.send(op);
+                   
+                   
                     }
                 });
    }else

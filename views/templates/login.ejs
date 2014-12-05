@@ -3,13 +3,14 @@
     $("#login").click(function(){
         var username = $("#userName").val();
         var password = $("#userPass").val();
-     var router = xtens.router; 
-      
+    	 var router = xtens.router; 
+        
         if (username && password) {
            $.post( '/login',
                 {login: username, password:password},
                 function () {
-                   router.navigate('operators',{trigger: true});                }
+                   router.navigate('#/operators',{trigger: true});            
+    }
             ).fail(function(res){
              alert("Error: " + res.responseJSON.error);
             });
@@ -24,7 +25,7 @@
         UserName <input name="user" type="text" id="userName" placeholder="Username"><br /><br />
           Password : <input type="password" id="userPass" placeholder="Password"><br /><br/>   
     </div>
-    <div id="login" class="row text-center">
-        <a href="#/homepage" class="btn btn-primary"><%= __("login")%></a>
+    <div class="row text-center">
+        <a id="login" class="btn btn-primary"><%= __("login")%></a>
     </div>
 </form>

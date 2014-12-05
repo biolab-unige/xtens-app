@@ -7,33 +7,35 @@
 
     }
 
-    IrodsFileManager.prototype.upload = function(source,destination) {
-        var fd = new FormData();
-        fd.append('uploadFile',source);
-        var deferred = $.ajax({
+    IrodsFileManager.prototype.upload = function(fileUpload) {
+
+        var body = new FormData();
+        body.append("uploadFile",fileUpload);
+        $.ajax({
             type: "POST",
 
-            url: this.basePath + destination,
+            url:this.basePath+fileUpload.name,
             beforeSend: function (xhr) {
-                xhr.withCredentials = true;
-                xhr.setRequestHeader("Authorization", "Basic " + btoa("biolab" + ":" + "superbio05!"));
+
+                xhr.setRequestHeader("Authorization", "Basic " + btoa("superbiorods" + ":" + "superbio05!"));
+                xhr.setRequestHeader("Access-Control-Allow-Origin","*");
             },
 
             xhrFields: { withCredentials: true },
+            acceptEncoding:'multipart/form-data',
             crossDomain: true,
-            
-            headers: { 'Authorization': "Basic " + btoa("biolab" + ":" + "superbio05!") },
             processData:false,
             contentType:false,
-            data:fd
-        });
+            data:body
 
-        return deferred;
+        }).done(function(data) {
+            console.log(data);
+        });
 
     };
 
     IrodsFileManager.prototype.download= function(destination){
-	$.ajax({
+        $.ajax({
             type: "GET",
 
             url: this.basePath + destination,
@@ -44,13 +46,13 @@
 
             xhrFields: { withCredentials: true },
             crossDomain: true,
-            
+
             headers: { 'Authorization': "Basic " + btoa("biolab" + ":" + "superbio05!") },
             processData:false,
             contentType:false,
-            
+
         });
-       
+
     };
 
     IrodsFileManager.prototype.delete = function(){
@@ -80,7 +82,7 @@
 
         initialize:function(){
             $("#main").html(this.el);
-            this.template = JST["views/templates/uploadFile.ejs"];
+            this.template = JST["views/templates/upload-file-server.ejs"];
             this.render();
         },
         render: function(options) {
@@ -98,7 +100,7 @@
         className:'fileManager',
         initialize:function(){
             $("#main").html(this.el);
-            this.template = JST["views/templates/UploadFileIrods.ejs"];
+            this.template = JST["views/templates/upload-file-irods.ejs"];
             this.render();
         },
         render: function(options) {
@@ -107,6 +109,41 @@
 
             self.$el.html(self.template({__: i18n}));
             return self;    
+        },
+        events:{
+            'click #upload' :'uploadFile',
+            'dragover #filedrag' :'enableDrop',
+            'drop #filedrag':'dropUploadFile'
+        },
+
+        enableDrop:function(ev){
+            ev.preventDefault();
+        },
+
+        dropUploadFile :function(ev){
+
+            ev.preventDefault();
+            var obj = document.getElementById('filedrag');
+            var fileUpload = ev.originalEvent.dataTransfer.files[0];
+            var newFile       = document.createElement('div');
+            newFile.innerHTML = 'Loaded : '+fileUpload.name+' size '+fileUpload.size+' B';
+            obj.appendChild(newFile);
+            var irodsDestination = new IrodsFileManager("http://130.251.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/superbiorods/");
+            irodsDestination.upload(fileUpload);
+
+
+
+        },
+
+
+        uploadFile: function(){
+
+            var irodsDestination = new IrodsFileManager("http://130.251.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/superbiorods/");
+            var fileUpload = document.getElementsByName('datafile')[0].files[0];
+            irodsDestination.upload(fileUpload);
+
+
+
         }
 
     });
@@ -118,7 +155,7 @@
 
         initialize:function(){
             $("#main").html(this.el);
-            this.template = JST["views/templates/DownloadFileIrods.ejs"];
+            this.template = JST["views/templates/FileIrods.ejs"];
             this.render();
         },
         render: function(options) {
