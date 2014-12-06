@@ -5,23 +5,15 @@
     var i18n = xtens.module("i18n").en;    
     var router = xtens.router;
     var Group = xtens.module("group");
-   var GroupsOperator =xtens.module("groupsOperator"); 
+    var GroupsOperator =xtens.module("groupsOperator"); 
     // define an Operator
     Operator.Model = Backbone.Model.extend({
-
         urlRoot: '/operator',
-
-        
-
     });
 
     Operator.List = Backbone.Collection.extend({
         url: '/operator',
         model: Operator.Model,
-        
-
-
-
     });
 
 
@@ -30,48 +22,27 @@
         tagName: 'div',
         className: 'operator',
 
-
-
         initialize: function(options) {
             $("#main").html(this.el);
             this.template = JST["views/templates/operator-edit.ejs"]; 
-
             this.render(options);
-
-
-
         },
 
         render: function(options)  {
             var that = this;
-            
-            
             if(options.id) {
-
-                that.operator = new Operator.Model({id: options.id});
-
-               
-                that.operator.fetch({
+                this.operator = new Operator.Model({id: options.id});
+                this.operator.fetch({
                     success: function (operator) {
-                    that.$el.html(that.template({__: i18n, operator: operator}));
-                    
+                        that.$el.html(that.template({__: i18n, operator: operator}));
                         return that;
-
-
                     },
- 		error: that.operator.error,                 
+                    error: xtens.error,                 
                 });
-
-
-
-
             } else {
-                 
-            that.$el.html(that.template({__: i18n,operator:null}));
-           
-                        return that;
-
-                               }
+                this.$el.html(that.template({__: i18n,operator:null}));
+                return this;
+            }
         },
 
         events: {
@@ -85,7 +56,7 @@
             var operatorDetails = $(ev.currentTarget).serializeObject();
 
             operatorDetails = {firstName: operatorDetails.name,lastName:operatorDetails.surname,birthDate:operatorDetails.date,sex:operatorDetails.sex,email:operatorDetails.email,login:operatorDetails.login,password:operatorDetails.password};
-          
+
             var operator = new Operator.Model();
 
             operator.save(operatorDetails, {
@@ -102,11 +73,11 @@
         updateOperator: function(ev) {
             var that = this;
 
-                      that.operator.set({firstName: document.Myform.name.value,lastName:document.Myform.surname.value,birthDate:document.Myform.date.value,sex:document.Myform.sex.value,email:document.Myform.email.value,login:document.Myform.login.value});
+            that.operator.set({firstName: document.Myform.name.value,lastName:document.Myform.surname.value,birthDate:document.Myform.date.value,sex:document.Myform.sex.value,email:document.Myform.email.value,login:document.Myform.login.value});
 
 
 
-                      that.operator.save();
+            that.operator.save();
             router.navigate('operators', {trigger:true});
             window.location.reload();
 
@@ -158,13 +129,13 @@
             var operators= new Operator.List();
             operators.fetch({
                 success: function(operators) {
-                  
+
                     self.$el.html(self.template({__: i18n, operators: operators.models}));
                     return self;
 
                 },
                 error: operators.error,
-                
+
             });
 
         }
@@ -174,7 +145,7 @@
         tagName:'div',
         className:'operator',
 
-      
+
         initialize:function(){
             $("#main").html(this.el);
             this.template = JST["views/templates/login.ejs"];
@@ -198,6 +169,6 @@
 
         }
 
-        
+
     });
 } (xtens, xtens.module("operator")));

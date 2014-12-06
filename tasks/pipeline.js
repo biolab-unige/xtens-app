@@ -43,8 +43,8 @@ var jsFilesToInject = [
     // 'dependencies/**/d3.js',
     
     // Customised client-side js files
-    'js/application/utils.js',
     'js/application/xtens.js',
+    'js/application/utils.js',
     'js/application/Router.js',
     'js/modules/i18n.js',
     'js/modules/XtensConstants.js',

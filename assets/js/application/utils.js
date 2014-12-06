@@ -3,31 +3,24 @@
  * Mutuated from: https://coderwall.com/p/xj81ua
  */
 
-function handleError(err,res){
+function handleError(res){
     if(res.status === 403){
         window.location.replace('/#login');
     }
     if(res.status === 401){
-        alert("error");
+        window.location.replace('/#login');
     }
 }
 
-
-   Backbone.Collection = Backbone.Collection.extend({
-        error:handleError
-    });
-
-
-Backbone.Model = Backbone.Model.extend({
-        error: handleError   
-    });
-
+(function(xtens) {
+    xtens.error = handleError;
+} (xtens));
 
 (function(Model){
     'use strict';
     // Additional extension layer for Models
     //
-    
+
     Model.fullExtend = function (protoProps, staticProps) {
         // Call default extend method
         var extended = Model.extend.call(this, protoProps, staticProps);

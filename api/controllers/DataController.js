@@ -123,8 +123,11 @@ return res.json(results.populated_data);
                 }
                 DataService.moveFiles(files, null, dataTypeName, callback);
             }],
-            data: ['renamed_files', function(callback, results) {
+            created_data: ['renamed_files', function(callback, results) {
                 Data.create(data).exec(callback);            
+            }],
+            data: ['created_data', function(callback, results) {
+                Data.findOne(_.pick(results.created_data, 'id')).populateAll().exec(callback);
             }]
         }, function(error, results) {
             if (error) {

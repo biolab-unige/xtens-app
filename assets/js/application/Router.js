@@ -126,7 +126,7 @@
                     _this.loadView(new DataType.Views.Edit({id: id, dataTypes: dataTypes.toJSON(), model: model}));
                 },
                 error: function(err) {
-                    console.log(err);
+                    xtens.error(err);
                 }
             });
         },
@@ -142,8 +142,8 @@
                     data: new Data.List(dataRes[0]),
                     dataTypes: new DataType.List(dataTypesRes[0])    
                 }));
-            }, function() {
-                alert("Error retrieving data from the server");
+            }, function(jqxhr) {
+                xtens.error(jqxhr);
             });
             // this.loadView(new Data.Views.List());
         },
@@ -165,7 +165,7 @@
                     _this.loadView(new Data.Views.Edit(results));
                 },
                 error: function(err) {
-                    alert(err);
+                    xtens.error(err);
                 }
             });
         },
@@ -207,8 +207,8 @@
                     subjects: new Subject.List(subjectsRes[0]),
                     dataTypes: new DataType.List(dataTypesRes[0])    
                 }));
-            }, function() {
-                alert("Error retrieving data from the server");
+            }, function(jqxhr) {
+                xtens.error(jqxhr);
             });
         },
 
@@ -248,7 +248,7 @@ alert("Error retrieving data from the server");
                     _this.loadView(new Subject.Views.Edit(results));
                 },
                 error: function(err) {
-                    alert(err);
+                    xtens.error(err);
                 }
             });
         },
@@ -264,8 +264,8 @@ alert("Error retrieving data from the server");
                     samples: new Sample.List(samplesRes[0]),
                     dataTypes: new DataType.List(dataTypesRes[0])                                    
                 }));
-            }, function() {
-                alert("Error retrieving data from the server");
+            }, function(jqxhr) {
+                xtens.error(jqxhr);
             });
         },
 
@@ -283,54 +283,20 @@ alert("Error retrieving data from the server");
                 success: function(results) {
                     _this.loadView(new Sample.Views.Edit(results));
                 },
-                error: function(err) {
-                    alert(err);
+                error: function(jqxhr) {
+                    xtens.error(jqxhr);
                 }
             });
         },
-
+        
+        /*
         uploadView:function(){
             this.loadView(new FileManager.Views.Upload());
         },
         uploadIrodsView:function(){
             this.loadView(new FileManager.Views.UploadIrods());
-        },
-        /*
-sampleEdit: function(id, queryParams) {
-var dataTypes = new DataType.List(), subjects = new Subject.List(), samples = new Sample.List();
-var param = parseQueryString(queryParams);
-var SAMPLE = xtens.module("xtensconstants").DataTypeClasses.SAMPLE;
-var dataTypeParams = { classTemplate: SAMPLE };
-var sampleParams, subjectParams;
-if (param.hasOwnProperty('parentSample')) {
-sampleParams = {id: param.parentSample};
-}
-if (param.hasOwnProperty('donor')) {
-subjectParams = {id: param.donor};
-}
-var _this = this;
-var $dataTypesDeferred = dataTypes.fetch({ data: dataTypeParams ? $.param(dataTypeParams) : null });
-var $subjectsDeferred = subjects.fetch({ data: subjectParams ? $.param(subjectParams) : null });
-var $samplesDeferred = samples.fetch({ data: sampleParams ? $.param(sampleParams) : null });
-$.when($dataTypesDeferred, $subjectsDeferred, $samplesDeferred)
-.then(function(dataTypesRes, subjectsRes, samplesRes) {
-var model = new Sample.Model();
-if (param.hasOwnProperty('idDataTypes')) {
-var ids = _.map(param.idDataTypes.split(","), function(el) { return _.parseInt(el); });
-dataTypesRes[0] = _.filter(dataTypesRes[0], function(dataType) {
-return ids.indexOf(dataType.id) > -1;
-});
-}
-_this.loadView(new Sample.Views.Edit({
-id: _.parseInt(id),
-dataTypes: new Data.List(dataTypesRes[0]),
-subjects: new Subject.List(subjectsRes[0]),
-samples: new Sample.List(samplesRes[0]),
-model: model
-}));
-});
-}, */
-
+        }, */
+        
         queryBuilder: function(id) {
             var dataTypes = new DataType.List();
             var that = this;
@@ -340,6 +306,9 @@ model: model
                         id: _.parseInt(id),
                         dataTypes: dataTypes
                     }));    
+                },
+                error: function(jqxhr) {
+                    xtens.error(jqxhr);
                 }
             });
         }
