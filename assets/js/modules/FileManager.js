@@ -40,19 +40,6 @@
         initialize: function(options) {
             this.template = JST['views/templates/filemanager-dropzone.ejs'];
             this.fileList = new FileManager.List();
-            // this.baseUri = options.baseUri;
-            // var _id = '#' + this.id;
-            /*
-            this.dropzone = new Dropzone('#xtens-dropzone', dropzoneOpts);
-            this.dropzone.on("processing", function(file) {
-                this.options.url = options.baseUri + options.dataTypeName + '/' + file.name;
-            });
-            this.dropzone.on("addedfile", function(file) {
-                // TODO create collections on iRODS if necessary
-            });
-            this.dropzone.on("sending", function(file, xhr, formData) {
-               xhr.setRequestHeader("Authorization", "Basic " + btoa("superbiorods" + ":" + "superbio05!"));
-            }); */
         },
 
         render: function() {
@@ -60,9 +47,18 @@
             return this;
         },
 
-        initializeDropzone: function() {
+        initializeDropzone: function(files) {
             var _this = this;
             this.dropzone = new Dropzone(this.el, dropzoneOpts);
+            if (files) {
+                var fileClones = _.cloneDeep(files);
+                _.each(fileClones, function(file) {
+                    file.name = _.last(file.uri.split("/"));
+                    this.dropzone.emit("addedfile", file);
+                }, this);
+                this.dropzone.disable();
+            }
+
             this.dropzone.on("processing", function(file) {
                 this.options.url = baseUri + "/" + landingRepo + "/" + file.name;
             });

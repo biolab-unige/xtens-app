@@ -6,7 +6,7 @@ var DataType = {
     attributes: {
         name: {
             type: 'string',
-            minLength: 3,
+            minLength: 2,
             maxLength: 32,
             required: true,
             columnName: 'name'

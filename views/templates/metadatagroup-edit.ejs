@@ -10,7 +10,7 @@
 <div class="form-group row">
     <label for="groupName" class="col-xs-3 control-label"><%= __("metadata-group-name") %></label>
     <div class="col-xs-9">
-        <input text class="form-control" name="name" placeholder="Metadata Group Name">
+        <input text class="form-control" name="name" placeholder="Metadata Group Name" required data-parsley-length"[2, 50]">
     </div>
 </div>
 <div class='metadataGroup-body'></div>

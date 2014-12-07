@@ -45,6 +45,7 @@
         getFlattenedFields: function(skipFieldsWithinLoops) {
             var flattened = [];
             var body = this.get("schema") && this.get("schema").body;
+            if (!body) return flattened;
             for (var i=0, len=body.length; i<len; i++){
                 var groupContent = body[i] && body[i].content;
                 for (var j=0, l=groupContent.length; j<l; j++) {
@@ -87,6 +88,24 @@
                 res.push(_.where(groupContent, {label: Constants.METADATA_LOOP}));
             }
             return _.flatten(res, true);
+        },
+        
+        /**
+         * @description customized client-side validation for DataType Model
+         */
+        validate: function(attrs, opts) {
+            var errors = [];
+
+            if (!attrs.schema.body || !attrs.schema.body.length) {
+                errors.push({name:'groups', message: i18n("please-add-at-least-a-metadata-group")});
+                return errors;
+            }
+            
+            if (!this.getFlattenedFields().length) {
+                errors.push({name:'attributes', message: i18n("please-add-at-least-a-metadata-field")});
+            }
+
+            return errors.length > 0 ? errors : false;
         }
 
     });
@@ -112,6 +131,7 @@
             this.nestedViews = [];
             this.existingDataTypes = options.dataTypes;
             this.render(options);
+            this.listenTo(this.model, 'invalid', this.handleValidationErrors);
         },
 
         bindings: {
@@ -159,15 +179,19 @@
             if (options.id) {
                 this.model = new DataType.Model({id: options.id});
                 this.model.fetch({
-                    success: this.fetchSuccess
+                    success: this.fetchSuccess,
+                    error: xtens.error
                 });
             } else {
                 this.$el.html(this.template({__: i18n, dataType: null}));
                 this.stickit();
             }
+            this.$form = this.$("form");
+            this.setValidate();
             return this;
         },
-
+        
+        // TODO requires refactoring - move it to the router (?)
         fetchSuccess: function(dataType) {
             this.$el.html(this.template({__: i18n, dataType: dataType}));
             this.stickit();
@@ -175,6 +199,21 @@
             for (var i=0, len=body.length; i<len; i++) {
                 this.add(body[i]);
             }
+            this.setValidate();
+        },
+        
+        /**
+         * @description Parsley-based validation
+         */
+        setValidate: function() {
+            // this.$form.parsley().suscribe('parsley:form:validate', function() {});
+        },
+        
+        /**
+         * @description show a list of the validation errors. So far it just alert the first error 
+         */
+        handleValidationErrors: function() {
+             alert(this.model.validationError[0].message);  
         },
 
         events: {

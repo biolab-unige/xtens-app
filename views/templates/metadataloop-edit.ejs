@@ -10,7 +10,7 @@
 <div class="form-group row">
     <label class="col-xs-3 control-label"><%= __("metadata-loop-name") %></label>
     <div class="col-xs-9">
-        <input text class="form-control" name="name" placeholder="Metadata Loop Name">
+        <input text class="form-control" name="name" placeholder="Metadata Loop Name" required data-parsley-length="[2,32]">
     </div>
 </div>
 <div class="metadataLoop-body"></div>

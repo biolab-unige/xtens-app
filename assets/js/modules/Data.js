@@ -16,7 +16,7 @@
     var FileManager = xtens.module("filemanager");
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
 
-   
+
     /**
      *  general purpose function to retrieve the value from a field
      */
@@ -355,14 +355,14 @@
                 observe: 'value',
                 getVal: getFieldValue
             }/*,
-            'select[name=fieldUnit]': {
-                observe: 'unit',
-                selectOptions: {
-                    collection: 'this.component.possibleUnits',
-                    labelPath: '',
-                    valuePath: ''
-                }
-            }*/
+               'select[name=fieldUnit]': {
+observe: 'unit',
+selectOptions: {
+collection: 'this.component.possibleUnits',
+labelPath: '',
+valuePath: ''
+}
+}*/
         },
 
         initialize: function(options) {
@@ -402,14 +402,14 @@
                     valuePath: ''
                 }
             }/*,
-            'select[name=fieldUnit]': {
-                observe: 'unit',
-                selectOptions: {
-                    collection: 'this.component.possibleUnits',
-                    labelPath: '',
-                    valuePath: ''
-                }
-            }*/
+               'select[name=fieldUnit]': {
+observe: 'unit',
+selectOptions: {
+collection: 'this.component.possibleUnits',
+labelPath: '',
+valuePath: ''
+}
+}*/
         },
 
         initialize: function(options) {
@@ -425,14 +425,14 @@
             'input[name=fieldValue]': {
                 observe: 'value'
             }/*,
-            'select[name=fieldUnit]': {
-                observe: 'unit',
-                selectOptions: {
-                    collection: 'this.component.possibleUnits',
-                    labelPath: '',
-                    valuePath: ''
-                }
-            }*/
+               'select[name=fieldUnit]': {
+observe: 'unit',
+selectOptions: {
+collection: 'this.component.possibleUnits',
+labelPath: '',
+valuePath: ''
+}
+}*/
         },
 
         initialize: function(options) {
@@ -480,11 +480,11 @@
                 }
             }, this);
             this.render();
-            this.$fileCnt = this.$("#data-header-row");
         },
 
         render: function() {
             this.$el.html(this.template({__: i18n, data: this.model}));
+            this.$fileCnt = this.$("#data-header-row");
             this.stickit();
             this.listenTo(this.model, 'change:type', this.dataTypeOnChange);
             this.$('#tags').select2({tags: []});
@@ -493,7 +493,7 @@
             }
             return this;
         },
-        
+
         bindings: {
             '#dataType': {
                 observe: 'type',
@@ -544,17 +544,13 @@
                 var metadata = this.schemaView.serialize();
                 this.model.set("metadata", metadata);
                 // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
-                if (this.fileUploadView) {
-                    this.model.set("files", this.fileUploadView.fileList.toJSON());
-                }
+                this.retrieveAndSetFiles();
                 console.log(this.model);
                 this.model.save(null, {
                     success: function(data) {
                         xtens.router.navigate(targetRoute, {trigger: true});
                     },
-                    error: function(err) {
-                        console.log(err);
-                    }
+                    error: xtens.error 
                 });
             }
             return false;
@@ -597,8 +593,18 @@
                 dataTypeName: this.model.get("type").name
             });
             this.$fileCnt.append(this.fileUploadView.render().el);
-            this.fileUploadView.initializeDropzone();
+            this.fileUploadView.initializeDropzone(this.model.get("files"));
+        },
+
+        retrieveAndSetFiles: function() {
+            if (this.fileUploadView) {
+                if (!this.model.id) {   // don't change the "files" attribute on update
+                    this.model.set("files", this.fileUploadView.fileList.toJSON());
+                }
+            }
+
         }
+
     });
 
     Data.Views.List = Backbone.View.extend({

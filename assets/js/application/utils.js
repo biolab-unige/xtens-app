@@ -10,6 +10,10 @@ function handleError(res){
     if(res.status === 401){
         window.location.replace('/#login');
     }
+    else {
+        console.log(res.message);
+        alert(res.message);
+    }
 }
 
 (function(xtens) {

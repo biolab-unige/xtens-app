@@ -23,6 +23,9 @@
         "delete": "Delete",
         "metadata-group-name": "Metadata Group Name",
         "metadata-loop-name": "Metadata Loop Name",
+        // assets/js/modules/DataType.js --> DataType.Model
+        "please-add-at-least-a-metadata-group": "Please add at least a Metadata Group",
+        "please-add-at-least-a-metadata-field": "Please add at least a Metadata Field",
         // views/templates/metadatafield-edit.ejs
         "type": "Type",
         "required": "Required",

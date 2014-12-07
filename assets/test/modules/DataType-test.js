@@ -1,5 +1,6 @@
 var expect = chai.expect;
 var should = chai.should();
+var i18n = xtens.module("i18n").en;
 var DataType = xtens.module("datatype");
 var Constants = xtens.module("xtensconstants").Constants;
 
@@ -155,6 +156,59 @@ describe('DataType', function() {
             expect(loops[0].content[0].label).to.eql(Constants.METADATA_FIELD);
             expect(loops[0].content[0].name).to.equal(schema.body[1].content[0].content[0].name);
         });
+    });
+
+    describe("#validate", function() {
+
+        var emptySchema = {
+            "header":{
+                "schemaName":"STAR",
+                "fileUpload":true,
+                "description":"Physical description of a star",
+                "version":"0.0.1",
+                "ontology":""
+            },
+            "body":[]
+        };
+
+        var fieldlessSchema = {
+            "header":{
+                "schemaName":"STAR",
+                "fileUpload":true,
+                "description":"Physical description of a star",
+                "version":"0.0.1",
+                "ontology":""
+            },
+            "body":[{
+                "label":"METADATA GROUP",
+                "name":"Basic Properties ",
+                "content":[]
+            },{
+                "label":"METADATA GROUP",
+                "name":"Star Details",
+                "content":[{
+                    "label":"METADATA LOOP",
+                    "name":"Planets",
+                    "content":[]
+                }]
+            }]
+        };
+
+
+        it("should return an error for missing group", function() {
+            var model = new DataType.Model({name: emptySchema.schemaName, schema: emptySchema});
+            var errs = model.validate(model.attributes);
+            expect(errs).to.have.length(1);
+            expect(errs[0].message).to.equal(i18n("please-add-at-least-a-metadata-group"));
+        });
+
+        it("should return an error for missing field", function() {
+            var model = new DataType.Model({name: fieldlessSchema.schemaName, schema: fieldlessSchema});
+            var errs = model.validate(model.attributes);
+            expect(errs).to.have.length(1);
+            expect(errs[0].message).to.equal(i18n("please-add-at-least-a-metadata-field"));
+        });
+
     });
 
 });

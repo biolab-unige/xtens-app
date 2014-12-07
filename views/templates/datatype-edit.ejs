@@ -3,13 +3,13 @@
 
 <div id="content"> 
 
-    <form class="form-horizontal edit-datatype-form" role="form">
+    <form class="form-horizontal edit-datatype-form" role="form" data-parsley-validate>
         <div id="schemaHeader">
             <div class="form-group row">
                 <label for="schemaName" class="col-md-2 control-label"><%= __("name") %></label>
                 <div class="col-md-6">
                     <input text class="form-control" id="schemaName" name="schemaName" 
-                    value="<%= dataType ? dataType.get('name') : '' %>" placeholder="Data Type Name">
+                    value="<%= dataType ? dataType.get('name') : '' %>" placeholder="Data Type Name" required >
                 </div>
                 <label for="fileUpload" class="col-md-2 control-label"><%= __("file-upload") %></label>
                 <div class="col-md-2">
@@ -30,8 +30,8 @@
             <div class="form-group row">
                 <label for="description" class="col-md-2 control-label"><%=__("description") %></label>
                 <div class="col-md-10">
-                    <input text class="form-control" id="description" name="description" 
-                    value="<%= dataType ? dataType.get('schema').header.description : '' %>" placeholder="Brief Description">
+                    <input text class="form-control" id="description" name="description" required 
+                    value="<%= dataType ? dataType.get('schema').header.description : '' %>" placeholder="Brief Description" >
                 </div>
             </div>
             <div class="form-group row">

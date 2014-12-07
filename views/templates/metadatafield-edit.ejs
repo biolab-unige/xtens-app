@@ -16,7 +16,7 @@
         </div>
         <div class="metadataField-third">
             <label class="control-label"><%= __('name') %></label>
-            <input text class="form-control input-sm no-edit" placeholder="Field Name" name="name">
+            <input text class="form-control input-sm no-edit" placeholder="Field Name" name="name" required data-parsley-length="[2, 20]">
         </div>
         <div class="metadataField-third">
             <label class="control-label"><%= __('custom-value') %></label>
@@ -46,15 +46,15 @@
         </div>
         <div class="metadataField-range">
             <label class="control-label"><%= __('min') %></label>
-            <input text class="form-control input-sm" name="min" placeholder="Minimum Value" >
+            <input text class="form-control input-sm" name="min" placeholder="Minimum Value" data-parsley-type="number">
         </div>
         <div class="metadataField-range">
             <label class="control-label"><%= __('max') %></label>
-            <input text class="form-control input-sm" name="max" placeholder="Maximum Value" >
+            <input text class="form-control input-sm" name="max" placeholder="Maximum Value" data-parsley-type="number">
         </div>
         <div class="metadataField-range">
             <label class="control-label"><%= __('step') %></label>
-            <input text class="form-control input-sm" name="step" placeholder="Step" >
+            <input text class="form-control input-sm" name="step" placeholder="Step" data-parsley-type="number">
         </div>
 
     </div>
