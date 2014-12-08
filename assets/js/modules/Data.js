@@ -262,10 +262,10 @@
             this.nestedViews = [];
             if (this.model.metadata) {
                 var loopInstance = this.model.metadata[this.component.content[0].name];
-                this.loopRecords = loopInstance ? loopInstance.value.length : 1;
+                this.loopRecords = loopInstance ? loopInstance.value.length : 0;
             }
             else {
-                this.loopRecords = 1;
+                this.loopRecords = 0;
             }
         },
 
@@ -274,14 +274,16 @@
          */
         render: function() {
             this.$el.html(this.template({ __:i18n, component: this.component}));
+            this.$metadataloopBody = this.$(".metadataloop-body");
             if (this.component) {
                 var content = this.component.content;
                 var i, len = content && content.length;
+                /*
                 for (i=0; i<len; i++) {
                     this.add(content[i], this.model.metadata, {name: this.component.name});
-                }
-                if (this.loopRecords > 1) {
-                    for (i=1; i<this.loopRecords; i++) {
+                } */
+                if (this.loopRecords > 0) {
+                    for (i=0; i<this.loopRecords; i++) {
                         this.addLoopBody(i);
                     }
                 }
@@ -294,8 +296,10 @@
          */
 
         add: function(subcomponent, metadatarecord, loopParams) {
+            // create a new field
             var view = factory.createComponentView(subcomponent, metadatarecord, loopParams);
-            this.$el.children('.metadatacomponent-body').last().append(view.render().el);
+            // add it to the current loop
+            this.$metadataloopBody.children('.metadatacomponent-body').last().append(view.render().el);
             this.nestedViews.push(view);
         },
 
@@ -305,8 +309,10 @@
 
         addLoopBody: function(index) {
             var newLoopbody = '<div class="metadatacomponent-body"></div>'; 
+            this.$metadataloopBody.append(newLoopbody);
+            /*
             var $last = this.$el.children('.metadatacomponent-body').last();
-            $last.after(newLoopbody);
+            $last.after(newLoopbody); */
             var len = this.component && this.component.content && this.component.content.length;
             var loopParams = { name: this.component.name, index: index };
             for (var i=0; i<len; i++) {
@@ -339,6 +345,10 @@
                     }
                 });
             }
+            this.$fieldValue = this.$("[name='fieldValue']");
+            if (this.setValidationOptions) {
+                this.setValidationOptions();
+            }
             return this;
         },
 
@@ -354,20 +364,35 @@
             ':text[name=fieldValue]': {
                 observe: 'value',
                 getVal: getFieldValue
-            }/*,
-               'select[name=fieldUnit]': {
-observe: 'unit',
-selectOptions: {
-collection: 'this.component.possibleUnits',
-labelPath: '',
-valuePath: ''
-}
-}*/
+            }        
         },
 
         initialize: function(options) {
             this.template = JST["views/templates/metadatafieldinput-form.ejs"];
             this.component = options.component;
+        },
+        
+        /**
+         * @description add HTML5/data tags to the metadata field for client-side validation
+         *              with Parsley
+         */
+        setValidationOptions: function() {
+            if (this.component.required) {
+                this.$fieldValue.prop('required', true); 
+            }
+            switch (this.component.fieldType) {
+                case FieldTypes.INTEGER:
+                    this.$fieldValue.attr("data-parsley-type", "integer");
+                    break;
+                case FieldTypes.FLOAT:
+                    this.$fieldValue.attr("data-parsley-type", "number");
+                    break;
+            }
+            if (this.component.hasRange) {
+                this.$fieldValue.attr("min", this.component.min);
+                this.$fieldValue.attr("max", this.component.max);
+                // TODO add step validation?
+            }
         }
 
     });
@@ -401,15 +426,7 @@ valuePath: ''
                     labelPath: '',
                     valuePath: ''
                 }
-            }/*,
-               'select[name=fieldUnit]': {
-observe: 'unit',
-selectOptions: {
-collection: 'this.component.possibleUnits',
-labelPath: '',
-valuePath: ''
-}
-}*/
+            }        
         },
 
         initialize: function(options) {
@@ -424,15 +441,7 @@ valuePath: ''
         bindings: {
             'input[name=fieldValue]': {
                 observe: 'value'
-            }/*,
-               'select[name=fieldUnit]': {
-observe: 'unit',
-selectOptions: {
-collection: 'this.component.possibleUnits',
-labelPath: '',
-valuePath: ''
-}
-}*/
+            }        
         },
 
         initialize: function(options) {
@@ -484,10 +493,12 @@ valuePath: ''
 
         render: function() {
             this.$el.html(this.template({__: i18n, data: this.model}));
+            this.$form = this.$('form');
             this.$fileCnt = this.$("#data-header-row");
             this.stickit();
             this.listenTo(this.model, 'change:type', this.dataTypeOnChange);
             this.$('#tags').select2({tags: []});
+            // this.$form.parsley();
             if (this.model.get("type")) {
                 this.renderDataTypeSchema(this.model);
             }
@@ -535,7 +546,7 @@ valuePath: ''
         },
 
         events: {
-            "click #save": "saveData"
+            "submit .edit-data-form": "saveData"
         },
 
         saveData: function(ev) {
@@ -586,6 +597,9 @@ valuePath: ''
             else {
                 this.$("#buttonbardiv").before();
             }
+            // reinitialize parsley
+            this.$form.attr("data-parsley-ui-enabled", true);
+            this.$form.parsley().reset();
         },
 
         enableFileUpload: function() {

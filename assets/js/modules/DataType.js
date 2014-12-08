@@ -199,11 +199,12 @@
             for (var i=0, len=body.length; i<len; i++) {
                 this.add(body[i]);
             }
-            this.setValidate();
+            this.setValidate(); //TODO
         },
         
         /**
          * @description Parsley-based validation
+         * TODO
          */
         setValidate: function() {
             // this.$form.parsley().suscribe('parsley:form:validate', function() {});
