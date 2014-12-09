@@ -100,8 +100,10 @@
                 errors.push({name:'groups', message: i18n("please-add-at-least-a-metadata-group")});
                 return errors;
             }
-            
-            if (!this.getFlattenedFields().length) {
+            // create a temporary DataType.Model to check the fields
+            var tempModel = new DataType.Model(attrs);
+            var flattened = tempModel.getFlattenedFields();
+            if (!flattened.length) {
                 errors.push({name:'attributes', message: i18n("please-add-at-least-a-metadata-field")});
             }
 

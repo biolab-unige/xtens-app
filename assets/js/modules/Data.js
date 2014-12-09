@@ -16,6 +16,18 @@
     var FileManager = xtens.module("filemanager");
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
 
+    var parsleyOpts = {
+        priorityEnabled: false,
+        excluded: "select[name='fieldUnit']", // don't validata unit field, otherwise success/error classes won't come together
+        successClass: "has-success",
+        errorClass: "has-error",
+        classHandler: function(el) {
+            return el.$element.closest(".form-group");
+        },
+        errorsWrapper: "<span class='help-block'></span>",
+        errorTemplate: "<span></span>"
+    };
+
 
     /**
      *  general purpose function to retrieve the value from a field
@@ -95,6 +107,10 @@
                 }
             }
             else {
+                if (field.fieldType === FieldTypes.BOOLEAN) {
+                    // initialize new boolean to FALSE
+                    this.set("value", false);
+                }
                 if (field.isList) {
                     this.set("value", field.possibleValues && field.possibleValues[0]);
                 }
@@ -279,9 +295,9 @@
                 var content = this.component.content;
                 var i, len = content && content.length;
                 /*
-                for (i=0; i<len; i++) {
-                    this.add(content[i], this.model.metadata, {name: this.component.name});
-                } */
+                   for (i=0; i<len; i++) {
+                   this.add(content[i], this.model.metadata, {name: this.component.name});
+                   } */
                 if (this.loopRecords > 0) {
                     for (i=0; i<this.loopRecords; i++) {
                         this.addLoopBody(i);
@@ -311,8 +327,8 @@
             var newLoopbody = '<div class="metadatacomponent-body"></div>'; 
             this.$metadataloopBody.append(newLoopbody);
             /*
-            var $last = this.$el.children('.metadatacomponent-body').last();
-            $last.after(newLoopbody); */
+               var $last = this.$el.children('.metadatacomponent-body').last();
+               $last.after(newLoopbody); */
             var len = this.component && this.component.content && this.component.content.length;
             var loopParams = { name: this.component.name, index: index };
             for (var i=0; i<len; i++) {
@@ -371,7 +387,7 @@
             this.template = JST["views/templates/metadatafieldinput-form.ejs"];
             this.component = options.component;
         },
-        
+
         /**
          * @description add HTML5/data tags to the metadata field for client-side validation
          *              with Parsley
@@ -383,10 +399,10 @@
             switch (this.component.fieldType) {
                 case FieldTypes.INTEGER:
                     this.$fieldValue.attr("data-parsley-type", "integer");
-                    break;
+                break;
                 case FieldTypes.FLOAT:
                     this.$fieldValue.attr("data-parsley-type", "number");
-                    break;
+                break;
             }
             if (this.component.hasRange) {
                 this.$fieldValue.attr("min", this.component.min);
@@ -498,7 +514,14 @@
             this.stickit();
             this.listenTo(this.model, 'change:type', this.dataTypeOnChange);
             this.$('#tags').select2({tags: []});
-            // this.$form.parsley();
+
+            // initialize Parsley
+            this.$form.parsley(parsleyOpts);
+            /*
+               this.$form.parsley(parsleyOpts);
+               this.$form.parsley().subscribe('parsley:field:error', this.showValidationErrorTooltip);
+               this.$form.parsley().subscribe('parsley:field:success', this.removeValidationErrorTooltip);
+               */
             if (this.model.get("type")) {
                 this.renderDataTypeSchema(this.model);
             }
@@ -576,6 +599,9 @@
         },
 
         renderDataTypeSchema: function(data) {
+            if (this.fileUploadView) {
+                this.fileUploadView.remove();
+            }
             if (this.schemaView) {
                 if (!this.schemaView.removeMe()) {
                     return;
@@ -598,8 +624,7 @@
                 this.$("#buttonbardiv").before();
             }
             // reinitialize parsley
-            this.$form.attr("data-parsley-ui-enabled", true);
-            this.$form.parsley().reset();
+            this.$form.parsley(parsleyOpts).reset();
         },
 
         enableFileUpload: function() {
@@ -616,7 +641,22 @@
                     this.model.set("files", this.fileUploadView.fileList.toJSON());
                 }
             }
+        },
 
+        showValidationErrorTooltip: function(formElement) {
+            var messages = ParsleyUI.getErrorsMessages(formElement);
+            formElement.$element.tooltip('destroy');
+            formElement.$element.tooltip({
+                animation: false,
+                container: 'body',
+                placement: 'right',
+                trigger: 'manual',
+                title: messages
+            }).tooltip('show');
+        },
+
+        removeValidationErrorTooltip: function(formElement) {
+            formElement.$element.tooltip('destroy');
         }
 
     });

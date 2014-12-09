@@ -42,7 +42,8 @@
       "js": "dist/jquery.js"
     },
     "bootstrap": {
-      "less": "less"
+      "less": "less",
+      "js": "js/**/*.js"
     },
     "underscore": {
       "js": "**/underscore.js"
@@ -62,6 +63,9 @@
     },
     "backbone.stickit": {
       "": "backbone.stickit.js"
+    },
+    "parsleyjs": {
+     "js": "dist/parsley.js"
     },
     "d3": {
       "": "d3.js"

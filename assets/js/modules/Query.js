@@ -114,11 +114,8 @@
                 initialize: function($el) {
                     $el.select2({placeholder: i18n("please-select")});
                 },
-                selectOptions: { /*
-collection: 'this.fieldList',
-labelPath: 'name',
-valuePath: 'name', */
-                collection: function() {
+                selectOptions: { 
+                    collection: function() {
                     return this.fieldList.map(function(field) {
                         return {value: field.name, label: replaceUnderscoreAndCapitalize(field.name)};
                     });
@@ -171,9 +168,9 @@ valuePath: 'name', */
         generateComparisonItem: function(metadataField) {
             var data = [], fieldType = metadataField.fieldType;
             if (fieldType === FieldTypes.BOOLEAN) {
-                return;
+                data = [{id: '=', text: '='}];
             }
-            if (metadataField.isList) {
+            else if (metadataField.isList) {
                 data = [ { id: 'IN', text: '=' }, { id: 'NOT IN', text: '≠' }];
             }
             else if (fieldType === FieldTypes.INTEGER || fieldType === FieldTypes.FLOAT) {
