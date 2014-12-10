@@ -26,6 +26,7 @@
         // assets/js/modules/DataType.js --> DataType.Model
         "please-add-at-least-a-metadata-group": "Please add at least a Metadata Group",
         "please-add-at-least-a-metadata-field": "Please add at least a Metadata Field",
+        "data-type-has-the-following-duplicate-names": "Datatype has the following duplicate names",
         // views/templates/metadatafield-edit.ejs
         "type": "Type",
         "required": "Required",
@@ -119,6 +120,17 @@
         "arrival-code": "Arrival Code",
         "anatomical-position": "Anatomical Position",
         "new-derivative-sample": "New Derivative Sample",
+        /* view/templates/biobank-edit */
+        "biobank-ID": "Biobank ID",
+        "acronym": "Acronym",
+        "url": "URL (Internet Address)",
+        "juristic-person": "Juristic Person",
+        /* view/templates/contactinformation-edit.js */
+        "phone": "Phone",
+        "address": "Address",
+        "zip": "ZIP Code",
+        "city": "City",
+        "country": "Country",
         /* views/templates/query.ejs */
         "query-builder": "Query Builder",
         "search-for:": "Search for:",

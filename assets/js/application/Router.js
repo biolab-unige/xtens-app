@@ -11,6 +11,7 @@
     var Project = xtens.module("project");
     var MaterialType = xtens.module("materialtype");
     var Sample = xtens.module("sample");
+    var Biobank = xtens.module("biobank");
     var Query = xtens.module("query");
     var Operator = xtens.module("operator");
     var Group = xtens.module("group");
@@ -61,6 +62,9 @@
             "samples/new": "sampleEdit",
             "samples/new/:skipme?*queryString": "sampleEdit",
             "samples/edit/:id": "sampleEdit",
+            "biobanks": "biobankList",
+            "biobanks/new": "biobankEdit",
+            "biobank/edit/:id": "biobankEdit",
             "query": "queryBuilder",
             "operators": "operatorList",
             "operators/new": "operatorEdit",
@@ -71,16 +75,10 @@
             "login":"loginView",
             "groups/operator/:id":"associationOperator",
             "groups/datatype/:id":"associationDataType",
-            "upload-file":"uploadView",
-            "download-file":"downloadView",
-            "upload-irods-file":"uploadIrodsView"
 
         },
 
-        
-     
         loadView: function(view) {
-            
             this.view && this.view.remove();
             this.view = view; 
         },
@@ -118,11 +116,16 @@
         },
 
         dataTypeEdit: function(id) {
-            var _this = this;
+            var model, _this = this;
             var dataTypes = new DataType.List();
             dataTypes.fetch({
                 success: function(dataTypes) {
-                    var model = new DataType.Model();
+                    if (id) {
+                        model = dataTypes.get(id);
+                    }
+                    else {
+                        model = new DataType.Model();
+                    }
                     _this.loadView(new DataType.Views.Edit({id: id, dataTypes: dataTypes.toJSON(), model: model}));
                 },
                 error: function(err) {
@@ -212,27 +215,6 @@
             });
         },
 
-        /*
-subjectEdit: function(id) {
-var dataTypes = new DataType.List();
-var projects = new Project.List();
-var _this = this;
-$.when(dataTypes.fetch(), projects.fetch()).then(
-function(dataTypesRes, projectsRes) {
-var SUBJECT = xtens.module("xtensconstants").DataTypeClasses.SUBJECT;
-        // get the last existing SUBJECT template (there should always be only one)
-        var subjectType = _.last(_.where(dataTypesRes[0], {classTemplate: SUBJECT}));
-        var model = new Subject.Model({type: subjectType});
-        _this.loadView(new Subject.Views.Edit({
-id: _.parseInt(id), 
-projects: projectsRes[0],
-model: model
-}));
-}, function() {
-alert("Error retrieving data from the server");
-});
-}, */
-
         subjectEdit: function(id) {
             var params = {};
             if (id && _.parseInt(id) > 0) {
@@ -288,15 +270,28 @@ alert("Error retrieving data from the server");
                 }
             });
         },
-        
-        /*
-        uploadView:function(){
-            this.loadView(new FileManager.Views.Upload());
+
+        biobankList: function() {
+            // TODO
         },
-        uploadIrodsView:function(){
-            this.loadView(new FileManager.Views.UploadIrods());
-        }, */
         
+        biobankEdit: function(id) {
+            var biobank = new Biobank.Model({id: id}), that = this;
+            if (id) {
+                biobank.fetch({
+                    success: function(biobank) {
+                        that.loadView(new Biobank.Views.Edit({
+                            model: biobank
+                        }));
+                    },
+                    error: xtens.error
+                });
+            }
+            else {
+                this.loadView(new Biobank.Views.Edit({model: biobank}));
+            }
+        },
+                
         queryBuilder: function(id) {
             var dataTypes = new DataType.List();
             var that = this;

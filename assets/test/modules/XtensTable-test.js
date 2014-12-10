@@ -10,7 +10,9 @@ var testData = [
         id: 5,
         "name": "Star",
         "classTemplate": "Generic",
-        "schema": {}
+        "schema": {
+            // TODO add schema details or move schema somewhere else!! (better the second option)
+        }
     },
     tags: null,
     notes: null,

@@ -13,7 +13,19 @@
     var MetadataGroup = xtens.module("metadatagroup"); 
 
     // XTENS router alias
-    var router = xtens.router;   
+    var router = xtens.router;  
+
+    // options object for Parsley Validation
+    var parsleyOpts = {
+        priorityEnabled: false,
+        successClass: "has-success",
+        errorClass: "has-error",
+        classHandler: function(el) {
+            return el.$element.parent();
+        },
+        errorsWrapper: "<span class='help-block'></span>",
+        errorTemplate: "<span></span>"
+    };
 
     /**
      *  define a DataType model
@@ -25,18 +37,6 @@
         defaults: {
             classTemplate: DataTypeClasses.GENERIC
         },
-
-        /**
-         *  @description returns a list of the fields that are not contained in loop
-         *
-        getFlattenedFieldsNotInLoops: function() {
-            var flattened = [];
-            var body = this.get("schema") && this.get("schema").body;
-            for (var i=0, len=body.length; i<len; i++) {
-            
-            }
-
-        }; */
 
         /**
          * @description flattens the metadata schema returning a 1D array containing all the metadata fields
@@ -89,7 +89,7 @@
             }
             return _.flatten(res, true);
         },
-        
+
         /**
          * @description customized client-side validation for DataType Model
          */
@@ -106,7 +106,20 @@
             if (!flattened.length) {
                 errors.push({name:'attributes', message: i18n("please-add-at-least-a-metadata-field")});
             }
-
+            // check that there are no fields with more than one occurrence
+            var occurrences = {}, duplicates = [];
+            _.each(_.pluck(flattened, 'name'), function(fieldName) {
+                if (!occurrences[fieldName]) {
+                    occurrences[fieldName] = 1;
+                }
+                else {
+                    occurrences[fieldName]++;
+                    duplicates.push(fieldName);
+                }
+            });
+            if (!_.isEmpty(duplicates)) {
+                errors.push({name: 'duplicates', message: i18n("data-type-has-the-following-duplicate-names") + ": " + duplicates.join(", ") });
+            }
             return errors.length > 0 ? errors : false;
         }
 
@@ -127,12 +140,12 @@
         className: 'dataType',
 
         initialize: function(options) {
-            _.bindAll(this, 'fetchSuccess');
+            // _.bindAll(this, 'fetchSuccess');
             $("#main").html(this.el);
             this.template = JST["views/templates/datatype-edit.ejs"];
             this.nestedViews = [];
             this.existingDataTypes = options.dataTypes;
-            this.render(options);
+            this.render();
             this.listenTo(this.model, 'invalid', this.handleValidationErrors);
         },
 
@@ -177,6 +190,25 @@
             }
         },
 
+        render: function() {
+            if (this.model.id){
+                this.$el.html(this.template({__: i18n, dataType: this.model}));
+            }
+            else {
+                this.$el.html(this.template({__: i18n, dataType: null}));
+            }
+            this.stickit();
+            this.$form = this.$("form");
+            this.$form.parsley(parsleyOpts);
+            if (this.model.get("schema") && _.isArray(this.model.get('schema').body)) {
+                var body = this.model.get('schema').body;
+                for (var i=0, len=body.length; i<len; i++) {
+                    this.add(body[i]);
+                }
+            }
+            return this;
+        },
+        /*
         render: function(options) {
             if (options.id) {
                 this.model = new DataType.Model({id: options.id});
@@ -189,10 +221,11 @@
                 this.stickit();
             }
             this.$form = this.$("form");
-            this.setValidate();
+            // initialize Parsley
+            this.$form.parsley(parsleyOpts);
             return this;
         },
-        
+
         // TODO requires refactoring - move it to the router (?)
         fetchSuccess: function(dataType) {
             this.$el.html(this.template({__: i18n, dataType: dataType}));
@@ -202,21 +235,13 @@
                 this.add(body[i]);
             }
             this.setValidate(); //TODO
-        },
-        
-        /**
-         * @description Parsley-based validation
-         * TODO
-         */
-        setValidate: function() {
-            // this.$form.parsley().suscribe('parsley:form:validate', function() {});
-        },
-        
+        }, */
+
         /**
          * @description show a list of the validation errors. So far it just alert the first error 
          */
         handleValidationErrors: function() {
-             alert(this.model.validationError[0].message);  
+            alert(this.model.validationError[0].message);  
         },
 
         events: {
@@ -245,9 +270,7 @@
                     console.log(dataType);
                     router.navigate('datatypes', {trigger: true});
                 },
-                error: function() {
-                    console.log("Error saving the DataType");
-                }
+                error: xtens.error
             });
             return false;
         },
@@ -296,16 +319,6 @@
             return this;
         }
     });
-
-/**
- *  This is the view to show the form generated from the selected DataType
- *
- DataType.Views.Form = MetadataComponent.Views.Form.fullExtend({
-
-tagName: div,
-className: '.dataForm', 
-
-}); */
 
 } (xtens, xtens.module("datatype")));
 

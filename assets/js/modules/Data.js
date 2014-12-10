@@ -18,11 +18,11 @@
 
     var parsleyOpts = {
         priorityEnabled: false,
-        excluded: "select[name='fieldUnit']", // don't validata unit field, otherwise success/error classes won't come together
+        // excluded: "select[name='fieldUnit']",
         successClass: "has-success",
         errorClass: "has-error",
         classHandler: function(el) {
-            return el.$element.closest(".form-group");
+            return el.$element.parent();
         },
         errorsWrapper: "<span class='help-block'></span>",
         errorTemplate: "<span></span>"

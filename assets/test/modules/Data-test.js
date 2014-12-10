@@ -138,18 +138,20 @@ describe('Data.Views.MetadataLoop', function() {
             var view = new Data.Views.MetadataLoop({model: model, component: loop});
             view.render();
             view.addLoopBody();
-            expect(view.$el.children('.metadatacomponent-body')).to.have.length(2);
+            expect(view.$metadataloopBody.children()).to.have.length(1);
             view.addLoopBody();
-            expect(view.$el.children('.metadatacomponent-body')).to.have.length(3);
+            expect(view.$metadataloopBody.children()).to.have.length(2);
         });
 
         it('should add a all the metadata fields contained in the loop body', function() {
             var model = new Data.MetadataLoopModel();  
             var view = new Data.Views.MetadataLoop({model: model, component: loop});
             view.render();
+            // add two loop bodies and compare them
             view.addLoopBody();
-            var newLoopBody = view.$el.children('.metadatacomponent-body').eq(1);
-            var oldLoopBody = view.$el.children('.metadatacomponent-body').eq(0);
+            view.addLoopBody();
+            var newLoopBody = view.$metadataloopBody.children('.metadatacomponent-body').eq(1);
+            var oldLoopBody = view.$metadataloopBody.children('.metadatacomponent-body').eq(0);
             expect(newLoopBody.children().length).to.equal(loop.content.length);
             var oldLabels = oldLoopBody.find('.metadata-label');
             newLoopBody.find('.metadata-label').each(function(index, element) {

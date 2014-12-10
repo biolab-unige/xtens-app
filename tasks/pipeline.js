@@ -62,6 +62,8 @@ var jsFilesToInject = [
     'js/modules/GroupsOperator.js',
     'js/modules/PersonalDetails.js',
     'js/modules/FileManager.js',
+    'js/modules/ContactInformation.js',
+    'js/modules/Biobank.js',
     'js/modules/Data.js',
     'js/modules/Subject.js',
     'js/modules/Project.js',

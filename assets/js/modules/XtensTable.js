@@ -33,7 +33,7 @@
         className: 'data-table',
 
         initialize: function(options) {
-            if (options.data) {
+            if (options && options.data) {
                 this.prepareDataForRendering(options.data);
             }
             // this.render();

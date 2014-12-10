@@ -194,6 +194,109 @@ describe('DataType', function() {
             }]
         };
 
+        var duplicateFieldsSchema = {
+            "header":{
+                "schemaName":"STAR",
+                "fileUpload":true,
+                "description":"Physical description of a star",
+                "version":"0.0.1",
+                "ontology":""
+            },
+            "body":[{
+                "label":"METADATA GROUP",
+                "name":"Basic Properties ",
+                "content":[{
+                    "label":"METADATA FIELD",
+                    "fieldType":"Text",
+                    "name":"name",
+                    "ontologyUri":null,
+                    "customValue":null,
+                    "required":true,
+                    "sensitive":true,
+                    "hasRange":false,
+                    "isList":false,
+                    "possibleValues":null,
+                    "hasUnit":false,
+                    "possibleUnits":null
+                },{
+                    "label":"METADATA FIELD",
+                    "fieldType":"Float",
+                    "name":"distance",
+                    "ontologyUri":null,
+                    "customValue":null,
+                    "required":false,
+                    "sensitive":false,
+                    "hasRange":false,
+                    "isList":false,
+                    "possibleValues":null,
+                    "hasUnit":true,
+                    "possibleUnits":["ly","pc","km"]
+                },{
+                    "label":"METADATA FIELD",
+                    "fieldType":"Float",
+                    "name":"mass",
+                    "ontologyUri":null,
+                    "customValue":null,
+                    "required":true,
+                    "sensitive":false,
+                    "hasRange":false,
+                    "isList":false,
+                    "possibleValues":null,
+                    "hasUnit":true,
+                    "possibleUnits":["M☉","kg"]
+                },{
+                    "label":"METADATA FIELD",
+                    "fieldType":"Text",
+                    "name":"name",
+                    "ontologyUri":null,
+                    "customValue":null,
+                    "required":false,
+                    "sensitive":false,
+                    "hasRange":false,
+                    "isList":true,
+                    "possibleValues":["hypergiant","supergiant","giant","sub-giant","main-sequqnce star","sub-dwarf","white dwarf","brown dwarf"],
+                    "hasUnit":false,
+                    "possibleUnits":null
+                }]
+            },{
+                "label":"METADATA GROUP",
+                "name":"Star Details",
+                "content":[{
+                    "label":"METADATA LOOP",
+                    "name":"Planets",
+                    "content":[{
+                        "label":"METADATA FIELD",
+                        "fieldType":"Float",
+                        "name":"distance",
+                        "ontologyUri":null,
+                        "customValue":"Unnamed",
+                        "required":false,
+                        "sensitive":false,
+                        "hasRange":false,
+                        "isList":false,
+                        "possibleValues":null,
+                        "hasUnit":false,
+                        "possibleUnits":null}
+                    ]},{
+                        "label":"METADATA FIELD",
+                        "fieldType":"Float",
+                        "name":"declination",
+                        "ontologyUri":null,
+                        "customValue":0.0,
+                        "required":false,
+                        "sensitive":false,
+                        "hasRange":true,
+                        "isList":false,
+                        "possibleValues":null,
+                        "hasUnit":true,
+                        "possibleUnits":["degree", "radians"],
+                        "min":"-180.0",
+                        "max":"180.0",
+                        "step":"0.5"
+                    }]
+            }]
+        };
+
 
         it("should return an error for missing group", function() {
             var model = new DataType.Model({name: emptySchema.schemaName, schema: emptySchema});
@@ -207,6 +310,16 @@ describe('DataType', function() {
             var errs = model.validate(model.attributes);
             expect(errs).to.have.length(1);
             expect(errs[0].message).to.equal(i18n("please-add-at-least-a-metadata-field"));
+        });
+
+        it("should return an error for duplicate fields", function() {
+            var model = new DataType.Model({name: fieldlessSchema.schemaName, schema: duplicateFieldsSchema});
+            var errs = model.validate(model.attributes);
+            expect(errs).to.have.length(1);
+            var message = i18n("data-type-has-the-following-duplicate-names") + ": name, distance";
+            expect(errs[0].name).to.equal("duplicates");
+            expect(errs[0].message).to.equal(message);
+
         });
 
     });
