@@ -19,6 +19,10 @@ module.exports = {
             columnName: 'type'  
         },
 
+        biobank: {
+            model: 'biobank'
+        },
+
         donor: {
             model: 'subject',
             columnName: 'parent_subject'

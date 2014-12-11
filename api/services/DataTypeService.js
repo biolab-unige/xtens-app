@@ -20,7 +20,7 @@ var DataTypeService = {
             var ids = params.idDataTypes.split(",");
             criteriaObj.id = ids;
         }
-        DataType.find(criteriaObj).populateAll().exec(next);
+        DataType.find(criteriaObj).populateAll().exec(next); // do we need populateAll here?
     }
 
 };

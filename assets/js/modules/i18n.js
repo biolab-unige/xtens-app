@@ -92,7 +92,7 @@
         "metadata": "Metadata",
         "new-data": "New Data",
         /* views/templates/personal-details-edit.ejs */
-        "given-name": "Given Name",
+        "given-name": "Name",
         "surname": "Surname",
         /* views/templates/subject-list */
         "subject-list": "Subject List",
@@ -109,6 +109,7 @@
         "sample-manager": "Sample Manager",
         "create-sample": "Create Sample",
         "update-sample": "Update Sample",
+        "biobank": "Biobank",
         "biobank-code": "Biobank Code",
         "material-type": "Material Type",
         "donor": "Donor",
@@ -121,11 +122,21 @@
         "anatomical-position": "Anatomical Position",
         "new-derivative-sample": "New Derivative Sample",
         /* view/templates/biobank-edit */
+        "biobanks": "Biobanks",
+        "new-biobank": "New Biobank",
+        /* view/templates/biobank-edit */
+        "biobank-manager": "Biobank Manager",
+        "create-biobank": "Create Biobank",
+        "update-biobank": "Update Biobank",
+        "delete-biobank": "Delete Biobank",
         "biobank-ID": "Biobank ID",
-        "acronym": "Acronym",
-        "url": "URL (Internet Address)",
+        "biobank-name": "Biobank Name",
+        "biobank-acronym": "Biobank Acronym",
+        "biobank-url": "Biobank URL",
         "juristic-person": "Juristic Person",
+        "save-biobank": "Save Biobank",
         /* view/templates/contactinformation-edit.js */
+        "contact-information": "Contact Information",
         "phone": "Phone",
         "address": "Address",
         "zip": "ZIP Code",

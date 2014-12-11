@@ -7,6 +7,7 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <th><%= __("biobank") %></th>
                             <th><%= __("arrival-code") %></th>
                             <th><%= __("biobank-code") %></th>
                             <th><%= __("type") %></th>
@@ -20,33 +21,17 @@
                     <% _.each(samples, function(sample) { 
                     var metadata = sample.get("metadata") %> 
                     <tr>
-                        <td><%= metadata["Arrival Code"] && metadata["Arrival Code"].value[0] %></td>
+                        <td><%= sample.get("biobank") && sample.get("biobank").acronym %></td>
+                        <td><%= metadata.arrival_code && metadata.arrival_code.value[0] %></td>
                         <td><%= sample.get("biobankCode") %></td>
                         <td><%= sample.get("type").name %></td>
                         <td><%= sample.get("donor") && sample.get("donor").code %></td>
-                        <td><%= metadata.Diagnosis &&  metadata.Diagnosis.value[0] %></td>
-                        <td><%= metadata["Anatomical Position"] && metadata["Anatomical Position"].value[0] %></td>
+                        <td><%= metadata.diagnosis &&  metadata.diagnosis.value[0] %></td>
+                        <td><%= metadata.anatomical_position && metadata.anatomical_position.value[0] %></td>
                         <td>
                             <a class="btn" href="<%= sample.get("editLink") %>"><%=__("edit") %></a>
                             <% if (sample.get("newDerivativeLink") && sample.get("newDerivativeLink").length > 0) {%>
                             <a class="btn" href="<%= sample.get("newDerivativeLink") %>"><%=__("new-derivative-sample") %></a>
-                            <!--
-                                <div class="dropdown">
-                                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownSample_<%=sample.id %>" data-toggle="dropdown">
-                                        <%=__("new-derivative-sample") %><span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSample_<%=sample.id %>">
-                                    <% _.each(sample.get("newDerivativeLink"), function(sampleTypeChild) {%>
-                                        <li role="presentation">
-                                            <a role="menuitem" tabindex="-1" 
-                                                href="#/samples/new/0?idDataType=<%= sampleTypeChild.id %>&parentSample=<%= sample.id %>">
-                                                <%= sampleTypeChild.name %>
-                                            </a>
-                                        </li>
-                                    <%}) %>
-                                    </ul>
-                                </div>
-                            -->
                             <%} %>
                             <% if (sample.get("newDataLink") && sample.get("newDataLink").length > 0) {%>
                             <a class="btn" href="<%= sample.get("newDataLink") %>"><%= __("new-data") %></a>
@@ -63,4 +48,3 @@
         </div>
     </div>
 </div>
-

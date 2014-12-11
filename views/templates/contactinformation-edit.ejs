@@ -1,49 +1,41 @@
 <h3><%= __('contact-information') %></h3>
 <div class="form-group metadataform-group">
-    <label for="givenName" class="data-label"><%= __('given-name') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="givenName" name="givenName"></input>
+    <label for="givenName" class="biobank-label"><%= __('given-name') %></label>
+    <div class="biobank-halfinput-div">
+        <input text class="form-control" id="givenName" name="givenName" required data-parsley-pattern="[a-zA-Z]+"></input>
+    </div>
+    <label for="surname" class="biobank-label"><%= __('surname') %></label>
+    <div class="biobank-halfinput-div">
+        <input text class="form-control" id="surname" name="surname" required data-parsley-pattern="[a-zA-Z]+"></input>
     </div>
 </div>
 <div class="form-group metadataform-group">
-    <label for="surname" class="data-label"><%= __('surname') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="surname" name="surname"></input>
+    <label for="phone" class="biobank-label"><%= __('phone') %></label>
+    <div class="biobank-halfinput-div">
+        <input text class="form-control" id="phone" name="phone" required></input>
+    </div>
+    <label for="email" class="biobank-label"><%= __('email') %></label>
+    <div class="biobank-halfinput-div">
+        <input type="email" class="form-control" id="email" name="email" required></input>
     </div>
 </div>
 <div class="form-group metadataform-group">
-    <label for="phone" class="data-label"><%= __('phone') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="phone" name="phone"></input>
-    </div>
-</div> 
-<div class="form-group metadataform-group">
-    <label for="email" class="data-label"><%= __('email') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="email" name="email"></input>
+    <label for="address" class="biobank-label"><%= __('address') %></label>
+    <div class="biobank-input-div">
+        <input text class="form-control" id="address" name="address" required></input>
     </div>
 </div>
 <div class="form-group metadataform-group">
-    <label for="address" class="data-label"><%= __('address') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="address" name="address"></input>
+    <label for="zip" class="biobank-label"><%= __('zip') %></label>
+    <div class="biobank-thirdinput-div">
+        <input text class="form-control" id="zip" name="zip" required></input>
     </div>
-</div>
-<div class="form-group metadataform-group">
-    <label for="zip" class="data-label"><%= __('zip') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="zip" name="zip"></input>
+    <label for="city" class="biobank-label"><%= __('city') %></label>
+    <div class="biobank-thirdinput-div">
+        <input text class="form-control" id="city" name="city" required data-parsley-pattern="[a-zA-Z]+"></input>
     </div>
-</div>
-<div class="form-group metadataform-group">
-    <label for="city" class="data-label"><%= __('city') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="city" name="city"></input>
-    </div>
-</div>
-<div class="form-group metadataform-group">
-    <label for="country" class="data-label"><%= __('country') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="country" name="country"></input>
+    <label for="country" class="biobank-label"><%= __('country') %></label>
+    <div class="biobank-thirdinput-div">
+        <input text class="form-control" id="country" name="country" required data-parsley-length="[2,2]" data-parsley-pattern="[a-zA-Z]+"></input>
     </div>
 </div>

@@ -16,6 +16,7 @@ module.exports = {
         acronym: {
             columnName: 'acronym',
             type: 'string',
+            required: true,
         },
         // MIABIS-03
         name: {
@@ -38,8 +39,10 @@ module.exports = {
         country: {
             columnName: 'country',
             type: 'string',
+            alpha: true,
             minLength: 2,
-            maxLength: 2
+            maxLength: 2,
+            required: true
         },
         // MIABIS-07
         contactInformation: {

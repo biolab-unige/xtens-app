@@ -28,7 +28,6 @@
 
             '#type': {
                 observe: 'type',
-
                 selectOptions: {
                     collection: 'this.dataTypes',
                     labelPath: 'name',
@@ -50,9 +49,31 @@
                 }
             },
 
+            '#biobank': {
+                observe: 'biobank',
+                selectOptions: {
+                    collection: 'this.biobanks',
+                    labelPath: 'acronym',
+                    valuePath: 'id',
+                    defaultOption: {
+                        label: "",
+                        value: null
+                    }
+                },
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n('please-select')});
+                },
+                getVal: function($el, ev, options) {
+                    var value = parseInt($el.val());
+                    return _.findWhere(options.view.biobanks, {id: value });
+                },
+                onGet: function(val, options) {
+                    return (val && val.id);
+                }
+            },
+
             '#donor': {
                 observe: 'donor',
-
                 selectOptions: {
                     collection: function() {
                         return this.subjects.map(function(subj) { 
@@ -81,7 +102,6 @@
 
             '#parent-sample': {
                 observe: 'parentSample',
-                
                 selectOptions: {
                     collection: function() {
                         return this.parentSamples.map(function(sample) { 
@@ -106,7 +126,6 @@
                 onGet: function(val, options) {
                     return (val && val.id);
                 }
-
             }
 
         },
@@ -117,7 +136,7 @@
             this.template = JST["views/templates/sample-edit.ejs"];
             this.schemaView = null;
             this.dataTypes = options.dataTypes || [];
-            // _.extend(this, options);
+            this.biobanks = options.biobanks || [];
             if (options.sample) {
                 this.model = new Sample.Model(options.sample);
             }
@@ -129,28 +148,9 @@
                     this.model.set(parent, options[parent]);
                 }
             }, this);
-            /*
-            this.dataTypes = options.dataTypes.toJSON();
-            this.subjects = options.subjects.toJSON();
-            this.parentSamples = options.samples.toJSON(); */
             this.render();
         },
-        /*
-        render: function(options) {
-            if (options.id) {
-                this.model = new Sample.Model({id: options.id});
-                this.model.fetch({
-                    success: this.fetchSuccess
-                });
-            }
-            else {
-                this.$el.html(this.template({__: i18n, data: null}));
-                this.stickit();
-                this.listenTo(this.model, 'change:type', this.dataTypeOnChange);
-            }
-            return this;
-        }, */
-
+        
         events: {
             'click #save': 'saveData'
         }

@@ -87,23 +87,87 @@ return __p
 
 this["JST"]["views/templates/biobank-edit.ejs"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div class="form-group biobankform-group">\n    <label for="biobankID" class="data-label">' +
+__p += '<h1>' +
+((__t = ( __("biobank-manager") )) == null ? '' : __t) +
+'</h1>\n<h2>' +
+((__t = ( biobank.id ? __("update-biobank") : __("create-biobank") )) == null ? '' : __t) +
+'</h2>\n\n<div id="content"> \n\n    <form id="biobank-form" class="form-horizontal edit-biobank-form" role="form">\n        <div class="form-group biobankform-group">\n            <label for="biobankID" class="biobank-label">' +
 ((__t = ( __('biobank-ID') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="biobankID" name="biobankID"></input>\n    </div>\n</div>\n<div class="form-group biobankform-group">\n    <label for="acronym" class="data-label">' +
-((__t = ( __('acronym') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="acronym" name="acronym"></input>\n    </div>\n</div>\n<div class="form-group biobankform-group">\n    <label for="name" class="data-label">' +
-((__t = ( __('name') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="name" name="name"></input>\n    </div>\n</div>\n<div class="form-group biobankform-group">\n    <label for="url" class="data-label">' +
-((__t = ( __('url') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="url" name="url"></input>\n    </div>\n</div>\n<div class="form-group biobankform-group">\n    <label for="juristicPerson" class="data-label">' +
-((__t = ( __('juristicPerson') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="juristicPerson" name="juristicPerson"></input>\n    </div>\n</div>\n<div class="form-group biobankform-group">\n    <label for="country" class="data-label">' +
+'</label>\n            <div class="biobank-halfinput-div">\n                <input text class="form-control" id="biobankID" name="biobankID"></input>\n            </div>\n            <label for="acronym" class="biobank-label">' +
+((__t = ( __('biobank-acronym') )) == null ? '' : __t) +
+'</label>\n            <div class="biobank-halfinput-div">\n                <input text class="form-control" id="acronym" name="acronym" required></input>\n            </div>\n        </div>\n        <div class="form-group biobankform-group">\n            <label for="name" class="biobank-label">' +
+((__t = ( __('biobank-name') )) == null ? '' : __t) +
+'</label>\n            <div class="biobank-halfinput-div">\n                <input text class="form-control" id="name" name="name" required></input>\n            </div>\n            <label for="url" class="biobank-label">' +
+((__t = ( __('biobank-url') )) == null ? '' : __t) +
+'</label>\n            <div class="biobank-halfinput-div">\n                <input text class="form-control" id="url" name="url"></input>\n            </div>\n        </div>\n        <div class="form-group biobankform-group">\n            <label for="juristicPerson" class="biobank-label">' +
+((__t = ( __('juristic-person') )) == null ? '' : __t) +
+'</label>\n            <div class="biobank-halfinput-div">\n                <input text class="form-control" id="juristicPerson" name="juristicPerson"></input>\n            </div>\n            <label for="country" class="biobank-label">' +
 ((__t = ( __('country') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="country" name="country"></input>\n    </div>\n</div>\n<div id="contact-information-cnt"></div> <!-- contactInformation -->\n<div class="form-group biobankform-group">\n    <label for="description" class="data-label">' +
+'</label>\n            <div class="biobank-halfinput-div">\n                <input text class="form-control" id="country" name="country" required \n                data-parsley-pattern="[a-zA-Z]+" data-parsley-length="[2,2]"></input>\n            </div>\n        </div>\n        <div class="form-group biobankform-group">\n            <label for="description" class="biobank-label">' +
 ((__t = ( __('description') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="description" name="description"></input>\n    </div>\n</div>\n';
+'</label>\n            <div class="biobank-input-div">\n                <input text class="form-control" id="description" name="description"></input>\n            </div>\n        </div>\n        <div id="contact-information-cnt"></div>\n        <div id="buttonbardiv" class="row text-center">\n            <div class="btn-group btn-group-margin">\n                <input type="submit" class="btn btn-primary" value="' +
+((__t = (__('save-biobank') )) == null ? '' : __t) +
+'" >\n                ';
+ if (biobank.id) { ;
+__p += '\n                <input type="hidden" id="id" name="id" value="' +
+((__t = ( biobank.id )) == null ? '' : __t) +
+'" />\n                <button data-biobank-id="' +
+((__t = ( biobank.id )) == null ? '' : __t) +
+'" class="btn btn-danger delete">' +
+((__t = ( __("delete") )) == null ? '' : __t) +
+'</button>\n                ';
+} ;
+__p += '\n            </div>\n        </div>\n    </form>\n</div> <!-- content -->\n';
+
+}
+return __p
+};
+
+this["JST"]["views/templates/biobank-list.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<h2>' +
+((__t = ( __("biobanks") )) == null ? '' : __t) +
+'</h2> \n\n<div id="content">\n    <div class="row">\n        <div class="col-sm-12">\n            <div class="table-responsive">\n                <table class="table">\n                    <thead>\n                        <tr>\n                            <th>' +
+((__t = ( __("biobank-ID") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("biobank-name") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("biobank-acronym") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("biobank-url") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("juristicPerson") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
+((__t = ( __("country") )) == null ? '' : __t) +
+'</th>\n                            <th></th>\n                        </tr>\n                    </thead>\n                    <tbody>\n                    ';
+ _.each(biobanks, function(biobank) { ;
+__p += ' \n                    <tr>\n                        <td>' +
+((__t = ( biobank.get("biobankID") )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( biobank.get("name") )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( biobank.get("acronym") )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( biobank.get("url") )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( biobank.get("juristicPerson") )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( biobank.get("country") )) == null ? '' : __t) +
+'</td>\n                        <td><a class="btn" href="#/biobanks/edit/' +
+((__t = ( biobank.id )) == null ? '' : __t) +
+'">' +
+((__t = (__("edit") )) == null ? '' : __t) +
+'</a></td>\n                    </tr>\n                    ';
+ }) ;
+__p += ' \n                    </tbody>\n                </table>\n            </div>\n            <div id="buttonbardiv" class="row text-center">\n                <a href="#/biobanks/new" class="btn btn-primary">' +
+((__t = ( __("new-biobank"))) == null ? '' : __t) +
+'</a>\n            </div>\n        </div>\n    </div>\n</div>\n';
 
 }
 return __p
@@ -115,23 +179,23 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<h3>' +
 ((__t = ( __('contact-information') )) == null ? '' : __t) +
-'</h3>\n<div class="form-group metadataform-group">\n    <label for="givenName" class="data-label">' +
+'</h3>\n<div class="form-group metadataform-group">\n    <label for="givenName" class="biobank-label">' +
 ((__t = ( __('given-name') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="givenName" name="givenName"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="surname" class="data-label">' +
+'</label>\n    <div class="biobank-halfinput-div">\n        <input text class="form-control" id="givenName" name="givenName" required data-parsley-pattern="[a-zA-Z]+"></input>\n    </div>\n    <label for="surname" class="biobank-label">' +
 ((__t = ( __('surname') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="surname" name="surname"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="phone" class="data-label">' +
+'</label>\n    <div class="biobank-halfinput-div">\n        <input text class="form-control" id="surname" name="surname" required data-parsley-pattern="[a-zA-Z]+"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="phone" class="biobank-label">' +
 ((__t = ( __('phone') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="phone" name="phone"></input>\n    </div>\n</div> \n<div class="form-group metadataform-group">\n    <label for="email" class="data-label">' +
+'</label>\n    <div class="biobank-halfinput-div">\n        <input text class="form-control" id="phone" name="phone" required></input>\n    </div>\n    <label for="email" class="biobank-label">' +
 ((__t = ( __('email') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="email" name="email"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="address" class="data-label">' +
+'</label>\n    <div class="biobank-halfinput-div">\n        <input type="email" class="form-control" id="email" name="email" required></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="address" class="biobank-label">' +
 ((__t = ( __('address') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="address" name="address"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="zip" class="data-label">' +
+'</label>\n    <div class="biobank-input-div">\n        <input text class="form-control" id="address" name="address" required></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="zip" class="biobank-label">' +
 ((__t = ( __('zip') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="zip" name="zip"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="city" class="data-label">' +
+'</label>\n    <div class="biobank-thirdinput-div">\n        <input text class="form-control" id="zip" name="zip" required></input>\n    </div>\n    <label for="city" class="biobank-label">' +
 ((__t = ( __('city') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="city" name="city"></input>\n    </div>\n</div>\n<div class="form-group metadataform-group">\n    <label for="country" class="data-label">' +
+'</label>\n    <div class="biobank-thirdinput-div">\n        <input text class="form-control" id="city" name="city" required data-parsley-pattern="[a-zA-Z]+"></input>\n    </div>\n    <label for="country" class="biobank-label">' +
 ((__t = ( __('country') )) == null ? '' : __t) +
-'</label>\n    <div class="data-input-div">\n        <input text class="form-control" id="country" name="country"></input>\n    </div>\n</div>\n';
+'</label>\n    <div class="biobank-thirdinput-div">\n        <input text class="form-control" id="country" name="country" required data-parsley-length="[2,2]" data-parsley-pattern="[a-zA-Z]+"></input>\n    </div>\n</div>\n';
 
 }
 return __p
@@ -911,7 +975,9 @@ __p += '<h1>' +
 ((__t = ( __("sample-manager") )) == null ? '' : __t) +
 '</h1>\n<h2>' +
 ((__t = ( data.id ? __("update-sample") : __("create-sample") )) == null ? '' : __t) +
-'</h2>\n<div id="content">\n    <form class="form-horizontal edit-data-form" role="form">\n        <div class="form-group"></div>\n        <div class="form-group metadataform-group">\n            <label for="biobank-code" class="data-label">' +
+'</h2>\n<div id="content">\n    <form class="form-horizontal edit-data-form" role="form">\n        <div class="form-group"></div>\n        <!-- Biobank Selection -->\n        <div class="form-group metadataform-group">\n            <label for="type" class="data-label">' +
+((__t = ( __('biobank') )) == null ? '' : __t) +
+'</label>\n            <div class="data-input-div">\n                <select class="form-control" id="biobank" name="biobank"></select>\n            </div>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="biobank-code" class="data-label">' +
 ((__t = ( __('biobank-code') )) == null ? '' : __t) +
 '</label>\n            <div class="data-input-div">\n                <input text class="form-control" id="biobank-code" name="biobank-code"></input>\n            </div>\n        </div>\n        <div class="form-group metadataform-group">\n            <label for="type" class="data-label">' +
 ((__t = ( __('type') )) == null ? '' : __t) +
@@ -921,7 +987,7 @@ __p += '\n        <div class="form-group metadataform-group">\n            <labe
 ((__t = ( __('donor') )) == null ? '' : __t) +
 '</label>\n            <span class="data-span">' +
 ((__t = ( data.get("donor").code )) == null ? '' : __t) +
-'</span>\n            <!--\n            <div class="data-input-div">\n                <select class="form-control" id="donor" name="donor"></select>\n            </div>\n            -->\n        </div>\n        ';
+'</span>\n        </div>\n        ';
 } ;
 __p += '\n        ';
  if (data.get("parentSample")) {;
@@ -929,7 +995,7 @@ __p += '\n        <div class="form-group metadataform-group">\n            <labe
 ((__t = ( __('parent-sample') )) == null ? '' : __t) +
 '</label>\n            <span class="data-span">' +
 ((__t = ( data.get("parentSample").biobankCode )) == null ? '' : __t) +
-'</span>\n            <!--\n            <div class="data-input-div">\n                <select class="form-control" id="parent-sample" name="parent-sample"></select>\n            </div>\n            -->\n        </div>\n        ';
+'</span>\n        </div>\n        ';
 } ;
 __p += '\n        <div id="buttonbardiv" class="row text-center">\n            <div class="btn-group btn-group-margin">\n                <input type="submit" id="save" class="btn btn-primary" data-target-route="samples" value="' +
 ((__t = (__('save') )) == null ? '' : __t) +
@@ -957,6 +1023,8 @@ with (obj) {
 __p += '<h2>' +
 ((__t = ( __("samples") )) == null ? '' : __t) +
 '</h2> \n\n<div id="content">\n    <div class="row">\n        <div class="col-sm-12">\n            <div class="table-responsive">\n                <table class="table">\n                    <thead>\n                        <tr>\n                            <th>' +
+((__t = ( __("biobank") )) == null ? '' : __t) +
+'</th>\n                            <th>' +
 ((__t = ( __("arrival-code") )) == null ? '' : __t) +
 '</th>\n                            <th>' +
 ((__t = ( __("biobank-code") )) == null ? '' : __t) +
@@ -972,7 +1040,9 @@ __p += '<h2>' +
  _.each(samples, function(sample) { 
                     var metadata = sample.get("metadata") ;
 __p += ' \n                    <tr>\n                        <td>' +
-((__t = ( metadata["Arrival Code"] && metadata["Arrival Code"].value[0] )) == null ? '' : __t) +
+((__t = ( sample.get("biobank") && sample.get("biobank").acronym )) == null ? '' : __t) +
+'</td>\n                        <td>' +
+((__t = ( metadata.arrival_code && metadata.arrival_code.value[0] )) == null ? '' : __t) +
 '</td>\n                        <td>' +
 ((__t = ( sample.get("biobankCode") )) == null ? '' : __t) +
 '</td>\n                        <td>' +
@@ -980,9 +1050,9 @@ __p += ' \n                    <tr>\n                        <td>' +
 '</td>\n                        <td>' +
 ((__t = ( sample.get("donor") && sample.get("donor").code )) == null ? '' : __t) +
 '</td>\n                        <td>' +
-((__t = ( metadata.Diagnosis &&  metadata.Diagnosis.value[0] )) == null ? '' : __t) +
+((__t = ( metadata.diagnosis &&  metadata.diagnosis.value[0] )) == null ? '' : __t) +
 '</td>\n                        <td>' +
-((__t = ( metadata["Anatomical Position"] && metadata["Anatomical Position"].value[0] )) == null ? '' : __t) +
+((__t = ( metadata.anatomical_position && metadata.anatomical_position.value[0] )) == null ? '' : __t) +
 '</td>\n                        <td>\n                            <a class="btn" href="' +
 ((__t = ( sample.get("editLink") )) == null ? '' : __t) +
 '">' +
@@ -993,23 +1063,7 @@ __p += '\n                            <a class="btn" href="' +
 ((__t = ( sample.get("newDerivativeLink") )) == null ? '' : __t) +
 '">' +
 ((__t = (__("new-derivative-sample") )) == null ? '' : __t) +
-'</a>\n                            <!--\n                                <div class="dropdown">\n                                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownSample_' +
-((__t = (sample.id )) == null ? '' : __t) +
-'" data-toggle="dropdown">\n                                        ' +
-((__t = (__("new-derivative-sample") )) == null ? '' : __t) +
-'<span class="caret"></span>\n                                    </button>\n                                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownSample_' +
-((__t = (sample.id )) == null ? '' : __t) +
-'">\n                                    ';
- _.each(sample.get("newDerivativeLink"), function(sampleTypeChild) {;
-__p += '\n                                        <li role="presentation">\n                                            <a role="menuitem" tabindex="-1" \n                                                href="#/samples/new/0?idDataType=' +
-((__t = ( sampleTypeChild.id )) == null ? '' : __t) +
-'&parentSample=' +
-((__t = ( sample.id )) == null ? '' : __t) +
-'">\n                                                ' +
-((__t = ( sampleTypeChild.name )) == null ? '' : __t) +
-'\n                                            </a>\n                                        </li>\n                                    ';
-}) ;
-__p += '\n                                    </ul>\n                                </div>\n                            -->\n                            ';
+'</a>\n                            ';
 } ;
 __p += '\n                            ';
  if (sample.get("newDataLink") && sample.get("newDataLink").length > 0) {;
@@ -1023,7 +1077,7 @@ __p += '   \n                        </td>\n                    </tr>\n         
  }) ;
 __p += ' \n                    </tbody>\n                </table>\n            </div>\n            <div id="buttonbardiv" class="row text-center">\n                <a href="#/samples/new" class="btn btn-primary">' +
 ((__t = ( __("new-sample"))) == null ? '' : __t) +
-'</a>\n            </div>\n        </div>\n    </div>\n</div>\n\n';
+'</a>\n            </div>\n        </div>\n    </div>\n</div>\n';
 
 }
 return __p

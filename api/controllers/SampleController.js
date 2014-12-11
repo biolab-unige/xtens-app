@@ -22,6 +22,10 @@ module.exports = {
                 DataTypeService.getAsync(callback, params);
             },
 
+            biobanks: function(callback) {
+                BiobankService.getAsync(callback, params);
+            },
+
             donor: function(callback) {
                 SubjectService.getOneAsync(callback, params.donor);
             },

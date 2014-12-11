@@ -3,6 +3,13 @@
 <div id="content">
     <form class="form-horizontal edit-data-form" role="form">
         <div class="form-group"></div>
+        <!-- Biobank Selection -->
+        <div class="form-group metadataform-group">
+            <label for="type" class="data-label"><%= __('biobank') %></label>
+            <div class="data-input-div">
+                <select class="form-control" id="biobank" name="biobank"></select>
+            </div>
+        </div>
         <div class="form-group metadataform-group">
             <label for="biobank-code" class="data-label"><%= __('biobank-code') %></label>
             <div class="data-input-div">
@@ -19,22 +26,12 @@
         <div class="form-group metadataform-group">
             <label for="donor" class="data-label"><%= __('donor') %></label>
             <span class="data-span"><%= data.get("donor").code %></span>
-            <!--
-            <div class="data-input-div">
-                <select class="form-control" id="donor" name="donor"></select>
-            </div>
-            -->
         </div>
         <%} %>
         <% if (data.get("parentSample")) {%>
         <div class="form-group metadataform-group">
             <label for="parent-sample" class="data-label"><%= __('parent-sample') %></label>
             <span class="data-span"><%= data.get("parentSample").biobankCode %></span>
-            <!--
-            <div class="data-input-div">
-                <select class="form-control" id="parent-sample" name="parent-sample"></select>
-            </div>
-            -->
         </div>
         <%} %>
         <div id="buttonbardiv" class="row text-center">

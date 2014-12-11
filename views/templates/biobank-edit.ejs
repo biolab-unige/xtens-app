@@ -1,43 +1,55 @@
-<div class="form-group biobankform-group">
-    <label for="biobankID" class="data-label"><%= __('biobank-ID') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="biobankID" name="biobankID"></input>
-    </div>
-</div>
-<div class="form-group biobankform-group">
-    <label for="acronym" class="data-label"><%= __('acronym') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="acronym" name="acronym"></input>
-    </div>
-</div>
-<div class="form-group biobankform-group">
-    <label for="name" class="data-label"><%= __('name') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="name" name="name"></input>
-    </div>
-</div>
-<div class="form-group biobankform-group">
-    <label for="url" class="data-label"><%= __('url') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="url" name="url"></input>
-    </div>
-</div>
-<div class="form-group biobankform-group">
-    <label for="juristicPerson" class="data-label"><%= __('juristicPerson') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="juristicPerson" name="juristicPerson"></input>
-    </div>
-</div>
-<div class="form-group biobankform-group">
-    <label for="country" class="data-label"><%= __('country') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="country" name="country"></input>
-    </div>
-</div>
-<div id="contact-information-cnt"></div> <!-- contactInformation -->
-<div class="form-group biobankform-group">
-    <label for="description" class="data-label"><%= __('description') %></label>
-    <div class="data-input-div">
-        <input text class="form-control" id="description" name="description"></input>
-    </div>
-</div>
+<h1><%= __("biobank-manager") %></h1>
+<h2><%= biobank.id ? __("update-biobank") : __("create-biobank") %></h2>
+
+<div id="content"> 
+
+    <form id="biobank-form" class="form-horizontal edit-biobank-form" role="form">
+        <div class="form-group biobankform-group">
+            <label for="biobankID" class="biobank-label"><%= __('biobank-ID') %></label>
+            <div class="biobank-halfinput-div">
+                <input text class="form-control" id="biobankID" name="biobankID"></input>
+            </div>
+            <label for="acronym" class="biobank-label"><%= __('biobank-acronym') %></label>
+            <div class="biobank-halfinput-div">
+                <input text class="form-control" id="acronym" name="acronym" required></input>
+            </div>
+        </div>
+        <div class="form-group biobankform-group">
+            <label for="name" class="biobank-label"><%= __('biobank-name') %></label>
+            <div class="biobank-halfinput-div">
+                <input text class="form-control" id="name" name="name" required></input>
+            </div>
+            <label for="url" class="biobank-label"><%= __('biobank-url') %></label>
+            <div class="biobank-halfinput-div">
+                <input text class="form-control" id="url" name="url"></input>
+            </div>
+        </div>
+        <div class="form-group biobankform-group">
+            <label for="juristicPerson" class="biobank-label"><%= __('juristic-person') %></label>
+            <div class="biobank-halfinput-div">
+                <input text class="form-control" id="juristicPerson" name="juristicPerson"></input>
+            </div>
+            <label for="country" class="biobank-label"><%= __('country') %></label>
+            <div class="biobank-halfinput-div">
+                <input text class="form-control" id="country" name="country" required 
+                data-parsley-pattern="[a-zA-Z]+" data-parsley-length="[2,2]"></input>
+            </div>
+        </div>
+        <div class="form-group biobankform-group">
+            <label for="description" class="biobank-label"><%= __('description') %></label>
+            <div class="biobank-input-div">
+                <input text class="form-control" id="description" name="description"></input>
+            </div>
+        </div>
+        <div id="contact-information-cnt"></div>
+        <div id="buttonbardiv" class="row text-center">
+            <div class="btn-group btn-group-margin">
+                <input type="submit" class="btn btn-primary" value="<%=__('save-biobank') %>" >
+                <% if (biobank.id) { %>
+                <input type="hidden" id="id" name="id" value="<%= biobank.id %>" />
+                <button data-biobank-id="<%= biobank.id %>" class="btn btn-danger delete"><%= __("delete") %></button>
+                <%} %>
+            </div>
+        </div>
+    </form>
+</div> <!-- content -->

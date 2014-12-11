@@ -64,7 +64,7 @@
             "samples/edit/:id": "sampleEdit",
             "biobanks": "biobankList",
             "biobanks/new": "biobankEdit",
-            "biobank/edit/:id": "biobankEdit",
+            "biobanks/edit/:id": "biobankEdit",
             "query": "queryBuilder",
             "operators": "operatorList",
             "operators/new": "operatorEdit",
@@ -191,9 +191,8 @@
         },
 
         operatorList:function(){
-	
             this.loadView(new Operator.Views.List());
-                    },
+        },
 
         operatorEdit:function(id){
             this.loadView(new Operator.Views.Edit({id:id}));
@@ -272,12 +271,12 @@
         },
 
         biobankList: function() {
-            // TODO
+            this.loadView(new Biobank.Views.List());
         },
         
         biobankEdit: function(id) {
-            var biobank = new Biobank.Model({id: id}), that = this;
             if (id) {
+                var biobank = new Biobank.Model({id: id}), that = this;
                 biobank.fetch({
                     success: function(biobank) {
                         that.loadView(new Biobank.Views.Edit({
@@ -288,7 +287,7 @@
                 });
             }
             else {
-                this.loadView(new Biobank.Views.Edit({model: biobank}));
+                this.loadView(new Biobank.Views.Edit({model: new Biobank.Model()}));
             }
         },
                 
