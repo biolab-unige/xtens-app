@@ -1,0 +1,39 @@
+<h2><%= __("biobanks") %></h2> 
+
+<div id="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><%= __("biobank-ID") %></th>
+                            <th><%= __("biobank-name") %></th>
+                            <th><%= __("biobank-acronym") %></th>
+                            <th><%= __("biobank-url") %></th>
+                            <th><%= __("juristicPerson") %></th>
+                            <th><%= __("country") %></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <% _.each(biobanks, function(biobank) { %> 
+                    <tr>
+                        <td><%= biobank.get("biobankID") %></td>
+                        <td><%= biobank.get("name") %></td>
+                        <td><%= biobank.get("acronym") %></td>
+                        <td><%= biobank.get("url") %></td>
+                        <td><%= biobank.get("juristicPerson") %></td>
+                        <td><%= biobank.get("country") %></td>
+                        <td><a class="btn" href="#/biobanks/edit/<%= biobank.id %>"><%=__("edit") %></a></td>
+                    </tr>
+                    <% }) %> 
+                    </tbody>
+                </table>
+            </div>
+            <div id="buttonbardiv" class="row text-center">
+                <a href="#/biobanks/new" class="btn btn-primary"><%= __("new-biobank")%></a>
+            </div>
+        </div>
+    </div>
+</div>
