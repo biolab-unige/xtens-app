@@ -27,6 +27,7 @@
     "sails-disk": "~0.10.0",
     "sails-postgresql": "^0.10.9",
     "skipper": "^0.5.3",
+    "xtens-fs": "git+https://github.com/biolab-unige/xtens-fs.git",
     "xtens-query": "git+https://github.com/biolab-unige/xtens-query.git"
   },
   "scripts": {

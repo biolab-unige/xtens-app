@@ -5,6 +5,7 @@ var http = require('http');
 var queryBuilder = sails.config.xtens.queryBuilder;
 var irodsConf = sails.config.xtens.irods;
 var DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
+var fileSystemManager = sails.config.xtens.fileSystemManager;
 
 var rule = [
     'xtensFileMove {',
@@ -61,7 +62,8 @@ var DataService = {
 
     moveFiles:function(files, id, dataTypeName, next) {
         async.each(files,function(file, callback){ 
-            DataService.moveFile(file, id, dataTypeName, callback);
+            // DataService.moveFile(file, id, dataTypeName, callback);
+            fileSystemManager.storeFile(file, id, dataTypeName, callback);
         }, function(err) {
             if (err) {
                 console.log("moving to next(error)");
