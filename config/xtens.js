@@ -1,7 +1,7 @@
 var QueryBuilder = require('xtens-query').QueryBuilder;
 var IrodsRestStrategy = require('xtens-fs').IrodsRestStrategy;
 var FileSystemManager = require('xtens-fs').FileSystemManager;
-var irodsConf = require('./local.js').irodsConf;
+var fileSystemConnections = require('./local.js').fileSystemConnections;
 
 /**
  *  @description XTENS configuration parameters
@@ -13,9 +13,9 @@ module.exports.xtens = {
     
     queryBuilder: new QueryBuilder(),
     
-    fileSystemManager: new FileSystemManager(new IrodsRestStrategy(irodsConf)),
+    fileSystemManager: new FileSystemManager(fileSystemConnections[fileSystemConnections.default]),
     
-    irods: irodsConf,
+    irods: fileSystemConnections[fileSystemConnections.default],
 
     /***
      * constants of the XTENS platform
