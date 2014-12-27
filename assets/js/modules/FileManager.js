@@ -3,7 +3,7 @@
     var router = xtens.router;
     
     // TODO: move this to server side config
-    var baseUri = "http://130.251.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/superbiorods";
+    var baseUri = "http://130.251.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/xtensdevel";
     var landingRepo = "landing";
     Dropzone.autoDiscover = false;
 
@@ -17,7 +17,7 @@
         maxFileSize: 2048, // max 2 GiB
         uploadMultiple: false,
         method: "POST",
-        withCredentials: true
+        // withCredentials: true
     };
 
     FileManager.Model = Backbone.Model.extend({
@@ -66,7 +66,7 @@
                 // TODO create collections on iRODS if necessary
             });
             this.dropzone.on("sending", function(file, xhr, formData) {
-               xhr.setRequestHeader("Authorization", "Basic " + btoa("superbiorods" + ":" + "superbio05!"));
+               xhr.setRequestHeader("Authorization", "Basic " + btoa("xtensdevel" + ":" + "xtensdevel"));
             });
             this.dropzone.on("success", function(file, xhr, formData) {
                 var name = _.last(this.options.url.split("/"));

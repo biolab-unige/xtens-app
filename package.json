@@ -28,7 +28,8 @@
     "sails-postgresql": "^0.10.9",
     "skipper": "^0.5.3",
     "xtens-fs": "git+https://github.com/biolab-unige/xtens-fs.git",
-    "xtens-query": "git+https://github.com/biolab-unige/xtens-query.git"
+    "xtens-query": "git+https://github.com/biolab-unige/xtens-query.git",
+    "xtens-transact": "git+https://github.com/biolab-unige/xtens-transact.git"
   },
   "scripts": {
     "start": "node app.js",

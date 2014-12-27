@@ -542,10 +542,18 @@
                 },
                 getVal: function($el, ev, options) {
                     var value = parseInt($el.val());
-                    return _.findWhere(options.view.dataTypes, {id: value });
+                    return _.isNaN(value) ? null : value;
+                    // return _.findWhere(options.view.dataTypes, {id: value });
                 },
                 onGet: function(val, options) {
-                    return (val && val.id);
+                    // if you get the whole DataType object you must retrieve the ID
+                    if (_.isObject(val)) {
+                        return (val && val.id);
+                    }
+                    // otherwise you've already the ID
+                    else {
+                        return val;
+                    }
                 }
             },
 
@@ -590,7 +598,14 @@
             return false;
         },
 
-        getSelectedSchema: function(idDataType) {
+        getSelectedSchema: function(dataType) {
+            var idDataType;
+            if (typeof dataType === "object") {
+                idDataType = dataType && dataType.id;
+            }
+            else {
+                idDataType = dataType;
+            }
             return _.findWhere(this.dataTypes, {id: idDataType}).schema;
         },
 
@@ -609,7 +624,7 @@
             }
             var type = this.model.get('type');
             if (type) {
-                var schema = type.schema;
+                var schema = this.getSelectedSchema(type);
                 var schemaModel = new Data.MetadataSchemaModel(null, {data: data});
                 this.schemaView = new Data.Views.MetadataSchema({
                     component: schema,

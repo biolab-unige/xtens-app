@@ -3,10 +3,10 @@
  */
 var http = require('http');
 var queryBuilder = sails.config.xtens.queryBuilder;
-var irodsConf = sails.config.xtens.irods;
 var DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
 var fileSystemManager = sails.config.xtens.fileSystemManager;
 
+/*
 var rule = [
     'xtensFileMove {',
     '*destColl = str(*irodsHome)++"/"++str(*repoColl)++"/"++str(*dataTypeName);',
@@ -24,7 +24,7 @@ var rule = [
     '}',
     'INPUT *irodsHome = "/biolabZone/home/superbiorods", *landingColl="land", *fileName = "void.txt", *dataTypeName = "none", *repoColl="test-repo", *idData =0',
     'OUTPUT *ruleExecOut'
-].join('\r\n');
+].join('\r\n'); */
 
 
 var DataService = {
@@ -62,7 +62,6 @@ var DataService = {
 
     moveFiles:function(files, id, dataTypeName, next) {
         async.each(files,function(file, callback){ 
-            // DataService.moveFile(file, id, dataTypeName, callback);
             fileSystemManager.storeFile(file, id, dataTypeName, callback);
         }, function(err) {
             if (err) {
@@ -73,71 +72,6 @@ var DataService = {
                 next();
             }
         });
-    },
-
-    moveFile: function(file, idData, dataTypeName, callback) {
-        console.log(file.name);
-
-        var irodsRuleInputParameters = [
-            {name: "*irodsHome", value: irodsConf.irodsHome},
-            {name: "*dataTypeName", value: dataTypeName},
-            {name: "*fileName", value: file.name},
-            {name: "*landingColl", value: irodsConf.landingColl},
-            {name: "*repoColl", value: irodsConf.repoColl}
-        ];
-
-        if (idData) {
-            console.log("adding idData...");
-            irodsRuleInputParameters.push({name: "*idData", value: idData});
-        }
-
-        var postOptions = {
-            hostname: irodsConf.irodsRest.hostname,
-            port: irodsConf.irodsRest.port,
-            path: irodsConf.irodsRest.path + '/rule',
-            method: 'POST', 
-            auth: irodsConf.username+':'+irodsConf.password,
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            } 
-        };
-
-        var postRequest = http.request(postOptions,function(res) {
-            res.setEncoding('utf8');
-
-            var resBody = '';
-
-            res.on('data', function(chunk) {
-                resBody += chunk;
-            });
-
-            res.on('end', function() {
-                console.log('res.end');
-                console.log(resBody); 
-                file.uri = irodsConf.irodsHome + "/" + irodsConf.repoColl + "/" + dataTypeName + "/" + 
-                    (idData ? idData + "/" : "") + file.name; 
-                delete file.name;
-                console.log("irods.moveFile: uri = " + file.uri);
-                console.log("irods.moveFile: success...calling callback");
-                callback();
-            });
-        });
-
-        postRequest.on('error',function(err) {
-            console.log('irods.moveFile: problem with request: ' + err.message);
-            callback(err);
-        });
-
-        var body = {
-            ruleProcessingType: "INTERNAL",
-            ruleAsOriginalText: rule,
-            irodsRuleInputParameters: irodsRuleInputParameters
-        };
-
-        postRequest.write(JSON.stringify(body));
-        postRequest.end();
-
     },
 
     saveFileEntities: function(files, next) {
@@ -151,8 +85,9 @@ var DataService = {
             next();
         });
 
-    },
-
+    }
+    
+    /*
     retrieveFiles: function(files, next) {
         
         async.each(files, function(file, callback) {
@@ -165,6 +100,8 @@ var DataService = {
         });
 
     },
+    
+   TODO: MOVE THIS FUNCTION TO xtens-fs module
 
     retrieveFile: function(file, callback) {
         
@@ -207,16 +144,6 @@ var DataService = {
         postRequest.end();
 
 
-    },
-
-    /* test function for update with populate 
-    testUpdate: function(id) {
-        Data.findOne(3).populateAll().exec(function(err, res) {
-            if (err) {
-                console.log(err);
-            }
-            
-        });
     } */
 
 };
