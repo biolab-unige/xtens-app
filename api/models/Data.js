@@ -34,7 +34,8 @@ var Data = {
         // associated data files
         files: {
             collection: 'dataFile',
-            via: 'data'
+            via: 'data',
+            dominant: true
         },
         // if the parent is a patient
         parentSubject: {

@@ -20,9 +20,16 @@ module.exports = {
         details: {
             type: 'json'
         },
-
+        
+        // many-to-many association with Data
         data: {
             collection: 'data',
+            via: 'files'
+        },
+
+        // many-to-many association with Sample
+        samples: {
+            collection: 'sample',
             via: 'files'
         },
         

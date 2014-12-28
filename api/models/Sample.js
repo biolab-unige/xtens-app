@@ -11,7 +11,8 @@ module.exports = {
 
         biobankCode: {
             type: 'string',
-            columnName: 'biobank_code'
+            columnName: 'biobank_code',
+            required: true
         },
 
         type: {
@@ -36,6 +37,13 @@ module.exports = {
         metadata: {
             type: 'json',
             required: true
+        },
+
+        // many-to-many association to files
+        files: {
+            collection: 'dataFile',
+            via: 'samples',
+            dominant: true
         },
 
         createdAt: {
