@@ -56,12 +56,12 @@
                         var colTitle = replaceUnderscoreAndCapitalize(field.name);
                         columns.push({
                             "title": colTitle,
-                            "data": "metadata." + field.name + ".value.0"
+                            "data": "metadata." + field.name + ".value"
                         });
                         if (field.hasUnit) {
                             columns.push({
                                 "title": colTitle + " Unit",
-                                "data": "metadata." + field.name + ".unit.0"
+                                "data": "metadata." + field.name + ".unit"
                             });
                         }
                 });

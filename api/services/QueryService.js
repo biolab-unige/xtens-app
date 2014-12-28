@@ -10,7 +10,11 @@ var QueryService = {
         var query = queryBuilder.compose(queryParams);
         console.log(query.statement);
         console.log(query.parameters);
-        Data.query(query.statement, query.parameters, function(err, result) {
+        // Using prepared statements as an additional protection against SQL injection
+        Data.query({
+            text: query.statement, 
+            values: query.parameters
+        }, function(err, result) {
             if (err) {
                 console.log(err);
             }

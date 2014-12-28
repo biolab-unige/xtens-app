@@ -49,19 +49,19 @@
 
     Data.Factory = function() {
 
-        this.createComponentView = function(component, metadatarecord, params) {
+        this.createComponentView = function(component, metadatarecord, groupName, params) {
 
             var model;
             if (component.label === Constants.METADATA_GROUP) {
-                model = new Data.MetadataGroupModel(null, {metadata: metadatarecord});
+                model = new Data.MetadataGroupModel(null, {metadata: metadatarecord, groupName: groupName});
                 return new Data.Views.MetadataGroup({model: model, component: component});
             }
             if (component.label === Constants.METADATA_LOOP) {
-                model = new Data.MetadataLoopModel(null, {metadata: metadatarecord});
+                model = new Data.MetadataLoopModel(null, {metadata: metadatarecord, groupName: groupName});
                 return new Data.Views.MetadataLoop({model: model, component: component });
             }
             else if (component.label === Constants.METADATA_FIELD) {
-                model = new Data.MetadataFieldModel(null, {field: component, metadata: metadatarecord, loopParams: params});
+                model = new Data.MetadataFieldModel(null, {field: component, metadata: metadatarecord, groupName: groupName, loopParams: params});
                 if (component.fieldType === FieldTypes.BOOLEAN) {
                     return new Data.Views.MetadataFieldCheckbox({model: model, component: component});
                 }
@@ -91,21 +91,42 @@
             value: null,
             unit: null
         },
+        
+        /**
+         * @description initialize a generic MetadataField for editing purposes 
+         */
 
         initialize: function(attributes, options) {
             var field = options.field || {};
             this.set("name", field.name);
+            this.set("groupName", options.groupName);
             if (options.loopParams) {
                 this.set("loop", options.loopParams.name);
             }
+
+            // it is an existing data instance
             if (options.metadata && options.metadata[field.name]) {
                 var fieldRecord = options.metadata[field.name];
-                var index = (options.loopParams && options.loopParams.index) || 0;
-                this.set("value", fieldRecord.value[index]);
-                if (field.hasUnit) {
-                    this.set("unit", fieldRecord.unit[index]);
+
+                // if it is a field from a loop retrieve the value/unit pair from the values & units arrays
+                if (options.loopParams) {
+                    var index = options.loopParams.index || 0;
+                    this.set("value", fieldRecord.values[index]);
+                    if (field.hasUnit) {
+                        this.set("unit", fieldRecord.units[index]);
+                    }
+                }
+
+                // if it's not from a loop just set the value/unit pair
+                else {
+                    this.set("value", fieldRecord.value);
+                    if (field.hasUnit) {
+                        this.set("unit", fieldRecord.unit);
+                    }
                 }
             }
+
+            // it is a new data instance
             else {
                 if (field.fieldType === FieldTypes.BOOLEAN) {
                     // initialize new boolean to FALSE
@@ -126,6 +147,7 @@
      */
     Data.MetadataGroupModel = Backbone.Model.extend({
         initialize: function(attributes, options) {
+            this.set("groupName", options.groupName);
             if (options && options.metadata) {
                 this.metadata = options.metadata;
             }
@@ -137,7 +159,8 @@
      */
     Data.MetadataLoopModel = Backbone.Model.extend({
         initialize: function(attributes, options) {
-            this.set("name", options && options.name); 
+            this.set("name", options && options.name);
+            this.set("groupName", options.groupName); 
             if (options && options.metadata) {
                 this.metadata = options.metadata;
             }
@@ -168,14 +191,15 @@
                 var content = this.component.body || this.component.content;
                 var len = content && content.length;
                 for (var i=0; i<len; i++) {
-                    this.add(content[i], this.model.metadata);
+                    var groupName = content[i].label === Constants.METADATA_GROUP ? content[i].name : this.model.get("groupName");
+                    this.add(content[i], this.model.metadata, groupName);
                 }
             }
             return this;
         },
 
-        add: function(subcomponent, metadatarecord) {
-            var view = factory.createComponentView(subcomponent, metadatarecord);
+        add: function(subcomponent, metadatarecord, groupName) {
+            var view = factory.createComponentView(subcomponent, metadatarecord, groupName);
             this.$el.children('.metadatacomponent-body').last().append(view.render().el);
             this.nestedViews.push(view);
         },
@@ -212,13 +236,8 @@
             var data = options && options.data;
             if (data) {
                 this.metadata = data.get("metadata");
-                /*
-                   this.set("date", data.get("date"));
-                   this.set("tags", data.get("tags"));
-                   this.set("notes", data.get("notes")); */
             }
         }
-
     });
 
     Data.Views.MetadataSchema = Data.Views.MetadataComponent.fullExtend({
@@ -232,6 +251,9 @@
             this.nestedViews = [];
         },
 
+        /**
+         *  @description serialize the metadadata schema to a JSON object
+         */
         serialize: function() {
             var arr = [];
             var i, len;
@@ -243,14 +265,25 @@
             var serialized = _.flatten(arr);
             var metadata = {};
             for (i=0, len=serialized.length; i<len; i++) {
-                var unit = serialized[i].unit ? [serialized[i].unit] : undefined;
-                if (!metadata[serialized[i].name]) {    
-                    metadata[serialized[i].name] = {value: [serialized[i].value], unit: unit, loop: serialized[i].loop};
+                var unit = serialized[i].unit || undefined;
+
+                // if it's not a field of a loop just store the value/unit pair as an object
+                if (!serialized[i].loop) {
+                    metadata[serialized[i].name] = {value: serialized[i].value, unit: unit, group: serialized[i].groupName};
                 }
+
+                // if it's a field within a loop store the value unit pair within two arrays
                 else {
-                    metadata[serialized[i].name].value.push(serialized[i].value);
-                    if (unit && _.isArray(metadata[serialized[i].name].unit)) {
-                        metadata[serialized[i].name].unit.push(serialized[i].unit);
+                    if (!metadata[serialized[i].name]) {    
+                        metadata[serialized[i].name] = {values: [serialized[i].value], group: serialized[i].groupName, loop: serialized[i].loop};
+                        metadata[serialized[i].name].units = unit ? [unit] : undefined;
+                    }
+                    // if the loop value/unit arrays already exists push them in the arrays
+                    else {
+                        metadata[serialized[i].name].values.push(serialized[i].value);
+                        if (unit && _.isArray(metadata[serialized[i].name].units)) {
+                            metadata[serialized[i].name].units.push(serialized[i].unit);
+                        }
                     }
                 }
             }
@@ -278,7 +311,7 @@
             this.nestedViews = [];
             if (this.model.metadata) {
                 var loopInstance = this.model.metadata[this.component.content[0].name];
-                this.loopRecords = loopInstance ? loopInstance.value.length : 0;
+                this.loopRecords = loopInstance ? loopInstance.values.length : 0;
             }
             else {
                 this.loopRecords = 0;
@@ -294,10 +327,6 @@
             if (this.component) {
                 var content = this.component.content;
                 var i, len = content && content.length;
-                /*
-                   for (i=0; i<len; i++) {
-                   this.add(content[i], this.model.metadata, {name: this.component.name});
-                   } */
                 if (this.loopRecords > 0) {
                     for (i=0; i<this.loopRecords; i++) {
                         this.addLoopBody(i);
@@ -311,9 +340,9 @@
          *  override  the basic Data,Views.MetadataComponent add() method
          */
 
-        add: function(subcomponent, metadatarecord, loopParams) {
+        add: function(subcomponent, metadatarecord, groupName, loopParams) {
             // create a new field
-            var view = factory.createComponentView(subcomponent, metadatarecord, loopParams);
+            var view = factory.createComponentView(subcomponent, metadatarecord, groupName, loopParams);
             // add it to the current loop
             this.$metadataloopBody.children('.metadatacomponent-body').last().append(view.render().el);
             this.nestedViews.push(view);
@@ -332,7 +361,7 @@
             var len = this.component && this.component.content && this.component.content.length;
             var loopParams = { name: this.component.name, index: index };
             for (var i=0; i<len; i++) {
-                this.add(this.component.content[i], this.model.metadata, loopParams);
+                this.add(this.component.content[i], this.model.metadata, this.model.get("groupName"), loopParams);
             }
         }
 

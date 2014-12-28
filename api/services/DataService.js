@@ -6,27 +6,6 @@ var queryBuilder = sails.config.xtens.queryBuilder;
 var DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
 var fileSystemManager = sails.config.xtens.fileSystemManager;
 
-/*
-var rule = [
-    'xtensFileMove {',
-    '*destColl = str(*irodsHome)++"/"++str(*repoColl)++"/"++str(*dataTypeName);',
-    'writeLine("serverLog", "idData is *idData");',
-    'if (int(*idData) > 0) then {',
-    '*destColl = *destColl ++ "/" ++ str(*idData);',
-    '}',
-    'writeLine("serverLog", "destColl is *destColl");',
-    'msiCollCreate(str(*destColl), "1", *status) ::: msiRollback;',
-    '*source = str(*irodsHome)++"/"++str(*landingColl)++"/"++str(*fileName);',
-    'writeLine("serverLog", "source is *source");',
-    '*destination = str(*destColl)++"/"++str(*fileName);',
-    'writeLine("serverLog", "destination is *destination");',
-    'msiDataObjRename(*source, *destination, "0", *status);',
-    '}',
-    'INPUT *irodsHome = "/biolabZone/home/superbiorods", *landingColl="land", *fileName = "void.txt", *dataTypeName = "none", *repoColl="test-repo", *idData =0',
-    'OUTPUT *ruleExecOut'
-].join('\r\n'); */
-
-
 var DataService = {
 
     getOneAsync: function(next, id) {
@@ -40,7 +19,14 @@ var DataService = {
 
     advancedQueryAsync: function(next, queryArgs) {
         var query = queryBuilder.compose(queryArgs);
-        Data.query(query.statement, query.parameters, next);
+        console.log(query.statement);
+        console.log(query.parameters);
+        // Using Prepared Statements for efficiency and SQL-injection protection
+        // https://github.com/brianc/node-postgres/wiki/Client#method-query-prepared 
+        Data.query({
+            text: query.statement, 
+            values: query.parameters
+        }, next);
     },
 
     queryAndPopulateItemsById: function(next, foundRows, classTemplate) {
