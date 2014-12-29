@@ -4,6 +4,7 @@
  * @description :: Server-side logic for managing samples
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
+var transactionHandler = sails.config.xtens.transactionHandler;
 
 module.exports = {
 
@@ -27,7 +28,7 @@ module.exports = {
             },
 
             donor: function(callback) {
-                SubjectService.getOneAsync(callback, params.donor);
+                SubjectService.getOne(callback, params.donor);
             },
 
             parentSample: function(callback) {
@@ -41,6 +42,30 @@ module.exports = {
             return res.json(results);
         });
     
+    },
+
+    /**
+     *  @description: POST /sample: create a new sample; implementation based on 
+     *  Bluebird Promises + knex (transaction-support)
+     */
+    create: function(req, res) {
+        var sample = req.body;
+        DataType.findOne(data.type)
+        .then(function(sampleType) {
+            var sampleTypeName = sampleType && sampleType.name;
+            return transactionHandler.createSample(sample, sampleTypeName);
+        })
+        .then(function(idSample) {
+            console.log(idSample);
+            return Sample.findOne(idSample).populateAll();
+        })
+        .then(function(result) {
+            return res.json(result);
+        })
+        .catch(function(error) {
+            console.log(error.message);
+            return res.serverError(error.message);
+        });
     }
 	
 };

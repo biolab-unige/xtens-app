@@ -28,7 +28,7 @@ module.exports = {
             },
 
             parentSubject: function(callback) {
-                SubjectService.getOneAsync(callback, params.parentSubject);
+                SubjectService.getOne(callback, params.parentSubject);
             },
 
             parentSample: function(callback) {
@@ -70,7 +70,7 @@ module.exports = {
         })
         .catch(function(error) {
             console.log(error.message);
-            return res.serverError(err.message);
+            return res.serverError(error.message);
         });
     },
     

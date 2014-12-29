@@ -6,6 +6,7 @@
   "keywords": [],
   "dependencies": {
     "bcrypt": "~0.8.0",
+    "bluebird": "^2.5.1",
     "ejs": "~0.8.4",
     "grunt": "~0.4.2",
     "grunt-contrib-clean": "~0.5.0",

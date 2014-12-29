@@ -4,74 +4,44 @@
  * @description :: Server-side logic for managing subjects
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
+var transactionHandler = sails.config.xtens.transactionHandler;
 
 module.exports = {
 
-    createWithPersonalDetails: function(req, res) {
-        var subjectRecord = req.body;
-        async.auto({
-            transaction: function(next) {
-                Subject.query('BEGIN TRANSACTION', next);
-            },
-            personalDetails: ['transaction', function(next) {
-                PersonalDetails.create(subjectRecord.personalInfo).exec(next);
-            }],
-            subject: ['personalDetails', function(next, results) {
-                subjectRecord.personalInfo = results.personalDetails;
-                Subject.create(subjectRecord).exec(next);
-            }]        
-        }, function(error, results) {
-            SubjectService.terminateTransaction(error, results, res);
+    create: function(req, res) {
+        var subject = req.body;
+        var personalDetails = subject.personalInfo;
+        
+        SubjectService.createPersonalDetailsAsync(personalDetails)
+        .then(function(createdPersonalDetails) {
+            subject.personalInfo = createdPersonalDetails.id;
+            return DataType.findOne(subject.type);
+        }) 
+        .then(function(subjectType) {
+            var subjectTypeName = subjectType && subjectType.name;
+            return transactionHandler.createSubject(subject, subjectTypeName);
+        })
+        .then(function(idSubject) {
+            console.log(idSubject);
+            return Subject.findOne(idSubject).populateAll();
+        })
+        .then(function(result) {
+            return res.json(result);
+        })
+        .catch(function(error) {
+            console.log(error.message);
+            return res.serverError(error.message);
         });
-
     },
-    
-    findWithPersonalDetails: function(req, res) {
+
+    /*
+    find: function(req, res) {
         var subjectCriteria = req.allParams();
-        Subject.find().where(subjectCriteria).populate('personalInfo').populate('projects')
-        .exec(function(error, result) {
-            if (error) {
-                res.send(error); 
-            }
-            else {
-                res.json(result);
-            }
+        Subject.find().where(subjectCriteria).populate('projects').populate('samples').populate('childrenData')
+        .then(function(subjects) {
+        
         });
-    },
-
-    findOneWithPersonalDetails: function(req, res) {
-        var id = parseInt(req.param("id"));
-        Subject.findOne(id).populate("personalInfo").populate("projects")
-        .exec(function(error, result) {
-            if (error) {
-                res.send(error);
-            }
-            else {
-                res.json(result);
-            }
-        });
-    },
-
-    updateWithPersonalDetails: function(req, res) {
-        var subjectRecord = req.body;
-        async.auto({
-            transaction: function(next) {
-                Subject.query('BEGIN TRANSACTION', next);
-            },
-            personalDetails: ['transaction', function(next) {
-                PersonalDetails.update(subjectRecord.personalInfo).exec(next);
-            }],
-            subject: ['transaction', function(next, results) {
-                Subject.update(subject).exec(next);
-            }]
-        }, function(err, results) {
-            SubjectService.terminateTransaction(err, results, res);
-        });    
-    },
-    
-    deleteWithPersonalDetails: function(req, res) {
-        // TODO
-    },
+    }, */
 
     edit: function(req, res) {
         
@@ -88,7 +58,7 @@ module.exports = {
             },
 
             subject: function(callback) {
-                SubjectService.getOneAsync(callback, id);
+                SubjectService.getOne(callback, id);
             }
 
         }, function(err, results) {
@@ -98,8 +68,6 @@ module.exports = {
             return res.json(results);
             
         });
-
-
 
     }
     

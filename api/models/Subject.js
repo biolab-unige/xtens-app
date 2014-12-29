@@ -12,8 +12,8 @@ var Subject= {
         code: {
             type:'string',
             required: true,
-            unique: true,
-            alphanumeric: true
+            unique: true
+            //alphanumeric: true
         },
 
         sex: {
@@ -41,6 +41,12 @@ var Subject= {
         samples: {
             collection: 'sample',
             via: 'donor'
+        },
+
+        childrenData: {
+            columnName: 'children_data',
+            collection: 'data',
+            via: 'parentSubject'
         },
 
         tags: {

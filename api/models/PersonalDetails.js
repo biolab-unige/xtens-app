@@ -6,6 +6,7 @@
  */
 
 module.exports = {
+    connection: 'postgresql-personal',
     tableName: 'personal_details',
     attributes: {
         givenName: {

@@ -52,11 +52,9 @@
                 }, 
                 getVal: function($el, ev, options) {
                     return $el.val().map(function(value) {
-                        return _.findWhere(options.view.projects, {id: parseInt(value)});
+                        // return _.findWhere(options.view.projects, {id: parseInt(value)});
+                        return _.parseInt(value);
                     });
-                    /*
-                       var value = parseInt($el.val());
-                       return _.findWhere(options.view.projects, {id: value }); */
                 },
                 onGet: function(vals, options) {
                     return (vals && vals.map(function(val){return val.id; }));
@@ -66,7 +64,7 @@
             '#code': {
                 observe: 'code'
             },
-            
+
             '#sex': {
                 observe: 'sex',
                 initialize: function($el) {
@@ -98,7 +96,7 @@
         initialize: function(options) {
             // _.bindAll(this, 'fetchSuccess');
             $('#main').html(this.el);
-            this.dataTypes = null;
+            this.dataTypes = options.dataTypes;
             this.template = JST["views/templates/subject-edit.ejs"];
             this.personalDetailsView = null;
             this.schemaView = null;
@@ -107,34 +105,11 @@
                 this.model = new Subject.Model(options.subject);
             }
             else {
-                this.model = new Subject.Model({type: _.last(options.dataTypes)});
+                this.model = new Subject.Model({type: _.last(this.dataTypes).id});
             }
             this.render();
         },
-        /*
-        render: function(options) {
-            if (options.id) {
-                this.model = new Subject.Model({id: options.id});
-                this.model.fetch({
-                    success: this.fetchSuccess
-                });
-            }
-            else {
-                this.$el.html(this.template({__: i18n, data: null}));
-                this.stickit();
-                this.$('#tags').select2({tags: []});
-                this.renderDataTypeSchema();
-            }
-            return this;
-        }, */
-
-        /*
-fetchSuccess:function(subject) {
-this.$el.html(this.template({__: i18n, data: subject}));
-this.stickit();
-this.renderDataTypeSchema(subject);
-}, */
-
+        
         events: {
             "click #save": "saveData",
             "click #add-personal-details": "addPersonalDetailsView"
@@ -199,20 +174,9 @@ this.renderDataTypeSchema(subject);
         },
 
         render: function() {
-            /*
-               var that = this;
-               var subjects = new Subject.List();
-               subjects.fetch({
-success: function(subjects) {
-that.$el.html(that.template({__: i18n, subjects: subjects.models}));
-},
-error: function() {
-that.$el.html(that.template({__: i18n}));
-}
-}); */
-        this.$el.html(this.template({__: i18n, subjects: this.subjects.models}));
-        return this;
+            this.$el.html(this.template({__: i18n, subjects: this.subjects.models}));
+            return this;
         } 
-});
+    });
 
 } (xtens, xtens.module("subject")));
