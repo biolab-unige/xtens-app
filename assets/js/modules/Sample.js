@@ -42,10 +42,18 @@
                 },
                 getVal: function($el, ev, options) {
                     var value = parseInt($el.val());
-                    return _.findWhere(options.view.dataTypes, {id: value });
+                    return _.isNaN(value) ? null : value;
+                    // return _.findWhere(options.view.dataTypes, {id: value });
                 },
                 onGet: function(val, options) {
-                    return (val && val.id);
+                    // if you get the whole DataType object you must retrieve the ID
+                    if (_.isObject(val)) {
+                        return (val && val.id);
+                    }
+                    // otherwise you've already the ID
+                    else {
+                        return val;
+                    }
                 }
             },
 

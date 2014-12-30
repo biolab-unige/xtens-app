@@ -44,7 +44,6 @@ var Subject= {
         },
 
         childrenData: {
-            columnName: 'children_data',
             collection: 'data',
             via: 'parentSubject'
         },

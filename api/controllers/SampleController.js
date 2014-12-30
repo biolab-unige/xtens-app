@@ -34,14 +34,14 @@ module.exports = {
             parentSample: function(callback) {
                 SampleService.getOneAsync(callback, params.parentSample);
             }
-        
+
         }, function(error, results) {
             if (error) {
                 return res.serverError(error);
             }
             return res.json(results);
         });
-    
+
     },
 
     /**
@@ -50,7 +50,14 @@ module.exports = {
      */
     create: function(req, res) {
         var sample = req.body;
-        DataType.findOne(data.type)
+
+        ["type", "donor", "parentSample", "biobank"].forEach(function(elem) {
+            if (sample[elem]) {
+                sample[elem] = sample[elem].id || sample[elem];
+            }
+        });
+
+        DataType.findOne(sample.type)
         .then(function(sampleType) {
             var sampleTypeName = sampleType && sampleType.name;
             return transactionHandler.createSample(sample, sampleTypeName);
@@ -67,6 +74,6 @@ module.exports = {
             return res.serverError(error.message);
         });
     }
-	
+
 };
 

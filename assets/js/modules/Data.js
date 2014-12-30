@@ -91,7 +91,7 @@
             value: null,
             unit: null
         },
-        
+
         /**
          * @description initialize a generic MetadataField for editing purposes 
          */
@@ -682,7 +682,10 @@
         retrieveAndSetFiles: function() {
             if (this.fileUploadView) {
                 if (!this.model.id) {   // don't change the "files" attribute on update
-                    this.model.set("files", this.fileUploadView.fileList.toJSON());
+                    var files = this.fileUploadView.fileList.toJSON();
+                    if (!_.isEmpty(files)) {
+                        this.model.set("files", files);
+                    }
                 }
             }
         },

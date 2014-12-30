@@ -50,8 +50,8 @@ module.exports = {
     },
 
     /**
-     *  @description POST /data -> create a new Data Instance; implementation based on 
-     *               Bluebird Promises + Knex (transaction support) using xtens-transact
+     *  @description POST /data -> create a new Data Instance; transaction-safe implementation 
+     *                   
      */
 
     create: function(req, res) {
@@ -73,6 +73,31 @@ module.exports = {
             return res.serverError(error.message);
         });
     },
-    
+
+    /**
+     *  @description PUT /data/id -> update an existing Data Instance; transaction-safe implementation
+     *
+     */
+    update: function(req, res) {
+        var data = req.body;
+
+        ["type", "parentSubject", "parentSample", "parentData"].forEach(function(elem) {
+            if (data[elem]) {
+                data[elem] = data[elem].id || data[elem];
+            }
+        });
+
+        transactionHandler.updateData(data)
+        .then(function(idData) {
+            return Data.findOne(idData).populateAll();
+        })
+        .then(function(result) {
+            return res.json(result);
+        })
+        .catch(function(error) {
+            console.log(error.message);
+            return res.serverError(error.message);
+        });
+    } 
 };
 

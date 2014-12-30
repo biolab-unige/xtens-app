@@ -10,13 +10,7 @@ module.exports = {
 
     create: function(req, res) {
         var subject = req.body;
-        var personalDetails = subject.personalInfo;
-        
-        SubjectService.createPersonalDetailsAsync(personalDetails)
-        .then(function(createdPersonalDetails) {
-            subject.personalInfo = createdPersonalDetails.id;
-            return DataType.findOne(subject.type);
-        }) 
+        DataType.findOne(subject.type)
         .then(function(subjectType) {
             var subjectTypeName = subjectType && subjectType.name;
             return transactionHandler.createSubject(subject, subjectTypeName);
@@ -33,15 +27,6 @@ module.exports = {
             return res.serverError(error.message);
         });
     },
-
-    /*
-    find: function(req, res) {
-        var subjectCriteria = req.allParams();
-        Subject.find().where(subjectCriteria).populate('projects').populate('samples').populate('childrenData')
-        .then(function(subjects) {
-        
-        });
-    }, */
 
     edit: function(req, res) {
         
