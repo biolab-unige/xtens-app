@@ -7,7 +7,12 @@
 var transactionHandler = sails.config.xtens.transactionHandler;
 
 module.exports = {
-
+    
+    /**
+     *  @method
+     *  @name create
+     *  @description: POST /subject: create a new subject; transaction-safe implementation
+     */
     create: function(req, res) {
         var subject = req.body;
         DataType.findOne(subject.type)
@@ -27,7 +32,35 @@ module.exports = {
             return res.serverError(error.message);
         });
     },
-
+    
+    /**
+     * @method
+     * @name update
+     * @description PUT /subject/:ID - update an existing subject.
+     *              Transaction-safe implementation
+     */
+    update: function(req, res) {
+        var subject = req.body;
+        SubjectService.simplify(subject);
+        transactionHandler.updateSubject(subject)
+        .then(function(idSubject) {
+            console.log(idSubject);
+            return Subject.findOne(idSubject).populateAll();
+        })
+        .then(function(result) {
+            return res.json(result);
+        })
+        .catch(function(error) {
+            console.log(error.message);
+            return res.serverError(error.message);
+        });
+    },
+    
+    /**
+     * @method
+     * @name edit
+     * @description retrieve all required models for editing/creating a Subject via client web-form
+     */
     edit: function(req, res) {
         
         var id = req.param("id");
@@ -39,7 +72,7 @@ module.exports = {
             },
 
             dataTypes: function(callback) {
-                DataTypeService.getAsync(callback, { classTemplate: 'Subject'});
+                DataTypeService.get(callback, { classTemplate: 'Subject'});
             },
 
             subject: function(callback) {

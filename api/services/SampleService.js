@@ -1,9 +1,27 @@
 /**
  *  @author Massimiliano Izzo
  */
-var SampleService = {
+var BluebirdPromise = require('bluebird');
 
-    getOneAsync: function(next, id) {
+var SampleService = BluebirdPromise.promisifyAll({
+
+    /**
+     * @method
+     * @name simplify
+     * @description removes all associated Objects if present keeping only their primary keys (i.e. IDs)
+     */
+    simplify: function(sample) {
+        ["type", "donor", "parentSample", "biobank"].forEach(function(elem) {
+            if (sample[elem]) {
+                sample[elem] = sample[elem].id || sample[elem];
+            }
+        });
+    },
+    
+    /**
+     * @description get a Sample model from the ID if an ID is provided
+     */
+    getOne: function(next, id) {
         if (!id) {
             next(null, null);
         }
@@ -12,5 +30,5 @@ var SampleService = {
         }
     }
 
-};
+});
 module.exports = SampleService;

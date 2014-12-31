@@ -11,7 +11,7 @@ module.exports = {
         var queryArgs = req.param('queryArgs');
         async.waterfall([
             function(callback) {
-                DataService.advancedQueryAsync(callback, queryArgs);
+                DataService.advancedQuery(callback, queryArgs);
             },
             function(results, callback) {
                 DataService.queryAndPopulateItemsById(callback, results.rows, queryArgs.classTemplate); 

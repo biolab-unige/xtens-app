@@ -3,7 +3,7 @@
  */
 var BiobankService = {
     
-    getAsync: function(next, params) {
+    get: function(next, params) {
         var criteriaObj = {};
         if (params.idBiobanks) {
             var ids = params.idBiobanks.split(",");

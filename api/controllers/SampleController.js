@@ -7,7 +7,12 @@
 var transactionHandler = sails.config.xtens.transactionHandler;
 
 module.exports = {
-
+    
+    /**
+     * @method
+     * @name edit
+     * @description retrieve all required models for editing/creating a Sample via client web-form
+     */
     edit: function(req, res) {
 
         var params = req.allParams();
@@ -16,15 +21,15 @@ module.exports = {
         async.parallel({
 
             sample: function(callback) {
-                SampleService.getOneAsync(callback, params.id);   
+                SampleService.getOne(callback, params.id);   
             },
 
             dataTypes: function(callback) {
-                DataTypeService.getAsync(callback, params);
+                DataTypeService.get(callback, params);
             },
 
             biobanks: function(callback) {
-                BiobankService.getAsync(callback, params);
+                BiobankService.get(callback, params);
             },
 
             donor: function(callback) {
@@ -32,7 +37,7 @@ module.exports = {
             },
 
             parentSample: function(callback) {
-                SampleService.getOneAsync(callback, params.parentSample);
+                SampleService.getOne(callback, params.parentSample);
             }
 
         }, function(error, results) {
@@ -45,17 +50,13 @@ module.exports = {
     },
 
     /**
-     *  @description: POST /sample: create a new sample; implementation based on 
-     *  Bluebird Promises + knex (transaction-support)
+     *  @method
+     *  @name create
+     *  @description: POST /sample: create a new sample; transaction-safe implementation
      */
     create: function(req, res) {
         var sample = req.body;
-
-        ["type", "donor", "parentSample", "biobank"].forEach(function(elem) {
-            if (sample[elem]) {
-                sample[elem] = sample[elem].id || sample[elem];
-            }
-        });
+        DataService.simplify(sample); 
 
         DataType.findOne(sample.type)
         .then(function(sampleType) {
@@ -73,6 +74,31 @@ module.exports = {
             console.log(error.message);
             return res.serverError(error.message);
         });
+    },
+    
+    /**
+     * @method
+     * @name update
+     * @description PUT /sample/:ID - update an existing sample.
+     *              Transaction-safe implementation
+     */
+    update: function(req, res) {
+        var sample = req.body;
+        DataService.simplify(sample);
+
+        transactionHandler.updateSample(sample)
+        .then(function(idSample) {
+            console.log(idSample);
+            return Sample.findOne(idSample).populateAll();
+        })
+        .then(function(result) {
+            return res.json(result);
+        })
+        .catch(function(err) {
+            console.log(error.message);
+            return res.serverError(error.message);
+        });
+
     }
 
 };

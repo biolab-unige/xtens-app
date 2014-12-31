@@ -8,7 +8,7 @@ var fileSystemManager = sails.config.xtens.fileSystemManager;
 
 var DataService = {
 
-    getOneAsync: function(next, id) {
+    getOne: function(next, id) {
         if (!id) {
             next(null, null);
         }
@@ -16,8 +16,14 @@ var DataService = {
             Data.findOne(_.parseInt(id)).populateAll().exec(next);
         }
     },
-
-    advancedQueryAsync: function(next, queryArgs) {
+    
+    /**
+     * @method
+     * @name advancedQuery
+     * @param{function} next - callback function
+     * @param{Object} queryArgs - a nested object containing all the query arguments
+     */
+    advancedQuery: function(next, queryArgs) {
         var query = queryBuilder.compose(queryArgs);
         console.log(query.statement);
         console.log(query.parameters);
@@ -73,64 +79,5 @@ var DataService = {
 
     }
     
-    /*
-    retrieveFiles: function(files, next) {
-        
-        async.each(files, function(file, callback) {
-            DataService.retrieveFile(file).exec(callback);
-        }, function(next) {
-            if(err) {
-                next(err);
-            }
-            next();
-        });
-
-    },
-    
-   TODO: MOVE THIS FUNCTION TO xtens-fs module
-
-    retrieveFile: function(file, callback) {
-        
-        var postOptions = {
-            hostname: irodsConf.irodsRest.hostname,
-            port: irodsConf.irodsRest.port,
-            path: irodsConf.irodsRest.path + '/dataObject' + file.uri,
-            method: 'GET', 
-            auth: irodsConf.username+':'+irodsConf.password,
-            headers: {
-                'Accept': 'application/json'
-            } 
-        };
-
-        var postRequest = http.request(postOptions,function(res) {
-            
-            console.log("method path: " + postOptions.path);
-            res.setEncoding('utf8');
-            var resBody = '';
-
-            res.on('data', function(chunk) {
-                resBody += chunk;
-            });
-
-            res.on('end', function() {
-                console.log('res.end');
-                console.log(resBody); 
-                file.details = resBody;
-                console.log(file);
-                console.log("irods.retrieveFile: success...calling callback");
-                callback();
-            });
-        });
-
-        postRequest.on('error',function(err) {
-            console.log('irods.retrieveFile: problem with request: ' + err.message);
-            callback(err);
-        });
-
-        postRequest.end();
-
-
-    } */
-
 };
 module.exports = DataService;

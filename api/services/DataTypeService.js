@@ -13,8 +13,14 @@ var DataTypeService = {
             });
         });
     },
+    
+    /**
+     * @method
+     * @name get
+     * @return {Array} - list of found DataType entities
+     */
 
-    getAsync: function(next, params) {
+    get: function(next, params) {
         var criteriaObj = { classTemplate: params.classTemplate };
         if (params.idDataTypes) {
             var ids = params.idDataTypes.split(",");

@@ -4,20 +4,19 @@
 var BluebirdPromise = require('bluebird');
 
 var SubjectService = BluebirdPromise.promisifyAll({
-
-    createPersonalDetails: function(personalDetails, next) {
-        if (!personalDetails) {
-            next(null, null);
-        }
-        else {
-            PersonalDetails.create(personalDetails).exec(next);
-        }
-
-    },
-
-    createSubject: function(subjectObj) {
-        // Subject.create(subjectObj).
-    },
+    
+    /**
+     * @method
+     * @name simplify
+     * @description removes all associated Objects if present keeping only their primary keys (i.e. IDs)
+     */
+    simplify: function(subject) {
+        ["type"].forEach(function(elem) {
+            if (subject[elem]) {
+                subject[elem] = subject[elem].id || subject[elem];
+            }
+        });
+    }, 
 
     anonymize: function() {},
 
