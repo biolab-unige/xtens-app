@@ -79,7 +79,10 @@
         },
 
         loadView: function(view) {
+            // remove previous bb view(s)
             this.view && this.view.remove();
+
+            // load new view
             this.view = view; 
         },
 

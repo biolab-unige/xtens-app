@@ -64,6 +64,7 @@ module.exports = {
     edit: function(req, res) {
         
         var id = req.param("id");
+        var idOperator = req.session.operator && req.session.operator.id;
 
         async.parallel({
             
@@ -72,7 +73,8 @@ module.exports = {
             },
 
             dataTypes: function(callback) {
-                DataTypeService.get(callback, { classTemplate: 'Subject'});
+                // DataTypeService.get(callback, { classTemplate: 'Subject'});
+                DataTypeService.getByOperator(idOperator, {classTemplate: 'Subject'}, callback);
             },
 
             subject: function(callback) {

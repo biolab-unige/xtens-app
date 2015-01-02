@@ -17,6 +17,7 @@ module.exports = {
 
         var params = req.allParams();
         params.classTemplate = "Sample";
+        var idOperator = req.session.operator && req.session.operator.id;
 
         async.parallel({
 
@@ -25,7 +26,8 @@ module.exports = {
             },
 
             dataTypes: function(callback) {
-                DataTypeService.get(callback, params);
+                // DataTypeService.get(callback, params);
+                DataTypeService.getByOperator(idOperator, params, callback);
             },
 
             biobanks: function(callback) {
@@ -56,7 +58,7 @@ module.exports = {
      */
     create: function(req, res) {
         var sample = req.body;
-        DataService.simplify(sample); 
+        SampleService.simplify(sample); 
 
         DataType.findOne(sample.type)
         .then(function(sampleType) {
@@ -84,7 +86,7 @@ module.exports = {
      */
     update: function(req, res) {
         var sample = req.body;
-        DataService.simplify(sample);
+        SampleService.simplify(sample);
 
         transactionHandler.updateSample(sample)
         .then(function(idSample) {

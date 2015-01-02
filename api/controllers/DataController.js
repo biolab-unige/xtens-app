@@ -16,6 +16,7 @@ module.exports = {
 
         var params = req.allParams();
         params.classTemplate = "Generic";
+        var idOperator = req.session.operator && req.session.operator.id;
 
         async.parallel({
 
@@ -24,7 +25,8 @@ module.exports = {
             },
 
             dataTypes: function(callback) {
-                DataTypeService.get(callback, params);
+                // DataTypeService.get(callback, params);
+                DataTypeService.getByOperator(idOperator, params, callback);
             },
 
             parentSubject: function(callback) {

@@ -22,12 +22,12 @@
                     var metadata = sample.get("metadata") %> 
                     <tr>
                         <td><%= sample.get("biobank") && sample.get("biobank").acronym %></td>
-                        <td><%= metadata.arrival_code && metadata.arrival_code.value[0] %></td>
+                        <td><%= metadata.arrival_code && metadata.arrival_code.value %></td>
                         <td><%= sample.get("biobankCode") %></td>
                         <td><%= sample.get("type").name %></td>
                         <td><%= sample.get("donor") && sample.get("donor").code %></td>
-                        <td><%= metadata.diagnosis &&  metadata.diagnosis.value[0] %></td>
-                        <td><%= metadata.anatomical_position && metadata.anatomical_position.value[0] %></td>
+                        <td><%= metadata.diagnosis &&  metadata.diagnosis.value %></td>
+                        <td><%= metadata.anatomical_position && metadata.location.value %></td>
                         <td>
                             <a class="btn" href="<%= sample.get("editLink") %>"><%=__("edit") %></a>
                             <% if (sample.get("newDerivativeLink") && sample.get("newDerivativeLink").length > 0) {%>

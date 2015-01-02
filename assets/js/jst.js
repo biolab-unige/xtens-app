@@ -1042,7 +1042,7 @@ __p += '<h2>' +
 __p += ' \n                    <tr>\n                        <td>' +
 ((__t = ( sample.get("biobank") && sample.get("biobank").acronym )) == null ? '' : __t) +
 '</td>\n                        <td>' +
-((__t = ( metadata.arrival_code && metadata.arrival_code.value[0] )) == null ? '' : __t) +
+((__t = ( metadata.arrival_code && metadata.arrival_code.value )) == null ? '' : __t) +
 '</td>\n                        <td>' +
 ((__t = ( sample.get("biobankCode") )) == null ? '' : __t) +
 '</td>\n                        <td>' +
@@ -1050,9 +1050,9 @@ __p += ' \n                    <tr>\n                        <td>' +
 '</td>\n                        <td>' +
 ((__t = ( sample.get("donor") && sample.get("donor").code )) == null ? '' : __t) +
 '</td>\n                        <td>' +
-((__t = ( metadata.diagnosis &&  metadata.diagnosis.value[0] )) == null ? '' : __t) +
+((__t = ( metadata.diagnosis &&  metadata.diagnosis.value )) == null ? '' : __t) +
 '</td>\n                        <td>' +
-((__t = ( metadata.anatomical_position && metadata.anatomical_position.value[0] )) == null ? '' : __t) +
+((__t = ( metadata.anatomical_position && metadata.location.value )) == null ? '' : __t) +
 '</td>\n                        <td>\n                            <a class="btn" href="' +
 ((__t = ( sample.get("editLink") )) == null ? '' : __t) +
 '">' +
