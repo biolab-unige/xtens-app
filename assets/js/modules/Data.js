@@ -147,7 +147,7 @@
      */
     Data.MetadataGroupModel = Backbone.Model.extend({
         initialize: function(attributes, options) {
-            this.set("groupName", options.groupName);
+            this.set("groupName", options && options.groupName);
             if (options && options.metadata) {
                 this.metadata = options.metadata;
             }
@@ -160,7 +160,7 @@
     Data.MetadataLoopModel = Backbone.Model.extend({
         initialize: function(attributes, options) {
             this.set("name", options && options.name);
-            this.set("groupName", options.groupName); 
+            this.set("groupName", options && options.groupName); 
             if (options && options.metadata) {
                 this.metadata = options.metadata;
             }
@@ -670,13 +670,30 @@
             // reinitialize parsley
             this.$form.parsley(parsleyOpts).reset();
         },
-
+        
+        /**
+         * @method
+         * @name enableFileUpload
+         * @description open the view for uploading files to the Distributes File System
+         *
+         */
         enableFileUpload: function() {
-            this.fileUploadView = new FileManager.Views.Dropzone({
-                dataTypeName: this.model.get("type").name
+            var _this = this;
+            var fileManager = new FileManager.Model();
+            $.ajax({
+                url: '/fileManager',
+                type: 'GET',
+                contentType: 'application/json',
+                success: function(fileSystem) {
+                    _this.fileUploadView = new FileManager.Views.Dropzone({
+                        fileSystem: fileSystem,
+                        dataTypeName: _this.model.get("type").name
+                    });
+                    _this.$fileCnt.append(_this.fileUploadView.render().el);
+                    _this.fileUploadView.initializeDropzone(_this.model.get("files"));
+                },
+                error: xtens.error
             });
-            this.$fileCnt.append(this.fileUploadView.render().el);
-            this.fileUploadView.initializeDropzone(this.model.get("files"));
         },
 
         retrieveAndSetFiles: function() {

@@ -135,7 +135,7 @@ describe('Data.Views.MetadataLoop', function() {
     describe('#addLoopBody', function() {
         it('should add a novel loop body element to the loop', function() {
             var model = new Data.MetadataLoopModel();
-            var view = new Data.Views.MetadataLoop({model: model, component: loop});
+            var view = new Data.Views.MetadataLoop({model: model, component: loop, groupName: null});
             view.render();
             view.addLoopBody();
             expect(view.$metadataloopBody.children()).to.have.length(1);

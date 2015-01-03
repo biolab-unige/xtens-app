@@ -5,7 +5,13 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 var MainController = {
-    login:function(req,res){
+
+    /**
+     * @method
+     * @name login
+     * @description authenticate a user against a password stored on the database
+     */
+    login:function(req, res){
         var login = req.param("login");
         var password = req.param("password");
 
@@ -36,7 +42,17 @@ var MainController = {
         });
     },
 
-    upload: function  (req, res) {
+    /**
+     * @method
+     * @name getFileSystemManager
+     * @description retrieve the FileSystem coordinates for the client
+     */
+    getFileSystemStrategy: function(req, res) {
+        var conn = sails.config.xtens.fileSystemConnection;
+        return res.json(conn);
+    },
+
+    upload: function(req, res) {
         req.file('uploadFile').upload(function (err, files) {
             if (err)
                 return res.serverError(err);

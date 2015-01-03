@@ -18,7 +18,7 @@ module.exports.xtens = {
 
     transactionHandler: new TransactionHandler(null, connections[connections.default], fileSystemConnections[fileSystemConnections.default]),
     
-    irods: fileSystemConnections[fileSystemConnections.default],
+    fileSystemConnection: fileSystemConnections[fileSystemConnections.default],
 
     /***
      * constants of the XTENS platform

@@ -2,6 +2,13 @@ var expect = chai.expect;
 var XtensTable = xtens.module("xtenstable");
 var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
 
+/* the data type against whom we build the DataTable */
+var testDataType = {
+    "id": 1,
+    "name": "Star",
+    "schema": {"body":[{"name":"Generic Info","label":"METADATA GROUP","content":[{"name":"name","label":"METADATA FIELD","isList":false,"hasUnit":false,"hasRange":false,"required":true,"fieldType":"Text","sensitive":true,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":null},{"name":"constellation","label":"METADATA FIELD","isList":true,"hasUnit":false,"hasRange":false,"required":true,"fieldType":"Text","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":["orion","taurus","N.A.","N.D.","scutum","canis major","cygnus"]},{"name":"classification","label":"METADATA FIELD","isList":true,"hasUnit":false,"hasRange":false,"required":true,"fieldType":"Text","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":["hypergiant","supergiant","giant","subgiant","main-sequence star","subdwarf","dwarf"]},{"name":"Other Designations","label":"METADATA LOOP","content":[{"name":"designation","label":"METADATA FIELD","isList":false,"hasUnit":false,"hasRange":false,"required":true,"fieldType":"Text","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":null}]}]},{"name":"Physical Details","label":"METADATA GROUP","content":[{"name":"mass","label":"METADATA FIELD","isList":false,"hasUnit":true,"hasRange":false,"required":true,"fieldType":"Float","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":["M☉"],"possibleValues":null},{"name":"radius","label":"METADATA FIELD","isList":false,"hasUnit":true,"hasRange":false,"required":true,"fieldType":"Float","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":["R☉"],"possibleValues":null},{"name":"luminosity","label":"METADATA FIELD","isList":false,"hasUnit":true,"hasRange":false,"required":false,"fieldType":"Integer","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":["L☉"],"possibleValues":null},{"name":"temperature","label":"METADATA FIELD","isList":false,"hasUnit":true,"hasRange":false,"required":false,"fieldType":"Integer","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":["K"],"possibleValues":null}]}],"header":{"version":"1.0","ontology":"","fileUpload":true,"schemaName":"Star","description":"A generic data type for a star","class_template":"Generic"}}
+};
+
 /* a list of data (**stars**) for testing purposes */
 var testData = [
     {
@@ -17,14 +24,14 @@ var testData = [
     tags: null,
     notes: null,
     metadata: {
-        "name":{"value":["Aldebaran"],"unit":[null]},
-        "constellation":{"value":["Taurus"],"unit":[null]},
-        "type":{"value":["giant"],"unit":[null]},
-        "radius":{"value":[44.2],"unit":["R☉"]},
-        "mass":{"value":[1.7],"unit":["M☉"]},
-        "temperature":{"value":[3910],"unit":["K"]},
-        "designation":{"value":["Alpha Tauri","87 Tauri","SAO 94027","Borgil"],"unit":[null,null,null,null],"loop":"Other designantions"},
-        "planet":{"value":[null],"unit":[null],"loop":"Companions"},"companion_name":{"value":[null],"unit":[null],"loop":"Companions"},"companion_radius":{"value":[null],"unit":["km"],"loop":"Companions"},"companion_distance":{"value":[null],"unit":["AU"],"loop":"Companions"}
+        "name":{"value":"Aldebaran"},
+        "constellation":{"value":"Taurus"},
+        "classification":{"value":"giant"},
+        "mass":{"value":1.7,"unit":"M☉"},
+        "radius":{"value":44.2,"unit":"R☉"},
+        "luminosity":{"value":518,"unit":"L☉"},
+        "temperature":{"value":3910,"unit":"K"},
+        "designation":{"values":["Alpha Tauri","87 Tauri","SAO 94027","Borgil"],"loop":"Other designantions"},
     }
 },
 {
@@ -38,14 +45,14 @@ var testData = [
     tags: ["test", "second element"],
     notes: "yet another test",
     metadata: {
-        "name":{"value":["Betelgeuse"],"unit":[null]},
-        "constellation":{"value":["Orion"],"unit":[null]},
-        "type":{"value":["giant"],"unit":[null]},
-        "radius":{"value":[950],"unit":["R☉"]},
-        "mass":{"value":[7.7],"unit":["M☉"]},
-        "temperature":{"value":[3140],"unit":["K"]},
-        "designation":{"value":["Alpha Orionis","58 Ori","SAO 113271","Borgil"],"unit":[null,null,null,null],"loop":"Other designantions"},
-        "planet":{"value":[null],"unit":[null],"loop":"Companions"},"companion_name":{"value":[null],"unit":[null],"loop":"Companions"},"companion_radius":{"value":[null],"unit":["km"],"loop":"Companions"},"companion_distance":{"value":[null],"unit":["AU"],"loop":"Companions"}  
+        "name":{"value":"Betelgeuse"},
+        "constellation":{"value":"Orion"},
+        "classification":{"value":"giant"},
+        "mass":{"value":7.7, "unit":"M☉"},
+        "radius":{"value":950, "unit":"R☉"},
+        "luminosity":{"value":135000,"unit":"L☉"},
+        "temperature":{"value":3140,"unit":"K"},
+        "designation":{"values":["Alpha Orionis","58 Ori","SAO 113271","Borgil"],"loop":"Other designantions"},
     }
 }
 ];
@@ -115,7 +122,7 @@ describe("XtensDataTable.DataTables", function() {
         });
 
         it("should correctly prepare the headers for a generic data (e.g. a star)", function() {
-            this.dataTable.prepareDataForRendering(testData);
+            this.dataTable.prepareDataForRendering(testData, testDataType);
             var tableOpts = this.dataTable.tableOpts;
             expect(tableOpts).not.to.be.empty;
             expect(tableOpts.data).to.be.an.instanceof(Array);

@@ -43,6 +43,8 @@ module.exports.routes = {
     '/groupDatatype/associate':{controller:'group', action:'addDatatype'},
     
     '/groupDatatype/dissociate':{controller:'group',action:'removeDatatype'},
+
+    'GET /fileManager': {controller: 'main', action: 'getFileSystemStrategy'},
        
     // REST API for subject (with personal info)
     // 'GET /subjectWithPersonalDetails': {controller: 'subject', action: 'findWithPersonalDetails'},

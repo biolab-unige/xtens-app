@@ -131,8 +131,8 @@
                     }
                     _this.loadView(new DataType.Views.Edit({id: id, dataTypes: dataTypes.toJSON(), model: model}));
                 },
-                error: function(res, jqxhr) {
-                    xtens.error(jqxhr);
+                error: function(model, res) {
+                    xtens.error(res);
                 }
             });
         },
@@ -286,8 +286,8 @@
                             model: biobank
                         }));
                     },
-                    error: function(res, jqxhr) {
-                        xtens.error(jqxhr);
+                    error: function(model, res) {
+                        xtens.error(res);
                     }
                 });
             }
@@ -306,8 +306,8 @@
                         dataTypes: dataTypes
                     }));    
                 },
-                error: function(res, jqxhr) {
-                    xtens.error(jqxhr);
+                error: function(model, res) {
+                    xtens.error(res);
                 }
             });
         }
