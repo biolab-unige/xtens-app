@@ -19,8 +19,14 @@ var SubjectService = BluebirdPromise.promisifyAll({
     }, 
 
     anonymize: function() {},
-
-    getOne: function(next, id) {
+    
+    /**
+     * @method 
+     * @name getOne
+     * @description find a Subject if ID is provided
+     * @return {Object} - the found Subject
+     */
+    getOne: function(id, next) {
         if (!id) {
             next(null, null);
         }

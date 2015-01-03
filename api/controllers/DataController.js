@@ -21,7 +21,7 @@ module.exports = {
         async.parallel({
 
             data: function(callback) {
-                DataService.getOne(callback, params.id);
+                DataService.getOne(params.id, callback);
             },
 
             dataTypes: function(callback) {
@@ -30,15 +30,15 @@ module.exports = {
             },
 
             parentSubject: function(callback) {
-                SubjectService.getOne(callback, params.parentSubject);
+                SubjectService.getOne(params.parentSubject, callback);
             },
 
             parentSample: function(callback) {
-                SampleService.getOne(callback, params.parentSample);
+                SampleService.getOne(params.parentSample, callback);
             },
 
             parentData: function(callback) {
-                DataService.getOne(callback, params.parentData);
+                DataService.getOne(params.parentData, callback);
             }
 
         }, function(err, results) {

@@ -1,9 +1,15 @@
 /**
  *  @author Massimiliano Izzo
  */
-var BiobankService = {
+var BluebirdPromise = require('bluebird');
+
+var BiobankService = BluebirdPromise.promisifyAll({
     
-    get: function(next, params) {
+    /**
+     * @description find a list of Biobanks
+     * @return {Array} - list of found Biobanks
+     */   
+    get: function(params, next) {
         var criteriaObj = {};
         if (params.idBiobanks) {
             var ids = params.idBiobanks.split(",");
@@ -12,7 +18,7 @@ var BiobankService = {
         Biobank.find(criteriaObj).exec(next);
     }
 
-};
+});
 
 
 

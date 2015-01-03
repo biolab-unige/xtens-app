@@ -128,9 +128,9 @@ describe("XtensDataTable.DataTables", function() {
             var keys = this.keys;
             for (var i=0, j=0; i<keys.length; i++) {
                 expect(tableOpts.columns[j].title).to.equal(replaceUnderscoreAndCapitalize(keys[i]));
-                expect(tableOpts.columns[j++].data).to.equal('metadata.' + keys[i] + '.value.0');
+                expect(tableOpts.columns[j++].data).to.equal('metadata.' + keys[i] + '.value');
                 if (testData[0].metadata[keys[i]].unit) {
-                   expect(tableOpts.columns[j++].data).to.equal('metadata.' + keys[i] + '.unit.0');
+                   expect(tableOpts.columns[j++].data).to.equal('metadata.' + keys[i] + '.unit');
                 }
             }
         });

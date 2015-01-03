@@ -21,7 +21,7 @@ var SampleService = BluebirdPromise.promisifyAll({
     /**
      * @description get a Sample model from the ID if an ID is provided
      */
-    getOne: function(next, id) {
+    getOne: function(id, next) {
         if (!id) {
             next(null, null);
         }

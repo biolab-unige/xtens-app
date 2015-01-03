@@ -34,7 +34,7 @@
 
         initialize: function(options) {
             if (options && options.data) {
-                this.prepareDataForRendering(options.data);
+                this.prepareDataForRendering(options.data, options.dataType);
             }
             // this.render();
         },
@@ -44,8 +44,8 @@
             return this;
         },
 
-        prepareDataForRendering: function(data, headers) {
-            var dataType = data[0] && data[0].type;
+        prepareDataForRendering: function(data, dataType, headers) {
+            // var dataType = data[0] && data[0].type;
             if (!dataType) {
                 return; //TODO add alert box
             }

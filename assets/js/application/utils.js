@@ -1,13 +1,17 @@
 /**
- * Provides a full extention for a Backbone Model
- * Mutuated from: https://coderwall.com/p/xj81ua
+ * @author Massimiliano Izzo
  */
 
+/**
+ * @method
+ * @name handleError
+ *
+ */
 function handleError(res){
-    if(res.status === 403){
+    if (res.status === 403) {
         window.location.replace('/#login');
     }
-    if(res.status === 401){
+    else if (res.status === 401) {
         window.location.replace('/#login');
     }
     else {
@@ -19,6 +23,12 @@ function handleError(res){
 (function(xtens) {
     xtens.error = handleError;
 } (xtens));
+
+
+/**
+ * Provides a full extention for a Backbone Model
+ * Mutuated from: https://coderwall.com/p/xj81ua
+ */
 
 (function(Model){
     'use strict';
@@ -78,10 +88,11 @@ function handleError(res){
 
     /*  $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
         options.url = 'http://localhost:1337' + options.url;
-        });    
+        });  */   
 
- /*
-  *  jQuery serializeObject plugin
+ /**
+  *  @method
+  *  @description jQuery serializeObject plugin
   */
 
     $.fn.serializeObject = function() {

@@ -22,7 +22,7 @@ module.exports = {
         async.parallel({
 
             sample: function(callback) {
-                SampleService.getOne(callback, params.id);   
+                SampleService.getOne(params.id, callback);   
             },
 
             dataTypes: function(callback) {
@@ -31,15 +31,15 @@ module.exports = {
             },
 
             biobanks: function(callback) {
-                BiobankService.get(callback, params);
+                BiobankService.get(params, callback);
             },
 
             donor: function(callback) {
-                SubjectService.getOne(callback, params.donor);
+                SubjectService.getOne(params.donor, callback);
             },
 
             parentSample: function(callback) {
-                SampleService.getOne(callback, params.parentSample);
+                SampleService.getOne(params.parentSample, callback);
             }
 
         }, function(error, results) {

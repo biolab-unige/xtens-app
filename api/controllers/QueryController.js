@@ -6,15 +6,16 @@
  */
 
 module.exports = {
-    
+    /* 
     dataSearch: function(req, res) {
+
         var queryArgs = req.param('queryArgs');
         async.waterfall([
             function(callback) {
-                DataService.advancedQuery(callback, queryArgs);
+                DataService.advancedQuery(queryArgs, callback);
             },
             function(results, callback) {
-                DataService.queryAndPopulateItemsById(callback, results.rows, queryArgs.classTemplate); 
+                DataService.queryAndPopulateItemsById(results.rows, queryArgs.classTemplate, callback); 
             }
         ], function(err, result) {
             if (err) {
@@ -22,17 +23,32 @@ module.exports = {
             }
             return res.json(result); 
         });
-        /*
-        Data.query(query.statement, query.parameters, function(err, results) {
-            if (err) {
-                res.badRequest('Invalid parameters submitted.');
-            }
-            else {
-                res.json(results.rows);
-            }
-        });
-       */
 
+    } */
+    
+    /**
+     * @method
+     * @name dataSearch
+     * @return {Object} - an object containing an array of found Data matching the criteria, and the DataType of the found Data
+     * @description perfor an advanced and nested query on the Data stored within the repository
+     */
+    dataSearch: function(req, res) {
+        var queryArgs = req.param('queryArgs');
+        var data = null;
+        DataService.advancedQueryAsync(queryArgs)
+        .then(function(results) {
+            return DataService.queryAndPopulateItemsByIdAsync(results.rows, queryArgs.classTemplate);
+        })
+        .then(function(foundData) {
+            data = foundData;
+            return DataType.findOne(foundData[0].type);
+        })
+        .then(function(dataType) {
+            res.json({data: data, dataType: dataType });
+        })
+        .catch(function(error) {
+            res.serverError(error.message);
+        });
     } 
 	
 };

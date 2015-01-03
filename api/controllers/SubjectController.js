@@ -78,7 +78,7 @@ module.exports = {
             },
 
             subject: function(callback) {
-                SubjectService.getOne(callback, id);
+                SubjectService.getOne(id, callback);
             }
 
         }, function(err, results) {

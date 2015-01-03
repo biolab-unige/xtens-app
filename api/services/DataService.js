@@ -2,13 +2,14 @@
  *  @author Massimiliano Izzo
  */
 var http = require('http');
+var BluebirdPromise = require('bluebird');
 var queryBuilder = sails.config.xtens.queryBuilder;
 var DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
 var fileSystemManager = sails.config.xtens.fileSystemManager;
 
-var DataService = {
+var DataService = BluebirdPromise.promisifyAll({
 
-    getOne: function(next, id) {
+    getOne: function(id, next) {
         if (!id) {
             next(null, null);
         }
@@ -20,10 +21,10 @@ var DataService = {
     /**
      * @method
      * @name advancedQuery
-     * @param{function} next - callback function
      * @param{Object} queryArgs - a nested object containing all the query arguments
+     * @param{function} next - callback function
      */
-    advancedQuery: function(next, queryArgs) {
+    advancedQuery: function(queryArgs, next) {
         var query = queryBuilder.compose(queryArgs);
         console.log(query.statement);
         console.log(query.parameters);
@@ -35,20 +36,20 @@ var DataService = {
         }, next);
     },
 
-    queryAndPopulateItemsById: function(next, foundRows, classTemplate) {
+    queryAndPopulateItemsById: function(foundRows, classTemplate, next) {
         var ids = _.pluck(foundRows, 'id');
         switch(classTemplate) {
             case DataTypeClasses.SUBJECT:
                 console.log("calling Subject.find");
-                Subject.find({id: ids}).populateAll().exec(next);
+                Subject.find({id: ids}).exec(next);
             break;
             case DataTypeClasses.SAMPLE:
                 console.log("calling Sample.find");
-                Sample.find({id: ids}).populateAll().exec(next);
+                Sample.find({id: ids}).exec(next);
             break;
             default:
                 console.log("calling Data.find");
-                Data.find({id: ids}).populateAll().exec(next);
+                Data.find({id: ids}).exec(next);
         }
     },
 
@@ -79,5 +80,5 @@ var DataService = {
 
     }
     
-};
+});
 module.exports = DataService;

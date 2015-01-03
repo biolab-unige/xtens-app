@@ -97,7 +97,7 @@
                     nondominantName:'dataTypes',
                     field:'name'
                 }));
-            });
+            }, xtens.error);
         },
 
         associationOperator: function(id){
@@ -111,7 +111,7 @@
                     nondominantName:'members',
                     field:'login'
                 }));
-            });
+            }, xtens.error);
         },
 
         dataTypeList: function() {
@@ -131,8 +131,8 @@
                     }
                     _this.loadView(new DataType.Views.Edit({id: id, dataTypes: dataTypes.toJSON(), model: model}));
                 },
-                error: function(err) {
-                    xtens.error(err);
+                error: function(res, jqxhr) {
+                    xtens.error(jqxhr);
                 }
             });
         },
@@ -286,7 +286,9 @@
                             model: biobank
                         }));
                     },
-                    error: xtens.error
+                    error: function(res, jqxhr) {
+                        xtens.error(jqxhr);
+                    }
                 });
             }
             else {
@@ -304,7 +306,7 @@
                         dataTypes: dataTypes
                     }));    
                 },
-                error: function(jqxhr) {
+                error: function(res, jqxhr) {
                     xtens.error(jqxhr);
                 }
             });
