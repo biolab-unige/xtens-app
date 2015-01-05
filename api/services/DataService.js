@@ -8,7 +8,13 @@ var DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
 var fileSystemManager = sails.config.xtens.fileSystemManager;
 
 var DataService = BluebirdPromise.promisifyAll({
-
+    
+    /**
+     * @method
+     * @name getOne
+     * @param {integer} id
+     * @param {function} next - callaback function
+     */
     getOne: function(id, next) {
         if (!id) {
             next(null, null);
@@ -35,6 +41,18 @@ var DataService = BluebirdPromise.promisifyAll({
             values: query.parameters
         }, next);
     },
+
+    /**
+     * @method
+     * @name queryAndPopulateItemsById
+     * @description given a list of items it retrieves them from the databases and 
+     *              (optionally) populates the existing associations
+     * @param {Array} foundRows - an array of items. Each item must contain at least an identifier (id)
+     *                for retrieval
+     * @param {enum} classTemplate - (e.g. Subject, Sample or Generic)
+     * @param {function} next - a callabck
+     * @return {Array} the list of found and populated objects
+     */
 
     queryAndPopulateItemsById: function(foundRows, classTemplate, next) {
         var ids = _.pluck(foundRows, 'id');
