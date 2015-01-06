@@ -15,6 +15,7 @@
     var DataTypeCollection = xtens.module("datatype").List;
     var FileManager = xtens.module("filemanager");
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
+    var dateUtil = xtens.module("utils").date;
 
     var parsleyOpts = {
         priorityEnabled: false,
@@ -556,7 +557,10 @@
             }
             return this;
         },
-
+        
+        /**
+         * @description Backbone.stickit bindings
+         */
         bindings: {
             '#dataType': {
                 observe: 'type',
@@ -588,8 +592,26 @@
 
             '#date': {
                 observe: 'date',
-                onGet: function(value) {
-                    return new Date(value);
+
+                // format date on model as ISO (YYYY-MM-DD)
+                onSet: function(val, options) {
+                    var dateArray = val.split("/");
+                    return new Date(dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0]);
+                },
+
+                // store data in view (from model) as DD/MM/YYYY (European format)
+                onGet: function(value, options) {
+                    if (value) {
+                        var dateArray = value instanceof Date ? value.toISOString().split('-') : value.split('-');
+                        return dateArray[2] + '/' + dateArray[1] + '/' + dateArray[0];
+                    }
+                },
+                // initialize Pikaday + Moment.js
+                initialize: function($el, model, options) {
+                    var picker = new Pikaday({
+                        field: $el[0],
+                        format: 'DD/MM/YYYY'
+                    });
                 }
             },
             '#tags': {
