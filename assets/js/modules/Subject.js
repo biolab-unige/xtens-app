@@ -115,6 +115,15 @@
             "click #add-personal-details": "addPersonalDetailsView"
         },
 
+        /**
+         * @method
+         * @name saveData
+         * @description retrieve all the Subject properties from the form (the metadata value(s)-unit(s) pairs, the files' paths, etc...)
+         *              and save the Subject model on the server
+         * @param {event} - the form submission event
+         * @return {false} - to suppress the HTML form submission
+         * @override 
+         */
         saveData: function() {
             var metadata = this.schemaView && this.schemaView.serialize();
             this.model.set("metadata", metadata);
@@ -124,8 +133,8 @@
                 success: function(subject) {
                     xtens.router.navigate('subjects', {trigger: true});
                 },
-                error: function(err) {
-                    alert(err);
+                error: function(model, res) {
+                    xtens.error(res);
                 }
             });
             return false;
