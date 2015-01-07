@@ -31,21 +31,42 @@
 
 
     /**
-     *  general purpose function to retrieve the value from a field
+     *  @description general purpose function to retrieve the value from a field
      */
     function getFieldValue($el, ev, options) {
         switch (options.view.component.fieldType) {
+            
             case FieldTypes.INTEGER:
                 return parseInt($el.val());
+            
             case FieldTypes.FLOAT:
                 return parseFloat($el.val());
+
+            // return the date string in ISO format
+            case FieldTypes.DATE:
+                var dateArray = $el.val().split("/");
+                return dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0];
+            
             default:
                 return $el.val();
+
+        }
+    }
+    
+    /**
+     * @description render a Date from the model to a view
+     */
+    function renderDateValue(value) {
+        if (value) {
+            var dateArray = value instanceof Date ? value.toISOString().split('-') : value.split('-');
+            return dateArray[2] + '/' + dateArray[1] + '/' + dateArray[0];
         }
     }
 
     /**
-     * Factory Method implementation for the Data.Views.* components
+     * @class
+     * @name Factory 
+     * @description Factory Method implementation for the Data.Views.* components
      */
 
     Data.Factory = function() {
@@ -156,7 +177,9 @@
     });
 
     /**
-     *  Backbone Model for a metadata loop
+     * @class
+     * @name MetadataLoopModel
+     * @description Backbone Model for a metadata loop
      */
     Data.MetadataLoopModel = Backbone.Model.extend({
         initialize: function(attributes, options) {
@@ -169,7 +192,9 @@
     });
 
     /**
-     * Implements a generic metadata component view according to the Composite pattern
+     * @class
+     * @name MetadataComponent
+     * @description Implements a generic metadata component view according to the Composite pattern
      */
 
     Data.Views.MetadataComponent = Backbone.View.extend({
@@ -198,13 +223,27 @@
             }
             return this;
         },
-
+        
+        /**
+         * @method
+         * @name add
+         * @description add a new subcomponent to the current object
+         * @param {Object} subcomponent - the subelement that must be added
+         * @param {Object} metadatarecord - the oprional record that must be used to populate the subcomponent fields. This is useful if
+         *                 we are updating an existing Data/Metadata record
+         * @param {string} groupName - the name of the parent metadataGroup NOTE: this should be moved somewhere else?? Set as a param object?
+         */
         add: function(subcomponent, metadatarecord, groupName) {
             var view = factory.createComponentView(subcomponent, metadatarecord, groupName);
             this.$el.children('.metadatacomponent-body').last().append(view.render().el);
             this.nestedViews.push(view);
         },
-
+        
+        /**
+         * @method
+         * @name removeMe
+         * @description remove the current object and all its subcomponents from the DOM tree
+         */
         removeMe: function() {
             var len = this.nestedViews || this.nestedViews.length;
             for (var i=0; i<len; i++) {
@@ -214,11 +253,24 @@
             this.remove();
             return true;
         },
-
+        
+        /**
+         * @method
+         * @name getChild
+         * @description get the i-th child subcomponent
+         * @param {integer} - the zero-based index of the child
+         * @return {Object} the required subcomponent
+         */
         getChild: function(index) {
             return this.nestedViews[i];
         },
-
+        
+        /**
+         * @method
+         * @name serialize
+         * @description iterate the serialize call through all the nested (i.e. children) views.
+         * @return {Array} an array containg all the serialized components.
+         */
         serialize: function() {
             // var json = {name: this.component.name, instances: []};
             var arr = [];
@@ -253,7 +305,11 @@
         },
 
         /**
+         *  @method
+         *  @name serialize
          *  @description serialize the metadadata schema to a JSON object
+         *  @return {Object} - an array containing all the metadata name-value-unit properties
+         *  @override 
          */
         serialize: function() {
             var arr = [];
@@ -338,9 +394,10 @@
         },
 
         /**
-         *  override  the basic Data,Views.MetadataComponent add() method
+         *  @method
+         *  @name add
+         *  @description override  the basic Data,Views.MetadataComponent add() method
          */
-
         add: function(subcomponent, metadatarecord, groupName, loopParams) {
             // create a new field
             var view = factory.createComponentView(subcomponent, metadatarecord, groupName, loopParams);
@@ -352,7 +409,13 @@
         events: {
             'click input[type=button]': 'addLoopBody'
         },
-
+        
+        /**
+         * @method
+         * @name addLoopBody
+         * @description add a new body to the Loop view. Each body contains all the fields of the loop
+         * @param {integer} the index of the body element, starting from 0
+         */
         addLoopBody: function(index) {
             var newLoopbody = '<div class="metadatacomponent-body"></div>'; 
             this.$metadataloopBody.append(newLoopbody);
@@ -371,9 +434,22 @@
     Data.Views.MetadataField = Data.Views.MetadataComponent.fullExtend({
 
         className: 'metadatafield',
-
+        
+        /**
+         * @method
+         * @name add
+         * @description no operation - you can't add subcomponents to a leaf object
+         * @override
+         */
         add: function() {},
-
+        
+        /**
+         * @method
+         * @name getChild
+         * @description no operation - a leaf has no children
+         * @return {null}
+         * @override
+         */
         getChild: function(i) {
             return null;
         },
@@ -398,6 +474,14 @@
             return this;
         },
 
+        /**
+         * @method
+         * @name serialize
+         * @description serialize the metadata field. Being the leaf of our Composite object, this means cloning all its model attributes
+         * @return {Object} the model attributes
+         * @override
+         */
+
         serialize: function() {
             return _.clone(this.model.attributes);
         }
@@ -409,7 +493,15 @@
         bindings: {
             ':text[name=fieldValue]': {
                 observe: 'value',
-                getVal: getFieldValue
+                getVal: getFieldValue,
+                onGet: function(value, options) {
+                    if (options.view.component && options.view.component.fieldType === FieldTypes.DATE) {
+                       return renderDateValue(value); 
+                    }
+                    else {
+                        return value;
+                    }
+                }
             }        
         },
 
@@ -419,6 +511,8 @@
         },
 
         /**
+         * @method
+         * @name setValidationOptions
          * @description add HTML5/data tags to the metadata field for client-side validation
          *              with Parsley
          */
@@ -433,12 +527,24 @@
                 case FieldTypes.FLOAT:
                     this.$fieldValue.attr("data-parsley-type", "number");
                 break;
+                case FieldTypes.DATE:
+                    this.initDatepicker();
+                break;
             }
             if (this.component.hasRange) {
                 this.$fieldValue.attr("min", this.component.min);
                 this.$fieldValue.attr("max", this.component.max);
                 // TODO add step validation?
             }
+        },
+
+        initDatepicker: function() {
+            var picker = new Pikaday({
+                field: this.$fieldValue[0],
+                format: 'DD/MM/YYYY',
+                yearRange: [1900, new Date().getYear()],
+                maxDate: new Date()
+            });
         }
 
     });
@@ -610,7 +716,9 @@
                 initialize: function($el, model, options) {
                     var picker = new Pikaday({
                         field: $el[0],
-                        format: 'DD/MM/YYYY'
+                        format: 'DD/MM/YYYY',
+                        minDate: moment('2006-01-01').toDate(),
+                        maxDate: new Date()
                     });
                 }
             },
@@ -630,7 +738,15 @@
         events: {
             "submit .edit-data-form": "saveData"
         },
-
+        
+        /**
+         * @method
+         * @name saveData
+         * @description retrieve all the Data properties from the form (the metadata value(s)-unit(s) pairs, the files' paths, etc...)
+         *              and save the Data model on the server
+         * @param {event} - the form submission event
+         * @return {false} - to suppress the HTML form submission 
+         */
         saveData: function(ev) {
             var targetRoute = $(ev.currentTarget).data('targetRoute') || 'data';
             if (this.schemaView && this.schemaView.serialize) {
@@ -643,7 +759,9 @@
                     success: function(data) {
                         xtens.router.navigate(targetRoute, {trigger: true});
                     },
-                    error: xtens.error 
+                    error: function(model, res) {
+                        xtens.error(res);
+                    } 
                 });
             }
             return false;
@@ -663,7 +781,14 @@
         dataTypeOnChange: function() {
             this.renderDataTypeSchema();
         },
-
+        
+        /**
+         * @method
+         * @name renderDataTypeSchema
+         * @description render the view for the specific DataType (metadata) schema. If required create the view for file upload
+         * @param {Object} data - the Data model to populate the form (e.g. on data update)
+         *
+         */
         renderDataTypeSchema: function(data) {
             if (this.fileUploadView) {
                 this.fileUploadView.remove();
