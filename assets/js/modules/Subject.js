@@ -128,7 +128,9 @@
             var metadata = this.schemaView && this.schemaView.serialize();
             this.model.set("metadata", metadata);
             // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
-            this.model.set("personalInfo", _.clone(this.personalDetailsView.model.attributes));
+            if (this.personalDetailsView && this.personalDetailsView.model) {
+                this.model.set("personalInfo", _.clone(this.personalDetailsView.model.attributes));
+            }
             this.model.save(null, {
                 success: function(subject) {
                     xtens.router.navigate('subjects', {trigger: true});
