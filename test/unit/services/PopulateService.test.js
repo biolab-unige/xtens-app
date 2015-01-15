@@ -48,4 +48,53 @@ describe('PopulateService', function() {
 
     });
 
+    describe('generateTextField', function() {
+        
+        it('should create a metadata field with a text value', function(){
+            var textField = fixtures.datatype[2].schema.body[0].content[0];
+
+            var field = PopulateService.generateTextField(textField);
+            expect(field.value).to.be.a('string');
+           
+        });
+
+    });
+
+    describe('generateIntegerField', function() {
+        
+        it('should create a metadata field with a integer value', function(){
+            var integerField = fixtures.datatype[2].schema.body[1].content[2];
+            
+            var min = integerField.min || sails.config.xtens.constants.TEST_MIN;
+            var max = integerField.max || sails.config.xtens.constants.TEST_MAX;
+
+            var field = PopulateService.generateIntegerField(integerField);
+            expect(field.value).to.be.a('number');
+            expect(field.value).to.be.at.least(min);
+            expect(field.value).to.be.at.most(max);
+
+            if (field.hasUnit) {
+                expect(field.unit).to.equals(integerField.possibleUnits[0]);
+            }
+
+
+        });
+
+    });
+
+     describe('generateBooleanField', function() {
+        
+        it('should create a metadata field with a boolean value', function(){
+            var booleanField = fixtures.datatype[2].schema.body[1].content[4];
+            
+            var field = PopulateService.generateBooleanField(booleanField);
+            expect(field.value).to.be.a('boolean');
+
+
+        });
+
+    });
+
+
+
 });
