@@ -1,0 +1,48 @@
+[
+    {
+    "id": 1,
+    "name": "Patient",
+    "classTemplate": "Subject",
+    "schema": {
+        "body":[
+            {
+            "name":"Generic Info","label":"METADATA GROUP",
+            "content":[
+                {"name":"status",
+                "label":"METADATA FIELD",
+                "isList":true,"hasUnit":false,"hasRange":false,"required":true,
+                "fieldType":"Text","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":["days"],
+                "possibleValues":["healthy","diseased","deceased","N.A."]},
+                {"name":"disease","label":"METADATA FIELD","isList":true,"hasUnit":false,"hasRange":false,"required":false,"fieldType":"Text","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":["neuroblastoma","medulloblastoma","DIV","DIA","fallot","glucogen storage disease"]},
+                {"name":"diagnosis_age","label":"METADATA FIELD","isList":false,"hasUnit":true,"hasRange":false,"required":false,"fieldType":"Integer","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":["days","months"],"possibleValues":null}
+            ]
+            }
+        ],
+        "header": {
+            "version":"1.0","ontology":"","fileUpload":false,"schemaName":"Patient","description":"Subject test model/schema","class_template":"Subject"
+        }
+    }
+
+    },
+
+    {
+        "id":2,
+        "name": "Tissue",
+        "classTemplate": "Sample",
+        "schema": {
+            "header":{"schemaName":"Tissue","fileUpload":true,"parents":"2","description":"Test case for tissue sample","version":"1.0","ontology":"","class_template":"Sample"},
+            "body":[{"label":"METADATA GROUP","name":"Generic Info","content":[{"label":"METADATA FIELD","fieldType":"Text","name":"arrival_code","ontologyUri":null,"customValue":null,"required":false,"sensitive":true,"hasRange":false,"isList":false,"possibleValues":null,"hasUnit":false,"possibleUnits":null},{"label":"METADATA FIELD","fieldType":"Text","name":"location","ontologyUri":null,"customValue":null,"required":false,"sensitive":false,"hasRange":false,"isList":true,"possibleValues":["adrenal gland","liver","neck","eye socket","ovary","heart","lung","kidney","spleen"],"hasUnit":false,"possibleUnits":null},{"label":"METADATA FIELD","fieldType":"Text","name":"diagnosis","ontologyUri":null,"customValue":null,"required":false,"sensitive":false,"hasRange":false,"isList":true,"possibleValues":["healthy","neuroblastoma","medulloblastoma","fallot","DIV","DIA","glucogen storage disease"],"hasUnit":false,"possibleUnits":null},{"label":"METADATA FIELD","fieldType":"Date","name":"sampling_date","ontologyUri":null,"customValue":null,"required":false,"sensitive":false,"hasRange":false,"isList":false,"possibleValues":null,"hasUnit":false,"possibleUnits":null}]}
+            ]
+        }
+    },
+
+    {
+        "id": 3,
+        "name": "Star",
+        "classTemplate": "Generic",
+        "schema": {
+            "header":{"schemaName":"Star","fileUpload":true,"description":"A generic data type for a star","version":"1.0","ontology":"","class_template":"Generic"},
+            "body":[{"label":"METADATA GROUP","name":"Generic Info","content":[{"label":"METADATA FIELD","fieldType":"Text","name":"name","ontologyUri":null,"customValue":null,"required":true,"sensitive":true,"hasRange":false,"isList":false,"possibleValues":null,"hasUnit":false,"possibleUnits":null},{"label":"METADATA FIELD","fieldType":"Text","name":"constellation","ontologyUri":null,"customValue":null,"required":true,"sensitive":false,"hasRange":false,"isList":true,"possibleValues":["orion","taurus","N.A.","N.D.","scutum","canis major","cygnus","boötes"],"hasUnit":false,"possibleUnits":null},{"label":"METADATA FIELD","fieldType":"Text","name":"classification","ontologyUri":null,"customValue":null,"required":true,"sensitive":false,"hasRange":false,"isList":true,"possibleValues":["hypergiant","supergiant","giant","subgiant","main-sequence star","subdwarf","dwarf"],"hasUnit":false,"possibleUnits":null},{"label":"METADATA LOOP","name":"Other Designations","content":[{"label":"METADATA FIELD","fieldType":"Text","name":"designation","ontologyUri":null,"customValue":null,"required":true,"sensitive":false,"hasRange":false,"isList":false,"possibleValues":null,"hasUnit":false,"possibleUnits":null}]}]},{"label":"METADATA GROUP","name":"Physical Details","content":[{"label":"METADATA FIELD","fieldType":"Float","name":"mass","ontologyUri":null,"customValue":null,"required":true,"sensitive":false,"hasRange":false,"isList":false,"possibleValues":null,"hasUnit":true,"possibleUnits":["M☉"]},{"label":"METADATA FIELD","fieldType":"Float","name":"radius","ontologyUri":null,"customValue":null,"required":true,"sensitive":false,"hasRange":false,"isList":false,"possibleValues":null,"hasUnit":true,"possibleUnits":["R☉"]},{"label":"METADATA FIELD","fieldType":"Integer","name":"luminosity","ontologyUri":null,"customValue":null,"required":false,"sensitive":false,"hasRange":false,"isList":false,"possibleValues":null,"hasUnit":true,"possibleUnits":["L☉"]},{"label":"METADATA FIELD","fieldType":"Integer","name":"temperature","ontologyUri":null,"customValue":null,"required":false,"sensitive":false,"hasRange":false,"isList":false,"possibleValues":null,"hasUnit":true,"possibleUnits":["K"]}]}]
+        }
+    }
+]
