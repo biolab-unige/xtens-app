@@ -51,6 +51,44 @@ var DataType = {
             collection: 'group',
             via: 'dataTypes'
         }
-    }
+    },
+    
+        /**
+         * @method
+         * @name getFlattenedFields
+         * @description flattens the metadata schema returning a 1D array containing all the metadata fields
+         * @param {boolean} skipFieldsWithinLoops - if true skips all the metadatafields that are contained within metadata loops
+         */
+        getFlattenedFields: function(skipFieldsWithinLoops) {
+            var flattened = [];
+            var body = this.schema && this.schema.body;
+            
+            // if no body return an empty array
+            if (!body) return flattened;
+            
+            // iterate through all groups within the body
+            for (var i=0, len=body.length; i<len; i++) {
+                var groupContent = body[i] && body[i].content;
+
+                // iterate through all the fields/loops
+                for (var j=0, l=groupContent.length; j<l; j++) {
+                    if (groupContent[j].label === Constants.METADATA_FIELD) {
+                        flattened.push(groupContent[j]);
+                    }
+                    else if (groupContent[j].label === Constants.METADATA_LOOP && !skipFieldsWithinLoops) {
+                        var loopContent = groupContent[j] && groupContent[j].content;
+                        for (var k=0; k<loopContent.length; k++) {
+                            if (loopContent[k].label === Constants.METADATA_FIELD) {
+                                flattened.push(loopContent[k]);
+                            }
+                        }
+                    }
+
+                }
+            }
+            return flattened;
+        },
+
+        
 };
 module.exports = DataType;
