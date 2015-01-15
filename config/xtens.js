@@ -9,15 +9,15 @@ var fileSystemConnections = require('./local.js').fileSystemConnections;
  *  @description XTENS configuration parameters
  */
 module.exports.xtens = {
-    
+
     name: 'xtens',
-    
+
     queryBuilder: new QueryBuilder(),
-    
+
     fileSystemManager: new FileSystemManager(fileSystemConnections[fileSystemConnections.default]),
 
     transactionHandler: new TransactionHandler(null, connections[connections.default], fileSystemConnections[fileSystemConnections.default]),
-    
+
     fileSystemConnection: fileSystemConnections[fileSystemConnections.default],
 
     /***
@@ -36,8 +36,30 @@ module.exports.xtens = {
             SUBJECT: 'Subject',
             SAMPLE: 'Sample',
             GENERIC: 'Generic'
-        }
-    
+        },
+
+        FieldTypes: {
+            TEXT: 'Text',
+            INTEGER: 'Integer',
+            FLOAT: 'Float',
+            BOOLEAN: 'Boolean',
+            DATE: 'Date'
+        },
+
+        DATA: 'DATA',
+        DATA_TYPE: 'DATA TYPE',
+        METADATA_FIELD: 'METADATA FIELD',
+        METADATA_LOOP: 'METADATA LOOP',
+        METADATA_GROUP: 'METADATA GROUP',
+        STRING: 'string',
+        PERSONAL_DETAILS: 'Personal Details',
+        SUBJECT_PROPERTIES: ['code', 'sex'],
+        SAMPLE_PROPERTIES: ['biobankCode'],
+        
+        // min and max values for PopulateService tests
+        TEST_MIN: -1000.0,
+        TEST_MAX: 1000.0
+
     }
-    
+
 };

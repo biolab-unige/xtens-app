@@ -110,7 +110,7 @@ describe('DataType', function() {
     }; //schema
 
 
-    describe('#getFields', function() {
+    describe('#getFlattenedFields', function() {
 
         it('returns a 1-d array with all the metadata fields', function() {
             var model = new DataType.Model({schema: schema});

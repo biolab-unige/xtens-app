@@ -40,7 +40,7 @@
 
         /**
          * @description flattens the metadata schema returning a 1D array containing all the metadata fields
-         * @param skipFieldsWithinLoops if true skips all the metadatafields that are contained within metadata loops
+         * @param {boolean} skipFieldsWithinLoops - if true skips all the metadatafields that are contained within metadata loops
          */
         getFlattenedFields: function(skipFieldsWithinLoops) {
             var flattened = [];
