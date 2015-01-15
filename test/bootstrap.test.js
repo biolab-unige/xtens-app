@@ -29,7 +29,7 @@ before(function(done) {
     sails = res;
     barrels.populate(function(err){
         done(err, res);
-    });
+    }, false);
   });
 });
 

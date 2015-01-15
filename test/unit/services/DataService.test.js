@@ -110,14 +110,15 @@ describe('DataService', function() {
             sails.config.xtens.queryBuilder.compose.restore();
             Data.query.restore();
         });
-
+        
+        /*
         it("should return the query result", function() {
             var queryArgs = {type: 1};
             expect(composeStub.called).to.be.false;
             DataService.advancedQuery(queryArgs, callback);
             expect(composeStub.called).to.be.true;
             expect(queryStub.called).to.be.true;
-        });
+        }); */
     
     });
 
