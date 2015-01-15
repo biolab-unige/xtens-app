@@ -11,6 +11,10 @@ function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+function randomDate(start, end) {
+    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+}
+
 var PopulateService = {
 
     /**
@@ -34,7 +38,15 @@ var PopulateService = {
                 case FieldTypes.FLOAT:
                     metadata[field.name] = PopulateService.generateFloatField(field);
                 break;
-
+                case FieldTypes.INTEGER:
+                    metadata[field.name] = PopulateService.generateIntegerField(field);
+                break;
+                case FieldTypes.BOOLEAN:
+                    metadata[field.name] = PopulateService.generateBooleanField(field);
+                break;
+                case FieldTypes.DATE:
+                    metadata[field.name] = PopulateService.genarateDateField(field);
+                break;
             }
 
         });
@@ -58,6 +70,44 @@ var PopulateService = {
 
     generateTextField: function(field) {
 
+        var res = { "value": Math.random().toString(36)
+        };
+       console.log("text field is:"+ res);
+       return res;
+    },
+
+    generateIntegerField: function(field) {
+
+        var min = field.min || MIN;
+        var max = field.max || MAX;
+    
+        var res = { "value": Math.floor(getRandomArbitrary(min,max)),
+        "unit": (field.hasUnit) ? field.possibleUnits[0] : undefined};
+
+        console.log("integer field is:" + res);
+        return res;
+    },
+
+    generateBooleanField: function(field) {
+    
+        var min = 0;
+        var max = 2;
+        var value;
+
+        if (Math.floor(getRandomArbitrary(min,max))===0){
+            value = true;
+        }
+        else {
+            value = false;
+        }
+        console.log(value);
+        var res = {"value":value};
+        console.log("boolean field is:" + res);
+        return res;
+    },
+
+    generateDateField : function(field) {
+    
     }
 
 };
