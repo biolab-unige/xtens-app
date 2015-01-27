@@ -8,7 +8,7 @@ describe('DataTypeService', function() {
         it('returns a 1-d array with all the metadata fields', function() {
             DataType.findOne(3).exec(function(err, dataType) {
                 var flattened = DataTypeService.getFlattenedFields(dataType) || [];
-                expect(flattened).to.have.length(8);
+                expect(flattened).to.have.length(9);
                 flattened.forEach(function(field){
                     expect(field.label).to.equal("METADATA FIELD");
                 });
