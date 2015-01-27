@@ -42,9 +42,11 @@ module.exports = {
         .then(function(foundData) {
             data = foundData;
             if (_.isEmpty(foundData)) {
+                return;
+            }
+            else {
                 return DataType.findOne(foundData[0].type);
             }
-            else return;
         })
         .then(function(dataType) {
             res.json({data: data, dataType: dataType });

@@ -40,7 +40,12 @@
         },
 
         render: function() {
-            this.$el.DataTable(this.tableOpts);
+            if (this.tableOpts) {
+                this.$el.DataTable(this.tableOpts);
+            }
+            else {
+                // TODO do something if no result found
+            }
             return this;
         },
 
