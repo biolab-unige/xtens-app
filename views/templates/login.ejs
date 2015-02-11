@@ -1,4 +1,4 @@
-<h2 class="legend" align="center"><%= __("xtens-login") %></h2> 
+<h2 id="account" class="legend">Account Login</h2> 
 <script>
     $("#login").click(function(){
         var username = $("#userName").val();
@@ -19,13 +19,36 @@
         }
     });
             </script>
+<style type="text/css">
+input{
+color: #555;
+line-height: 1.428571429;
+height: 34px;
+vertical-align: middle;
+background-color: #fff;
+border: 1px solid #ccc;
+border-radius: 4px;
+max-width: 280px;
+margin: 0;
+padding-left:10px;
+}
+h2#account{
+font-size:20px;
+line-height: 30px;
+color: #555;
+font-family: 'Helvetica',Gadget, sans-serif;
+font-weight: normal;
+}
+
+</style>
+
 <form name = "LForm" id="form" class="form-horizontal login-form" role="form">
 
 <div id="log">
-        UserName <input name="user" type="text" id="userName" placeholder="Username"><br /><br />
-          Password : <input type="password" id="userPass" placeholder="Password"><br /><br/>   
+        <input name="user" type="text" id="userName" placeholder=" User Name"><br /><br />
+        <input type="password" id="userPass" placeholder=" Password"><br /><br/>   
     </div>
-    <div class="row text-center">
-        <a id="login" class="btn btn-primary"><%= __("login")%></a>
+    <div>
+        <a id="login" class="btn btn-primary">Log in</a>
     </div>
 </form>
