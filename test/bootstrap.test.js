@@ -28,6 +28,7 @@ before(function(done) {
     
     sails = res;
     barrels.populate(function(err){
+        console.log(err);
         done(err, res);
     }, false);
   });
