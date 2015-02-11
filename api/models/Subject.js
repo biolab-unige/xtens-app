@@ -19,7 +19,7 @@ var Subject= {
         sex: {
             type: 'string',
             required: true,
-            enum: ['M', 'F', 'N.D.', 'UNKNOWN', 'UNDIFFERENTIATED']
+            enum: ['M', 'F', 'N.D.', 'N.A.', 'UNDIFFERENTIATED']
         },
 
         // one-way association to PersonalDetails model
