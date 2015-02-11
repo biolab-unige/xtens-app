@@ -37,7 +37,7 @@
                         that.$el.html(that.template({__: i18n, operator: operator}));
                         return that;
                     },
-                    error: xtens.error,                 
+                    error: function(operator,res){xtens.error(res)},                 
                 });
             } else {
                 this.$el.html(that.template({__: i18n,operator:null}));
@@ -134,7 +134,7 @@
                     return self;
 
                 },
-                error: operators.error,
+                error:function(operators,res){ xtens.error(res)},
 
             });
 
