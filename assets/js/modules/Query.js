@@ -149,6 +149,13 @@
         },
 
         fieldNameOnChange: function(model, fieldName) {
+            // unset all the attributes but field name for the current model (FIX issue #1)
+            _.forEach(model.attributes, function(value, key) {
+                if (key !== 'fieldName') {
+                    model.unset(key);
+                }
+            });
+
             this.generateStatementOptions(model, fieldName);
         },
 
