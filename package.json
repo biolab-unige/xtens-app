@@ -6,6 +6,7 @@
   "keywords": [],
   "dependencies": {
     "bcrypt": "~0.8.0",
+    "bcryptjs": "^2.1.0",
     "bluebird": "^2.5.1",
     "ejs": "~0.8.4",
     "grunt": "~0.4.2",
@@ -37,7 +38,7 @@
   "scripts": {
     "start": "node app.js",
     "debug": "node debug app.js",
-    "test": "PORT=9999 NODE_ENV=test mocha -R spec -b --recursive"
+    "test": "PORT=9999 NODE_ENV=test mocha -R spec -b --recursive --debug-brk"
   },
   "main": "app.js",
   "repository": {

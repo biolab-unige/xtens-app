@@ -1,5 +1,6 @@
-var expect = require('chai').expect,
+var expect = require('chai').expect, assert = require('chai').assert,
 sinon = require('sinon');
+var BluebirdPromise = require('bluebird');
 
 var foundRecords = [
     {"type": "sometype", "metadata": {"somemetadata": {"value": "val"}}},
@@ -120,6 +121,29 @@ describe('DataService', function() {
             expect(queryStub.called).to.be.true;
         }); */
     
+    });
+
+    describe("#storeMetadataIntoEAV", function() {
+        
+        it("#should call the transactionHandler to execute the storage of metadata value", function() {
+            
+            var stub = sinon.stub(sails.config.xtens.transactionHandler, 'putMetadataValuesIntoEAV', function() {
+                return BluebirdPromise.try(function() { return [1]; } );
+            });
+            
+            return DataService.storeMetadataIntoEAV(1)
+            
+            .then(function() {
+                console.log('DataService.test.storeMetadataIntoEAV - testing after promise fulfilled');
+                expect(stub.calledOnce).to.be.true;
+                sails.config.xtens.transactionHandler.putMetadataValuesIntoEAV.restore();
+            })
+            .catch(function(error) {
+               assert.fail("DataService.test.storeMetadataIntoEAV - error caught"); 
+            });
+
+        });
+
     });
 
 });

@@ -3,6 +3,8 @@
  *  @author Massimiliano Izzo
  */
 var Constants = sails.config.xtens.constants;
+var transactionHandler = sails.config.xtens.transactionHandler;
+
 var DataTypeService = {
 
     getChildrenRecursive: function(parents) {
@@ -97,7 +99,34 @@ var DataTypeService = {
             }
         }
         return flattened;
-    }
+    },
+    
+    /**
+     * @method
+     * @name putMetadataFieldIntoEAV
+     * @description extract the Metadata Fields from the JSON schema and stores each one in a dedicated 
+     *              ATTRIBUTE table, for use in an EAV catalogue
+     * @param {DataType} dataType - the type that must be extracted
+     */
+    putMetadataFieldsIntoEAV: function(dataType) {
+        
+        // check whether the dataType effectively exists
+        return DataType.findOne(dataType)
+        
+        // extract and store all metadata fields
+        .then(function(foundType) {
+            console.log("DataTypeService.putMetadataFieldsIntoEAV - found type" + foundType);
+            var fields = DataTypeService.getFlattenedFields(foundType, false);
+            return transactionHandler.putMetadataFieldsIntoEAV(foundType.id, fields);
+        })
+        .then(function(inserted) {
+            console.log("new EavAttributes inserted: " + inserted);
+        })
+        .catch(function(err) {
+            console.log("DataTypeService.putMetadataFieldsIntoEAV - error caught");
+        });
+    
+    },
 
 
 };

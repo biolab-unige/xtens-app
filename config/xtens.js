@@ -46,6 +46,14 @@ module.exports.xtens = {
             DATE: 'Date'
         },
 
+        EavValueTableMap: {
+            'Text': 'eav_value_text',
+            'Integer': 'eav_value_integer',
+            'Float': 'eav_value_float',
+            'Boolean': 'eav_value_boolean',
+            'Date': 'eav_value_date'
+        },
+
         DATA: 'DATA',
         DATA_TYPE: 'DATA TYPE',
         METADATA_FIELD: 'METADATA FIELD',

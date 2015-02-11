@@ -6,9 +6,10 @@ var BluebirdPromise = require('bluebird');
 var queryBuilder = sails.config.xtens.queryBuilder;
 var DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
 var fileSystemManager = sails.config.xtens.fileSystemManager;
+var transactionHandler = sails.config.xtens.transactionHandler;
 
 var DataService = BluebirdPromise.promisifyAll({
-    
+
     /**
      * @method
      * @name getOne
@@ -23,7 +24,7 @@ var DataService = BluebirdPromise.promisifyAll({
             Data.findOne(_.parseInt(id)).populateAll().exec(next);
         }
     },
-    
+
     /**
      * @method
      * @name advancedQuery
@@ -59,15 +60,15 @@ var DataService = BluebirdPromise.promisifyAll({
         switch(classTemplate) {
             case DataTypeClasses.SUBJECT:
                 console.log("calling Subject.find");
-                Subject.find({id: ids}).exec(next);
+            Subject.find({id: ids}).exec(next);
             break;
             case DataTypeClasses.SAMPLE:
                 console.log("calling Sample.find");
-                Sample.find({id: ids}).exec(next);
+            Sample.find({id: ids}).exec(next);
             break;
             default:
                 console.log("calling Data.find");
-                Data.find({id: ids}).exec(next);
+            Data.find({id: ids}).exec(next);
         }
     },
 
@@ -96,7 +97,31 @@ var DataService = BluebirdPromise.promisifyAll({
             next();
         });
 
+    },
+
+    /**
+     * @name 
+     */
+    storeMetadataIntoEAV: function(ids) {
+
+        return Data.find(ids).then(function(foundData) {
+            console.log(transactionHandler.putMetadataValuesIntoEAV);
+            return BluebirdPromise.map(foundData, function(datum) {
+                return transactionHandler.putMetadataValuesIntoEAV(datum, sails.config.xtens.constants.EavValueTableMap);
+            });
+        })
+
+        .then(function(inserted) {
+            console.log("DataService.storeMetadataIntoEAV - new rows inserted: " + inserted.length);
+        })
+        
+        .catch(function(error) {
+            console.log(error);
+            console.log("DataService.storeMetadataIntoEAV - error caught");
+        });
+
     }
-    
+
 });
+
 module.exports = DataService;

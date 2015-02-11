@@ -186,7 +186,7 @@ describe('PopulateService', function() {
             var _this = this;
             var dataType = fixtures.datatype[0];
             return PopulateService.generateSubjectSampleData(dataType).then(function(res) {
-                console.log('testing after promise fulfilled');
+                console.log('PopulateService.test.generateSubjectSampleData - testing after promise fulfilled');
                 expect(_this.subjectCreateStub.calledOnce).to.be.true;
                 expect(_this.sampleCreateStub.called).to.be.false;
                 expect(_this.dataCreateStub.called).to.be.false;
