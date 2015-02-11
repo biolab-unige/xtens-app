@@ -31,7 +31,6 @@
 <!--STYLES-->
 <link rel="stylesheet" href="/styles/importer.css">
 <link rel="stylesheet" href="/dependencies/select2/select2.css">
-<link rel="stylesheet" href="/dependencies/async/deps/nodeunit.css">
 <link rel="stylesheet" href="/dependencies/datatables/styles/jquery.dataTables.css">
 <link rel="stylesheet" href="/dependencies/dropzone/styles/basic.css">
 <link rel="stylesheet" href="/dependencies/font-awesome/styles/font-awesome.css">
@@ -41,20 +40,22 @@
 </head>
 
 <style type="text/css">
-body{
-background:"/home/valentina/Pictures/pippo.png";
-}
+
 nav ul li:hover ul {
     display: block;
     width:200px;
     padding:5px;
     height:auto;
+    background-color:#EEEEEE;
+    border-top-width:3px;
+    border-top-color:blue;
 }
-
-.dropdown a{
-    color:black;
+a#search{
+    color:#555;
     font-size: 13px;
-    font-weight: bold;
+    font-weight: normal;
+    text-transform:uppercase;
+
 }
 div#footer{position: relative; 
 bottom:0; 
@@ -65,39 +66,76 @@ margin-top:50%;
      color: #000;text-align:center;}
 
 nav ul li{
-    text-align:center;
+    text-left:center;
 }
+li:hover{
+   width:390px;
+   }
+nav#nav1{
+margin-bottom:0px;
+border-bottom-width:0px;
+}
+nav#nav2{
+margin-bottom:0px;
+border-top-width:0px;
+}
+ul#left{
+padding-left:25px;
+}
+h2#title{
+    color:#555;
+    font-size:14px;
+    padding-left:10px;
+    margin-top:10px;
+    padding-bottom:5px;
+    border-bottom: 1px solid #ccc;
+
+}
+ul#box{
+    width:400px;
 
 
-
+}
 </style>
 <body>
 
-<nav class="navbar navbar-default" role="navigation">
+<nav id="nav1"class="navbar navbar-default" role="navigation">
     <div class="navbar-header">
-        <p class="navbar-text" data-toggle="collapse"><%= __("xtens") %></p>
+        <svg height="50" width="200">
+             <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:rgb(0,255,255);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:rgb(0,0,255);stop-opacity:1" />
+                 </linearGradient>
+                 <text x="30" y="40" fill = "url(#grad1)" font-family="ff-market-web, cursive" font-size="40">XTENS</text>
+
+        </svg>
 
     </div>
-    <ul class ="nav navbar-nav navbar-right ">
-        <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><%= __("admin") %><span class="caret"></span></a>
-        <ul class="dropdown-menu">
+    </nav>
+    <nav class="navbar navbar-default" id="nav2" role="navigation">
+    <ul id="left" class ="nav navbar-nav navbar-left">
+        <li id="pippo" class="dropdown">
+        <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" >Admin <span class="fa fa-angle-down"></span></a>
+        <ul id="box" class="dropdown-menu">
+            <h2 id="title">ADMIN </h2>
             <li><a href="#/groups"><%= __("groups") %></a></li>
             <li><a href="#/operators"><%= __("operators") %></a></li>
         </ul>
         </li>
 
         <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><%= __("data-type-management") %><span class="caret"></span></a>
-        <ul class="dropdown-menu">
-            <li><a href="#"></a></li>
+        <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" >Datatype Management <span class="fa fa-angle-down"></span></a>
+        <ul id="box" class="dropdown-menu">
+            <h2 id="title">DATATYPE MANAGEMENT</h2>
+            <li><a href="#/datatypes">DataTypes</a></li>
         </ul>
 
         </li>
 
         <li class="dropdown">
-        <a  href="#" class="dropdown-toggle" data-toggle="dropdown" data-toggle="collapse"><%= __("search") %><span class="caret"></span></a>
-        <ul class="dropdown-menu">
+        <a  href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" data-toggle="collapse">Search <span class="fa fa-angle-down"></span></a>
+        <ul id="box" class="dropdown-menu">
+            <h2 id="title">SEARCH</h2>
             <li><a href="#/query"><%= __("data-search") %></a></li>
             <li><a href="#/data/new"><%= __("new-data") %></a></li>
         </ul>
@@ -179,7 +217,6 @@ nav ul li{
 <script src="/dependencies/pikaday/js/pikaday.js"></script>
 <script src="/dependencies/dropzone/js/dropzone.js"></script>
 <script src="/dependencies/datatables/js/jquery.dataTables.js"></script>
-<script src="/dependencies/async/lib/async.js"></script>
 <script src="/js/application/xtens.js"></script>
 <script src="/js/application/utils.js"></script>
 <script src="/js/application/Router.js"></script>
