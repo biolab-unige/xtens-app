@@ -43,7 +43,7 @@
                  if(options.id) {
                 this.group = new Group.Model({id: options.id});
                 this.group.fetch({
-                    success:this.fetchSuccess, error:this.group.error  });
+                    success:this.fetchSuccess, error:function(group,res){xtens.error(res);}  });
             } else {
 		
                 this.$el.html(this.template({__: i18n,group:null}));
@@ -125,7 +125,7 @@
                     _this.$el.html(_this.template({__: i18n, groups: groups.models}));
                     return _this;
                 },
-                error: 	groups.error,
+                error: 	function(groups,res){xtens.error(res)},
 		/*function() {
 
                     // _this.$el.html(_this.template({__: i18n}));
