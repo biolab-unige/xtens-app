@@ -100,12 +100,16 @@ var DataService = BluebirdPromise.promisifyAll({
     },
 
     /**
-     * @name 
+     * @name storeMetadataIntoEAV
+     * @description insert in the EAV catalogue a certain number of Data (Subject or Sample) instances
+     * @param {Integer/Array} - an integer or an arry of identifiers
+     * @param {modelName} - an optional name determining on which table run the query
+     * @return {Promise} -  a Bluebird Promise
      */
-    storeMetadataIntoEAV: function(ids) {
-
-        return Data.find(ids).then(function(foundData) {
-            console.log(transactionHandler.putMetadataValuesIntoEAV);
+    storeMetadataIntoEAV: function(ids, modelName) {
+        modelName = modelName || 'Data';
+        return global[modelName].find(ids).then(function(foundData) {
+            console.log("DataService.storeMetadataIntoEAV - EAV value table map is: " + sails.config.xtens.constants.EavValueTableMap);
             return BluebirdPromise.map(foundData, function(datum) {
                 return transactionHandler.putMetadataValuesIntoEAV(datum, sails.config.xtens.constants.EavValueTableMap);
             });

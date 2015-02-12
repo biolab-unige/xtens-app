@@ -1,5 +1,5 @@
 /**
-* EavValueDate.js
+* EavValueDateSample.js
 *
 * @author Massimiliano Izzo
 * @description :: EAV Value Table for Date metadata fields
@@ -8,21 +8,13 @@
 
 module.exports = {
     
-    tableName: 'eav_value_date',
+    tableName: 'eav_value_date_sample',
 
     attributes: {
         
-        entityTable: {
-            type: 'string',
-            required: true,
-            enum: ['subject', 'sample', 'data'],
-            columnName: 'entity_table'
-        },
-
-        entityId: {
-            type: 'integer',
-            required: true,
-            columnName: 'entity_id'
+        entity: {
+            model: 'sample',
+            required: true
         },
 
         attribute: {

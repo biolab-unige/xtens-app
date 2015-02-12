@@ -62,7 +62,27 @@ var MainController = {
                 message: files.length + ' file(s) uploaded successfully!',
             });
         });
-    }
+    },
+
+    /*
+     * @method
+     * @test
+     * TODO remove this one! Only for testing EAV catalogue
+     *
+    populateEAV: function(req, res) {
+        var idData = _.parseInt(req.param("idData"));
+        console.log("MainController.populateEav - idData = " + idData);
+        DataService.storeMetadataIntoEAV(idData)
+        
+        .then(function(res) {
+            console.log(res);
+            return res.json(res);
+        })
+        
+        .catch(function(err) {
+            console.log("MainController.populateEav - error caught: " + err);
+        });
+    } */
 
 };
 

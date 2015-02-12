@@ -1,5 +1,5 @@
 /**
- * EavValueFloat.js
+ * EavValueFloatSample.js
  *
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/#!documentation/models
@@ -7,21 +7,13 @@
 
 module.exports = {
 
-    tableName: 'eav_value_float',
+    tableName: 'eav_value_float_sample',
 
     attributes: {
 
-        entityTable: {
-            type: 'string',
+        entity: {
+            model: 'sample',
             required: true,
-            enum: ['subject', 'sample', 'data'],
-            columnName: 'entity_table'
-        },
-
-        entityId: {
-            type: 'integer',
-            required: true,
-            columnName: 'entity_id'
         },
 
         attribute: {

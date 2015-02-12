@@ -31,6 +31,8 @@ module.exports.routes = {
     'POST /login':{controller:'main',
         action:'login'
     },
+
+    // 'GET /populateEAV': {controller: 'main', action: 'populateEAV'},
     
     '/upload-file':{controller:'dataFile',action:'upload'},
     
