@@ -35,7 +35,8 @@ module.exports.xtens = {
         DataTypeClasses: {
             SUBJECT: 'Subject',
             SAMPLE: 'Sample',
-            GENERIC: 'Generic'
+            GENERIC: 'Data',
+            DATA: 'Data'
         },
 
         FieldTypes: {

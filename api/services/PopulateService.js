@@ -207,7 +207,7 @@ var PopulateService = {
             typeTissue = res;
 
             data = PopulateService.generateData(dataType);
-            switch(dataType.classTemplate) {
+            switch(dataType.model) {
 
                 case DataTypeClasses.SUBJECT:
                     var sexList = Object.keys(SexList);
@@ -221,11 +221,11 @@ var PopulateService = {
                     data.biobankCode = guid();
                 data.biobank = 1;
                 break;
-                case DataTypeClasses.GENERIC:
+                case DataTypeClasses.DATA:
                     break;
             }
 
-            var modelName = dataType.classTemplate ===  DataTypeClasses.GENERIC ? 'Data' : dataType.classTemplate;
+            var modelName = dataType.model;
             console.log("PopulateService.generateSubjectSampleData - creating the new Data!");
             return global[modelName].create(data);
 
@@ -233,7 +233,7 @@ var PopulateService = {
 
         // if DataType is SUBJECT create all the children and 
         .then(function(created) {
-            if (dataType.classTemplate === DataTypeClasses.SUBJECT) {
+            if (dataType.model === DataTypeClasses.SUBJECT) {
                 return PopulateService.generateSubjectChildren(created, childrenDataTypes, childrenSampleTypes, typeTissue, numVariants);             
             }    
         })
@@ -628,10 +628,10 @@ console.log(e);
                              return BluebirdPromise.map(dataTypes,function(dataType){
 
                                  if(dataType.schema.header.parents && (dataType.schema.header.parents).indexOf(subject.id) > -1) {
-                                     if(dataType.classTemplate === DataTypeClasses.SAMPLE){
+                                     if(dataType.model === DataTypeClasses.SAMPLE){
                                          sampleChildren.push(dataType);
                                      }
-                                     else if(dataType.classTemplate === DataTypeClasses.GENERIC){
+                                     else if(dataType.model === DataTypeClasses.DATA){
                                          dataChildren.push(dataType);
                                      }
                                  }

@@ -8,7 +8,7 @@
                     <thead>
                         <tr>
                             <th><%= __("name") %></th>
-                            <th><%= __("class-template") %></th>
+                            <th><%= __("model") %></th>
                             <!--
                             <th><%= __("json-schema") %></th>
                             -->
@@ -20,7 +20,7 @@
                     <% _.each(dataTypes, function(dataType) { %> 
                     <tr>
                         <td><%= dataType.get("name") %></td>
-                        <td><%= dataType.get("classTemplate") %></td>
+                        <td><%= dataType.get("model") %></td>
                         <!--
                         <td><%= JSON.stringify(dataType.get("schema")) %></td>
                         -->

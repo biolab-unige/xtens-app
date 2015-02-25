@@ -171,12 +171,12 @@
                 var type = this.dataTypes.get(subject.get("type").id);
                 subject.set("editLink", "#/subjects/edit/" + subject.id);
                 if (type.get("children") && type.get("children").length > 0) {
-                    var sampleTypeChildren = _.where(type.get("children"), {"classTemplate": Classes.SAMPLE});
+                    var sampleTypeChildren = _.where(type.get("children"), {"model": Classes.SAMPLE});
                     if (sampleTypeChildren.length) {
                         var sids = _.pluck(sampleTypeChildren, 'id').join();
                         subject.set("newSampleLink", "#/samples/new/0?idDataTypes="+sids+"&donor=" + subject.id);
                     }
-                    var dataTypeChildren = _.where(type.get("children"), {"classTemplate": Classes.GENERIC});
+                    var dataTypeChildren = _.where(type.get("children"), {"model": Classes.DATA});
                     if (dataTypeChildren.length) {
                         subject.set("newDataLink", "#/data/new/0?parentSubject=" + subject.id);
                     }

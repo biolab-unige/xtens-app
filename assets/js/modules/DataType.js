@@ -35,7 +35,7 @@
         urlRoot: '/dataType',
 
         defaults: {
-            classTemplate: DataTypeClasses.GENERIC
+            model: DataTypeClasses.DATA
         },
 
         /**
@@ -150,11 +150,11 @@
         },
 
         bindings: {
-            '#schemaName': {
+            '#name': {
                 observe: 'name'
             },
-            '#classTemplate': {
-                observe: 'classTemplate',
+            '#model': {
+                observe: 'model',
                 selectOptions: {
                     collection: function() {
                         var coll = [];
@@ -181,7 +181,8 @@
                 },
                 getVal: function($el, ev, options) {
                     return $el.val().map(function(value) {
-                        return _.findWhere(options.view.existingDataTypes, {id: parseInt(value)});
+                        // return _.findWhere(options.view.existingDataTypes, {id: parseInt(value)});
+                        return _.parseInt(value);
                     });
                 },
                 onGet: function(vals, options) {
@@ -262,7 +263,14 @@
             var header = this.$("#schemaHeader").find("select, input, textarea").serializeObject();
             header.fileUpload = header.fileUpload ? true : false;
             var body = this.serialize();
-            var dataTypeDetails = { id: id, name: header.schemaName, schema: {header: header, body: body} };
+            var dataTypeDetails = { 
+                id: id, 
+                name: header.name,
+                schema: {
+                    header: _.omit(header, ['parents']), // parent-child many-to-many associations are not currently saved in the JSON schema 
+                    body: body
+                } 
+            };
             //var dataType = new DataType.Model();
             this.model.save(dataTypeDetails, {
                 //  patch: true,

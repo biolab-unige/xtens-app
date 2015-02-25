@@ -6,9 +6,9 @@
     <form class="form-horizontal edit-datatype-form" role="form" data-parsley-validate>
         <div id="schemaHeader">
             <div class="form-group row">
-                <label for="schemaName" class="col-md-2 control-label"><%= __("name") %></label>
+                <label for="name" class="col-md-2 control-label"><%= __("name") %></label>
                 <div class="col-md-6">
-                    <input text class="form-control" id="schemaName" name="schemaName" 
+                    <input text class="form-control" id="name" name="name" 
                     value="<%= dataType ? dataType.get('name') : '' %>" placeholder="Data Type Name" required >
                 </div>
                 <label for="fileUpload" class="col-md-2 control-label"><%= __("file-upload") %></label>
@@ -18,9 +18,9 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="className" class="col-md-2 control-label"><%= __("class-template") %></label>
+                <label for="model" class="col-md-2 control-label"><%= __("model") %></label>
                 <div class="col-md-4">
-                    <select class="form-control" id="classTemplate" name="classTemplate"></select>
+                    <select class="form-control" id="model" name="model"></select>
                 </div>
                 <label for="parent" class="col-md-2 control-label"><%= __("parent") %></label>
                 <div class="col-md-4">

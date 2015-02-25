@@ -12,7 +12,8 @@
         "file-upload": "File Upload",
         "yes": "YES",
         "no": "NO",
-        "class-template": "Class Template",
+        "model": "Model",
+        "class-template": "Class Template", //TODO
         "parent": "Parent",
         "description": "Description",
         "version": "Version",

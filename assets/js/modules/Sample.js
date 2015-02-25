@@ -185,12 +185,12 @@
                 var type = this.dataTypes.get(typeId);
                 sample.set("editLink", "#/samples/edit/" + sample.id);
                 if (type.get("children") && type.get("children").length > 0) {
-                    var sampleTypeChildren = _.where(type.get("children"), {"classTemplate": Classes.SAMPLE});
+                    var sampleTypeChildren = _.where(type.get("children"), {"model": Classes.SAMPLE});
                     if (sampleTypeChildren.length > 0) {
                         var sids = _.pluck(sampleTypeChildren, 'id').join();
                         sample.set("newDerivativeLink", "#/samples/new/0?idDataTypes="+sids+"&parentSample="+sample.id+"&donor="+sample.get("donor").id);
                     }
-                    var dataTypeChildren = _.where(type.get("children"), {"classTemplate": Classes.GENERIC});
+                    var dataTypeChildren = _.where(type.get("children"), {"model": Classes.DATA});
                     if (dataTypeChildren.length > 0) {
                         var dids = _.pluck(dataTypeChildren, 'id').join();
                         sample.set("newDataLink", "#/data/new/0?idDataTypes="+dids+"&parentSample="+sample.id);

@@ -17,7 +17,7 @@
             var data =[];
             var list = model.get(property);
             for (i=0, len=list.length; i<len; i++) {
-                data.push({id: list[i], text: list[i], locked: true}); // set locked to false to edit values/unit list options
+                data.push({id: list[i], text: list[i], locked: false}); // set locked to false to edit values/unit list options
             }
             $el.select2({
                 multiple: true, 

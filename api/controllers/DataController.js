@@ -5,6 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 var transactionHandler = sails.config.xtens.transactionHandler;
+var DATA = sails.config.xtens.constants.DataTypeClasses.DATA;
 
 module.exports = {
 
@@ -15,7 +16,7 @@ module.exports = {
     edit: function(req, res) {
 
         var params = req.allParams();
-        params.classTemplate = "Generic";
+        params.model = DATA;
         var idOperator = req.session.operator && req.session.operator.id;
 
         async.parallel({

@@ -4,36 +4,109 @@
  * @description :: Server-side logic for managing datatypes
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
+var transactionHandler = sails.config.xtens.transactionHandler;
+
 var DataTypeController = {
-    /*
-create: function(req, res) {
-DataType.find()
-.then(function(dataTypes) {
-res.send(dataTypes);
-}).fail(function(err) {
-res.send(500, {error: "Database Error"});
-});
-},
 
-find: function(req, res) {
+    /**
+     * GET /dataType
+     * GET /dataType/find
+     *
+     * @method
+     * @name find
+     * @description Find dataTypes based on criteria
+     */
+    find: function(req, res) {
 
-},
+        console.log("DataType.find - prova");
 
-findOne: function(req, res) {
+        var query = DataType.find()
+        .where(QueryService.parseCriteria(req))
+        .limit(QueryService.parseLimit(req))
+        .skip(QueryService.parseSkip(req))
+        .sort(QueryService.parseSort(req)).populate('parents');
 
-},
+        query.then(function(dataTypes) {
+            res.json(dataTypes);
+        })
+        .catch(function(err) {
+            return res.serverError(err);
+        });
+    },
 
-update: function(req, res) {
+    /**
+     * POST /dataType
+     * @method
+     * @name create
+     */
+    create: function(req, res) {
+        console.log("DataType.create - prova");
 
-},
+        var dataType = req.body;
+        if(!dataType.schema) {
+            return res.badRequest("a DataType requires at least valid JSON schema");
+        }
+        if (!dataType.name) dataType.name = dataType.schema.name;
+        if (!dataType.model) dataType.model = dataType.schema.model;
+        // omit all the properties relative to associations
+        // var newDataType = _.omit(req.body, ['parents', 'children', 'datas', 'groups']);
+        // var parents = req.param('parents');
 
-updateSelective: function(req, res) {
+        transactionHandler.createDataType(dataType).then(function(idDataType) {
+            return DataType.findOne(idDataType).populate('parents');
+        })
+        .then(function(dataType) {
+            return res.json(dataType);
+        })
+        .catch(function(error) {
+            return res.serverError(error.message);
+        });
 
-},
+        /*
+           DataType.create(newDataType)
 
-destroy: function(req, res) {
+        // if the dataType is successfully created, create all the 
+        .then(function(dataType) {
+        newDataType = dataType;
+        return BluebirdPromise.map(parents, function(parent) {
+        console.log('Associating new DataType ', dataType.name ,'with Parent ', parent);
+        dataType.parents.add(parent);
+        return dataType.save();
+        });
+        })
 
-} */
+        .then(function() {
+        return DataType.find(newDataType.id).populate('parents');
+        })
+
+        .then(function(dataType) {
+        return res.json(dataType);
+        })
+
+        .catch(function(error) {
+        return res.serverError(error);
+        }); */
+
+    },
+
+    /**
+     * PUT /dataType/:id
+     * @method
+     * @name update
+     */
+    update: function(req, res) {
+        var dataType = req.body;
+
+        transactionHandler.updateDataType(dataType).then(function(idDataType) {
+            return DataType.findOne(idDataType).populate('parents');
+        })
+        .then(function(dataType) {
+            return res.json(dataType);
+        })
+        .catch(function(error) {
+            return res.serverError(error.message);
+        });
+    },
 
     buildHierarchy: function(req, res) {
         DataType.find({ parent: null}).populate('children').then(function(roots) {
@@ -46,36 +119,6 @@ destroy: function(req, res) {
         .catch(function(error) {
             if (error) return res.serverError(error);
         });
-        /*
-        DataType.find({ parent: null }).exec(function(err, rootDataTypes) {
-            if (err) {
-                return res.serverError(err);
-            }
-            else {
-                async.auto({
-                        populate_recursive: function(next) {
-                            async.each(rootDataTypes, DataTypeService.getChildrenRecursive, function(err) {
-                                if (err) {
-                                    return res.serverError(err);
-                                }
-                                next(null, rootDataTypes);
-                            });
-                        },
-                        verify_results: ['populate_recursive', function(next, results) {
-                            console.log(results.populate_recursive);
-                            next(null, results.populate_recursive);
-                        }]
-                }, function(error, results) {
-                    return res.json(results);
-                });
-            }
-        }); */
-        /*
-        async.auto({
-            get_roots: function(next) {
-                DataType.find({ parent: null}).populate('children').exec(next);
-            }  
-        }); */
     }
 
 };

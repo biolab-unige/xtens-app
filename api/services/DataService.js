@@ -10,6 +10,7 @@ var transactionHandler = sails.config.xtens.transactionHandler;
 
 var DataService = BluebirdPromise.promisifyAll({
 
+    
     /**
      * @method
      * @name getOne
@@ -50,14 +51,14 @@ var DataService = BluebirdPromise.promisifyAll({
      *              (optionally) populates the existing associations
      * @param {Array} foundRows - an array of items. Each item must contain at least an identifier (id)
      *                for retrieval
-     * @param {enum} classTemplate - (e.g. Subject, Sample or Generic)
+     * @param {enum} model - (e.g. Subject, Sample or Generic)
      * @param {function} next - a callabck
      * @return {Array} the list of found and populated objects
      */
 
-    queryAndPopulateItemsById: function(foundRows, classTemplate, next) {
+    queryAndPopulateItemsById: function(foundRows, model, next) {
         var ids = _.pluck(foundRows, 'id');
-        switch(classTemplate) {
+        switch(model) {
             case DataTypeClasses.SUBJECT:
                 console.log("calling Subject.find");
             Subject.find({id: ids}).exec(next);
@@ -118,7 +119,7 @@ var DataService = BluebirdPromise.promisifyAll({
         .then(function(inserted) {
             console.log("DataService.storeMetadataIntoEAV - new rows inserted: " + inserted.length);
         })
-        
+
         .catch(function(error) {
             console.log(error);
             console.log("DataService.storeMetadataIntoEAV - error caught");

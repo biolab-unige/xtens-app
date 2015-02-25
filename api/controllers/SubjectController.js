@@ -5,6 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 var transactionHandler = sails.config.xtens.transactionHandler;
+var SUBJECT = sails.config.xtens.constants.DataTypeClasses.SUBJECT;
 
 module.exports = {
     
@@ -74,7 +75,7 @@ module.exports = {
 
             dataTypes: function(callback) {
                 // DataTypeService.get(callback, { classTemplate: 'Subject'});
-                DataTypeService.getByOperator(idOperator, {classTemplate: 'Subject'}, callback);
+                DataTypeService.getByOperator(idOperator, {model: SUBJECT}, callback);
             },
 
             subject: function(callback) {

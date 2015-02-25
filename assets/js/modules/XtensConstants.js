@@ -14,7 +14,8 @@
     XtensConstants.DataTypeClasses = {
         SUBJECT: 'Subject',
         SAMPLE: 'Sample',
-        GENERIC: 'Generic'
+        GENERIC: 'Data',
+        DATA: 'Data'
     };
 
     XtensConstants.FieldTypes = {

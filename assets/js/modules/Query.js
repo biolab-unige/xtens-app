@@ -18,8 +18,8 @@
 
     // Factory method class to create specialized query views
     function QueryViewFactory() {
-        this.createClassTemplateQueryView = function(classTemplate) {
-            switch(classTemplate) {
+        this.createModelQueryView = function(model) {
+            switch(model) {
                 case DataTypeClasses.SUBJECT:
                     return new Query.Views.Subject({ model: new Query.SubjectModel() });
                 case DataTypeClasses.SAMPLE:
@@ -590,18 +590,18 @@
                 this.$addLoopButton.addClass('hidden');
                 this.$addNestedButton.removeClass('hidden');
                 this.selectedDataType = null;
-                this.model.set("classTemplate", null);
+                this.model.set("model", null);
                 return;
             }
             this.selectedDataType = this.dataTypes.get(idDataType);
-            this.model.set("classTemplate", this.selectedDataType.get("classTemplate"));
-            if (this.model.get("classTemplate") === DataTypeClasses.SUBJECT) {      //TODO add policy to filter those not allowed to see personal info 
+            this.model.set("model", this.selectedDataType.get("model"));
+            if (this.model.get("model") === DataTypeClasses.SUBJECT) {      //TODO add policy to filter those not allowed to see personal info 
                 var personalInfoQueryView = new Query.Views.PersonalInfo({ model: new Query.PersonalInfoModel() });
                 this.addSubqueryView(personalInfoQueryView);
             }
-            var classTemplateQueryView = factory.createClassTemplateQueryView(this.model.get("classTemplate"));
-            if (classTemplateQueryView) {
-                this.addSubqueryView(classTemplateQueryView);
+            var modelQueryView = factory.createModelQueryView(this.model.get("model"));
+            if (modelQueryView) {
+                this.addSubqueryView(modelQueryView);
             }
             /*  // removed "improved loop search"
                 if (selectedDataType.hasLoops()) {
@@ -611,7 +611,7 @@
             this.$addNestedButton.removeClass('hidden');
             var childView = new Query.Views.Row({fieldList: this.selectedDataType.getFlattenedFields(), model: new Query.RowModel()});
             this.$el.append(childView.render().el);
-            // this.model.set("classTemplate", this.selectedDataType.get("classTemplate"));
+            // this.model.set("model", this.selectedDataType.get("model"));
             this.add(childView);
 
         },
