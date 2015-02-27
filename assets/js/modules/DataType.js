@@ -181,8 +181,8 @@
                 },
                 getVal: function($el, ev, options) {
                     return $el.val().map(function(value) {
-                        // return _.findWhere(options.view.existingDataTypes, {id: parseInt(value)});
-                        return _.parseInt(value);
+                        return _.findWhere(options.view.existingDataTypes, {id: parseInt(value)});
+                        // return _.parseInt(value);
                     });
                 },
                 onGet: function(vals, options) {
@@ -258,6 +258,7 @@
             return metadataBody;
         },
 
+
         saveDataType: function(ev) {
             var id = $('#id').val();
             var header = this.$("#schemaHeader").find("select, input, textarea").serializeObject();
@@ -271,6 +272,9 @@
                     body: body
                 } 
             };
+            
+            this.model.set("parents", _.pluck(this.model.get("parents"),'id'));
+            
             //var dataType = new DataType.Model();
             this.model.save(dataTypeDetails, {
                 //  patch: true,
