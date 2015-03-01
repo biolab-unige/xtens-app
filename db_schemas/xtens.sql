@@ -75,16 +75,16 @@ SET default_with_oids = false;
 
 CREATE TABLE biobank (
     id integer NOT NULL,
-    biobank_id text,
-    acronym text,
-    name text,
+    biobank_id text NOT NULL,
+    acronym text NOT NULL,
+    name text NOT NULL,
     url text,
-    contact_information integer,
-    juristic_person text,
-    country text,
+    contact_information integer NOT NULL,
+    juristic_person text NOT NULL,
+    country text NOT NULL,
     description text,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
 );
 
 
@@ -117,16 +117,16 @@ ALTER SEQUENCE biobank_id_seq OWNED BY biobank.id;
 
 CREATE TABLE contact_information (
     id integer NOT NULL,
-    surname text,
-    given_name text,
-    phone text,
-    email text,
-    address text,
-    zip text,
-    city text,
-    country text,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone
+    surname text NOT NULL,
+    given_name text NOT NULL,
+    phone text NOT NULL,
+    email text NOT NULL,
+    address text NOT NULL,
+    zip text NOT NULL,
+    city text NOT NULL,
+    country text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
 );
 
 
@@ -159,16 +159,16 @@ ALTER SEQUENCE contact_information_id_seq OWNED BY contact_information.id;
 
 CREATE TABLE data (
     id integer NOT NULL,
-    type integer,
+    type integer NOT NULL,
     parent_subject integer,
     parent_sample integer,
     parent_data integer,
     acquisition_date date,
-    metadata jsonb,
+    metadata jsonb NOT NULL,
     tags jsonb,
     notes text,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
 );
 
 
@@ -180,10 +180,10 @@ ALTER TABLE data OWNER TO xtenspg;
 
 CREATE TABLE data_file (
     id integer NOT NULL,
-    uri text,
+    uri text NOT NULL,
     details json,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
 );
 
 
@@ -216,8 +216,8 @@ ALTER SEQUENCE data_file_id_seq OWNED BY data_file.id;
 
 CREATE TABLE data_files__datafile_data (
     id integer NOT NULL,
-    data_files integer,
-    datafile_data integer
+    data_files integer NOT NULL,
+    datafile_data integer NOT NULL
 );
 
 
@@ -271,11 +271,11 @@ ALTER SEQUENCE data_id_seq OWNED BY data.id;
 
 CREATE TABLE data_type (
     id integer NOT NULL,
-    name text,
-    model text,
-    schema jsonb,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone
+    name text NOT NULL,
+    model text NOT NULL,
+    schema jsonb NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
 );
 
 
@@ -308,8 +308,8 @@ ALTER SEQUENCE data_type_id_seq OWNED BY data_type.id;
 
 CREATE TABLE datafile_samples__sample_files (
     id integer NOT NULL,
-    datafile_samples integer,
-    sample_files integer
+    datafile_samples integer NOT NULL,
+    sample_files integer NOT NULL
 );
 
 
@@ -342,8 +342,8 @@ ALTER SEQUENCE datafile_samples__sample_files_id_seq OWNED BY datafile_samples__
 
 CREATE TABLE datatype_children__datatype_parents (
     id integer NOT NULL,
-    datatype_parents integer,
-    datatype_children integer
+    datatype_parents integer NOT NULL,
+    datatype_children integer NOT NULL
 );
 
 
@@ -376,8 +376,8 @@ ALTER SEQUENCE datatype_children__datatype_parents_id_seq OWNED BY datatype_chil
 
 CREATE TABLE datatype_groups__group_datatypes (
     id integer NOT NULL,
-    datatype_groups integer,
-    "group_dataTypes" integer
+    datatype_groups integer NOT NULL,
+    "group_dataTypes" integer NOT NULL
 );
 
 
@@ -1237,8 +1237,8 @@ ALTER SEQUENCE eav_value_text_subject_id_seq OWNED BY eav_value_text_subject.id;
 
 CREATE TABLE group_members__operator_groups (
     id integer NOT NULL,
-    group_members integer,
-    operator_groups integer
+    group_members integer NOT NULL,
+    operator_groups integer NOT NULL
 );
 
 
@@ -1271,15 +1271,15 @@ ALTER SEQUENCE group_members__operator_groups_id_seq OWNED BY group_members__ope
 
 CREATE TABLE operator (
     id integer NOT NULL,
-    login text,
-    password text,
-    last_name text,
-    first_name text,
-    birth_date timestamp with time zone,
-    sex text,
-    email text,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone
+    login text NOT NULL,
+    password text NOT NULL,
+    last_name text NOT NULL,
+    first_name text NOT NULL,
+    birth_date timestamp with time zone NOT NULL,
+    sex text NOT NULL,
+    email text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
 );
 
 
@@ -1312,11 +1312,11 @@ ALTER SEQUENCE operator_id_seq OWNED BY operator.id;
 
 CREATE TABLE personal_details (
     id integer NOT NULL,
-    surname text,
-    given_name text,
-    birth_date date,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone
+    surname text NOT NULL,
+    given_name text NOT NULL,
+    birth_date date NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
 );
 
 
@@ -1349,10 +1349,10 @@ ALTER SEQUENCE personal_details_id_seq OWNED BY personal_details.id;
 
 CREATE TABLE project (
     id integer NOT NULL,
-    name text,
+    name text NOT NULL,
     description text,
-    "createdAt" timestamp with time zone,
-    "updatedAt" timestamp with time zone
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
 );
 
 
@@ -1385,8 +1385,8 @@ ALTER SEQUENCE project_id_seq OWNED BY project.id;
 
 CREATE TABLE project_subjects__subject_projects (
     id integer NOT NULL,
-    project_subjects integer,
-    subject_projects integer
+    project_subjects integer NOT NULL,
+    subject_projects integer NOT NULL
 );
 
 
@@ -1419,16 +1419,16 @@ ALTER SEQUENCE project_subjects__subject_projects_id_seq OWNED BY project_subjec
 
 CREATE TABLE sample (
     id integer NOT NULL,
-    type integer,
-    parent_subject integer,
+    type integer NOT NULL,
+    parent_subject integer NOT NULL,
     parent_sample integer,
-    biobank integer,
-    biobank_code text,
-    metadata jsonb,
+    biobank integer NOT NULL,
+    biobank_code text NOT NULL,
+    metadata jsonb NOT NULL,
     tags jsonb,
     notes text,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
 );
 
 
@@ -1461,15 +1461,15 @@ ALTER SEQUENCE sample_id_seq OWNED BY sample.id;
 
 CREATE TABLE subject (
     id integer NOT NULL,
-    type integer,
+    type integer NOT NULL,
     personal_info integer,
-    code text,
-    sex text,
-    metadata jsonb,
+    code text NOT NULL,
+    sex text NOT NULL,
+    metadata jsonb NOT NULL,
     tags jsonb,
     notes text,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
 );
 
 
@@ -1502,9 +1502,9 @@ ALTER SEQUENCE subject_id_seq OWNED BY subject.id;
 
 CREATE TABLE xtens_group (
     id integer NOT NULL,
-    name text,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone
+    name text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
 );
 
 
@@ -1894,14 +1894,14 @@ SELECT pg_catalog.setval('data_id_seq', 1, false);
 --
 
 COPY data_type (id, name, model, schema, created_at, updated_at) FROM stdin;
-3	Patient	Subject	{"body": [{"name": "Patient Risk Factors", "label": "METADATA GROUP", "content": [{"name": "ethnic_group", "label": "METADATA FIELD", "isList": true, "hasUnit": false, "hasRange": false, "required": true, "fieldType": "Text", "sensitive": true, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": ["white", "asian", "black", "mixed/multiple", "other", "N.A."]}, {"min": "0", "name": "body_mass index", "label": "METADATA FIELD", "isList": false, "hasUnit": true, "hasRange": true, "required": false, "fieldType": "Float", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": ["kg/m^2"], "possibleValues": null}]}], "header": {"name": "Patient", "model": "Subject", "version": "1.0", "ontology": "", "fileUpload": false, "description": "A generic patient for performance testing"}}	2015-02-24 15:21:09.155+00	2015-02-24 15:22:10.392+00
 5	Fluid	Sample	{"body": [{"name": "Fluid Details", "label": "METADATA GROUP", "content": [{"name": "sampling_date", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": true, "fieldType": "Date", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": ["blood plasma", "blood serum", "amniotic fluid", "cerebrospinal fluid", "saliva", "bile", "urine", "other"]}, {"name": "class", "label": "METADATA FIELD", "isList": true, "hasUnit": false, "hasRange": false, "required": true, "fieldType": "Text", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": ["amniotic fluid", "bile", "blood plasma", "blood serum", "cerebrospinal fluid", "saliva", "urine", "whole blood", "other"]}, {"min": "0.0", "name": "volume", "label": "METADATA FIELD", "isList": false, "hasUnit": true, "hasRange": true, "required": false, "fieldType": "Float", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": ["ml", "μl"], "possibleValues": null}]}], "header": {"name": "Fluid", "model": "Sample", "version": "1.0", "ontology": "", "fileUpload": false, "description": "A fluid sample type for performance tests"}}	2015-02-24 16:20:01.176+00	2015-02-24 16:20:01.176+00
 6	DNA	Sample	{"body": [{"name": "DNA Details", "label": "METADATA GROUP", "content": [{"name": "sampling_date", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": true, "fieldType": "Date", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}, {"min": "0.0", "name": "quantity", "label": "METADATA FIELD", "isList": false, "hasUnit": true, "hasRange": true, "required": true, "fieldType": "Float", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": ["µg"], "possibleValues": null}, {"min": "0.0", "name": "concentration", "label": "METADATA FIELD", "isList": false, "hasUnit": true, "hasRange": true, "required": false, "fieldType": "Float", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": ["ng/µl"], "possibleValues": null}]}], "header": {"name": "DNA", "model": "Sample", "version": "1.0", "ontology": "", "fileUpload": true, "description": "A generic DNA sample for performance tests"}}	2015-02-24 16:41:40.516+00	2015-02-24 16:41:40.516+00
 4	Tissue	Sample	{"body": [{"name": "Tissue Details", "label": "METADATA GROUP", "content": [{"name": "sampling_date", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": true, "fieldType": "Date", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}, {"name": "tumour", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": true, "fieldType": "Boolean", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}, {"name": "topography", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": false, "fieldType": "Text", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}, {"name": "morphology", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": false, "fieldType": "Text", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}, {"name": "volume", "label": "METADATA FIELD", "isList": false, "hasUnit": true, "hasRange": false, "required": true, "fieldType": "Float", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": ["mm^3"], "possibleValues": null}, {"name": "benign", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": false, "fieldType": "Boolean", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}]}], "header": {"name": "Tissue", "model": "Sample", "version": "1.0", "ontology": "", "fileUpload": true, "description": "A generic tissue sample for performance testing"}}	2015-02-24 16:00:23.334+00	2015-02-27 15:45:20.442+00
 7	RNA	Sample	{"body": [{"name": "RNA Details", "label": "METADATA GROUP", "content": [{"name": "sampling_date", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": true, "fieldType": "Date", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}, {"min": "0.0", "name": "quantity", "label": "METADATA FIELD", "isList": false, "hasUnit": true, "hasRange": true, "required": true, "fieldType": "Float", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": ["µg"], "possibleValues": null}, {"min": "0", "name": "concentration", "label": "METADATA FIELD", "isList": false, "hasUnit": true, "hasRange": true, "required": false, "fieldType": "Float", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": ["ng/µl"], "possibleValues": null}]}], "header": {"name": "RNA", "model": "Sample", "version": "1.0", "ontology": "", "fileUpload": true, "description": "A generic RNA sample for performance testing"}}	2015-02-24 16:44:34.874+00	2015-02-24 16:44:34.874+00
 9	CGH Array Report	Data	{"body": [{"name": "Prognostic Genomic Profile", "label": "METADATA GROUP", "content": [{"name": "prognostic_profile", "label": "METADATA FIELD", "isList": true, "hasUnit": false, "hasRange": false, "required": true, "fieldType": "Text", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": ["SCA profile", "NCA profile", "NO RESULT profile"]}]}, {"name": "CGH Report Details", "label": "METADATA GROUP", "content": [{"name": "structural_abnormalities", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": false, "fieldType": "Boolean", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}, {"name": "numerical_abnormalities", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": false, "fieldType": "Boolean", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}]}], "header": {"name": "CGH Array Report", "model": "Data", "version": "", "ontology": "", "fileUpload": false, "description": "A generic CGH report for performance tests"}}	2015-02-24 17:25:03.338+00	2015-02-24 17:25:03.338+00
-10	Whole Genome Sequencing	Data	{"body": [{"name": "Platform Details", "label": "METADATA GROUP", "content": [{"name": "instrument_model", "label": "METADATA FIELD", "isList": true, "hasUnit": false, "hasRange": false, "required": true, "fieldType": "Text", "sensitive": true, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": ["Illumina Genome Analyzer II", "Illumina HiSeq 1000", "Illumina HiSeq 2000", "Illumina HiSeq 2500", "Illumina HiSeq 3000", "AB Solid System", "AB 5500 Genetic Analyzer", "454 GS", "454 GS FLX+", "Ion Torrent"]}, {"name": "read_length", "label": "METADATA FIELD", "isList": false, "hasUnit": true, "hasRange": false, "required": false, "fieldType": "Integer", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": ["bp"], "possibleValues": null}, {"name": "is_paired end", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": false, "fieldType": "Boolean", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}]}, {"name": "Analysis Details", "label": "METADATA GROUP", "content": [{"name": "total_reads", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": false, "fieldType": "Integer", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}, {"name": "high_quality reads", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": false, "fieldType": "Integer", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}, {"name": "reference_genome", "label": "METADATA FIELD", "isList": true, "hasUnit": false, "hasRange": false, "required": false, "fieldType": "Text", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": ["hg18", "hg19", "hg38"]}]}], "header": {"name": "Whole Genome Sequencing", "model": "Data", "version": "1.0", "ontology": "", "fileUpload": true, "description": "A whole genome sequencing data type for performance testing"}}	2015-02-27 11:54:15.713+00	2015-02-27 11:54:15.713+00
 8	Clinical Situation	Data	{"body": [{"name": "Clinical Info", "label": "METADATA GROUP", "content": [{"name": "current_status", "label": "METADATA FIELD", "isList": true, "hasUnit": false, "hasRange": false, "required": true, "fieldType": "Text", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": ["alive - complete remission", "alive - residual disease", "alive - active disease", "alive - other disease", "dead for disease", "dead for other causes"]}, {"name": "disease", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": true, "fieldType": "Text", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": ["carcinoma", "lymphoma", "sarcoma", "other", "N.D.", "N.A."]}, {"min": "0", "name": "diagnosis_age", "label": "METADATA FIELD", "isList": false, "hasUnit": true, "hasRange": true, "required": false, "fieldType": "Integer", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": ["day", "month", "year"], "possibleValues": null}]}], "header": {"name": "Clinical Situation", "model": "Data", "version": "1.0", "ontology": "", "fileUpload": false, "description": "A generic Clinical Situation for performance tests"}}	2015-02-24 16:58:20.697+00	2015-02-27 15:47:41.189+00
+10	Whole Genome Sequencing	Data	{"body": [{"name": "Platform Details", "label": "METADATA GROUP", "content": [{"name": "instrument_model", "label": "METADATA FIELD", "isList": true, "hasUnit": false, "hasRange": false, "required": true, "fieldType": "Text", "sensitive": true, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": ["Illumina Genome Analyzer II", "Illumina HiSeq 1000", "Illumina HiSeq 2000", "Illumina HiSeq 2500", "Illumina HiSeq 3000", "AB Solid System", "AB 5500 Genetic Analyzer", "454 GS", "454 GS FLX+", "Ion Torrent"]}, {"name": "read_length", "label": "METADATA FIELD", "isList": false, "hasUnit": true, "hasRange": false, "required": false, "fieldType": "Integer", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": ["bp"], "possibleValues": null}, {"name": "is_paired_end", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": false, "fieldType": "Boolean", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}]}, {"name": "Analysis Details", "label": "METADATA GROUP", "content": [{"name": "total_reads", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": false, "fieldType": "Integer", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}, {"name": "high_quality_reads", "label": "METADATA FIELD", "isList": false, "hasUnit": false, "hasRange": false, "required": false, "fieldType": "Integer", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": null}, {"name": "reference_genome", "label": "METADATA FIELD", "isList": true, "hasUnit": false, "hasRange": false, "required": false, "fieldType": "Text", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": ["hg18", "hg19", "hg38"]}]}], "header": {"name": "Whole Genome Sequencing", "model": "Data", "version": "1.0", "ontology": "", "fileUpload": true, "description": "A whole genome sequencing data type for performance testing"}}	2015-02-27 11:54:15.713+00	2015-02-28 22:23:07.432+00
+3	Patient	Subject	{"body": [{"name": "Patient Risk Factors", "label": "METADATA GROUP", "content": [{"name": "ethnic_group", "label": "METADATA FIELD", "isList": true, "hasUnit": false, "hasRange": false, "required": true, "fieldType": "Text", "sensitive": true, "customValue": null, "ontologyUri": null, "possibleUnits": null, "possibleValues": ["white", "asian", "black", "mixed/multiple", "other", "N.A."]}, {"min": "0", "name": "body_mass_index", "label": "METADATA FIELD", "isList": false, "hasUnit": true, "hasRange": true, "required": false, "fieldType": "Float", "sensitive": false, "customValue": null, "ontologyUri": null, "possibleUnits": ["kg/m^2"], "possibleValues": null}]}], "header": {"name": "Patient", "model": "Subject", "version": "1.0", "ontology": "", "fileUpload": false, "description": "A generic patient for performance testing"}}	2015-02-24 15:21:09.155+00	2015-02-28 22:25:30.183+00
 \.
 
 
@@ -2349,7 +2349,7 @@ SELECT pg_catalog.setval('personal_details_id_seq', 1, false);
 -- Data for Name: project; Type: TABLE DATA; Schema: public; Owner: xtenspg
 --
 
-COPY project (id, name, description, "createdAt", "updatedAt") FROM stdin;
+COPY project (id, name, description, created_at, updated_at) FROM stdin;
 \.
 
 
@@ -2379,7 +2379,7 @@ SELECT pg_catalog.setval('project_subjects__subject_projects_id_seq', 1, false);
 -- Data for Name: sample; Type: TABLE DATA; Schema: public; Owner: xtenspg
 --
 
-COPY sample (id, type, parent_subject, parent_sample, biobank, biobank_code, metadata, created_at, updated_at, tags) FROM stdin;
+COPY sample (id, type, parent_subject, parent_sample, biobank, biobank_code, metadata, tags, notes, created_at, updated_at) FROM stdin;
 \.
 
 
@@ -2394,7 +2394,7 @@ SELECT pg_catalog.setval('sample_id_seq', 1, false);
 -- Data for Name: subject; Type: TABLE DATA; Schema: public; Owner: xtenspg
 --
 
-COPY subject (id, type, personal_info, code, sex, metadata, tags, notes, created_at, updated_at) FROM stdin;
+COPY subject (id, type, code, sex, metadata, tags, notes, created_at, updated_at, personal_info) FROM stdin;
 \.
 
 
@@ -2462,6 +2462,14 @@ ALTER TABLE ONLY data_files__datafile_data
 
 
 --
+-- Name: data_files_datafile_data_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+--
+
+ALTER TABLE ONLY data_files__datafile_data
+    ADD CONSTRAINT data_files_datafile_data_key UNIQUE (data_files, datafile_data);
+
+
+--
 -- Name: data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
 --
 
@@ -2478,11 +2486,27 @@ ALTER TABLE ONLY data_type
 
 
 --
+-- Name: datafile_samples__sample_files_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+--
+
+ALTER TABLE ONLY datafile_samples__sample_files
+    ADD CONSTRAINT datafile_samples__sample_files_key UNIQUE (datafile_samples, sample_files);
+
+
+--
 -- Name: datafile_samples__sample_files_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
 --
 
 ALTER TABLE ONLY datafile_samples__sample_files
     ADD CONSTRAINT datafile_samples__sample_files_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: datatype_children__datatype_parents_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+--
+
+ALTER TABLE ONLY datatype_children__datatype_parents
+    ADD CONSTRAINT datatype_children__datatype_parents_key UNIQUE (datatype_children, datatype_parents);
 
 
 --
@@ -2494,11 +2518,27 @@ ALTER TABLE ONLY datatype_children__datatype_parents
 
 
 --
+-- Name: datatype_groups__group_datatypes_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+--
+
+ALTER TABLE ONLY datatype_groups__group_datatypes
+    ADD CONSTRAINT datatype_groups__group_datatypes_key UNIQUE (datatype_groups, "group_dataTypes");
+
+
+--
 -- Name: datatype_groups__group_datatypes_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
 --
 
 ALTER TABLE ONLY datatype_groups__group_datatypes
     ADD CONSTRAINT datatype_groups__group_datatypes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: datatype_name_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+--
+
+ALTER TABLE ONLY data_type
+    ADD CONSTRAINT datatype_name_key UNIQUE (name);
 
 
 --
@@ -2678,11 +2718,43 @@ ALTER TABLE ONLY eav_value_text_subject
 
 
 --
+-- Name: email_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+--
+
+ALTER TABLE ONLY contact_information
+    ADD CONSTRAINT email_key UNIQUE (email);
+
+
+--
+-- Name: group_members__operator_groups_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+--
+
+ALTER TABLE ONLY group_members__operator_groups
+    ADD CONSTRAINT group_members__operator_groups_key UNIQUE (group_members, operator_groups);
+
+
+--
 -- Name: group_members__operator_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
 --
 
 ALTER TABLE ONLY group_members__operator_groups
     ADD CONSTRAINT group_members__operator_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: operator_email_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+--
+
+ALTER TABLE ONLY operator
+    ADD CONSTRAINT operator_email_key UNIQUE (email);
+
+
+--
+-- Name: operator_login_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+--
+
+ALTER TABLE ONLY operator
+    ADD CONSTRAINT operator_login_key UNIQUE (login);
 
 
 --
@@ -2718,6 +2790,14 @@ ALTER TABLE ONLY project
 
 
 --
+-- Name: project_subjects__subject_projects_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+--
+
+ALTER TABLE ONLY project_subjects__subject_projects
+    ADD CONSTRAINT project_subjects__subject_projects_key UNIQUE (project_subjects, subject_projects);
+
+
+--
 -- Name: project_subjects__subject_projects_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
 --
 
@@ -2750,6 +2830,14 @@ ALTER TABLE ONLY subject
 
 
 --
+-- Name: surname_givenname_birthdate_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+--
+
+ALTER TABLE ONLY personal_details
+    ADD CONSTRAINT surname_givenname_birthdate_key UNIQUE (surname, given_name, birth_date);
+
+
+--
 -- Name: xtens_group_name_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
 --
 
@@ -2766,17 +2854,187 @@ ALTER TABLE ONLY xtens_group
 
 
 --
--- Name: typedata; Type: INDEX; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: xtensgroup_name_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
 --
 
-CREATE INDEX typedata ON data USING btree (type);
+ALTER TABLE ONLY xtens_group
+    ADD CONSTRAINT xtensgroup_name_key UNIQUE (name);
 
 
 --
--- Name: typesample; Type: INDEX; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: contact_information_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
 --
 
-CREATE INDEX typesample ON sample USING btree (type);
+ALTER TABLE ONLY biobank
+    ADD CONSTRAINT contact_information_fkey FOREIGN KEY (contact_information) REFERENCES contact_information(id) MATCH FULL;
+
+
+--
+-- Name: data_files_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY data_files__datafile_data
+    ADD CONSTRAINT data_files_fkey FOREIGN KEY (data_files) REFERENCES data(id) MATCH FULL;
+
+
+--
+-- Name: datafile_data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY data_files__datafile_data
+    ADD CONSTRAINT datafile_data_fkey FOREIGN KEY (datafile_data) REFERENCES data_file(id) MATCH FULL;
+
+
+--
+-- Name: datafile_samples_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY datafile_samples__sample_files
+    ADD CONSTRAINT datafile_samples_fkey FOREIGN KEY (datafile_samples) REFERENCES data_file(id) MATCH FULL;
+
+
+--
+-- Name: datatype_children_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY datatype_children__datatype_parents
+    ADD CONSTRAINT datatype_children_fkey FOREIGN KEY (datatype_children) REFERENCES data_type(id) MATCH FULL;
+
+
+--
+-- Name: datatype_groups_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY datatype_groups__group_datatypes
+    ADD CONSTRAINT datatype_groups_fkey FOREIGN KEY (datatype_groups) REFERENCES data_type(id) MATCH FULL;
+
+
+--
+-- Name: datatype_parents_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY datatype_children__datatype_parents
+    ADD CONSTRAINT datatype_parents_fkey FOREIGN KEY (datatype_parents) REFERENCES data_type(id) MATCH FULL;
+
+
+--
+-- Name: group_datatypes_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY datatype_groups__group_datatypes
+    ADD CONSTRAINT group_datatypes_fkey FOREIGN KEY ("group_dataTypes") REFERENCES xtens_group(id) MATCH FULL;
+
+
+--
+-- Name: group_members_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY group_members__operator_groups
+    ADD CONSTRAINT group_members_fkey FOREIGN KEY (group_members) REFERENCES xtens_group(id) MATCH FULL;
+
+
+--
+-- Name: operator_groups_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY group_members__operator_groups
+    ADD CONSTRAINT operator_groups_fkey FOREIGN KEY (operator_groups) REFERENCES operator(id) MATCH FULL;
+
+
+--
+-- Name: parent_data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY data
+    ADD CONSTRAINT parent_data_fkey FOREIGN KEY (parent_data) REFERENCES data(id) MATCH FULL;
+
+
+--
+-- Name: parent_sample_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY data
+    ADD CONSTRAINT parent_sample_fkey FOREIGN KEY (parent_sample) REFERENCES sample(id) MATCH FULL;
+
+
+--
+-- Name: parent_sample_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY sample
+    ADD CONSTRAINT parent_sample_fkey FOREIGN KEY (parent_sample) REFERENCES sample(id) MATCH FULL;
+
+
+--
+-- Name: parent_subject_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY data
+    ADD CONSTRAINT parent_subject_fkey FOREIGN KEY (parent_subject) REFERENCES subject(id) MATCH FULL;
+
+
+--
+-- Name: parent_subject_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY sample
+    ADD CONSTRAINT parent_subject_fkey FOREIGN KEY (parent_subject) REFERENCES subject(id) MATCH FULL;
+
+
+--
+-- Name: personal_info_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY subject
+    ADD CONSTRAINT personal_info_fkey FOREIGN KEY (personal_info) REFERENCES personal_details(id) MATCH FULL;
+
+
+--
+-- Name: project_subjects_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY project_subjects__subject_projects
+    ADD CONSTRAINT project_subjects_fkey FOREIGN KEY (project_subjects) REFERENCES project(id) MATCH FULL;
+
+
+--
+-- Name: sample_files_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY datafile_samples__sample_files
+    ADD CONSTRAINT sample_files_fkey FOREIGN KEY (sample_files) REFERENCES sample(id) MATCH FULL;
+
+
+--
+-- Name: subject_projects_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY project_subjects__subject_projects
+    ADD CONSTRAINT subject_projects_fkey FOREIGN KEY (subject_projects) REFERENCES subject(id) MATCH FULL;
+
+
+--
+-- Name: type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY data
+    ADD CONSTRAINT type_fkey FOREIGN KEY (type) REFERENCES data_type(id) MATCH FULL;
+
+
+--
+-- Name: type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY sample
+    ADD CONSTRAINT type_fkey FOREIGN KEY (type) REFERENCES data_type(id) MATCH FULL;
+
+
+--
+-- Name: type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY subject
+    ADD CONSTRAINT type_fkey FOREIGN KEY (type) REFERENCES data_type(id) MATCH FULL;
 
 
 --

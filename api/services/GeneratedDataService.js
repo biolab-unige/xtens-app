@@ -625,7 +625,7 @@ var GeneratedDataService = {
                 
                 return GeneratedDataService.generateCompleteSubject(dataTypes, biobankIds);
 
-            }, {concurrency: 10});
+            }, {concurrency: 20});
 
         })
         
@@ -657,7 +657,7 @@ var GeneratedDataService = {
         })
 
         .spread(function(createdTissue, createdFluid, createdClinicalSituation) {
-           console.log("GeneratedDataService.generateCompleteSubject - created new ClinicalSituation with id: " + createdClinicalSituation.id);
+           // console.log("GeneratedDataService.generateCompleteSubject - created new ClinicalSituation with id: " + createdClinicalSituation.id);
            return [
                 GeneratedDataService.generateDerivative(_.find(dataTypes, {name:'DNA'}), idSubject, createdTissue.id, biobankTis),
                 GeneratedDataService.generateDerivative(_.find(dataTypes, {name:'RNA'}), idSubject, createdTissue.id, biobankTis)
@@ -666,7 +666,7 @@ var GeneratedDataService = {
         })
         
         .spread(function(createdDNA, createdRNA) {
-            console.log("GeneratedDataService.generateCompleteSubject - created new RNA with id: " + createdRNA.id);
+            // console.log("GeneratedDataService.generateCompleteSubject - created new RNA with id: " + createdRNA.id);
             return [
                 GeneratedDataService.generateCGHReport(_.find(dataTypes, {name:'CGH Array Report'}), idSubject, createdDNA.id, disease),
                 GeneratedDataService.generateNGS(_.find(dataTypes, {name:'Whole Genome Sequencing'}), idSubject, createdDNA.id)
@@ -675,8 +675,8 @@ var GeneratedDataService = {
         })
 
         .spread(function(createdCGH, createdNGS) {
-            console.log("GeneratedDataService.generateCompleteSubject - created new NGS with id: " + createdNGS.id);
-            console.log("GeneratedDataService.generateCompleteSubject - patient data successfully generated! " + idSubject);
+            // console.log("GeneratedDataService.generateCompleteSubject - created new NGS with id: " + createdNGS.id);
+            // console.log("GeneratedDataService.generateCompleteSubject - patient data successfully generated! " + idSubject);
             return idSubject;
         })
         
@@ -758,19 +758,19 @@ var GeneratedDataService = {
     },
 
     generateCGHReport: function(cghType, idSubj, idParentSample, details) {
-        console.log("GeneratedDataService.generateCGHReport - here we are");
+        // console.log("GeneratedDataService.generateCGHReport - here we are");
         var cgh = PopulateService.generateData(cghType);
         if (details.benign) {
             cgh.metadata.prognostic_profile.value = 'NO RESULT profile';
         }
         cgh.parentSubject = idSubj;
         cgh.parentSample = idParentSample;
-        console.log("GeneratedDataService.generateReport - ready to create CGH: " + cgh);
+        // console.log("GeneratedDataService.generateReport - ready to create CGH: " + cgh);
         return Data.create(cgh);
     },
 
     generateNGS: function(ngsType, idSubj, idParentSample) {
-        console.log("GeneratedDataService.generateNGS - here we are");
+        // console.log("GeneratedDataService.generateNGS - here we are");
         var ngs = PopulateService.generateData(ngsType, ['read_length']);
         ngs.metadata.read_length = {};
         ngs.metadata.read_length.value = Math.ceil(getRandomArbitrary(instrumentation[ngs.metadata.instrument_model.value][0], 
@@ -795,7 +795,7 @@ var GeneratedDataService = {
         ngs.metadata.reference_genome.value = 'hg19';
         ngs.parentSubject = idSubj;
         ngs.parentSample = idParentSample;
-        console.log("GeneratedDataService.generateReport - ready to create NGS: " + ngs);
+        // console.log("GeneratedDataService.generateReport - ready to create NGS: " + ngs);
         return Data.create(ngs);
     }
 

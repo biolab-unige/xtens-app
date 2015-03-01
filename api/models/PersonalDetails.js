@@ -8,6 +8,7 @@
 module.exports = {
     tableName: 'personal_details',
     attributes: {
+
         givenName: {
             type: 'string',
             required: true,
@@ -15,6 +16,7 @@ module.exports = {
             alpha: true,
             columnName: 'given_name',
         },
+
         surname: {
             type: 'string',
             required: true,
@@ -22,14 +24,25 @@ module.exports = {
             alpha: true,
             columnName: 'surname'
         },
+
         birthDate: {
             type: 'date',
             columnName: 'birth_date'
         },
+        /*
+        subject: {
+            model: 'subject',
+            required: true,
+            via: 'personalInfo',
+            dominant: true,
+            columnName: 'subject'
+        }, */
+
         createdAt: {
             type: 'datetime',
             columnName: 'created_at'
         },
+
         updatedAt: {
             type: 'datetime',
             columnName: 'updated_at'
