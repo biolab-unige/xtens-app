@@ -294,8 +294,7 @@ var diseases = [
         morphology:{icd_o:'9200/0', name:'osteoblastoma, nos'},
         topography_snomedct: {iri:'http://purl.bioontology.org/ontology/SNOMEDCT/61496007', name:'Cartilage'},
         disease_snomedct: {iri:'http://purl.bioontology.org/ontology/SNOMEDCT/86049000', name:'Malignant neoplasm'},
-        morphology_snomedct: {iri: 'http://purl.bioontology.org/ontology/SNOMEDCT/9001003', name: "Chondroblastoma"},
-        benign: true
+        morphology_snomedct: {iri: 'http://purl.bioontology.org/ontology/SNOMEDCT/9001003', name: "Chondroblastoma"}
     },
     {
         topography:{icd_o: 'C44', name: 'skin'}, 
@@ -629,9 +628,9 @@ var GeneratedDataService = {
             }, {concurrency: 10});
 
         })
-
+        
         .catch(function(err) {
-            console.log(err.message);
+            throw new Error(err.message);
         });
 
     },
@@ -645,38 +644,44 @@ var GeneratedDataService = {
         var biobankTis = biobankIds[Math.floor(Math.random()*biobankIds.length)];
         var biobankFluid = biobankIds[Math.floor(Math.random()*biobankIds.length)];
 
-        return GeneratedDataService.generateSubject(_.pick('dataTypes', {name:'Patient'}))
+        return GeneratedDataService.generateSubject(_.find(dataTypes, {name:'Patient'}))
 
         .then(function(patient) {
             idSubject = _.parseInt(patient.id);
             return [
-                GeneratedDataService.generateTissue(_.pick('dataTypes', {name:'Tissue'}), idSubject, disease, biobankTis),
-                GeneratedDataService.generateFluid(_.pick('dataTypes', {name:'Fluid'}), idSubject, biobankFluid),
-                GeneratedDataService.generateClinicalSituation(_.pick('dataTypes', {name:'Clinical Situation'}), idSubject, disease)
+                GeneratedDataService.generateTissue(_.find(dataTypes, {name:'Tissue'}), idSubject, disease, biobankTis),
+                GeneratedDataService.generateFluid(_.find(dataTypes, {name:'Fluid'}), idSubject, biobankFluid),
+                GeneratedDataService.generateClinicalSituation(_.find(dataTypes, {name:'Clinical Situation'}), idSubject, disease)
             ];
 
         })
 
         .spread(function(createdTissue, createdFluid, createdClinicalSituation) {
-           
+           console.log("GeneratedDataService.generateCompleteSubject - created new ClinicalSituation with id: " + createdClinicalSituation.id);
            return [
-                GeneratedDataService.generateDerivative(_.pick('dataTypes', {name:'DNA'}), idSubject, createdTissue.id, biobankTis),
-                GeneratedDataService.generateDerivative(_.pick('dataTypes', {name:'RNA'}), idSubject, createdTissue.id, biobankTis)
+                GeneratedDataService.generateDerivative(_.find(dataTypes, {name:'DNA'}), idSubject, createdTissue.id, biobankTis),
+                GeneratedDataService.generateDerivative(_.find(dataTypes, {name:'RNA'}), idSubject, createdTissue.id, biobankTis)
            ]; 
 
         })
         
         .spread(function(createdDNA, createdRNA) {
-            
+            console.log("GeneratedDataService.generateCompleteSubject - created new RNA with id: " + createdRNA.id);
             return [
-                GeneratedDataService.generateCGHReport('dataTypes', {name:'CGH Array Report'}, idSubject, createdDNA.id, disease),
-                GeneratedDataService.generateNGS('dataTypes', {name:'Whole Genome Sequencing'}, idSubject, createdDNA.id)
+                GeneratedDataService.generateCGHReport(_.find(dataTypes, {name:'CGH Array Report'}), idSubject, createdDNA.id, disease),
+                GeneratedDataService.generateNGS(_.find(dataTypes, {name:'Whole Genome Sequencing'}), idSubject, createdDNA.id)
             ];
 
         })
+
+        .spread(function(createdCGH, createdNGS) {
+            console.log("GeneratedDataService.generateCompleteSubject - created new NGS with id: " + createdNGS.id);
+            console.log("GeneratedDataService.generateCompleteSubject - patient data successfully generated! " + idSubject);
+            return idSubject;
+        })
         
         .catch(function(error) {
-            throw new Error(error.message);
+            throw new Error(error.message || error.details);
         });
 
         
@@ -696,6 +701,7 @@ var GeneratedDataService = {
 
     generateTissue: function(tissueType, idSubj, details, biobank) {
         var tissue = PopulateService.generateData(tissueType, ['tumour', 'topography', 'morphology']);
+        tissue.metadata.volume.value = parseFloat(getRandomArbitrary(0.0, 25.0).toFixed(2));
         tissue.tumour = {value: true};
         tissue.metadata.topography = { value: details.topography_snomedct.name, iri: details.topography_snomedct.iri };
         tissue.metadata.morphology = { value: details.morphology_snomedct.name, iri: details.morphology_snomedct.iri };
@@ -715,7 +721,7 @@ var GeneratedDataService = {
 
     generateClinicalSituation: function(csType, idSubj, details) {
         var clinSit = PopulateService.generateData(csType, ['disease', 'is_benign']);
-        clinSit.metadata.disease = { value: details.disease.name, iri: details.disease.iri};
+        clinSit.metadata.disease = { value: details.disease_snomedct.name, iri: details.disease_snomedct.iri};
         if (details.fetal) {
             clinSit.metadata.diagnosis_age.value = 0;
             clinSit.metadata.diagnosis_age.unit = "day";
@@ -743,47 +749,53 @@ var GeneratedDataService = {
 
     generateDerivative: function(derivativeType, idSubj, idParentSample, biobank) {
         var derivative = PopulateService.generateData(derivativeType);
+        derivative.metadata.quantity.value = parseFloat(getRandomArbitrary(0.0, 10.0).toFixed(2));
         derivative.donor = idSubj;
         derivative.parentSample = idParentSample;
-        derivative.biobankCode = gui();
+        derivative.biobankCode = guid();
         derivative.biobank = biobank;
         return Sample.create(derivative);
     },
 
     generateCGHReport: function(cghType, idSubj, idParentSample, details) {
+        console.log("GeneratedDataService.generateCGHReport - here we are");
         var cgh = PopulateService.generateData(cghType);
         if (details.benign) {
             cgh.metadata.prognostic_profile.value = 'NO RESULT profile';
         }
         cgh.parentSubject = idSubj;
         cgh.parentSample = idParentSample;
+        console.log("GeneratedDataService.generateReport - ready to create CGH: " + cgh);
         return Data.create(cgh);
     },
 
     generateNGS: function(ngsType, idSubj, idParentSample) {
-        var ngs = PopulateService.generateData(ngs, ['read_length']);
-        ngs.metadata.read_length.value = Math.ceil(getRandomArbitrary(instrumentation[ngs.metadata.instrument_model.value[0]], 
-                                                                      instrumentation[ngs.metadata.instrument_model.value[0]] ));
+        console.log("GeneratedDataService.generateNGS - here we are");
+        var ngs = PopulateService.generateData(ngsType, ['read_length']);
+        ngs.metadata.read_length = {};
+        ngs.metadata.read_length.value = Math.ceil(getRandomArbitrary(instrumentation[ngs.metadata.instrument_model.value][0], 
+                                                                      instrumentation[ngs.metadata.instrument_model.value][0] ));
         switch (ngs.metadata.instrument_model) {
             case "Illumina HiSeq 2000":
                 ngs.metadata.total_reads.value = Math.floor(getRandomArbitrary(500000000,800000000));
-                ngs.metadata.high_quality_reads.value = Math.floor(getRandomArbitrary(78,85)*ngs.metadata.total_reads.value);
+                ngs.metadata.high_quality_reads.value = Math.floor(getRandomArbitrary(0.78,0.85)*ngs.metadata.total_reads.value);
                 break;
             case "Illumina HiSeq 2500":
                 ngs.metadata.total_reads.value = Math.floor(getRandomArbitrary(600000000,800000000));
-                ngs.metadata.high_quality_reads.value = Math.floor(getRandomArbitrary(78,88)*ngs.metadata.total_reads.value);
+                ngs.metadata.high_quality_reads.value = Math.floor(getRandomArbitrary(0.78,0.88)*ngs.metadata.total_reads.value);
                 break;
             case "Illumina HiSeq 3000":
                 ngs.metadata.total_reads.value = Math.floor(getRandomArbitrary(600000000,1000000000));
-                ngs.metadata.high_quality_reads.value = Math.floor(getRandomArbitrary(80,88)*ngs.metadata.total_reads.value);
+                ngs.metadata.high_quality_reads.value = Math.floor(getRandomArbitrary(0.80,0.88)*ngs.metadata.total_reads.value);
                 break;
             default:
                 ngs.metadata.total_reads.value = Math.floor(getRandomArbitrary(350000000,550000000));
-                ngs.metadata.high_quality_reads.value = Math.floor(getRandomArbitrary(70,80)*ngs.metadata.total_reads.value);
+                ngs.metadata.high_quality_reads.value = Math.floor(getRandomArbitrary(0.70,0.80)*ngs.metadata.total_reads.value);
         }
         ngs.metadata.reference_genome.value = 'hg19';
         ngs.parentSubject = idSubj;
         ngs.parentSample = idParentSample;
+        console.log("GeneratedDataService.generateReport - ready to create NGS: " + ngs);
         return Data.create(ngs);
     }
 

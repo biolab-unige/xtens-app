@@ -53,10 +53,14 @@ var PopulateService = {
      */
     generateData: function(dataType, blacklist) {
 
+        if (!dataType.schema) {
+            throw new Error("missing metadata schema");
+        }
+
         var data = {
             type:dataType.id,
             date:new Date(),
-            notes:"auromatically generated"
+            notes:"automatically generated"
         };
 
         // skipping the loop fields getRandomArbitrary(min, max
@@ -65,7 +69,7 @@ var PopulateService = {
         fields.forEach(function(field){
             
             // skip field if its name is in blacklist
-            if (blacklist.indexOf(field.name) < 0) {
+            if (blacklist && blacklist.indexOf(field.name) > 0) {
                 return true;
             }
 
@@ -102,7 +106,7 @@ var PopulateService = {
         var min = field.min || MIN;
         var max = field.max || MAX;
         var res = {
-            "value": parseFloat(getRandomArbitrary(min,max).toFixed(3)),
+            "value": (parseFloat(getRandomArbitrary(min,max)).toFixed(3)),
             "unit": (field.hasUnit) ? field.possibleUnits[0] : undefined
         };
         return res;
