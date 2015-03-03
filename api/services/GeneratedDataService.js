@@ -659,8 +659,8 @@ var GeneratedDataService = {
         .spread(function(createdTissue, createdFluid, createdClinicalSituation) {
            // console.log("GeneratedDataService.generateCompleteSubject - created new ClinicalSituation with id: " + createdClinicalSituation.id);
            return [
-                GeneratedDataService.generateDerivative(_.find(dataTypes, {name:'DNA'}), idSubject, createdTissue.id, biobankTis),
-                GeneratedDataService.generateDerivative(_.find(dataTypes, {name:'RNA'}), idSubject, createdTissue.id, biobankTis)
+                GeneratedDataService.generateDerivative(_.find(dataTypes, {name:'DNA'}), createdTissue),
+                GeneratedDataService.generateDerivative(_.find(dataTypes, {name:'RNA'}), createdTissue)
            ]; 
 
         })
@@ -713,6 +713,7 @@ var GeneratedDataService = {
 
     generateFluid: function(fluidType, idSubj, biobank) {
         var fluid = PopulateService.generateData(fluidType);
+        fluid.metadata.volume.value = parseFloat(getRandomArbitrary(0.0, 10.0).toFixed(2));
         fluid.biobankCode = guid();
         fluid.biobank = biobank;
         fluid.donor = idSubj;
@@ -735,25 +736,27 @@ var GeneratedDataService = {
         clinSit.metadata.is_benign = { 
             value: details.benign ? true : false
         };
-        if (clinSit.metadata.is_benign) {
+        if (clinSit.metadata.is_benign.value) {
             if (getRandomArbitrary(0,1) < 0.9 ) {
-                clinSit.metadata.current_status = 'alive - complete remission';
+                clinSit.metadata.current_status.value = 'alive - complete remission';
             }
             else {
-                clinSit.metadata.current_status = 'alive - other disease';
+                clinSit.metadata.current_status.value = 'alive - other disease';
             }
         }
         clinSit.parentSubject = idSubj;
         return Data.create(clinSit);
     },
 
-    generateDerivative: function(derivativeType, idSubj, idParentSample, biobank) {
+    generateDerivative: function(derivativeType, parentSample) {
         var derivative = PopulateService.generateData(derivativeType);
         derivative.metadata.quantity.value = parseFloat(getRandomArbitrary(0.0, 10.0).toFixed(2));
-        derivative.donor = idSubj;
-        derivative.parentSample = idParentSample;
+        derivative.metadata.concentration.value = parseFloat(getRandomArbitrary(0.0, 100.0).toFixed(2));
+        derivative.metadata.sampling_date.value = PopulateService.generateDateField(null, parentSample.metadata.sampling_date.value);
+        derivative.donor = parentSample.donor;
+        derivative.parentSample = parentSample.id;
         derivative.biobankCode = guid();
-        derivative.biobank = biobank;
+        derivative.biobank = parentSample.biobank;
         return Sample.create(derivative);
     },
 
@@ -761,6 +764,15 @@ var GeneratedDataService = {
         // console.log("GeneratedDataService.generateCGHReport - here we are");
         var cgh = PopulateService.generateData(cghType);
         if (details.benign) {
+            cgh.metadata.prognostic_profile.value = 'NO RESULT profile';
+        }
+        else if (cgh.metadata.structural_abnormalities.value) {
+            cgh.metadata.prognostic_profile.value = 'SCA profile';
+        }
+        else if (cgh.metadata.numerical_abnormalities.value) {
+             cgh.metadata.prognostic_profile.value = 'NCA profile';
+        }
+        else {
             cgh.metadata.prognostic_profile.value = 'NO RESULT profile';
         }
         cgh.parentSubject = idSubj;
@@ -775,6 +787,7 @@ var GeneratedDataService = {
         ngs.metadata.read_length = {};
         ngs.metadata.read_length.value = Math.ceil(getRandomArbitrary(instrumentation[ngs.metadata.instrument_model.value][0], 
                                                                       instrumentation[ngs.metadata.instrument_model.value][0] ));
+        ngs.metadata.read_length.unit = 'bp';
         switch (ngs.metadata.instrument_model) {
             case "Illumina HiSeq 2000":
                 ngs.metadata.total_reads.value = Math.floor(getRandomArbitrary(500000000,800000000));

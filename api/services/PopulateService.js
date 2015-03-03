@@ -184,7 +184,7 @@ var PopulateService = {
             start = new Date(arguments[1]);
         }
         else {
-            start = new Date("1970-01-01");
+            start = new Date("2000-01-01");
         }
 
         if (arguments[2]) {
