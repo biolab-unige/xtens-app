@@ -825,7 +825,7 @@ var GeneratedDataService = {
                 query(["SELECT d.id, d.parent_subject, d.parent_data FROM data d",
                       " INNER JOIN data_type dt ON dt.id = d.type",
                       " WHERE dt.name = 'Whole Genome Sequencing' AND ",
-                      "(SELECT count(*) FROM data cd WHERE cd.parent_data = d.id) = 0 LIMIT 3;"].join("")),
+                      "(SELECT count(*) FROM data cd WHERE cd.parent_data = d.id) = 0;"].join("")),
                       query("SELECT id FROM data_type WHERE name = 'Human Variant';"),
                       query("SELECT count(*) FROM germline_variant;"),
                       query("SELECT count(*) FROM somatic_variant;")
@@ -847,8 +847,9 @@ var GeneratedDataService = {
 
         })
 
-        .then(function() {
-            return "success - finished";
+        .then(function(results) {
+            console.log("GeneratedDataService.populateVariants - done");
+            return results;
         });
 
     },
@@ -860,10 +861,14 @@ var GeneratedDataService = {
      */
     populateExome: function(germVarCount, somVarCount, varTypeId, ngsDatum) {
         var varId, note = "automatically generated";
+        var germlines = [], somatics = [];
         var query = BluebirdPromise.promisify(Data.query, Data);
         console.log("GeneratedDataService.populateExome: creating germline variants");
         return BluebirdPromise.map(new Array(GERMLINE_SIZE), function() {
-            varId = Math.floor(germVarCount*Math.random());
+            do {
+                varId = Math.ceil(germVarCount*Math.random());
+            } while(germlines.indexOf(varId)>0);
+            germlines.push(varId);
             return query({
                 name: "creategermline",
                 text: [
@@ -880,9 +885,11 @@ var GeneratedDataService = {
             console.log("GeneratedDataService.populateExome: created " + result.length + " germline variants");
             console.log("GeneratedDataService.populateExome: creating somatic variants");
             return BluebirdPromise.map(new Array(SOMATIC_SIZE), function() {
-                
-                varId = Math.floor(somVarCount*Math.random());
-                console.log(varId);
+                do {
+                    varId = Math.ceil(somVarCount*Math.random());
+                } while (somatics.indexOf(varId) > 0);
+                somatics.push(varId);
+
                 return query({
                     name: "createsomatic",
                     text: [
@@ -899,7 +906,10 @@ var GeneratedDataService = {
         
         .then(function(result) {
             console.log("GeneratedDataService.populateExome: created " + result.length + " somatic variants");
-
+            return {
+                germlines: germlines,
+                somatics: somatics
+            };
         });
        
     },
