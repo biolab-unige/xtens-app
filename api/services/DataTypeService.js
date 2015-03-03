@@ -106,7 +106,7 @@ var DataTypeService = {
      * @name putMetadataFieldIntoEAV
      * @description extract the Metadata Fields from the JSON schema and stores each one in a dedicated 
      *              ATTRIBUTE table, for use in an EAV catalogue
-     * @param {DataType} dataType - the type that must be extracted
+     * @param {Integer} dataType - the id of the DataType
      */
     putMetadataFieldsIntoEAV: function(dataType) {
         

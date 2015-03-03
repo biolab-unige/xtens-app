@@ -37,15 +37,15 @@ var newFile       = document.createElement('div');
 obj.appendChild(newFile);
 var body = new FormData();
 body.append("uploadFile",fileUpload);
-    $.ajax({
-type: "POST",
+$.ajax({
+type: "GET",
 
-url:"http://130.251.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/superbiorods/"+fileUpload.name,
+url:"http://130.251.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/xtensdevel/test.fcsv",
 //url:"http://10.186.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/superbiorods/pippo.txt",
 beforeSend: function (xhr) {
 // xhr.withCredentials = true;
 
-xhr.setRequestHeader("Authorization", "Basic " + btoa("superbiorods" + ":" + "superbio05!"));
+xhr.setRequestHeader("Authorization", "Basic " + btoa("xtensdevel" + ":" + "xtensdevel"));
 xhr.setRequestHeader("Access-Control-Allow-Origin","*");
 },
 

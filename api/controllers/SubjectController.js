@@ -1,10 +1,12 @@
-/**
+/*t
  * SubjectController
  * @author      :: Massimiliano Izzo
  * @description :: Server-side logic for managing subjects
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 var transactionHandler = sails.config.xtens.transactionHandler;
+var BluebirdPromise = require('bluebird');
+
 
 module.exports = {
     
@@ -89,6 +91,65 @@ module.exports = {
             
         });
 
+    },
+
+    createGraph: function(req,res){
+        
+        
+        var idPatient = req.param("idPatient");
+
+     Subject.query('select data_type.id from data_type inner join sample on data_type.id = sample.type where parent_subject ='+idPatient+' union select data_type.id from data_type inner join data on data_type.id = data.type where parent_subject ='+idPatient+';',function(err,resp){
+       
+        var children = [];
+
+        var child;
+
+        var links = [];
+        
+        if(resp.rows.length === 0){
+        
+         links = [{'source':'Patient','target':null}];
+         return res.json({'links':links});
+        }
+        
+
+        for(var i = 0;i<resp.rows.length;i++)
+        {
+          children.push(resp.rows[i].id);
+        }
+       
+    
+
+        BluebirdPromise.map(children,function(child){
+       
+ 
+        var childName;
+     return DataType.findOne(child).then(function(dataType){
+        childName = dataType.name;
+        var parents = dataType.schema.header.parents;
+        
+      return DataType.findOne(parents).then(function(source){
+        
+            return {'source':source.name,'target':childName};
+
+        }); 
+        });
+        }).then(function(link){
+        console.log(link);
+        links = link;
+         var json = {'links':links};
+            console.log(json);
+            return res.json(json);
+
+
+        });
+        
+        
+        });      
+        
+
+          
+    
     }
     
 

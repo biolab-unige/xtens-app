@@ -1,0 +1,30 @@
+<h2>Patient Graph</h2>
+<style>
+ellipse {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 3px;
+}
+
+.node text { font: 12px sans-serif; }
+
+.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 2px;
+}
+</style>
+<div id="content">
+    <p>Select a Patient:</p>
+    <div> 
+        <p><select id="select">
+            <% _.each(subjects,function(subject){ %>
+            <option id = "subject"><%= subject.get("id")%></option>
+            <%})%>
+        </select></p>
+    </div>
+    <div>
+        <a id="graph" class="btn btn-primary">Create the Patient Graph</a>
+    </div>
+</div>
+

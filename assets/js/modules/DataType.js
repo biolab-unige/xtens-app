@@ -130,9 +130,9 @@
         model: DataType.Model
     });
 
-/**
- * This is the view to create/edit the DataType
- */
+    /**
+     * This is the view to create/edit the DataType
+     */
 
     DataType.Views.Edit = MetadataComponent.Views.Edit.fullExtend({
 
@@ -209,33 +209,33 @@
             return this;
         },
         /*
-        render: function(options) {
-            if (options.id) {
-                this.model = new DataType.Model({id: options.id});
-                this.model.fetch({
-                    success: this.fetchSuccess,
-                    error: xtens.error
-                });
-            } else {
-                this.$el.html(this.template({__: i18n, dataType: null}));
-                this.stickit();
-            }
-            this.$form = this.$("form");
-            // initialize Parsley
-            this.$form.parsley(parsleyOpts);
-            return this;
+render: function(options) {
+if (options.id) {
+this.model = new DataType.Model({id: options.id});
+this.model.fetch({
+success: this.fetchSuccess,
+error: xtens.error
+});
+} else {
+this.$el.html(this.template({__: i18n, dataType: null}));
+this.stickit();
+}
+this.$form = this.$("form");
+        // initialize Parsley
+        this.$form.parsley(parsleyOpts);
+        return this;
         },
 
         // TODO requires refactoring - move it to the router (?)
-        fetchSuccess: function(dataType) {
-            this.$el.html(this.template({__: i18n, dataType: dataType}));
-            this.stickit();
-            var body = dataType.get('schema').body;
-            for (var i=0, len=body.length; i<len; i++) {
-                this.add(body[i]);
-            }
-            this.setValidate(); //TODO
-        }, */
+fetchSuccess: function(dataType) {
+this.$el.html(this.template({__: i18n, dataType: dataType}));
+this.stickit();
+var body = dataType.get('schema').body;
+for (var i=0, len=body.length; i<len; i++) {
+this.add(body[i]);
+}
+this.setValidate(); //TODO
+}, */
 
         /**
          * @description show a list of the validation errors. So far it just alert the first error 
@@ -317,6 +317,154 @@
                 }
             });
             return this;
+        }
+    });
+
+    DataType.Views.Graph = Backbone.View.extend({
+
+        tagName:'div',
+        className:'dataTypes',
+
+        events: {
+            'click #graph':'createGraph'
+        },
+
+        initialize: function() {
+
+            $('#main').html(this.el);
+            this.template = JST["views/templates/datatype-graph.ejs"];
+            this.render();
+        },
+
+        render : function () {
+
+            var that = this;
+            var dataTypes = new DataType.List();
+            dataTypes.fetch({
+
+                success : function(dataTypes) {
+                    that.$el.html(that.template({ __: i18n, dataTypes : dataTypes.models}));
+                },
+                error: function() {
+                    that.$el.html(that.template({ __: i18n}));
+                }
+            });
+            return this;
+        },
+
+        createGraph: function() {
+            var idDatatype = document.getElementById('select1').value;
+
+            $.post( '/graph',
+                   {idDataType: idDatatype},
+                   function (err,res,body) {
+                       var graph = body.responseJSON;
+
+                       var links = graph.links;
+                       var nodes = {};
+                       var force;
+                       var width = 960,
+                       height = 500;
+
+                       var position = width/2;
+                       var depth1;
+
+                       links.forEach(function(link) {
+
+                           link.source = nodes[link.source] || (nodes[link.source] = {name: link.source,template:link.source_template,x:width/2,y:40,fixed:true});
+
+                           if(depth1 === link.depth){
+                               position = position+160;
+                           }
+                           else{
+                               position = link.source.x;
+                           }
+
+                           link.target = nodes[link.target] || (nodes[link.target] = {name: link.target,template:link.target_template,x:position, y:link.depth*100,fixed:true});
+
+                           depth1 = link.depth;
+
+                       });
+
+
+                       force = d3.layout.force()
+                       .nodes(d3.values(nodes).filter(function(d){ return d.name;}))
+                       .links(links)
+                       .size([width, height])
+                       .linkDistance(120)
+                       .charge(-300)
+                       .on("tick", tick)
+                       .start();
+
+                       var svg = d3.select("#main").append("svg")
+                       .attr("width", width)
+                       .attr("height", height);
+
+                       svg.append("defs").selectAll("marker")
+                       .data(["suit"])
+                       .enter().append("marker")
+                       .attr("id", function(d) { return d; })
+                       .attr("viewBox", "0 -5 10 10")
+                       .attr("refX", 15)
+                       .attr("refY", -1.5)
+                       .attr("markerWidth", 6)
+                       .attr("markerHeight",6)
+                       .attr("orient", "auto")
+                       .append("path")
+                       .attr("d", "M0,-5L10,0L0,5");
+
+                       var path = svg.append("g").selectAll("path")
+                       .data(force.links())
+                       .enter().append("path")
+                       .attr("class","link")
+                       .attr("marker-end","url(#suit)");
+
+                       var ellipse = svg.append("g").selectAll("ellipse")
+                       .data(force.nodes())
+                       .enter().append("ellipse")
+                       .attr("rx", 70)
+                       .attr("ry",20)
+                       .call(force.drag);
+
+                       var text1 = svg.append("g").selectAll("text")
+                       .data(force.nodes())
+                       .enter().append("text")
+                       .attr("x", -30)
+                       .attr("y", -5)
+                       .text(function(d) { return d.name;});
+
+                       var text2 =svg.append("g").selectAll("text").data(force.nodes()).enter().append("text")
+                       .attr("x",-30)
+                       .attr("y",10)
+                       .text(function(d){return d.template;});
+
+                       function tick() {
+                           path.attr("d", linkArc);
+                           ellipse.attr("transform",transform);
+                           text1.attr("transform", transform);
+                           text2.attr("transform",transform);
+                       }
+
+                       function linkArc(d) {
+                           if(d.target.x && d.target.y){
+                               var dx = d.target.x - d.source.x,
+                               dy = d.target.y - d.source.y,
+                               dr = Math.sqrt(dx * dx + dy * dy);
+                               return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+                           }
+                           else {
+                               return null;
+                           }
+                       }
+
+                       function transform(d) {
+                           return "translate(" + d.x + "," + d.y + ")";
+                       }
+                   }
+                  ).fail(function(res){
+                      alert("Error: " + res.responseJSON.error);
+                  });
+
         }
     });
 

@@ -190,4 +190,147 @@
         } 
     });
 
+    Subject.Views.Graph = Backbone.View.extend({
+    
+        tagName: 'div',
+        className: 'subject',
+
+        events: {
+        
+            'click #graph': 'createGraph'
+        },
+
+        initialize: function() {
+            $("#main").html(this.el);
+            this.template = JST["views/templates/subject-graph.ejs"];
+            this.render();
+        },
+
+        render: function(options) {
+            var that = this;
+            var subjects = new Subject.List();
+            subjects.fetch({
+                success: function(subjects) {
+                    that.$el.html(that.template({__: i18n, subjects: subjects.models}));
+                },
+                error: function() {
+                    that.$el.html(that.template({__: i18n}));
+                }
+            });
+            return this;
+        },
+
+        createGraph : function () {
+        var patient = document.getElementById('select').value;
+
+        $.post('/subjectGraph',{
+idPatient:patient
+},function(err,res,body){
+
+
+var margin = {top: 40, right: 120, bottom: 40, left: 120},
+width = 960 - margin.left - margin.right,
+height = 500 - margin.top - margin.bottom;
+
+var tree = d3.layout.tree()
+.size([width, height]);
+
+var diagonal = d3.svg.diagonal()
+.projection(function(d) { 
+      return [d.x, d.y];
+    }
+    );
+
+var svg = d3.select("#main").append("svg")
+.attr("width", width + margin.left + margin.right)
+.attr("height", height + margin.top + margin.bottom)
+.append("g")
+.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var graph = body.responseJSON;
+
+var links = graph.links;
+var nodesByName = {};
+
+// Create nodes for each unique source and target.
+links.forEach(function(link) {
+        var parent = link.source = nodeByName(link.source),
+        child = link.target = nodeByName(link.target);
+        if (parent.children) parent.children.push(child);
+        else parent.children = [child];
+        });
+
+var index;
+
+for(var i=0;i<links.length;i++){
+    if(links[i].source.name === 'Patient'){
+        index = i;
+    }
+}
+var nodes = tree.nodes(links[index].source);
+
+console.log(links);
+
+    svg.selectAll(".link")
+.data(links.filter(function(d){return d.target.name;}))
+    .enter().append("path")
+    .attr("class", "link")
+    .attr("d",diagonal);
+
+    svg.selectAll(".node")
+    .data(nodes.filter(function(d){return d.name;}))
+    .enter().append("ellipse")
+    .attr("class", "node")
+    .attr("rx",70)
+    .attr("ry",20)
+    .attr("cx", function(d) { return d.x; })
+    .attr("cy", function(d) { return d.y; });
+
+     svg.append("g").selectAll("text")
+    .data(nodes)
+    .enter().append("text")
+    .each(function (d) {
+        if (d.name === 'Patient')
+            {
+            d.name = d.name+' #'+patient;
+            }
+        var arr = d.name.split(" ");
+        if (arr !== undefined) {
+            for (var i = 0; i < arr.length; i++) {
+                d3.select(this).append("tspan")
+                    .text(arr[i])
+                    .attr("dy", function(d){return d.y -(d.y -15)*i;})
+                    .attr("x", function(d){return d.x-25;} )
+                    .attr("class", "tspan0");
+            }
+        }
+    });
+    /*
+    .attr("dx", function(d){return d.x -20;})
+    .attr("dy", function(d){return d.y +5 ;})
+    .html(function(d) { 
+        if(d.name === 'Patient'){
+        return d.name+'<br>'+' #'+patient;
+        }
+        else
+        return d.name;
+        }
+     );*/
+
+    function nodeByName(name) {
+        return nodesByName[name] || (nodesByName[name] = {name: name});
+    }
+}
+
+).fail(function(res){
+    alert("Error: " + res.responseJSON.error);
+    });
+
+        
+        
+        }
+
+    
+    });
+
 } (xtens, xtens.module("subject")));

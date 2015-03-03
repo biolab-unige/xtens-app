@@ -91,5 +91,22 @@
     
     });
 
+FileManager.Views.Download = Backbone.View.extend({
+ 	
+	tagName: 'div',
+        className: 'download',
+
+	initialize: function(options) {
+	    $("#main").html(this.el);
+            this.template = JST["views/templates/DownloadFileIrods.ejs"];
+            this.render();
+	},
+	
+	render: function() {
+            this.$el.html(this.template({__:i18n}));
+            return this;
+        }
+});
+
 }(xtens,xtens.module("filemanager")));
 

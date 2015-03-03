@@ -31,6 +31,10 @@ module.exports.routes = {
     'POST /login':{controller:'main',
         action:'login'
     },
+
+    'POST /graph':{controller:'dataType',action:'buildGraph'},
+
+    'POST /subjectGraph':{controller:'subject',action:'createGraph'},
     
     '/upload-file':{controller:'dataFile',action:'upload'},
     

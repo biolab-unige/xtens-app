@@ -70,10 +70,10 @@ var PopulateService = {
                     metadata[field.name] = PopulateService.generateIntegerField(field);
                 break;
                 case FieldTypes.BOOLEAN:
-                    metadata[field.name] = PopulateService.generateBooleanField(field);
+                    metadata[field.name] = PopulateService.generateBooleanField();
                 break;
                 case FieldTypes.DATE:
-                    metadata[field.name] = PopulateService.generateDateField(field);
+                    metadata[field.name] = PopulateService.generateDateField();
                 break;
             }
 
@@ -139,7 +139,7 @@ var PopulateService = {
      * @param {Object} field - the field that it should be filled
      * @return {Object} - the metadata field with a boolean value
      */
-    generateBooleanField: function(field) {
+    generateBooleanField: function() {
 
         var min = 0;
         var max = 2;
@@ -162,7 +162,7 @@ var PopulateService = {
      * @param {string} args[2] - end date in ISO8601
      * @return {Object} - the metadata field with a date value
      */
-    generateDateField : function(field) {
+    generateDateField : function() {
 
         var start, end;
 

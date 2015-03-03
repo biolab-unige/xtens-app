@@ -8,6 +8,8 @@
     "bcrypt": "~0.8.0",
     "bcryptjs": "^2.1.0",
     "bluebird": "^2.5.1",
+    "d3": "^3.5.5",
+    "d3-chart": "0.0.1",
     "ejs": "~0.8.4",
     "grunt": "~0.4.2",
     "grunt-contrib-clean": "~0.5.0",

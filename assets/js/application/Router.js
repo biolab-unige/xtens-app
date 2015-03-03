@@ -16,7 +16,7 @@
     var Operator = xtens.module("operator");
     var Group = xtens.module("group");
     var AdminAssociation = xtens.module("adminassociation");
-    var FileManager= xtens.module("FileManager");
+    var FileManager= xtens.module("filemanager");
 
     function parseQueryString(queryString){
         var params = {};
@@ -75,7 +75,9 @@
             "login":"loginView",
             "groups/operator/:id":"associationOperator",
             "groups/datatype/:id":"associationDataType",
-
+            "downIrods":"downIrods",
+            "datatypes/graph":"dataTypeGraph",
+            "subjects/graph":"subjectGraph"
         },
 
         loadView: function(view) {
@@ -116,6 +118,14 @@
 
         dataTypeList: function() {
             this.loadView(new DataType.Views.List());
+        },
+
+        downIrods: function() {
+            this.loadView(new FileManager.Views.Download());
+        },
+
+        dataTypeGraph : function() {
+            this.loadView(new DataType.Views.Graph());
         },
 
         dataTypeEdit: function(id) {
@@ -237,6 +247,12 @@
             });
         },
 
+        subjectGraph: function() {
+        
+            this.loadView(new Subject.Views.Graph());
+
+        },
+         
         sampleList: function() {
             var dataTypes = new DataType.List();
             var samples = new Sample.List();
@@ -276,7 +292,7 @@
         biobankList: function() {
             this.loadView(new Biobank.Views.List());
         },
-        
+
         biobankEdit: function(id) {
             if (id) {
                 var biobank = new Biobank.Model({id: id}), that = this;
@@ -295,7 +311,7 @@
                 this.loadView(new Biobank.Views.Edit({model: new Biobank.Model()}));
             }
         },
-                
+
         queryBuilder: function(id) {
             var dataTypes = new DataType.List();
             var that = this;
