@@ -786,6 +786,10 @@ var GeneratedDataService = {
     },
 
     generateNGS: function(ngsType, idSubj, idParentSample) {
+        if (Math.random() >= 0.5) {
+            return;
+        }
+        
         // console.log("GeneratedDataService.generateNGS - here we are");
         var ngs = PopulateService.generateData(ngsType, ['read_length']);
         ngs.metadata.read_length = {};
@@ -863,10 +867,7 @@ var GeneratedDataService = {
         var varId, note = "automatically generated";
         var germlines = [], somatics = [];
         var query = BluebirdPromise.promisify(Data.query, Data);
-        if (Math.random() >= 0.5) {
-            return;
-        }
-
+        
         console.log("GeneratedDataService.populateExome: creating germline variants");
         return BluebirdPromise.map(new Array(GERMLINE_SIZE), function() {
             do {
