@@ -103,7 +103,7 @@ var DataService = BluebirdPromise.promisifyAll({
     /**
      * @name storeMetadataIntoEAV
      * @description insert in the EAV catalogue a certain number of Data (Subject or Sample) instances
-     * @param {Integer/Array} - an integer or an arry of identifiers
+     * @param {Integer/Array} - an integer or an array of identifiers
      * @param {modelName} - an optional name determining on which table run the query
      * @return {Promise} -  a Bluebird Promise
      */
@@ -113,7 +113,7 @@ var DataService = BluebirdPromise.promisifyAll({
             console.log("DataService.storeMetadataIntoEAV - EAV value table map is: " + sails.config.xtens.constants.EavValueTableMap);
             return BluebirdPromise.map(foundData, function(datum) {
                 return transactionHandler.putMetadataValuesIntoEAV(datum, sails.config.xtens.constants.EavValueTableMap);
-            });
+            }, {concurrency: 100});
         })
 
         .then(function(inserted) {
@@ -125,6 +125,44 @@ var DataService = BluebirdPromise.promisifyAll({
             console.log("DataService.storeMetadataIntoEAV - error caught");
         });
 
+    },
+    
+    /**
+     * TODO
+     * @method
+     * @name storeEAVAll
+     * @description populates the whole metadata catalogue 
+     * @
+     */
+    storeEAVAll: function(limit) {
+        var offset = 0; 
+        limit = limit || 100000;
+        
+        var modelName = arguments.length < 2 ? 'data' : 
+            (arguments[1].toLowerCase() === 'subject' || arguments[1].toLowerCase() === 'sample') ? arguments[1].toLowerCase() : 'data';
+        console.log("modelName: " + modelName);
+
+        var query = BluebirdPromise.promisify(Data.query, Data);
+        
+        return query("SELECT count(*) FROM " + modelName +  ";")
+
+        .then(function(res) {
+            var count = res.rows[0].count;
+            console.log("total count is: " + count);
+            var iterations = Math.ceil(count/limit);
+            console.log("iterations: " + iterations);
+            return BluebirdPromise.map(new Array(iterations), function() {
+                console.log("offset: " + offset);
+                console.log("limit: " + limit);
+                return query("SELECT id FROM " + modelName + " LIMIT $1 OFFSET $2", [limit,offset]).then(function(result) {
+                    offset += limit;
+                    var ids = _.pluck(result.rows, 'id');
+                    // console.log(ids);
+                    return DataService.storeMetadataIntoEAV(ids);
+                    // return;
+                });
+            }, {concurrency: 1});
+        });
     }
 
 });

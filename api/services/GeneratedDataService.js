@@ -867,7 +867,7 @@ var GeneratedDataService = {
         return BluebirdPromise.map(new Array(GERMLINE_SIZE), function() {
             do {
                 varId = Math.ceil(germVarCount*Math.random());
-            } while(germlines.indexOf(varId)>0);
+            } while(germlines.indexOf(varId) > 0);
             germlines.push(varId);
             return query({
                 name: "creategermline",
@@ -912,24 +912,6 @@ var GeneratedDataService = {
             };
         });
        
-    },
-
-    populateExomeWithSomatic: function(somVarCount, varTypeId, ngsDatum) {
-        var varId, node = "automatically generated";
-        var query = BluebirdPromise.promisify(Data.query, Data);
-        return query([
-            "PREPARE createsomatic (integer, integer, integer, integer, text) AS",
-            "INSERT INTO data (type, parent_subject, parent_data, metadata, notes, created_at, updated_at)",
-            "VALUES ($1, $2, $3, (SELECT metadata FROM somatic_variant WHERE id = $4), $5, current_timestamp, current_timestamp);"
-        ].join(" "))
-
-        .then(function() {
-            return BluebirdPromise.map(new Array(SOMATIC_SIZE), function() {
-                varId = Math.floor(somVarCount*Math.random());
-                return query("EXECUTE createsomatic($1, $2, $3, $4, $5)", [varTypeId, varId, ngsDatum.parentSubject, ngsDatum.parentData, note]);
-
-            }, {concurrency: 50});
-        });
     }
 
 };
