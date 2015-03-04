@@ -863,6 +863,10 @@ var GeneratedDataService = {
         var varId, note = "automatically generated";
         var germlines = [], somatics = [];
         var query = BluebirdPromise.promisify(Data.query, Data);
+        if (Math.random() >= 0.5) {
+            return;
+        }
+
         console.log("GeneratedDataService.populateExome: creating germline variants");
         return BluebirdPromise.map(new Array(GERMLINE_SIZE), function() {
             do {
@@ -878,7 +882,7 @@ var GeneratedDataService = {
                 ].join(" "),
                 values: [varTypeId, ngsDatum.parent_subject, ngsDatum.id, varId, note]
             });
-        }, {concurrency: 50})
+        }, {concurrency: 60})
 
         .then(function(result) {
             
@@ -897,7 +901,7 @@ var GeneratedDataService = {
                         "VALUES ($1, $2, $3, (SELECT metadata FROM somatic_variant WHERE id = $4), $5, current_timestamp, current_timestamp)",
                         "RETURNING id;"
                     ].join(" "),
-                    values: [varTypeId, ngsDatum.parentSubject, ngsDatum.id, varId, note]
+                    values: [varTypeId, ngsDatum.parent_subject, ngsDatum.id, varId, note]
                 });
 
             });
