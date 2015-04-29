@@ -300,7 +300,11 @@
             var dataTypes = new DataType.List();
             var that = this;
             dataTypes.fetch({
+                data: $.param({
+                    populate: ['children']
+                }),
                 success: function(dataTypes) {
+                    console.log(dataTypes);
                     that.loadView(new Query.Views.Builder({
                         id: _.parseInt(id),
                         dataTypes: dataTypes

@@ -834,7 +834,9 @@
                 success: function(fileSystem) {
                     _this.fileUploadView = new FileManager.Views.Dropzone({
                         fileSystem: fileSystem,
-                        dataTypeName: _this.model.get("type").name
+
+                        // added the second condition for the scenarios where the dataType is not populated
+                        dataTypeName: _this.model.get("type").name || _.findWhere(_this.dataTypes, {id: _.parseInt(_this.model.get("type"))}).name
                     });
                     _this.$fileCnt.append(_this.fileUploadView.render().el);
                     _this.fileUploadView.initializeDropzone(_this.model.get("files"));

@@ -622,7 +622,8 @@ var GeneratedDataService = {
         })
 
         .spread(function(dataTypes, biobanks) {
-
+            console.log(dataTypes);
+            console.log(biobanks);
             var biobankIds = _.pluck(biobanks, 'id');
 
             return BluebirdPromise.map(new Array(n), function() {
@@ -634,7 +635,7 @@ var GeneratedDataService = {
         })
 
         .catch(function(err) {
-            throw new Error(err.message);
+            throw new Error(err.message || err.details);
         });
 
     },
@@ -691,7 +692,14 @@ var GeneratedDataService = {
 
 
     },
-
+    
+    /**
+     * @method
+     * @name generateSubject
+     * @param {int} - patientType, the ID of 'Patient' in the "data_type" table
+     * @description generate a subject with quasi-random metadata parameters
+     * @return {Object} - Subject
+     */
     generateSubject: function(patientType) {
         var subject = PopulateService.generateData(patientType);
         var sexList = Object.keys(SexList);
@@ -703,6 +711,16 @@ var GeneratedDataService = {
         return Subject.create(subject);
     },
 
+    /**
+     * @method
+     * @name generateTissue
+     * @param {int} - tissueType, the ID of 'Tissue' in the "data_type" table
+     * @param {int} - idSubj - ID of the donor ("parent" Subject")
+     * @param {Object} - details - object containing morphology and topography information
+     * @param {int} - biobank - ID of the biobank in the "biobank" table
+     * @description generate a tissue sample with quasi-randomly selected metadata parameters
+     * @return {Object} - Tissue sample
+     */
     generateTissue: function(tissueType, idSubj, details, biobank) {
         var tissue = PopulateService.generateData(tissueType, ['tumour', 'topography', 'morphology']);
         tissue.metadata.volume.value = parseFloat(getRandomArbitrary(0.0, 25.0).toFixed(2));
@@ -714,7 +732,16 @@ var GeneratedDataService = {
         tissue.donor = idSubj;
         return Sample.create(tissue); 
     },
-
+    
+    /**
+     * @method
+     * @name generateFluid
+     * @param {int} - fluidType, the ID of 'Fluid' in the "data_type" table
+     * @param {int} - idSubj - ID of the donor ("parent" Subject")
+     * @param {int} - biobank - ID of the biobank in the "biobank" table
+     * @description generate a fluid sample with quasi-randomly selected metadata parameters
+     * @return {Object} - Fluid sample
+     */
     generateFluid: function(fluidType, idSubj, biobank) {
         var fluid = PopulateService.generateData(fluidType);
         fluid.metadata.volume.value = parseFloat(getRandomArbitrary(0.0, 10.0).toFixed(2));
@@ -723,7 +750,16 @@ var GeneratedDataService = {
         fluid.donor = idSubj;
         return Sample.create(fluid);
     },
-
+    
+    /**
+     * @method
+     * @name generateClinicalSituation
+     * @param {int} - csType
+     * @param {int} - idSubj  - ID of the biobank in the "biobank" table
+     * @param {Object} - details - object containing clinical info
+     * @description generate a fluid sample with quasi-randomly selected metadata parameters
+     * @return {Object} - clinical situation data
+     */
     generateClinicalSituation: function(csType, idSubj, details) {
         var clinSit = PopulateService.generateData(csType, ['disease', 'is_benign']);
         clinSit.metadata.disease = { value: details.disease_snomedct.name, iri: details.disease_snomedct.iri};
@@ -751,19 +787,37 @@ var GeneratedDataService = {
         clinSit.parentSubject = idSubj;
         return Data.create(clinSit);
     },
-
+    
+    /**
+     * @method
+     * @name generateDerivative
+     * @param {int} - derivativeType - the ID of the derivative type in the 'data_type' table
+     * @param {Object} parentSample - the parent Sample (DNA/RNA)
+     * @return {Object} - the generated derivative sample
+     */
     generateDerivative: function(derivativeType, parentSample) {
         var derivative = PopulateService.generateData(derivativeType);
         derivative.metadata.quantity.value = parseFloat(getRandomArbitrary(0.0, 10.0).toFixed(2));
         derivative.metadata.concentration.value = parseFloat(getRandomArbitrary(0.0, 100.0).toFixed(2));
-        derivative.metadata.sampling_date.value = PopulateService.generateDateField(null, parentSample.metadata.sampling_date.value);
+        derivative.metadata.sampling_date = PopulateService.generateDateField(null, parentSample.metadata.sampling_date.value);
         derivative.donor = parentSample.donor;
         derivative.parentSample = parentSample.id;
         derivative.biobankCode = guid();
         derivative.biobank = parentSample.biobank;
+        console.log("DERIVATIVE sampling_date: ");
+        console.log(derivative.metadata.sampling_date);
         return Sample.create(derivative);
     },
-
+    
+    /**
+     * @method 
+     * @name generateCGHReport
+     * @param {int} cghType - the ID of 'CGH Report' in the 'data_type' table
+     * @param {int} idSubj - the ID of the 'parent' Subject
+     * @param {int} idParentSample - the ID of the 'parent' Sample
+     * @param {Object} details - the object containing metadata info
+     * @return {Object} cghReport 
+     */
     generateCGHReport: function(cghType, idSubj, idParentSample, details) {
         // console.log("GeneratedDataService.generateCGHReport - here we are");
         var cgh = PopulateService.generateData(cghType);
@@ -784,7 +838,14 @@ var GeneratedDataService = {
         // console.log("GeneratedDataService.generateReport - ready to create CGH: " + cgh);
         return Data.create(cgh);
     },
-
+    
+    /**
+     * @method
+     * @name generateNGS
+     * @param {int} ngsType - the 
+     * @param {int} idSubj - the ID of the 'parent' Subject
+     * @param {int} idParentSample - the ID of the 'parent' Sample
+     */
     generateNGS: function(ngsType, idSubj, idParentSample) {
         if (Math.random() >= 0.5) {
             return;
@@ -818,7 +879,13 @@ var GeneratedDataService = {
         // console.log("GeneratedDataService.generateReport - ready to create NGS: " + ngs);
         return Data.create(ngs);
     },
-
+    
+    /**
+     * @method
+     * @name populateVariants
+     * @description retrieve all the 'Whole Genome Sequencing' data and for each of those populate with variants
+     * @return {Promise} a bluebird promise
+     */
     populateVariants: function() {
 
         var query = BluebirdPromise.promisify(Data.query, Data);

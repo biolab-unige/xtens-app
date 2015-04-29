@@ -19,12 +19,22 @@ var DataTypeController = {
     find: function(req, res) {
 
         console.log("DataType.find - prova");
+        
+        // the "populate" param is used to send all the associations to be populated
+        var populate = _.clone(req.param('populate')) || ['parents'];
+        delete res.populate;
+        console.log(populate);
 
         var query = DataType.find()
         .where(QueryService.parseCriteria(req))
         .limit(QueryService.parseLimit(req))
         .skip(QueryService.parseSkip(req))
-        .sort(QueryService.parseSort(req)).populate('parents');
+        .sort(QueryService.parseSort(req));
+        
+        populate.forEach(function(associationName) {
+            console.log("DataTypeController.find - populating " + associationName);
+            query.populate(associationName);
+        });
 
         query.then(function(dataTypes) {
             res.json(dataTypes);

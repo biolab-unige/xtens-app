@@ -120,10 +120,10 @@ var PopulateService = {
      */
     generateTextField: function(field) {
         var res = {};
-        if(!field.isList){
+        if(!field.isList) {
             res = { "value": Math.random().toString(36)};
         }
-        else{
+        else {
             var len = field.possibleValues.length;
             var randomIndex = Math.floor(Math.random()*(len));
             res = {"value": field.possibleValues[randomIndex]};

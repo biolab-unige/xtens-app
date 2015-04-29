@@ -171,6 +171,11 @@
                         $el.parent().hide();
                     }
                 },
+                selectOptions: {
+                    collection: function() {
+                        return ["SNOMED CT"];
+                    } 
+                },
                 defaultOption: {
                     label: i18n('please-select'),
                     value: null

@@ -13,5 +13,5 @@ module.exports.models = {
     //
     // (defaults to localDiskDbi)
     migrate: 'safe',
-    connection: 'pgdibris'
+    connection: 'postgresql'
 };
