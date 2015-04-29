@@ -171,4 +171,42 @@
 
 
     });
+    
+    /**
+     * @class
+     * @name Homepage
+     * @description personalised homepage for the operator
+     */
+    Operator.Views.Homepage = Backbone.View.extend({
+
+     tagName:'div',
+        className:'operator',
+
+
+        initialize:function(){
+            $("#main").html(this.el);
+            this.template = JST["views/templates/homepage.ejs"];
+            this.render();
+        },
+
+        render: function(options) {
+
+            var self = this;
+            var operators= new Operator.List();
+            operators.fetch({
+                success: function(operators) {
+                    self.$el.html(self.template({__: i18n, operators: operators.models}));
+                    return self;
+                },
+                error: function() {
+                    self.$el.html(self.template({__: i18n}));
+                    return self;    
+                }
+
+            });
+
+        }
+
+    });
+
 } (xtens, xtens.module("operator")));
