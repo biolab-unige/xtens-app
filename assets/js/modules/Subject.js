@@ -109,7 +109,7 @@
             }
             this.render();
         },
-        
+
         events: {
             "click #save": "saveData",
             "click #add-personal-details": "addPersonalDetailsView"
@@ -171,12 +171,12 @@
                 var type = this.dataTypes.get(subject.get("type").id);
                 subject.set("editLink", "#/subjects/edit/" + subject.id);
                 if (type.get("children") && type.get("children").length > 0) {
-                    var sampleTypeChildren = _.where(type.get("children"), {"classTemplate": Classes.SAMPLE});
+                    var sampleTypeChildren = _.where(type.get("children"), {"model": Classes.SAMPLE});
                     if (sampleTypeChildren.length) {
                         var sids = _.pluck(sampleTypeChildren, 'id').join();
                         subject.set("newSampleLink", "#/samples/new/0?idDataTypes="+sids+"&donor=" + subject.id);
                     }
-                    var dataTypeChildren = _.where(type.get("children"), {"classTemplate": Classes.GENERIC});
+                    var dataTypeChildren = _.where(type.get("children"), {"model": Classes.DATA});
                     if (dataTypeChildren.length) {
                         subject.set("newDataLink", "#/data/new/0?parentSubject=" + subject.id);
                     }
@@ -191,12 +191,12 @@
     });
 
     Subject.Views.Graph = Backbone.View.extend({
-    
+
         tagName: 'div',
         className: 'subject',
 
         events: {
-        
+
             'click #graph': 'createGraph'
         },
 
@@ -208,129 +208,197 @@
 
         render: function(options) {
             var that = this;
-            var subjects = new Subject.List();
-            subjects.fetch({
-                success: function(subjects) {
-                    that.$el.html(that.template({__: i18n, subjects: subjects.models}));
-                },
-                error: function() {
-                    that.$el.html(that.template({__: i18n}));
-                }
-            });
+            that.$el.html(that.template({__: i18n}));
             return this;
         },
 
         createGraph : function () {
-        var patient = document.getElementById('select').value;
+            var patient = document.getElementById('select').value;
 
-        $.post('/subjectGraph',{
-idPatient:patient
-},function(err,res,body){
+            // retrieve all the descendant samples and data for the given patient 
+            $.post('/subjectGraph',{
+                idPatient:patient
+            },function(err,res,body){
+
+                // clean the previous graph if present
+                d3.select("svg").remove(); 
+
+                // set margins, width and height of the svg container
+                var margin = {top: 40, right: 120, bottom: 40, left: 120},
+                width = 1000 - margin.left - margin.right,
+                height = 800 - margin.top - margin.bottom;
+
+                var color = d3.scale.category20();
+
+                // show tooltip with metadata details
+                // TODO:CHANGE MODIFY THIS PART TO MODULARIZE IT!!
+                var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .html(function(d) {
+                    if(d.metadata!==undefined){
+                        var dato = (JSON.stringify(d.metadata)).replace(/,/g,"<br />");
+                        return d.name+"<br />" +dato;
+                    }
+                    else
+                        return 'Patient'+" " +patient;
+                });
+
+                // generate a data hierarchy tree 
+                var tree = d3.layout.tree()
+                .size([width, height]) 
+                // decrease the separation among nodes dividing the distance by a factor 2 for each level 
+                .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+
+                //function to draw the slanted arcs
+                var diagonal = d3.svg.diagonal()
+                .projection(function(d) { 
+                    return [d.x*1.3-120, d.y/2];
+                });
+                
+                // x and y required by d3.tip() function
+                var x = d3.scale.ordinal()
+                .rangeRoundBands([0, width], .1);
+
+                var y = d3.scale.linear()
+                .range([height, 0]);
+
+                // create the svg container
+                var svg = d3.select("#main").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                
+                // execute the tip method
+                svg.call(tip);
+
+                var graph = body.responseJSON;
+
+                var links = graph.links;
+                var nodesByName = {};
+
+                // Create nodes for each unique source and target.
+                links.forEach(function(link) {
+                    var parent = link.source = nodeByName(link.source),      
+                    child = link.target = nodeByName(link.target);
+                    if (parent.children) parent.children.push(child);
+                    else parent.children = [child];
+                });
+
+                var index;
+                
+                // find the root node (Patient)
+                for(var i=0;i<links.length;i++){
+                    if(links[i].source.name === 'Patient'){
+                        index = i;
+                    }
+                }
+
+                //generate the tree
+                var nodes = tree.nodes(links[index].source);
+
+                //add to each node its type and the metadata
+                nodes.forEach(function(node){
+                    for(var i=0;i<links.length;i++){
+                        if(node.name===links[i].target.name){
+                            node.type = links[i].type;
+                            node.metadata = links[i].metadata;
+                        }
+                    } 
+                });
 
 
-var margin = {top: 40, right: 120, bottom: 40, left: 120},
-width = 960 - margin.left - margin.right,
-height = 500 - margin.top - margin.bottom;
+                // define the links format/appereance     
+                svg.append("svg:defs").selectAll("marker")
+                .data(links)
+                .enter().append("svg:marker")
+                .attr("id","arrowhead")
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX",10)
+                .attr("refY",1.5)
+                .attr("markerWidth", 5)
+                .attr("markerHeight", 5)
+                .attr("orient","auto")
+                .attr("stroke","grey")
+                .attr("stroke-width",10)
+                .append("path")
+                .attr("d","M0,0L100,100,200,200");
 
-var tree = d3.layout.tree()
-.size([width, height]);
+                // draw the links
+                svg.selectAll(".link")
+                .data(links.filter(function(d){ return d.target.name;}))
+                .enter().append("path")
+                .attr("class", "link")
+                .attr("marker-end","url(#arrowhead)")
+                .attr("d",diagonal);
 
-var diagonal = d3.svg.diagonal()
-.projection(function(d) { 
-      return [d.x, d.y];
-    }
-    );
+                // draw the nodes
+                svg.selectAll(".node")
+                .data(nodes.filter(function(d){ return d.name;}))
+                .enter().append("circle")
+                .attr("class", "node")
+                .attr("r",function(d){
+                    if (d.metadata === undefined){
+                        return 10; // for the subject use double node size
+                    }
+                    else{
+                        return 5;
+                    }
+                })
+                // set the x coordinate of the node centre
+                .attr("cx", function(d) { 
+                    return d.x*1.3-120;      
+                })
+                // set the y
+                .attr("cy", function(d) {
+                    return d.y/2; 
+                })
+                // set the color 
+                .style("fill", function(d) {
+                    if(d.type){
+                        return color(d.type);
+                    }
+                    else{
+                        return "blue"; // if subject colour it with blue
+                    }
+                }) 
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide);
 
-var svg = d3.select("#main").append("svg")
-.attr("width", width + margin.left + margin.right)
-.attr("height", height + margin.top + margin.bottom)
-.append("g")
-.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                // add the colour legend
+                var legend = svg.selectAll(".legend")
+                .data(color.domain())
+                .enter().append("g")
+                .attr("class", "legend")
+                .attr("transform", function(d, i) { return "translate(80," + i * 20 + ")"; });
 
-var graph = body.responseJSON;
+                legend.append("rect")
+                .attr("x", width - 18)
+                .attr("width", 18)
+                .attr("height", 18)
+                .style("fill", color);
 
-var links = graph.links;
-var nodesByName = {};
+                legend.append("text")
+                .attr("x", width - 24)
+                .attr("y", 9)
+                .attr("dy", ".35em")
+                .style("text-anchor", "end")
+                .text(function(d) { return d; });
 
-// Create nodes for each unique source and target.
-links.forEach(function(link) {
-        var parent = link.source = nodeByName(link.source),
-        child = link.target = nodeByName(link.target);
-        if (parent.children) parent.children.push(child);
-        else parent.children = [child];
-        });
 
-var index;
+                function nodeByName(name) {
+                    return nodesByName[name] || (nodesByName[name] = {name: name});
+                }
+            })
 
-for(var i=0;i<links.length;i++){
-    if(links[i].source.name === 'Patient'){
-        index = i;
-    }
-}
-var nodes = tree.nodes(links[index].source);
+            .fail(function(res){
+                alert("Error: " + res.responseJSON.error);
+            });
 
-console.log(links);
-
-    svg.selectAll(".link")
-.data(links.filter(function(d){return d.target.name;}))
-    .enter().append("path")
-    .attr("class", "link")
-    .attr("d",diagonal);
-
-    svg.selectAll(".node")
-    .data(nodes.filter(function(d){return d.name;}))
-    .enter().append("ellipse")
-    .attr("class", "node")
-    .attr("rx",70)
-    .attr("ry",20)
-    .attr("cx", function(d) { return d.x; })
-    .attr("cy", function(d) { return d.y; });
-
-     svg.append("g").selectAll("text")
-    .data(nodes)
-    .enter().append("text")
-    .each(function (d) {
-        if (d.name === 'Patient')
-            {
-            d.name = d.name+' #'+patient;
-            }
-        var arr = d.name.split(" ");
-        if (arr !== undefined) {
-            for (var i = 0; i < arr.length; i++) {
-                d3.select(this).append("tspan")
-                    .text(arr[i])
-                    .attr("dy", function(d){return d.y -(d.y -15)*i;})
-                    .attr("x", function(d){return d.x-25;} )
-                    .attr("class", "tspan0");
-            }
         }
-    });
-    /*
-    .attr("dx", function(d){return d.x -20;})
-    .attr("dy", function(d){return d.y +5 ;})
-    .html(function(d) { 
-        if(d.name === 'Patient'){
-        return d.name+'<br>'+' #'+patient;
-        }
-        else
-        return d.name;
-        }
-     );*/
 
-    function nodeByName(name) {
-        return nodesByName[name] || (nodesByName[name] = {name: name});
-    }
-}
 
-).fail(function(res){
-    alert("Error: " + res.responseJSON.error);
-    });
-
-        
-        
-        }
-
-    
     });
 
 } (xtens, xtens.module("subject")));
