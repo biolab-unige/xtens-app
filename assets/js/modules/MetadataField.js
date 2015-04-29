@@ -17,7 +17,7 @@
             var data =[];
             var list = model.get(property);
             for (i=0, len=list.length; i<len; i++) {
-                data.push({id: list[i], text: list[i], locked: true}); // set locked to false to edit values/unit list options
+                data.push({id: list[i], text: list[i], locked: false}); // set locked to false to edit values/unit list options
             }
             $el.select2({
                 multiple: true, 
@@ -93,10 +93,10 @@
             '[name=name]': {
                 observe: 'name',
                 onGet: function(value) {
-                    return value && value.toLowerCase().replace("_"," ");
+                    return value && value.toLowerCase().replace(/_/g," ");
                 },
                 onSet: function(value) {
-                    return value && value.toLowerCase().replace(" ","_");
+                    return value && value.toLowerCase().replace(/ /g,"_");
                 }
             },
             '[name=customValue]': 'customValue',
@@ -171,6 +171,11 @@
                         $el.parent().hide();
                     }
                 },
+                selectOptions: {
+                    collection: function() {
+                        return ["SNOMED CT"];
+                    } 
+                },
                 defaultOption: {
                     label: i18n('please-select'),
                     value: null
@@ -186,7 +191,7 @@
             var field = _.clone(this.model.attributes);
             this.$el.html(this.template({__: i18n, fieldTypes: fieldTypes, component: field}));
             if (field.name) {
-                this.$('.no-edit').prop('disabled', true); /* disables all the fields I don't want to be edited (for consistency) */
+                // this.$('.no-edit').prop('disabled', true); /* disables all the fields I don't want to be edited (for consistency) */
             }
             this.stickit();
             this.listenTo(this.model, 'change:fieldType', this.fieldTypeOnChange);

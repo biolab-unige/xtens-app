@@ -17,7 +17,6 @@ var DataTypeController = {
      * @description Find dataTypes based on criteria
      */
     find: function(req, res) {
-
         console.log("DataType.find - prova");
 
         var query = DataType.find()
@@ -97,21 +96,36 @@ var DataTypeController = {
     update: function(req, res) {
         var dataType = req.body;
 
-        transactionHandler.updateDataType(dataType).then(function(idDataType) {
-            return DataType.findOne(idDataType).populate('parents');
+        console.log("DataType.find - prova");
+
+        // the "populate" param is used to send all the associations to be populated
+        var populate = _.clone(req.param('populate')) || ['parents'];
+        delete res.populate;
+        console.log(populate);
+
+        var query = DataType.find()
+        .where(QueryService.parseCriteria(req))
+        .limit(QueryService.parseLimit(req))
+        .skip(QueryService.parseSkip(req))
+        .sort(QueryService.parseSort(req));
+
+        populate.forEach(function(associationName) {
+            console.log("DataTypeController.find - populating " + associationName);
+            query.populate(associationName);
+        });
+
+        query.then(function(dataTypes) {
+            res.json(dataTypes);
         })
-        .then(function(dataType) {
-            return res.json(dataType);
-        })
-        .catch(function(error) {
-            return res.serverError(error.message);
+        .catch(function(err) {
+            return res.serverError(err);
         });
     },
+
 
     /**
      * @deprecated
      */
-
     buildHierarchy: function(req, res) {
         DataType.find({ parent: null}).populate('children').then(function(roots) {
             DataTypeService.getChildrenRecursive(roots);  
@@ -123,36 +137,6 @@ var DataTypeController = {
         .catch(function(error) {
             if (error) return res.serverError(error);
         });
-        /*
-           DataType.find({ parent: null }).exec(function(err, rootDataTypes) {
-           if (err) {
-           return res.serverError(err);
-           }
-           else {
-           async.auto({
-populate_recursive: function(next) {
-async.each(rootDataTypes, DataTypeService.getChildrenRecursive, function(err) {
-if (err) {
-return res.serverError(err);
-}
-next(null, rootDataTypes);
-});
-},
-verify_results: ['populate_recursive', function(next, results) {
-console.log(results.populate_recursive);
-next(null, results.populate_recursive);
-}]
-}, function(error, results) {
-return res.json(results);
-});
-}
-}); */
-/*
-   async.auto({
-get_roots: function(next) {
-DataType.find({ parent: null}).populate('children').exec(next);
-}  
-}); */
     },
 
     /**

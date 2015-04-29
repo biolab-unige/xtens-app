@@ -29,13 +29,14 @@ module.exports.xtens = {
             MALE: 'M',
             FEMALE: 'F',
             UNKNOWN: 'N.A.',
-            UNDIFFERENTIATED: 'N.D'
+            UNDIFFERENTIATED: 'N.D.'
         },
 
         DataTypeClasses: {
             SUBJECT: 'Subject',
             SAMPLE: 'Sample',
-            GENERIC: 'Generic'
+            GENERIC: 'Data',
+            DATA: 'Data'
         },
 
         FieldTypes: {
@@ -65,8 +66,8 @@ module.exports.xtens = {
         SAMPLE_PROPERTIES: ['biobankCode'],
         
         // min and max values for PopulateService tests
-        TEST_MIN: -1000.0,
-        TEST_MAX: 1000.0
+        TEST_MIN: 0.0,
+        TEST_MAX: 100.0
 
     }
 

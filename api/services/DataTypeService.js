@@ -25,7 +25,7 @@ var DataTypeService = {
      */
 
     get: function(next, params) {
-        var criteriaObj = { classTemplate: params.classTemplate };
+        var criteriaObj = { model: params.model };
         if (params.idDataTypes) {
             var ids = params.idDataTypes.split(",");
             criteriaObj.id = ids;
@@ -50,9 +50,9 @@ var DataTypeService = {
                 'INNER JOIN xtens_group g ON g.id = dggd."group_dataTypes" ',
                 'INNER JOIN group_members__operator_groups gmog ON g.id = gmog.group_members ',
                 'INNER JOIN operator o ON o.id = gmog.operator_groups ',
-                'WHERE o.id = $1 AND d.class_template = $2;'
+                'WHERE o.id = $1 AND d.model = $2;'
             ].join(""),
-            values: [idOperator, params.classTemplate]
+            values: [idOperator, params.model]
         }, function(err, result) {
             if (err) {
                 next(err);

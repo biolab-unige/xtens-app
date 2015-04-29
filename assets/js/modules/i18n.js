@@ -2,6 +2,8 @@
 
     var en = {
         "welcome": "Welcome",
+        // views/templates/datatype-list.ejs
+        "id":"ID",
         // views/templates/datatype-edit.ejs
         "please-select": "Please Select",
         "data-type-manager": "Data Type Manager",
@@ -12,7 +14,8 @@
         "file-upload": "File Upload",
         "yes": "YES",
         "no": "NO",
-        "class-template": "Class Template",
+        "model": "Model",
+        "class-template": "Class Template", //TODO
         "parent": "Parent",
         "description": "Description",
         "version": "Version",
@@ -37,7 +40,7 @@
         "has-units": "Has Units",
         "add-value": "Add Value",
         "add-unit": "Add Unit",
-        "has-database-connection": "Has Database Connection",
+        "has-database-connection": "Has Controlled Terminology",
         "db-table": "DB Table",
         "min": "Min",
         "max": "Max",

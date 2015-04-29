@@ -26,7 +26,7 @@ var Subject= {
         personalInfo: {
             model: 'personalDetails',
             columnName: 'personal_info'
-        },
+        }, 
 
         // one-way association to DataType model
         type: {

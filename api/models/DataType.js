@@ -16,12 +16,12 @@ var DataType = {
             required: true,
             columnName: 'schema'
         },
-        classTemplate: {
+        model: {
             type: 'string',
             required: true,
-            enum: ['Subject', 'Sample', 'Generic'],
-            defaultsTo: 'Generic',
-            columnName: 'class_template'
+            enum: ['Subject', 'Sample', 'Data'],
+            defaultsTo: 'Data',
+            columnName: 'model'
         },        
         createdAt: {
             type: 'datetime',

@@ -34,7 +34,7 @@
     "lodash": "~2.4.1",
     "d3": "~3.4.13",
     "datatables": "~1.10.4",
-    "dropzone": "~3.12.0",
+    "dropzone": "~4.0.1",
     "pikaday": "https://github.com/dbushell/Pikaday.git#~1.2.0"
   },
   "exportsOverride": {
@@ -79,8 +79,8 @@
       "images": "media/images/*"
     },
     "dropzone": {
-      "js": "downloads/dropzone.js",
-      "styles": "downloads/css/basic.css",
+      "js": "dist/*.js",
+      "styles": "dist/*.css",
       "images": "downloads/images/*"
     },
     "pikaday": {

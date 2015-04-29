@@ -1,37 +1,43 @@
 <h1><%= __("sample-manager") %></h1>
-<h2><%= data.id ? __("update-sample") : __("create-sample") %></h2>
+<h2><%= data.id ? __("create-sample") : __("create-sample") %></h2>
 <div id="content">
     <form class="form-horizontal edit-data-form" role="form">
-        <div class="form-group"></div>
-        <!-- Biobank Selection -->
-        <div class="form-group metadataform-group">
-            <label for="type" class="data-label"><%= __('biobank') %></label>
-            <div class="data-input-div">
-                <select class="form-control" id="biobank" name="biobank"></select>
+        <div class="container data-header-cnt">
+            <div id="data-header-row" class="row data-header-row">
+                <div id="data-header" class="data-header-col">
+                    <div class="form-group"></div>
+                    <!-- Biobank Selection -->
+                    <div class="form-group metadataform-group">
+                        <label for="type" class="data-label"><%= __('biobank') %></label>
+                        <div class="data-input-div">
+                            <select class="form-control" id="biobank" name="biobank"></select>
+                        </div>
+                    </div>
+                    <div class="form-group metadataform-group">
+                        <label for="biobank-code" class="data-label"><%= __('biobank-code') %></label>
+                        <div class="data-input-div">
+                            <input text class="form-control" id="biobank-code" name="biobank-code"></input>
+                        </div>
+                    </div>
+                    <div class="form-group metadataform-group">
+                        <label for="type" class="data-label"><%= __('type') %></label>
+                        <div class="data-input-div">
+                            <select class="form-control" id="type" name="type"></select>
+                        </div>
+                    </div>
+                    <% if (data.get("donor")) {%>
+                    <div class="form-group metadataform-group">
+                        <label for="donor" class="data-label"><%= __('donor') %></label>
+                        <span class="data-span"><%= data.get("donor").code %></span>
+                    </div>
+                    <%} %>
+                    <% if (data.get("parentSample")) {%>
+                    <div class="form-group metadataform-group">
+                        <label for="parent-sample" class="data-label"><%= __('parent-sample') %></label>
+                        <span class="data-span"><%= data.get("parentSample").biobankCode %></span>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="form-group metadataform-group">
-            <label for="biobank-code" class="data-label"><%= __('biobank-code') %></label>
-            <div class="data-input-div">
-                <input text class="form-control" id="biobank-code" name="biobank-code"></input>
-            </div>
-        </div>
-        <div class="form-group metadataform-group">
-            <label for="type" class="data-label"><%= __('type') %></label>
-            <div class="data-input-div">
-                <select class="form-control" id="type" name="type"></select>
-            </div>
-        </div>
-        <% if (data.get("donor")) {%>
-        <div class="form-group metadataform-group">
-            <label for="donor" class="data-label"><%= __('donor') %></label>
-            <span class="data-span"><%= data.get("donor").code %></span>
-        </div>
-        <%} %>
-        <% if (data.get("parentSample")) {%>
-        <div class="form-group metadataform-group">
-            <label for="parent-sample" class="data-label"><%= __('parent-sample') %></label>
-            <span class="data-span"><%= data.get("parentSample").biobankCode %></span>
         </div>
         <%} %>
         <div id="buttonbardiv" class="row text-center">

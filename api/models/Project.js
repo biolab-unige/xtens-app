@@ -22,7 +22,17 @@ module.exports = {
         collection: 'subject',
         via: 'projects',
         dominant: true
-      }
+      },
+
+    createdAt: {
+        type: 'datetime',
+        columnName: 'created_at'
+    },
+        
+    updatedAt: {
+        type: 'datetime',
+        columnName: 'updated_at'
+    }
 
   }
 };

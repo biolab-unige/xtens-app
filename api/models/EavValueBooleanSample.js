@@ -1,5 +1,5 @@
 /**
- * EavValueFloat.js
+ * EavValueBooleanSample.js
  *
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/#!documentation/models
@@ -7,21 +7,13 @@
 
 module.exports = {
 
-    tableName: 'eav_value_float',
+    tableName: 'eav_value_boolean_sample',
 
     attributes: {
-
-        entityTable: {
-            type: 'string',
-            required: true,
-            enum: ['subject', 'sample', 'data'],
-            columnName: 'entity_table'
-        },
-
-        entityId: {
-            type: 'integer',
-            required: true,
-            columnName: 'entity_id'
+        
+        entity: {
+            model: 'sample',
+            required: true
         },
 
         attribute: {
@@ -30,12 +22,9 @@ module.exports = {
         },
 
         value: {
-            type: 'float',
-            required: true
-        },
-
-        unit: {
-            type: 'string'
+            type: 'boolean',
+            required: true,
+            defaultsTo: false 
         },
 
         createdAt: {
@@ -47,7 +36,6 @@ module.exports = {
             type: 'datetime',
             columnName: 'updated_at'
         }
-
     }
 };
 

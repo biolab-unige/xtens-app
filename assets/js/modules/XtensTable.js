@@ -56,7 +56,7 @@
             }
             dataType = new DataTypeModel(dataType);
             var fieldsToShow = dataType.getFlattenedFields(true); // get the names of all the madatafields but those within loops;
-            var columns = this.insertClassTemplateSpecificColumns(dataType.get("classTemplate"), true);  // TODO manage permission for personalDetails
+            var columns = this.insertModelSpecificColumns(dataType.get("model"), true);  // TODO manage permission for personalDetails
                 _.each(fieldsToShow, function(field) {
                         var colTitle = replaceUnderscoreAndCapitalize(field.name);
                         columns.push({
@@ -76,9 +76,9 @@
             };
         },
 
-        insertClassTemplateSpecificColumns: function(classTemplate, canViewPersonalInfo) {
+        insertModelSpecificColumns: function(model, canViewPersonalInfo) {
             var cols = [];
-            switch(classTemplate) {
+            switch(model) {
                 case Classes.SUBJECT:
                     if (canViewPersonalInfo) { // if you are allowed to see the Personal Details
                         cols = cols.concat(this.insertPersonalDetailsColumns());

@@ -6,7 +6,6 @@
  */
 var transactionHandler = sails.config.xtens.transactionHandler;
 var BluebirdPromise = require('bluebird');
-
 var SUBJECT = sails.config.xtens.constants.DataTypeClasses.SUBJECT;
 
 module.exports = {

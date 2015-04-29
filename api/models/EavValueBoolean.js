@@ -14,12 +14,14 @@ module.exports = {
         entityTable: {
             type: 'string',
             required: true,
-            enum: ['subject', 'sample', 'data']
+            enum: ['subject', 'sample', 'data'],
+            columnName: 'entity_table'
         },
 
         entityId: {
             type: 'integer',
-            required: true
+            required: true,
+            columnName: 'entity_id'
         },
 
         attribute: {
@@ -31,6 +33,16 @@ module.exports = {
             type: 'boolean',
             required: true,
             defaultsTo: false 
+        },
+
+        createdAt: {
+            type: 'datetime',
+            columnName: 'created_at'
+        },
+
+        updatedAt: {
+            type: 'datetime',
+            columnName: 'updated_at'
         }
     }
 };

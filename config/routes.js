@@ -36,6 +36,10 @@ module.exports.routes = {
 
     'POST /subjectGraph':{controller:'subject',action:'createGraph'},
     
+    // 'GET /populateEAV': {controller: 'main', action: 'populateEAV'},
+    //
+    'POST /populateDB': {controller: 'main', action: 'populateDB'},
+
     '/upload-file':{controller:'dataFile',action:'upload'},
     
     'POST /download-file':{controller:'dataFile',action:'download'},

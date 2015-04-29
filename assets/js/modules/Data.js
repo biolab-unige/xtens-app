@@ -834,7 +834,9 @@
                 success: function(fileSystem) {
                     _this.fileUploadView = new FileManager.Views.Dropzone({
                         fileSystem: fileSystem,
-                        dataTypeName: _this.model.get("type").name
+
+                        // added the second condition for the scenarios where the dataType is not populated
+                        dataTypeName: _this.model.get("type").name || _.findWhere(_this.dataTypes, {id: _.parseInt(_this.model.get("type"))}).name
                     });
                     _this.$fileCnt.append(_this.fileUploadView.render().el);
                     _this.fileUploadView.initializeDropzone(_this.model.get("files"));
@@ -890,7 +892,7 @@
             _.each(this.data.models, function(data) {
                 var type = this.dataTypes.get(data.get("type").id);
                 data.set("editLink", "#/data/edit/" + data.id);
-                var dataTypeChildren = _.where(type.get("children"), {"classTemplate": Classes.GENERIC});
+                var dataTypeChildren = _.where(type.get("children"), {"model": Classes.DATA});
                 if (dataTypeChildren.length > 0) { 
                     var dids = _.pluck(dataTypeChildren, 'id').join();
                     data.set("newDataLink", "#/data/new/0?idDataTypes="+dids+"&parentData="+data.id);

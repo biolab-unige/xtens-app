@@ -39,6 +39,10 @@ module.exports = {
             required: true
         },
 
+        tags: {
+            type: 'json'
+        },
+
         // many-to-many association to files
         files: {
             collection: 'dataFile',
