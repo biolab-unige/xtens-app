@@ -42,6 +42,13 @@ var MainController = {
         });
     },
 
+    logout: function (req,res){
+
+        req.session.destroy();
+        res.redirect('#/login');
+
+    },
+
     /**
      * @method
      * @name getFileSystemManager
@@ -61,6 +68,46 @@ var MainController = {
             return res.json({
                 message: files.length + ' file(s) uploaded successfully!',
             });
+        });
+    },
+
+    /*
+     * @method
+     * @test
+     * TODO remove this one! Only for testing EAV catalogue
+     *
+populateEAV: function(req, res) {
+var idData = _.parseInt(req.param("idData"));
+console.log("MainController.populateEav - idData = " + idData);
+DataService.storeMetadataIntoEAV(idData)
+
+.then(function(res) {
+console.log(res);
+return res.json(res);
+})
+
+.catch(function(err) {
+console.log("MainController.populateEav - error caught: " + err);
+});
+} */
+
+    /**
+     * @method
+     * @test
+     * TODO remove this one! Only for testing data population
+     */
+    populateDB: function(req,res) {
+        var num = _.isNaN(_.parseInt(req.param("num"))) ? 1 : num;
+        GeneratedDataService.generateAll(1)
+        
+        .then(function(result) {
+            console.log("MainController.populateDB: created Patients: " + result);
+            return res.json(result);
+        })
+        
+        .catch(function(err) {
+            console.log("MainController.populateDB - error caught: " + err.message);
+            return res.serverError(err.message);
         });
     }
 
