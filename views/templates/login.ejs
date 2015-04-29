@@ -8,8 +8,12 @@
         if (username && password) {
            $.post( '/login',
                 {login: username, password:password},
-                function () {
-                   router.navigate('#/operators',{trigger: true});            
+                function (err,res,body) {
+                   // console.log(body.responseJSON.login);
+                  //  router.navigate('#/operators',{trigger: true, user:body.responseJSON.login});
+                sessionStorage.setItem("firstName",body.responseJSON.firstName);
+                sessionStorage.setItem("lastName",body.responseJSON.lastName);
+                router.navigate('#/homepage',{trigger: true});          
     }
             ).fail(function(res){
              alert("Error: " + res.responseJSON.error);
@@ -20,6 +24,7 @@
     });
             </script>
 <style type="text/css">
+
 input{
 color: #555;
 line-height: 1.428571429;
@@ -32,6 +37,11 @@ max-width: 280px;
 margin: 0;
 padding-left:10px;
 }
+
+#nav2{
+display:none;
+}
+
 h2#account{
 font-size:20px;
 line-height: 30px;
