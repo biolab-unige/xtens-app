@@ -13,18 +13,36 @@ ellipse {
     stroke: #ccc;
     stroke-width: 2px;
 }
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+  position:absolute;
+  text-align:center;
+  margin-left:20px;
+ }
+
+
+.d3-tip.n:after {
+  margin: 0 0 0 0;
+  top: 100%;
+}
+
 </style>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <div id="content">
     <p>Select a Patient:</p>
-    <div> 
-        <p><select id="select">
-            <% _.each(subjects,function(subject){ %>
-            <option id = "subject"><%= subject.get("id")%></option>
-            <%})%>
-        </select></p>
+    <div class="row">
+        <div class="col-md-4">
+        <input type="number" class="form-control" id="select"/>
     </div>
-    <div>
-        <a id="graph" class="btn btn-primary">Create the Patient Graph</a>
+    <div class="col-md-4">
+        <a id="graph" class="btn btn-primary">Generate Graph</a>
+    </div>
     </div>
 </div>
 
