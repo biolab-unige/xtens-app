@@ -77,7 +77,8 @@
             "groups/datatype/:id":"associationDataType",
             "downIrods":"downIrods",
             "datatypes/graph":"dataTypeGraph",
-            "subjects/graph":"subjectGraph"
+            "subjects/graph":"subjectGraph",
+            "homepage":"homepage"
         },
 
         loadView: function(view) {
@@ -197,6 +198,10 @@
 
         groupEdit:function(id){
             this.loadView(new Group.Views.Edit({id:id}));
+        },
+
+        homepage:function(){
+            this.loadView(new Operator.Views.Homepage());
         },
 
         loginView:function(){

@@ -371,7 +371,7 @@ this.setValidate(); //TODO
                    {idDataType: nameDatatype},
                    function (err,res,body) {
 
-                       d3.select("svg")
+                       d3.select("#data-type-graph")
                        .remove();                    
 
                        var margin = {top: 40, right: 120, bottom: 40, left: 120},
@@ -388,10 +388,12 @@ this.setValidate(); //TODO
                                   );
 
                                   var svg = d3.select("#main").append("svg")
+                                  .attr("id","data-type-graph")   
                                   .attr("width", width + margin.left + margin.right)
                                   .attr("height", height + margin.top + margin.bottom)
                                   .append("g")
                                   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
                                   var graph = body.responseJSON;
 

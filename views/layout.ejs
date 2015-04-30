@@ -33,7 +33,6 @@
 <link rel="stylesheet" href="/dependencies/select2/select2.css">
 <link rel="stylesheet" href="/dependencies/datatables/styles/jquery.dataTables.css">
 <link rel="stylesheet" href="/dependencies/dropzone/styles/basic.css">
-<link rel="stylesheet" href="/dependencies/dropzone/styles/dropzone.css">
 <link rel="stylesheet" href="/dependencies/font-awesome/styles/font-awesome.css">
 <link rel="stylesheet" href="/dependencies/pikaday/styles/pikaday.css">
 <link rel="stylesheet" href="/dependencies/select2-bootstrap-css/select2-bootstrap.css">
@@ -101,7 +100,18 @@ ul#box{
 <body>
 
 <nav id="nav1"class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">XTENS </div>
+ <div class="navbar-header">
+        <svg height="50" width="200">
+             <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:rgb(0,255,255);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:rgb(0,0,255);stop-opacity:1" />
+                 </linearGradient>
+                 <text x="30" y="40" fill = "url(#grad1)" font-family="ff-market-web, cursive" font-size="40">XTENS</text>
+
+        </svg>
+
+    </div>
+    
     </nav>
     <nav class="navbar navbar-default" id="nav2" role="navigation">
     <ul id="left" class ="nav navbar-nav navbar-left">
@@ -135,6 +145,13 @@ ul#box{
         </li>
 
     </ul>
+    <div style="float:right">
+        <form align="right" name="form1" method="post" action="/logout">
+            <label class="logoutLblPos">
+                <input name="logout" type="submit" id="logout" value="logout">
+                </label>
+                </form>
+                </div>
 </nav>
 
 

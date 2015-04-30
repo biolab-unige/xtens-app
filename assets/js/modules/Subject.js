@@ -221,7 +221,7 @@
             },function(err,res,body){
 
                 // clean the previous graph if present
-                d3.select("svg").remove(); 
+                d3.select("#subject-graph").remove(); 
 
                 // set margins, width and height of the svg container
                 var margin = {top: 40, right: 120, bottom: 40, left: 120},
@@ -258,7 +258,7 @@
                 
                 // x and y required by d3.tip() function
                 var x = d3.scale.ordinal()
-                .rangeRoundBands([0, width], .1);
+                .rangeRoundBands([0, width], 0.1);
 
                 var y = d3.scale.linear()
                 .range([height, 0]);
@@ -267,6 +267,7 @@
                 var svg = d3.select("#main").append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
+                .attr("id", "subject-graph")
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
                 
