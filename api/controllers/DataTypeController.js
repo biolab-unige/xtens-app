@@ -96,9 +96,18 @@ var DataTypeController = {
     update: function(req, res) {
         var dataType = req.body;
 
-        console.log("DataType.find - prova");
+        transactionHandler.updateDataType(dataType).then(function(idDataType) {
+            return DataType.findOne(idDataType).populate('parents');
+        })
+        .then(function(dataType) {
+            return res.json(dataType);
+        })
+        .catch(function(error) {
+            return res.serverError(error.message);
+        });
 
         // the "populate" param is used to send all the associations to be populated
+        /*
         var populate = _.clone(req.param('populate')) || ['parents'];
         delete res.populate;
         console.log(populate);
@@ -120,6 +129,7 @@ var DataTypeController = {
         .catch(function(err) {
             return res.serverError(err);
         });
+       */
     },
 
 
