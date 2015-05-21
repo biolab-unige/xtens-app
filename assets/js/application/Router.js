@@ -220,7 +220,9 @@
             var dataTypes = new DataType.List();
             var subjects = new Subject.List();
             var _this = this;
-            var $dataTypesDeferred = dataTypes.fetch();
+            var $dataTypesDeferred = dataTypes.fetch({
+                data: $.param({ populate: ['children'] })
+            });
             var $subjectsDeferred = subjects.fetch();
             $.when($dataTypesDeferred, $subjectsDeferred).then(function(dataTypesRes, subjectsRes) {
                 _this.loadView(new Subject.Views.List({
@@ -262,7 +264,9 @@
             var dataTypes = new DataType.List();
             var samples = new Sample.List();
             var _this = this;
-            var $dataTypesDeferred = dataTypes.fetch();
+            var $dataTypesDeferred = dataTypes.fetch({
+                data: $.param({populate:['children']})
+            });
             var $samplesDeferred = samples.fetch();
             $.when($dataTypesDeferred, $samplesDeferred).then( function(dataTypesRes, samplesRes) {
                 _this.loadView(new Sample.Views.List({ 

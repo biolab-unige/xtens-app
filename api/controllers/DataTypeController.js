@@ -23,7 +23,15 @@ var DataTypeController = {
         .where(QueryService.parseCriteria(req))
         .limit(QueryService.parseLimit(req))
         .skip(QueryService.parseSkip(req))
-        .sort(QueryService.parseSort(req)).populate('parents');
+        .sort(QueryService.parseSort(req));
+        // .populate('parents');  // commented out by Massi 2015-05-20
+
+        if (!req.param('populate')) {
+            query.populate('parents');  // by default populate only with 'parents' dataTypes
+        }
+        else {
+            query = QueryService.populateEach(query, req);
+        }
 
         query.then(function(dataTypes) {
             res.json(dataTypes);
