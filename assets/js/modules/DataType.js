@@ -367,26 +367,33 @@ this.setValidate(); //TODO
         createGraph: function() {
             var nameDatatype = document.getElementById('select1').value;
 
+            // retrieve all the descendant samples and data for the given datatype
+
             $.post( '/graph',
                    {idDataType: nameDatatype},
                    function (err,res,body) {
 
+                       // clean the previous graph if present
                        d3.select("#data-type-graph")
-                       .remove();                    
+                       .remove();    
 
+                       // set margins, width and height of the svg container
                        var margin = {top: 40, right: 120, bottom: 40, left: 120},
                        width = 960 - margin.left - margin.right,
                        height = 800 - margin.top - margin.bottom;
 
+                       // generate a data hierarchy tree 
                        var tree = d3.layout.tree()
                        .size([height, width]);
 
+                       //function to draw the slanted arcs
                        var diagonal = d3.svg.diagonal()
                        .projection(function(d) { 
                            return [d.x, d.y-39];
                        }
                                   );
 
+                                  // create the svg container
                                   var svg = d3.select("#main").append("svg")
                                   .attr("id","data-type-graph")   
                                   .attr("width", width + margin.left + margin.right)
@@ -423,16 +430,20 @@ this.setValidate(); //TODO
 
                                                var index;
 
+                                               // find the root node
                                                for(var i=0;i<links.length;i++){
                                                    if(links[i].source.name === nameDatatype ){
                                                        index = i;
                                                    }
                                                }
+
+                                               //generate the tree
                                                var nodes = tree.nodes(links[0].source);
                                                nodes =_.uniq(nodes,'name');
 
                                                console.log(nodes);
 
+                                               // for each node define its position
                                                nodes.forEach(function(d){ d.y= d.depth*150;
                                                              if(d.x>1000 && d.x<100000){
                                                                  d.x=d.x/80 -100;
@@ -441,13 +452,14 @@ this.setValidate(); //TODO
                                                                  d.x=d.x/200000 - 120;
                                                              }
                                                              else if(d.x >=1000000000){
-                                                                 d.x=d.x/2000000000000 -40;
+                                                                 d.x=d.x/200000000000 -40;
                                                              }
                                                              else if(d.x>500 && d.x <1000){
-                                                                 d.x=(d.x/1.5)*3 -500;
+                                                                 d.x=(d.x/1.5)*3 -750;
                                                              }
                                                });
 
+                                               // define the links format/appereance  
                                                svg.append("svg:defs").selectAll("marker")
                                                .data(links)
                                                .enter().append("svg:marker")
@@ -463,7 +475,7 @@ this.setValidate(); //TODO
                                                .append("path")
                                                .attr("d","M0,0L100,100,200,200");
 
-
+                                               //draw the links
                                                svg.selectAll(".link")
                                                .data(links.filter(function(d){return d.target.name;}))
                                                .enter().append("path")
@@ -471,6 +483,7 @@ this.setValidate(); //TODO
                                                .attr("marker-end","url(#arrowhead)")
                                                .attr("d",diagonal);
 
+                                               // draw the nodes
                                                svg.selectAll(".node")
                                                .data(nodes.filter(function(d){return d.name;}))
                                                .enter().append("ellipse")
@@ -484,6 +497,7 @@ this.setValidate(); //TODO
                                                .attr("cx", function(d) { return d.x; })
                                                .attr("cy", function(d) { return d.y; });
 
+                                               //append the title on the nodes
                                                svg.append("g").selectAll("text")
                                                .data(nodes)
                                                .enter().append("text")
@@ -521,10 +535,6 @@ this.setValidate(); //TODO
                                                        }
                                                    }
                                                });
-
-
-
-
 
 
                                                function nodeByName(name) {
