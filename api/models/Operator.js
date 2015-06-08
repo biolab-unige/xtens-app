@@ -15,35 +15,48 @@ var Operator = {
             max: 64,
             columnName: 'first_name'
         },
+
         lastName: {
             type: 'string',
             required: true,
             max: 64,
             columnName: 'last_name'
         },
+
         birthDate: {
             type: 'datetime',
             columnName: 'birth_date'
         },
+
         sex: {
             type: 'string',
             enum: ['M', 'F', 'N.A.'],
             columnName: 'sex'
         },
+
         email: {
             type: 'email',
             required: true,
             columnName: 'email'
         },
+
         login: {
             type: 'string',
             required: true,
             max: 64
         },
+
+        /* moved to the Passport 
         password: {
             type: 'string',
             required: true
+        }, */
+       
+        passports: {
+            collection: 'passport',
+            via: 'user'
         },
+
         createdAt: {
             type:'datetime',
             columnName: 'created_at'
@@ -67,8 +80,9 @@ var Operator = {
         }
 
         
-    },
-
+    }
+    
+    /*,
     // Lifecycle Callbacks
     beforeCreate: function(values, next) {
         bcrypt.hash(values.password, 10, function(err, hash) {
@@ -76,7 +90,7 @@ var Operator = {
             values.password = hash;
             next();
         });
-    }
+    } */
 
 };
 

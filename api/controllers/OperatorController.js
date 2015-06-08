@@ -5,34 +5,53 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 
-module.exports = {
+var BluebirdPromise = require("bluebird");
+var createUser = BluebirdPromise.promisify(PassportService.protocols.local.createUser);
 
-addGroupToOperator: function(req,res,next){
+var OperatorController = {
+    
+    create: function(req, res) {
+         
+        return createUser(req.allParams())
 
-     /* Operator.findOne(req.param('operator_id')).populate('groups').exec(function(err,bean){
-        if(err) return next(err);
-        if(!bean) return next();
-        bean.groups.add(req.param('group_id'));            
-        bean.save(function(err) {
-            if(err) return next(err);
-            res.redirect('/operator');
+        .then(function(operator) {
+            
+            // set a password field (for Backbone) 
+            operator.password = true;
+
+            console.log(operator);
+            return res.json(200, operator);
+
         });
-    });*/
-}
-   
 
-/*removeGroupFromOperator: function(req,res,next){
-   }
-    /**
-     * `OperatorController.create()`
+    },
+
+    addGroupToOperator: function(req,res,next) {
+
+        /* Operator.findOne(req.param('operator_id')).populate('groups').exec(function(err,bean){
+           if(err) return next(err);
+           if(!bean) return next();
+           bean.groups.add(req.param('group_id'));            
+           bean.save(function(err) {
+           if(err) return next(err);
+           res.redirect('/operator');
+           });
+           });*/
+    }
+
+
+                        /*removeGroupFromOperator: function(req,res,next){
+                          }
+                        /**
+                         * `OperatorController.create()`
 
 create: function (req, res) {
 res.view();  
 },
 */
 
-    /**
-     * `OperatorController.destroy()`
+                        /**
+                         * `OperatorController.destroy()`
 
 destroy: function (req, res) {
 return res.json({
@@ -60,4 +79,6 @@ todo: 'like() is not implemented yet!'
 });
 }*/
 };
+
+module.exports = OperatorController;
 

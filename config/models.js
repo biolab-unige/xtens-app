@@ -12,6 +12,6 @@ module.exports.models = {
     // i.e. the name of one of your app's connections (see `config/connections.js`)
     //
     // (defaults to localDiskDbi)
-    migrate: 'safe',
-    connection: 'postgresql'
+    migrate: 'drop',
+    connection: 'postgresqltest'
 };
