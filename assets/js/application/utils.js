@@ -24,6 +24,23 @@ function handleError(res){
     xtens.error = handleError;
 } (xtens));
 
+/**
+ * @description function to overrid the original Backbone sync method to supply authentication Token
+ */
+(function(Backbone) {
+
+    var originalSync = Backbone.sync;
+    Backbone.sync = function(method, model, options) {
+        options.headers = options.headers || {};
+        var accessToken = xtens.session.get('accessToken');
+        if (accessToken) {
+            _.extend(options.headers, { 'Authorization': 'Bearer ' + accessToken });
+        }
+        originalSync.call(model, method, model, options);
+    };
+
+})(Backbone);
+
 
 /**
  * Provides a full extention for a Backbone Model
@@ -119,8 +136,6 @@ function handleError(res){
             return false;
         }
     });
-
-
 
 })(jQuery);
 

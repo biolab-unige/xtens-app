@@ -148,7 +148,7 @@ exports.login = function (req, identifier, password, next) {
         query.email = identifier;
     }
     else {
-        query.username = identifier;
+        query.login = identifier;
     }
 
     Operator.findOne(query, function (err, user) {

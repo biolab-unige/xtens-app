@@ -7,9 +7,11 @@
  * API requests.
  *
  */
+var BluebirdPromise = require("bluebird");
+var verifyTokenAsync = BluebirdPromise.promisify(require("../TokenService.js").verify);
 
 exports.authorize = function(token, done) {
-  
+  /* 
   Passport.findOne({ accessToken: token }, function(err, passport) {
     if (err) { return done(err); }
     if (!passport) { return done(null, false); }
@@ -18,6 +20,19 @@ exports.authorize = function(token, done) {
       if (!user) { return done(null, false); }
       return done(null, user, { scope: 'all' });
     });
-  });
+  }); */
+
+    // verify that the token is valid and has not been tampered with
+    verifyTokenAsync(token)
+    
+    // pass the payload to the next action
+    .then(function(payload) {
+        console.log(payload);
+        return done(null, payload, {scope: 'all'});
+    })
+    
+    .catch(function(err) {
+        return done(err);
+    });
   
 };

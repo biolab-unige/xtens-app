@@ -31,9 +31,11 @@ module.exports.routes = {
     'POST /logout' : {controller:'main',action:'logout'},
 
     'GET /': {controller: 'home'},
+    /*
     'POST /login':{controller:'main',
         action:'login'
-    },
+    }, */
+    'POST /login': {controller: 'auth', action: 'login'},
 
     'POST /graph':{controller:'dataType',action:'buildGraph'},
 

@@ -33,8 +33,8 @@ var xtens = {
 // // application
 jQuery(function($) {
     // Initialise your application here (?)
+    var Session = xtens.module("session");
+    xtens.session = new Session.Model();
 
-
-       
     Backbone.history.start();
 });

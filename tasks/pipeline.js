@@ -50,6 +50,7 @@ var jsFilesToInject = [
     'js/modules/i18n.js',
     'js/modules/XtensConstants.js',
     'js/modules/Utils.js',
+    'js/modules/Session.js',
     'js/modules/MetadataComponent.js',
     'js/modules/MetadataField.js',
     'js/modules/MetadataLoop.js',

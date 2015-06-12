@@ -37,7 +37,7 @@
                         that.$el.html(that.template({__: i18n, operator: operator}));
                         return that;
                     },
-                    error: function(operator,res){xtens.error(res)},                 
+                    error: function(operator,res){xtens.error(res); },                 
                 });
             } else {
                 this.$el.html(that.template({__: i18n,operator:null}));
@@ -55,7 +55,15 @@
 
             var operatorDetails = $(ev.currentTarget).serializeObject();
 
-            operatorDetails = {firstName: operatorDetails.name,lastName:operatorDetails.surname,birthDate:operatorDetails.date,sex:operatorDetails.sex,email:operatorDetails.email,login:operatorDetails.login,password:operatorDetails.password};
+            operatorDetails = {
+                firstName: operatorDetails.name,
+                lastName: operatorDetails.surname,
+                birthDate: operatorDetails.date,
+                sex: operatorDetails.sex,
+                email: operatorDetails.email,
+                login: operatorDetails.login,
+                password: operatorDetails.password
+            };
 
             var operator = new Operator.Model();
 
@@ -70,20 +78,25 @@
             });
             return false;
         },
+
         updateOperator: function(ev) {
-            var that = this;
 
-            that.operator.set({firstName: document.Myform.name.value,lastName:document.Myform.surname.value,birthDate:document.Myform.date.value,sex:document.Myform.sex.value,email:document.Myform.email.value,login:document.Myform.login.value});
+            this.operator.set({
+                firstName: document.Myform.name.value,
+                lastName: document.Myform.surname.value,
+                birthDate: document.Myform.date.value,
+                sex: document.Myform.sex.value,
+                email: document.Myform.email.value,
+                login: document.Myform.login.value
+            });
 
-
-
-            that.operator.save();
+            this.operator.save(); // SBAGLIATO!!!!!!!!!!!!!!!!!!
             router.navigate('operators', {trigger:true});
             window.location.reload();
-
             return false;
 
         },
+
         deleteOperator: function (ev) {
             var that = this;
             var rif_id = that.operator.id;
@@ -107,7 +120,7 @@
                 }
             });
             return false;
-        },
+        }
 
     });
 
@@ -128,13 +141,15 @@
             var self = this;
             var operators= new Operator.List();
             operators.fetch({
+                
                 success: function(operators) {
-
                     self.$el.html(self.template({__: i18n, operators: operators.models}));
                     return self;
-
                 },
-                error:function(operators,res){ xtens.error(res)},
+
+                error:function(operators, res) { 
+                    xtens.error(res);
+                }
 
             });
 
@@ -142,15 +157,16 @@
     });
 
     Operator.Views.Login = Backbone.View.extend({
+
         tagName:'div',
         className:'operator',
 
-
-        initialize:function(){
+        initialize:function() {
             $("#main").html(this.el);
             this.template = JST["views/templates/login.ejs"];
             this.render();
         },
+
         render: function(options) {
 
             var self = this;
@@ -164,11 +180,35 @@
                     self.$el.html(self.template({__: i18n}));
                     return self;    
                 }
-
             });
 
-        }
+        },
 
+        events: {
+            'click #login': 'logIn'
+        },
+
+        logIn: function() {
+            var username = this.$("#username").val();
+            var password = this.$("#password").val();
+
+            if (username && password) {
+                $.post('/login', {
+                    identifier: username,
+                    password: password
+                }, function(data, status, jqxhr) {
+                    xtens.session.load(data);
+                    router.navigate("#/homepage", {trigger: true});
+                })
+                .fail(function(res) {
+                    alert("Error: " + res.responseJSON.error);
+                });
+            }
+
+            else {  
+                alert("A username and password is required");
+            }
+        }
 
     });
     
@@ -190,7 +230,7 @@
         },
 
         render: function(options) {
-
+            /*
             var self = this;
             var operators= new Operator.List();
             operators.fetch({
@@ -204,7 +244,8 @@
                 }
 
             });
-
+            */
+           this.$el.html(this.template({__: i18n, login: xtens.session.get("login")}));
         }
 
     });

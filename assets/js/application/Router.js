@@ -39,9 +39,12 @@
         }
         return params;
     }
-
+    
+ 
     /**
-     * XTENS Router for Backbone
+     * @class
+     * @name XtensRouter
+     * @description XTENS Router for Backbone
      */
     var XtensRouter = Backbone.Router.extend({
 
@@ -72,13 +75,40 @@
             "groups":"groupList",
             "groups/new":"groupEdit",
             "groups/edit/:id":"groupEdit",
-            "login":"loginView",
+            "login":"logIn",
+            "logout":"logOut",
             "groups/operator/:id":"associationOperator",
             "groups/datatype/:id":"associationDataType",
             "downIrods":"downIrods",
             "datatypes/graph":"dataTypeGraph",
             "subjects/graph":"subjectGraph",
             "homepage":"homepage"
+        },
+
+        publicRoutes: ["login"],
+        
+        /**
+         * @method
+         * @name execute
+         * @extends Backbone.Router.execute
+         */
+        execute: function(callback, args, name) {
+            /* Router BEFORE HOOK */
+            // if the user is not authenticated redirect to login page
+            var isAuth = xtens.session.isAuthenticated();
+            // console.log(Backbone.history.getFragment());
+            var path = Backbone.history.getFragment();
+            var restricted = !_.contains(this.publicRoutes, path);
+
+            if (restricted && !isAuth) {
+                    this.navigate('login', {trigger: true});
+                    return false;
+            }
+
+            if (callback) {
+                callback.apply(this, args);
+            }
+
         },
 
         loadView: function(view) {
@@ -93,7 +123,7 @@
             var _this = this;
             var dominant = new Group.Model({id:id});
             var nondominant = new DataType.List();
-            $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes,dominantRes){
+            $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes,dominantRes) {
                 _this.loadView(new AdminAssociation.Views.Edit({
                     dominant:new Group.Model(dominantRes[0]),
                     nondominant: nondominantRes[0],
@@ -176,6 +206,9 @@
             $.ajax({ 
                 url: '/data/edit', 
                 type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                },
                 data: params,
                 contentType: 'application/json', 
                 success: function(results) {
@@ -188,31 +221,36 @@
         },
 
 
-        downloadView:function(){
+        downloadView:function() {
             this.loadView(new FileManager.Views.Download());
         },
 
-        groupList:function(){
+        groupList:function() {
             this.loadView(new Group.Views.List());
         },
 
-        groupEdit:function(id){
+        groupEdit:function(id) {
             this.loadView(new Group.Views.Edit({id:id}));
         },
 
-        homepage:function(){
+        homepage:function() {
             this.loadView(new Operator.Views.Homepage());
         },
 
-        loginView:function(){
+        logIn: function() {
             this.loadView(new Operator.Views.Login());
         },
 
-        operatorList:function(){
+        logOut: function() {
+            xtens.session.reset();
+            this.navigate('login', {trigger: true});
+        },
+
+        operatorList:function() {
             this.loadView(new Operator.Views.List());
         },
 
-        operatorEdit:function(id){
+        operatorEdit:function(id) {
             this.loadView(new Operator.Views.Edit({id:id}));
         },
 
@@ -243,6 +281,9 @@
             $.ajax({ 
                 url: '/subject/edit', 
                 type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                },
                 data: params,
                 contentType: 'application/json; charset=utf-8', 
                 success: function(results) {
@@ -255,9 +296,7 @@
         },
 
         subjectGraph: function() {
-        
             this.loadView(new Subject.Views.Graph());
-
         },
          
         sampleList: function() {
@@ -287,6 +326,9 @@
             $.ajax({ 
                 url: '/sample/edit', 
                 type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                },
                 data: params,
                 contentType: 'application/json; charset=utf-8', 
                 success: function(results) {

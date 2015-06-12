@@ -36,14 +36,21 @@ var AuthController = {
             else {
                 // Upon successful login, send back user data and JWT token
                 // sails.services.logger.login(user, req);
+                 
                 console.log("AuthController - successfully logged in");
-
+                return res.json(200, {
+                    user: operator,
+                    token: TokenService.issue(_.isObject(operator.id) ? JSON.stringify(operator.id) : operator.id)
+                });
+               
+                /*
                 Passport.findOne({ protocol: protocol, user: operator.id})
-
+                
+            
                 .then(function(passport) {
                     passport.accessToken = TokenService.issue(_.isObject(operator.id) ? JSON.stringify(operator.id) : operator.id);
                     return Passport.update(passport);
-                })
+                }) 
 
                 .then(function(passport) {
                     return res.json(200, {
@@ -55,7 +62,7 @@ var AuthController = {
                 
                 .catch(function(err) {
                     return res.serverError("Error while authenticating. Please try again later.");
-                });
+                }); */
             }
         });
     },

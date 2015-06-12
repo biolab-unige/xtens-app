@@ -60,62 +60,62 @@ a#search{
 
 }
 div#footer{position: relative; 
-bottom:0; 
-z-index:0;
-width: 100%;
-margin-top:50%;
+    bottom:0; 
+    z-index:0;
+    width: 100%;
+    margin-top:50%;
 
-     color: #000;text-align:center;}
+    color: #000;text-align:center;}
 
 nav ul li{
     text-left:center;
 }
 li:hover{
-   width:390px;
+    width:390px;
    }
-nav#nav1{
-margin-bottom:0px;
-border-bottom-width:0px;
-}
-nav#nav2{
-margin-bottom:0px;
-border-top-width:0px;
-}
-ul#left{
-padding-left:25px;
-}
-h2#title{
-    color:#555;
-    font-size:14px;
-    padding-left:10px;
-    margin-top:10px;
-    padding-bottom:5px;
-    border-bottom: 1px solid #ccc;
+   nav#nav1{
+       margin-bottom:0px;
+       border-bottom-width:0px;
+   }
+   nav#nav2{
+       margin-bottom:0px;
+       border-top-width:0px;
+   }
+   ul#left{
+       padding-left:25px;
+   }
+   h2#title{
+       color:#555;
+       font-size:14px;
+       padding-left:10px;
+       margin-top:10px;
+       padding-bottom:5px;
+       border-bottom: 1px solid #ccc;
 
-}
-ul#box{
-    width:400px;
+   }
+   ul#box{
+       width:400px;
 
 
-}
+   }
 </style>
 <body>
 
 <nav id="nav1"class="navbar navbar-default" role="navigation">
- <div class="navbar-header">
+    <div class="navbar-header">
         <svg height="50" width="200">
-             <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" style="stop-color:rgb(0,255,255);stop-opacity:1" />
-                <stop offset="100%" style="stop-color:rgb(0,0,255);stop-opacity:1" />
-                 </linearGradient>
-                 <text x="30" y="40" fill = "url(#grad1)" font-family="ff-market-web, cursive" font-size="40">XTENS</text>
+            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:rgb(0,255,255);stop-opacity:1" />
+            <stop offset="100%" style="stop-color:rgb(0,0,255);stop-opacity:1" />
+            </linearGradient>
+            <text x="30" y="40" fill = "url(#grad1)" font-family="ff-market-web, cursive" font-size="40">XTENS</text>
 
         </svg>
 
     </div>
-    
-    </nav>
-    <nav class="navbar navbar-default" id="nav2" role="navigation">
+</nav>
+
+<nav class="navbar navbar-default" id="nav2" role="navigation">
     <ul id="left" class ="nav navbar-nav navbar-left">
         <li id="pippo" class="dropdown">
         <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" >Admin <span class="fa fa-angle-down"></span></a>
@@ -143,17 +143,14 @@ ul#box{
             <li><a href="#/data/new"><%= __("new-data") %></a></li>
         </ul>
 
-
         </li>
 
     </ul>
     <div style="float:right">
-        <form align="right" name="form1" method="post" action="/logout">
-            <label class="logoutLblPos">
-                <input name="logout" type="submit" id="logout" value="logout">
-                </label>
-                </form>
-                </div>
+        <label class="logoutLblPos">
+            <a class="btn btn-default" href="#/logout"><%= __("logout") %></a>
+        </label>
+    </div>
 </nav>
 
 
@@ -235,6 +232,7 @@ ul#box{
 <script src="/js/modules/i18n.js"></script>
 <script src="/js/modules/XtensConstants.js"></script>
 <script src="/js/modules/Utils.js"></script>
+<script src="/js/modules/Session.js"></script>
 <script src="/js/modules/MetadataComponent.js"></script>
 <script src="/js/modules/MetadataField.js"></script>
 <script src="/js/modules/MetadataLoop.js"></script>
