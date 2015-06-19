@@ -97,8 +97,8 @@
             var errors = [];
 
             if (!attrs.schema.body || !attrs.schema.body.length) {
-                errors.push({name:'groups', message: i18n("please-add-at-least-a-metadata-group")});
-                return errors;
+                // errors.push({name:'groups', message: i18n("please-add-at-least-a-metadata-group")});
+                return false;
             }
             // create a temporary DataType.Model to check the fields
             var tempModel = new DataType.Model(attrs);

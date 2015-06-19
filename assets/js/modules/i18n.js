@@ -2,6 +2,11 @@
 
     var en = {
         "welcome": "Welcome",
+        // menu
+        "data-types": "Data Types",
+        "data": "Data",
+        "subjects": "Subjects",
+        "samples": "Samples",
         // views/templates/datatype-list.ejs
         "id":"ID",
         // views/templates/datatype-edit.ejs

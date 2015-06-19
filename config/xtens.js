@@ -3,6 +3,7 @@ var IrodsRestStrategy = require('xtens-fs').IrodsRestStrategy;
 var FileSystemManager = require('xtens-fs').FileSystemManager;
 var TransactionHandler = require('xtens-transact').TransactionHandler;
 var connections = require('./local.js').connections;
+var connName = require('./models.js').models.connection;
 var fileSystemConnections = require('./local.js').fileSystemConnections;
 
 /**
@@ -16,7 +17,7 @@ module.exports.xtens = {
 
     fileSystemManager: new FileSystemManager(fileSystemConnections[fileSystemConnections.default]),
 
-    transactionHandler: new TransactionHandler(null, connections[connections.default], fileSystemConnections[fileSystemConnections.default]),
+    transactionHandler: new TransactionHandler(null, connections[connName], fileSystemConnections[fileSystemConnections.default]),
 
     fileSystemConnection: fileSystemConnections[fileSystemConnections.default],
 

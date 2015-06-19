@@ -17,7 +17,7 @@ module.exports = {
 
         var params = req.allParams();
         params.model = DATA;
-        var idOperator = req.session.operator && req.session.operator.id;
+        var idOperator = TokenService.getToken(req);
 
         async.parallel({
 

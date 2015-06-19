@@ -109,6 +109,23 @@ console.log("MainController.populateEav - error caught: " + err);
             console.log("MainController.populateDB - error caught: " + err.message);
             return res.serverError(err.message);
         });
+    },
+
+    /**
+     * @method
+     * @name migrate
+     * TODO remove this one! Only for testing data population
+     */
+    migrate: function(req, res) {
+        console.log(req.allParams());
+        var subject = _.parseInt(req.param("idSubj"));
+        MigrateService.execute(subject)
+        .then(function() {
+            return res.ok("Done!");
+        })
+        .catch(function(err) {
+            return res.serverError(err.details || err.message);
+        });
     }
 
 };

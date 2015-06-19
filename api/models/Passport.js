@@ -74,7 +74,8 @@ var Passport = {
     // For more information on associations in Waterline, check out:
     // https://github.com/balderdashy/waterline
     user: { 
-        model: 'operator', 
+        model: 'operator',
+        columnName: 'operator', 
         required: true 
     },  // TODO: change it back to user??
 

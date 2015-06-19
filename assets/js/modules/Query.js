@@ -673,6 +673,9 @@
             console.log(this.queryView.serialize());
             $.ajax({
                 method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                },
                 contentType: 'application/json;charset:utf-8',
                 url: '/query/dataSearch',
                 data: queryParameters,

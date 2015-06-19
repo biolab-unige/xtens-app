@@ -66,7 +66,9 @@ module.exports = {
     edit: function(req, res) {
 
         var id = req.param("id");
-        var idOperator = req.session.operator && req.session.operator.id;
+        // var idOperator = req.session.operator && req.session.operator.id;
+        var idOperator = TokenService.getToken(req);
+        console.log("SubjectController.edit - Decoded ID is: " + idOperator);  
 
         async.parallel({
 

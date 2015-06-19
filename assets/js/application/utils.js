@@ -36,7 +36,7 @@ function handleError(res){
         if (accessToken) {
             _.extend(options.headers, { 'Authorization': 'Bearer ' + accessToken });
         }
-        originalSync.call(model, method, model, options);
+        return originalSync.call(model, method, model, options);
     };
 
 })(Backbone);

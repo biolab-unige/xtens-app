@@ -123,10 +123,10 @@
             var _this = this;
             var dominant = new Group.Model({id:id});
             var nondominant = new DataType.List();
-            $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes,dominantRes) {
+            $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes, dominantRes) {
                 _this.loadView(new AdminAssociation.Views.Edit({
-                    dominant:new Group.Model(dominantRes[0]),
-                    nondominant: nondominantRes[0],
+                    dominant:new Group.Model(dominantRes && dominantRes[0]),
+                    nondominant: nondominantRes && nondominantRes[0],
                     nondominantName:'dataTypes',
                     field:'name'
                 }));
@@ -137,10 +137,10 @@
             var _this = this;
             var dominant = new Group.Model({id:id});
             var nondominant = new Operator.List();
-            $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes,dominantRes){
+            $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes, dominantRes){
                 _this.loadView(new AdminAssociation.Views.Edit({
-                    dominant:new Group.Model(dominantRes[0]),
-                    nondominant: nondominantRes[0],
+                    dominant:new Group.Model(dominantRes && dominantRes[0]),
+                    nondominant: nondominantRes && nondominantRes[0],
                     nondominantName:'members',
                     field:'login'
                 }));
@@ -186,8 +186,8 @@
             var $dataDeferred = data.fetch();
             $.when($dataTypesDeferred, $dataDeferred).then(function(dataTypesRes, dataRes) {
                 _this.loadView(new Data.Views.List({
-                    data: new Data.List(dataRes[0]),
-                    dataTypes: new DataType.List(dataTypesRes[0])    
+                    data: new Data.List(dataRes && dataRes[0]),
+                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])    
                 }));
             }, function(jqxhr) {
                 xtens.error(jqxhr);
@@ -264,8 +264,8 @@
             var $subjectsDeferred = subjects.fetch();
             $.when($dataTypesDeferred, $subjectsDeferred).then(function(dataTypesRes, subjectsRes) {
                 _this.loadView(new Subject.Views.List({
-                    subjects: new Subject.List(subjectsRes[0]),
-                    dataTypes: new DataType.List(dataTypesRes[0])    
+                    subjects: new Subject.List(subjectsRes && subjectsRes[0]),
+                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])    
                 }));
             }, function(jqxhr) {
                 xtens.error(jqxhr);
@@ -309,8 +309,8 @@
             var $samplesDeferred = samples.fetch();
             $.when($dataTypesDeferred, $samplesDeferred).then( function(dataTypesRes, samplesRes) {
                 _this.loadView(new Sample.Views.List({ 
-                    samples: new Sample.List(samplesRes[0]),
-                    dataTypes: new DataType.List(dataTypesRes[0])                                    
+                    samples: new Sample.List(samplesRes && samplesRes[0]),
+                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])                                    
                 }));
             }, function(jqxhr) {
                 xtens.error(jqxhr);
