@@ -48,7 +48,12 @@
             }
             return this;
         },
-
+        
+        /**
+         * @method
+         * @name prepareDataForRendering
+         * @description Format the data according to the dataType schema and prepare data for visualization through DataTables
+         */
         prepareDataForRendering: function(data, dataType, headers) {
             // var dataType = data[0] && data[0].type;
             if (!dataType) {
@@ -109,8 +114,8 @@
 
         insertSampleColumns: function() {
             return [{
-                "title": i18n("biobankCode"),
-                "data": "biobankCode"
+                "title": i18n("biobank-code"),
+                "data": "biobank_code"
             }];
         }
 
