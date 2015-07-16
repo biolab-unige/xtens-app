@@ -36,24 +36,30 @@ module.exports = {
         var queryArgs = req.param('queryArgs');
         var data = null;
         DataService.advancedQueryAsync(queryArgs)
+
+        /* commenting out this additional search
         .then(function(results) {
             return DataService.queryAndPopulateItemsByIdAsync(results.rows, queryArgs.classTemplate);
-        })
-        .then(function(foundData) {
-            data = foundData;
-            if (_.isEmpty(foundData)) {
+        }) */
+
+        .then(function(results) {
+            data = results.rows;
+            if (_.isEmpty(data)) {
                 return;
             }
             else {
-                return DataType.findOne(foundData[0].type);
+                return DataType.findOne(data[0].type);
             }
         })
+
         .then(function(dataType) {
             res.json({data: data, dataType: dataType });
         })
+
         .catch(function(error) {
             res.serverError(error.message);
         });
+
     } 
 	
 };

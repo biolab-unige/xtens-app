@@ -72,7 +72,11 @@ var DataService = BluebirdPromise.promisifyAll({
             Data.find({id: ids}).exec(next);
         }
     },
-
+    
+    /**
+     * @method
+     * @name moveFiles
+     */
     moveFiles:function(files, id, dataTypeName, next) {
         async.each(files,function(file, callback){ 
             fileSystemManager.storeFile(file, id, dataTypeName, callback);
@@ -86,7 +90,11 @@ var DataService = BluebirdPromise.promisifyAll({
             }
         });
     },
-
+    
+    /**
+     * @method
+     * @name saveFileEntities
+     */
     saveFileEntities: function(files, next) {
 
         async.each(files, function(file, callback) {
