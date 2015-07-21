@@ -35,7 +35,8 @@
     "d3": "~3.4.13",
     "datatables": "~1.10.4",
     "dropzone": "~4.0.1",
-    "pikaday": "https://github.com/dbushell/Pikaday.git#~1.2.0"
+    "pikaday": "https://github.com/dbushell/Pikaday.git#~1.2.0",
+    "datatables-plugins": "~1.10.7"
   },
   "exportsOverride": {
     "jquery": {
@@ -65,7 +66,7 @@
       "": "backbone.stickit.js"
     },
     "parsleyjs": {
-     "js": "dist/parsley.js"
+      "js": "dist/parsley.js"
     },
     "d3": {
       "": "d3.js"
@@ -84,8 +85,8 @@
       "images": "downloads/images/*"
     },
     "pikaday": {
-       "js": "pikaday.js",
-       "styles": "css/pikaday.css" 
+      "js": "pikaday.js",
+      "styles": "css/pikaday.css"
     }
   },
   "devDependencies": {

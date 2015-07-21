@@ -4,7 +4,7 @@
      * @description convert a string replacing underscore with whitespaces and Capitalizing only the first letter 
      */
     utils.replaceUnderscoreAndCapitalize = function(str) {
-        return str.replace("_", " ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+        return str.replace(/_/g, " ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     };
     
     /**
