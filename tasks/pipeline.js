@@ -15,9 +15,14 @@
 // (if you're using LESS with the built-in default config, you'll want
 //  to change `assets/styles/importer.less` instead.)
 var cssFilesToInject = [
-    'styles/**/*.css',
+    'styles/importer.css',
+    'dependencies/font-awesome/styles/font-awesome.css',
     'dependencies/select2/select2.css',
-    'dependencies/**/*.css'
+    'dependencies/datatables/styles/jquery.dataTables.css',
+    'dependencies/datatables-plugins/integration-bootstrap/styles/dataTables.bootstrap.css',
+    'dependencies/datatables-plugins/integration-fontAwesome/styles/dataTables.fontAwesome.css',
+    'dependencies/**/*.css',
+    'styles/xtens.css'
 ];
 
 
@@ -40,6 +45,7 @@ var jsFilesToInject = [
     'dependencies/**/pikaday.js',
     'dependencies/**/dropzone.js',
     'dependencies/**/jquery.dataTables.js',
+    'dependencies/**/dataTables.bootstrap.js',
     'dependencies/**/async.js',
     'dependencies/**/d3.js',
     

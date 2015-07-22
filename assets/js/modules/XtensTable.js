@@ -8,7 +8,10 @@
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
     var DataTypeModel = xtens.module("datatype").Model;
-
+    
+    /**
+     * !!!NOT USED!!!
+     *
     XtensTable.Views.HtmlTable = Backbone.View.extend({
 
         tagName: 'div',
@@ -25,12 +28,16 @@
             return this; 
         }
 
-    });
+    }); */
+    
 
+    /**
+     * @class Views.Datatable
+     */
     XtensTable.Views.DataTable = Backbone.View.extend({
 
         tagName: 'table',
-        className: 'data-table',
+        className: 'query-table',
 
         initialize: function(options) {
             if (options && options.data) {
@@ -77,7 +84,9 @@
                 });
             this.tableOpts = {
                 data: data,
-                columns: columns
+                columns: columns,
+                "pagingType": "full_numbers", // DOES NOT WORK!!
+                "defaultContent": ""
             };
         },
 

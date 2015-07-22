@@ -21,8 +21,8 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "1.11.1",
-    "bootstrap": "3.2.0",
+    "jquery": "~1.11.3",
+    "bootstrap": "~3.3.5",
     "underscore": null,
     "backbone": null,
     "font-awesome": "~4.2.0",
@@ -33,10 +33,10 @@
     "moment": "~2.8.3",
     "lodash": "~2.4.1",
     "d3": "~3.4.13",
-    "datatables": "~1.10.4",
+    "datatables": "~1.10.7",
+    "datatables-plugins": "~1.10.7",
     "dropzone": "~4.0.1",
-    "pikaday": "https://github.com/dbushell/Pikaday.git#~1.2.0",
-    "datatables-plugins": "~1.10.7"
+    "pikaday": "https://github.com/dbushell/Pikaday.git#~1.2.0"
   },
   "exportsOverride": {
     "jquery": {
@@ -76,8 +76,12 @@
     },
     "datatables": {
       "js": "media/js/jquery.dataTables.js",
-      "styles": "media/css/jquery.dataTables.css",
       "images": "media/images/*"
+    },
+    "datatables-plugins": {
+      "integration-bootstrap/js": "integration/bootstrap/3/dataTables.bootstrap.js",
+      "integration-bootstrap/styles": "integration/bootstrap/3/dataTables.bootstrap.css",
+      "integration-fontAwesome/styles": "integration/font-awesome/dataTables.fontAwesome.css"
     },
     "dropzone": {
       "js": "dist/*.js",
