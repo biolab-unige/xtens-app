@@ -38,6 +38,8 @@
         // views/templates/metadatafield-edit.ejs
         "type": "Type",
         "required": "Required",
+        "visible": "Visible",
+        "display-name": "Display Name",
         "sensitive": "Sensitive",
         "hasRange": "Has Range",
         "custom-value": "Custom Value",

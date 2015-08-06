@@ -52,6 +52,7 @@
             name: null,
             ontologyUri: null,
             customValue: null,
+            visible: true,
             required: false,
             sensitive: false,
             hasRange: false,
@@ -100,6 +101,15 @@
                 }
             },
             '[name=customValue]': 'customValue',
+            '[name=visible]': {
+                observe: 'visible',
+                getVal: function($el, ev, options) {
+                    return $el.prop('checked');
+                }
+            },
+            '[name=displayName]': {
+                observe: 'displayName'
+            },
             '[name=required]': {
                 observe: 'required',
                 getVal: function($el, ev, options) {

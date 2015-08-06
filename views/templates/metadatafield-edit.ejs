@@ -28,6 +28,21 @@
     <div class="metadataField-row">
         <div class="metadataField-sixth">
             <label class="checkbox-inline">
+                <input type="checkbox" name="visible" value="visible">
+                <%=__('visible') %>
+            </label>
+        </div>
+        <div class="metadataField-sixth"></div>
+        <div class="metadataField-third">
+             <label class="control-label"><%= __('display-name') %></label>
+             <input text class="form-control input-sm" placeholder="Display Name" name="displayName">
+        </div>
+    </div>
+</div>
+<div class="metadataField-formgroup">
+    <div class="metadataField-row">
+        <div class="metadataField-sixth">
+            <label class="checkbox-inline">
                 <input type="checkbox" name="required" value="required" class="no-edit">
                 <%=__('required') %>
             </label>

@@ -209,35 +209,7 @@
             }
             return this;
         },
-        /*
-render: function(options) {
-if (options.id) {
-this.model = new DataType.Model({id: options.id});
-this.model.fetch({
-success: this.fetchSuccess,
-error: xtens.error
-});
-} else {
-this.$el.html(this.template({__: i18n, dataType: null}));
-this.stickit();
-}
-this.$form = this.$("form");
-        // initialize Parsley
-        this.$form.parsley(parsleyOpts);
-        return this;
-        },
-
-        // TODO requires refactoring - move it to the router (?)
-fetchSuccess: function(dataType) {
-this.$el.html(this.template({__: i18n, dataType: dataType}));
-this.stickit();
-var body = dataType.get('schema').body;
-for (var i=0, len=body.length; i<len; i++) {
-this.add(body[i]);
-}
-this.setValidate(); //TODO
-}, */
-
+       
         /**
          * @description show a list of the validation errors. So far it just alert the first error 
          */
@@ -516,7 +488,7 @@ this.setValidate(); //TODO
                                                                    return d.y -6*(arr.length-1) +(12)*i+3;})
                                                                    .attr("x", function(d){
                                                                        return d.x;
-                                                                   } )
+                                                                   })
                                                                    .attr("id",function(d){
                                                                        if( i=== arr.length-1){
                                                                            return arr[i];
