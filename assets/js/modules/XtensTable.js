@@ -2,6 +2,20 @@
  * @author Massimiliano Izzo
  * 
  */
+function renderDatatablesDate(data, type) {
+    
+    function pad(s) { return (s < 10) ? '0' + s : s; }
+
+    if (!_.isEmpty(data)) {
+        var d = new Date(data);
+        if (type === 'display' || type === 'filter') {
+            return pad(d.getDate()) + "/" + pad(d.getMonth()+1) + "/" + d.getFullYear();
+        }
+        else return new Date(data);
+    }
+    return "";
+}
+
 (function(xtens, XtensTable) {
 
     var i18n = xtens.module("i18n").en;
@@ -9,28 +23,6 @@
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
     var DataTypeModel = xtens.module("datatype").Model;
     
-    /**
-     * !!!NOT USED!!!
-     *
-    XtensTable.Views.HtmlTable = Backbone.View.extend({
-
-        tagName: 'div',
-        className: 'col-sm-12',
-
-        initialize: function(options) {
-            this.data = options.data;
-            this.template = JST["views/templates/data-table.ejs"];
-            this.render(); 
-        },
-
-        render: function() {
-            this.$el.html(this.template({__:i18n, data: this.data}));
-            return this; 
-        }
-
-    }); */
-    
-
     /**
      * @class Views.Datatable
      */
@@ -71,22 +63,36 @@
             var columns = this.insertModelSpecificColumns(dataType.get("model"), true);  // TODO manage permission for personalDetails
                 _.each(fieldsToShow, function(field) {
                         var colTitle = replaceUnderscoreAndCapitalize(field.name);
-                        columns.push({
+                        
+                        var columnOpts = {
                             "title": colTitle,
-                            "data": "metadata." + field.name + ".value"
-                        });
+                            "data": "metadata." + field.name + ".value",
+                            "visible": field.visible,
+                            "defaultContent": ""
+                        };
+                        
+                        switch(field.fieldType) {
+                            case "Date":    // if the column has dates render them in the desired format
+                                columnOpts.render = renderDatatablesDate;
+                                break;
+                        }
+
+                        columns.push(columnOpts);
+
                         if (field.hasUnit) {
                             columns.push({
                                 "title": colTitle + " Unit",
-                                "data": "metadata." + field.name + ".unit"
+                                "data": "metadata." + field.name + ".unit",
+                                "visible": field.visible,
+                                "defaultContent": ""
                             });
                         }
+
                 });
             this.tableOpts = {
                 data: data,
                 columns: columns,
                 "pagingType": "full_numbers", // DOES NOT WORK!!
-                "defaultContent": ""
             };
         },
 
