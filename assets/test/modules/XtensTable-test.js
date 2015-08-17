@@ -6,7 +6,7 @@ var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndC
 var testDataType = {
     "id": 1,
     "name": "Star",
-    "schema": {"body":[{"name":"Generic Info","label":"METADATA GROUP","content":[{"name":"name","label":"METADATA FIELD","isList":false,"hasUnit":false,"hasRange":false,"required":true,"fieldType":"Text","sensitive":true,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":null},{"name":"constellation","label":"METADATA FIELD","isList":true,"hasUnit":false,"hasRange":false,"required":true,"fieldType":"Text","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":["orion","taurus","N.A.","N.D.","scutum","canis major","cygnus"]},{"name":"classification","label":"METADATA FIELD","isList":true,"hasUnit":false,"hasRange":false,"required":true,"fieldType":"Text","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":["hypergiant","supergiant","giant","subgiant","main-sequence star","subdwarf","dwarf"]},{"name":"Other Designations","label":"METADATA LOOP","content":[{"name":"designation","label":"METADATA FIELD","isList":false,"hasUnit":false,"hasRange":false,"required":true,"fieldType":"Text","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":null}]}]},{"name":"Physical Details","label":"METADATA GROUP","content":[{"name":"mass","label":"METADATA FIELD","isList":false,"hasUnit":true,"hasRange":false,"required":true,"fieldType":"Float","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":["M☉"],"possibleValues":null},{"name":"radius","label":"METADATA FIELD","isList":false,"hasUnit":true,"hasRange":false,"required":true,"fieldType":"Float","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":["R☉"],"possibleValues":null},{"name":"luminosity","label":"METADATA FIELD","isList":false,"hasUnit":true,"hasRange":false,"required":false,"fieldType":"Integer","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":["L☉"],"possibleValues":null},{"name":"temperature","label":"METADATA FIELD","isList":false,"hasUnit":true,"hasRange":false,"required":false,"fieldType":"Integer","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":["K"],"possibleValues":null}]}],"header":{"version":"1.0","ontology":"","fileUpload":true,"schemaName":"Star","description":"A generic data type for a star","class_template":"Generic"}}
+    "schema": {"body":[{"name":"Generic Info","label":"METADATA GROUP","content":[{"name":"name","label":"METADATA FIELD","isList":false,"hasUnit":false,"hasRange":false,"required":true,"fieldType":"Text","sensitive":true,"visible":true,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":null},{"name":"constellation","label":"METADATA FIELD","isList":true,"hasUnit":false,"hasRange":false,"required":true,"fieldType":"Text","sensitive":false,"visible":true,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":["orion","taurus","N.A.","N.D.","scutum","canis major","cygnus"]},{"name":"classification","label":"METADATA FIELD","isList":true,"hasUnit":false,"hasRange":false,"required":true,"fieldType":"Text","sensitive":false,"visible":true,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":["hypergiant","supergiant","giant","subgiant","main-sequence star","subdwarf","dwarf"]},{"name":"Other Designations","label":"METADATA LOOP","content":[{"name":"designation","label":"METADATA FIELD","isList":false,"hasUnit":false,"hasRange":false,"required":true,"fieldType":"Text","sensitive":false,"visible":true,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":null}]}]},{"name":"Physical Details","label":"METADATA GROUP","content":[{"name":"mass","label":"METADATA FIELD","isList":false,"hasUnit":true,"hasRange":false,"required":true,"fieldType":"Float","sensitive":false,"visible":true,"customValue":null,"ontologyUri":null,"possibleUnits":["M☉"],"possibleValues":null},{"name":"radius","label":"METADATA FIELD","isList":false,"hasUnit":true,"hasRange":false,"required":true,"fieldType":"Float","sensitive":false,"visible":true,"customValue":null,"ontologyUri":null,"possibleUnits":["R☉"],"possibleValues":null},{"name":"luminosity","label":"METADATA FIELD","isList":false,"hasUnit":true,"hasRange":false,"required":false,"fieldType":"Integer","sensitive":false,"visible":true,"customValue":null,"ontologyUri":null,"possibleUnits":["L☉"],"possibleValues":null},{"name":"temperature","label":"METADATA FIELD","isList":false,"hasUnit":true,"hasRange":false,"required":false,"fieldType":"Integer","sensitive":false,"visible":true,"customValue":null,"ontologyUri":null,"possibleUnits":["K"],"possibleValues":null}]}],"header":{"version":"1.0","ontology":"","fileUpload":true,"schemaName":"Star","description":"A generic data type for a star","class_template":"Generic"}}
 };
 
 /* a list of data (**stars**) for testing purposes */
@@ -108,7 +108,7 @@ var testSubjects = [
 
 describe("XtensDataTable.DataTables", function() {
 
-    describe("#prepareDataForRendering", function() {
+    describe("#prepareDataForRenderingJSON", function() {
 
         beforeEach(function() {
             this.dataTable = new XtensTable.Views.DataTable();
@@ -122,7 +122,7 @@ describe("XtensDataTable.DataTables", function() {
         });
 
         it("should correctly prepare the headers for a generic data (e.g. a star)", function() {
-            this.dataTable.prepareDataForRendering(testData, testDataType);
+            this.dataTable.prepareDataForRenderingJSON(testData, testDataType);
             var tableOpts = this.dataTable.tableOpts;
             expect(tableOpts).not.to.be.empty;
             expect(tableOpts.data).to.be.an.instanceof(Array);
@@ -140,6 +140,26 @@ describe("XtensDataTable.DataTables", function() {
                    expect(tableOpts.columns[j++].data).to.equal('metadata.' + keys[i] + '.unit');
                 }
             }
+        });
+
+    });
+
+    describe("#prepareDataForRenderingHtml", function() {
+        
+        beforeEach(function() {
+            this.dataTable = new XtensTable.Views.DataTable();
+            this.keys = [];
+        });
+
+        it("should correctly build the HTML table corresponding to the given data and dataType", function() {
+            this.dataTable.prepareDataForRenderingHtml(testData, testDataType);
+            var theads = this.dataTable.el.getElementsByTagName("th");
+            expect(theads.length).to.equal(8);
+            
+            theads.forEach(function(thead) {
+                expect(thead.innerHTML).to.equal(/*TODO*/);
+            });
+            
         });
 
     });

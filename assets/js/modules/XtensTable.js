@@ -2,6 +2,7 @@
  * @author Massimiliano Izzo
  * 
  */
+
 function renderDatatablesDate(data, type) {
     
     function pad(s) { return (s < 10) ? '0' + s : s; }
@@ -32,35 +33,63 @@ function renderDatatablesDate(data, type) {
         className: 'query-table',
 
         initialize: function(options) {
-            if (options && options.data) {
-                this.prepareDataForRendering(options.data, options.dataType);
+            if (!options || !options.dataType) {
+                throw new Error("Missing required options: dataType");
             }
+            this.dataType = new DataTypeModel(options.dataType);
+            this.prepareDataForRenderingJSON(options.data);
             // this.render();
-        },
-
-        render: function() {
-            if (this.tableOpts) {
-                this.$el.DataTable(this.tableOpts);
-            }
-            else {
-                // TODO do something if no result found
-            }
-            return this;
         },
         
         /**
          * @method
-         * @name prepareDataForRendering
+         * @name render
+         */
+        render: function() {
+            return this;
+        },
+
+        /**
+         * @method
+         * @name destroy
+         */
+        destroy: function() {
+             if (this.table) { 
+                 this.table.destroy(true);
+                 this.$el.empty();
+             }
+             this.remove();
+        },
+
+        /**
+         * @method
+         * @name displayDataTable
+         * @description show the datatable given the option object
+         */
+        displayDataTable: function() {
+            if (this.tableOpts && !_.isEmpty(this.tableOpts.data)) {
+                this.table = this.$el.DataTable(this.tableOpts);
+            }
+
+            // the returned dataset is empty
+            else {
+                this.remove();
+            }
+        },
+        
+        /**
+         * @method
+         * @name prepareDataForRenderingJSON
          * @description Format the data according to the dataType schema and prepare data for visualization through DataTables
          */
-        prepareDataForRendering: function(data, dataType, headers) {
-            // var dataType = data[0] && data[0].type;
-            if (!dataType) {
+        prepareDataForRenderingJSON: function(data, headers) {
+            /*
+            if (!this.dataType) {
                 return; //TODO add alert box
-            }
-            dataType = new DataTypeModel(dataType);
-            var fieldsToShow = dataType.getFlattenedFields(true); // get the names of all the madatafields but those within loops;
-            var columns = this.insertModelSpecificColumns(dataType.get("model"), true);  // TODO manage permission for personalDetails
+            } */
+            // var dataType = new DataTypeModel(this.dataType);
+            var fieldsToShow = this.dataType.getFlattenedFields(true); // get the names of all the madatafields but those within loops;
+            var columns = this.insertModelSpecificColumns(this.dataType.get("model"), true);  // TODO manage permission for personalDetails
                 _.each(fieldsToShow, function(field) {
                         var colTitle = replaceUnderscoreAndCapitalize(field.name);
                         
@@ -92,8 +121,59 @@ function renderDatatablesDate(data, type) {
             this.tableOpts = {
                 data: data,
                 columns: columns,
-                "pagingType": "full_numbers", // DOES NOT WORK!!
+                "paging": true,
+                "info": true,
+                "pagingType": "full_numbers" // DOES NOT WORK!!
             };
+        },
+
+        /**
+         * @method
+         * @name prepareDataForRenderingJSON
+         * @description Format the data according to the dataType schema and prepare data for visualization through DataTables
+         */
+        prepareDataForRenderingHtml: function(data, dataType, headers) {
+            if (!dataType) {
+                return;
+            }
+            dataType = new DataTypeModel(dataType);
+            var fields = dataType.getFlattenedFields(true);
+            var columns = this.insertModelSpecificColumns(dataType.get("model"), true);  // TODO manage permission for personalDetails
+            
+            var i, j, row = "<thead><tr>", value, unit;
+            
+            for (i=0; i<fields.length; i++) {
+                if (fields[i].visible) {
+                    row += "<th>" + fields[i].name + "</th>";
+
+                    if (fields[i].hasUnit) {
+                        row += "<th>" + fields[i].name + " Unit</th>";
+                    }
+                }
+            }
+
+            row += "</tr></thead>";
+            this.$el.append(row);
+            
+            for (i=0; i<data.length; i++) {
+                row = "<tr>";
+                for (j=0; j<fields.length; j++) {
+
+                    if (fields[j].visible) {
+                        value = data[i].metadata[fields[j].name] && data[i].metadata[fields[j].name].value;
+                        row += "<td>" + (value || "") + "</td>";
+
+                        if (fields[j].hasUnit) {
+                            unit = data[i].metadata[fields[j].name] && data[i].metadata[fields[j].name].unit;
+                            row += "<td>" + (unit || "") + "</td>";
+                        }
+                    }
+
+                }
+                row += "</tr>";
+                this.$el.append(row);
+            }
+            
         },
 
         insertModelSpecificColumns: function(model, canViewPersonalInfo) {
@@ -132,6 +212,15 @@ function renderDatatablesDate(data, type) {
                 "title": i18n("biobank-code"),
                 "data": "biobank_code"
             }];
+        },
+
+        /**
+         * @method
+         * @name addLinks
+         * @description add the proper links to each row in the table given the dataType Model
+         */
+        addLinks: function() {
+            switch(this.dataType.get("model")) {} // TODO
         }
 
     });

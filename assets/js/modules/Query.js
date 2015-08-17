@@ -3,6 +3,7 @@
     var i18n = xtens.module("i18n").en;
     var Constants = xtens.module("xtensconstants").Constants; 
     var FieldTypes = xtens.module("xtensconstants").FieldTypes;
+    var ModalDialog = xtens.module("xtensdialog").Views.ModalDialog;
     var QueryStrategy = xtens.module("querystrategy");
     var Data = xtens.module("data");
     var DataType = xtens.module("datatype");
@@ -654,7 +655,8 @@
             this.dataTypes = options.dataTypes || [];
             this.render(options);
             this.queryView = new Query.Views.Composite({dataTypes: this.dataTypes, dataTypesComplete: this.dataTypes, model: new Query.Model()});
-            this.$tableCnt = this.$("#result-table");
+            this.$tableCnt = this.$("#result-table-cnt");
+            this.$queryModal = this.$(".query-modal");
             this.tableView = null;
             this.$("#query-form").append(this.queryView.render({}).el);
         },
@@ -690,11 +692,23 @@
 
         queryOnSuccess: function(result) {
             if (this.tableView) {
-                this.tableView.remove();
+                this.tableView.destroy();
             }
-            // this.tableView = new XtensTable.Views.HtmlTable({ data: data});
+            if (!result) throw new Error("Missing result object");
+            
+            if (_.isEmpty(result.data)) {
+                this.modal = new ModalDialog({
+                    title: i18n('no-result-found'),
+                    body: i18n("no-data-was-found-to-match-your-search-options") + ' ' + i18n('please-try-again-with-different-parameters')
+                });
+                this.$queryModal.append(this.modal.render().el);
+                this.modal.show();
+                return;
+            }
+
             this.tableView = new XtensTable.Views.DataTable(result);
             this.$tableCnt.append(this.tableView.render().el);
+            this.tableView.displayDataTable();
         }
 
     });
