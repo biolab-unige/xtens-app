@@ -170,7 +170,14 @@
         /* views/templates/query-subject-fields.ejs */
         "subject-code": "Subject Code",
         /* views/templates/filemanager-dropzone.ejs */
-        "drop-files-here": "Drop files here"
+        "drop-files-here": "Drop files here",
+        /* views/templates/dialog-bootstrap.ejs */
+        "close": "Close",
+        "default-title": "Default Title",
+        "default-body": "Dafault Body",
+        "no-result-found": "No Result Found",
+        "no-data-was-found-to-match-your-search-options": "No data was found to match your search options.",
+        "please-try-again-with-different-parameters": "Please try again with different parameters"
     };
 
     var it = {
