@@ -1,0 +1,30 @@
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th><%= __("code") %></th>
+                <th><%= __("surname") %></th>
+                <th><%= __("given-name") %></th>
+                <th><%= __("sex") %></th>
+                <th><%= __("overall-status") %></th>
+                <th><%= __("diagnosis-age") %></th>
+                <th><%= __("diagnosis-age-unit")%></th>
+            </tr>
+        </thead>
+        <tbody>
+        <% _.each(data, function(datum) {%>
+        <% if (datum.type && datum.type.classTemplate === 'Subject') {%>
+        <tr>
+            <td><%= datum.code %></td>
+            <td><%= datum.personalInfo.surname %></td>
+            <td><%= datum.personalInfo.givenName %></td>
+            <td><%= datum.personalInfo.sex %></td>
+            <td><%= datum.metadata["Overall Status"] && datum.metadata["Overall Status"].value[0] %></td>
+            <td><%= datum.metadata["Diagnosis Age"] && datum.metadata["Diagnosis Age"].value[0] %></td>
+            <td><%= datum.metadata["Diagnosis Age"] && datum.metadata["Diagnosis Age"].unit[0] %></td>
+        </tr>
+        <%}%>
+        <%}) %>
+        </tbody>
+    </table>
+</div>
