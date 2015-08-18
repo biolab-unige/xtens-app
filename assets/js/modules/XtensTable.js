@@ -37,8 +37,13 @@ function renderDatatablesDate(data, type) {
                 throw new Error("Missing required options: dataType");
             }
             this.dataType = new DataTypeModel(options.dataType);
-            this.prepareDataForRenderingJSON(options.data);
+            this.data = options.data;
+            this.prepareDataForRenderingJSON();
             // this.render();
+        },
+
+        events: {
+            "click .xtenstable-deriveddata": "showDerivedDataList"
         },
         
         /**
@@ -82,14 +87,14 @@ function renderDatatablesDate(data, type) {
          * @name prepareDataForRenderingJSON
          * @description Format the data according to the dataType schema and prepare data for visualization through DataTables
          */
-        prepareDataForRenderingJSON: function(data, headers) {
+        prepareDataForRenderingJSON: function(headers) {
             /*
             if (!this.dataType) {
                 return; //TODO add alert box
             } */
             // var dataType = new DataTypeModel(this.dataType);
             var fieldsToShow = this.dataType.getFlattenedFields(true); // get the names of all the madatafields but those within loops;
-            var columns = this.insertModelSpecificColumns(this.dataType.get("model"), true);  // TODO manage permission for personalDetails
+            this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), true);  // TODO manage permission for personalDetails
                 _.each(fieldsToShow, function(field) {
                         var colTitle = replaceUnderscoreAndCapitalize(field.name);
                         
@@ -106,10 +111,10 @@ function renderDatatablesDate(data, type) {
                                 break;
                         }
 
-                        columns.push(columnOpts);
+                        this.columns.push(columnOpts);
 
                         if (field.hasUnit) {
-                            columns.push({
+                            this.columns.push({
                                 "title": colTitle + " Unit",
                                 "data": "metadata." + field.name + ".unit",
                                 "visible": field.visible,
@@ -117,10 +122,14 @@ function renderDatatablesDate(data, type) {
                             });
                         }
 
-                });
+                }, this);
+            
+            // add links
+            this.addLinks();
+
             this.tableOpts = {
-                data: data,
-                columns: columns,
+                data: this.data,
+                columns: this.columns,
                 "paging": true,
                 "info": true,
                 "pagingType": "full_numbers" // DOES NOT WORK!!
@@ -220,7 +229,27 @@ function renderDatatablesDate(data, type) {
          * @description add the proper links to each row in the table given the dataType Model
          */
         addLinks: function() {
-            switch(this.dataType.get("model")) {} // TODO
+
+            var btnGroupTemplate = JST["views/templates/xtenstable-buttongroup.ejs"];
+
+            _.each(this.data, function(datum) {
+                datum._links = btnGroupTemplate({__:i18n});
+            });
+
+            this.columns.push({
+                "data": "_links",
+                "title": i18n("actions")
+            });
+            
+        },
+
+        /**
+         * @method
+         * @name showDerivedDataList
+         * @description returns a list of the data stored as children of the given data instance
+         */
+        showDerivedDataList: function() {
+            
         }
 
     });

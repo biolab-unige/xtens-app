@@ -175,9 +175,16 @@
         "close": "Close",
         "default-title": "Default Title",
         "default-body": "Dafault Body",
+        /* assets/js/modules/Query.js */
         "no-result-found": "No Result Found",
         "no-data-was-found-to-match-your-search-options": "No data was found to match your search options.",
-        "please-try-again-with-different-parameters": "Please try again with different parameters"
+        "please-try-again-with-different-parameters": "Please try again with different parameters",
+        /* views/templates/xtenstable-buttongroup.ejs  */
+        "files": "Files",
+        "derived-samples": "Derived Samples",
+        "derived-data": "Derived Data",
+        /* assets/js/modules/XtensTable.js */
+        "actions": "Actions"
     };
 
     var it = {
