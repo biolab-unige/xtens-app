@@ -1,6 +1,9 @@
 (function(xtens, Query) {
 
     var i18n = xtens.module("i18n").en;
+
+    // TODO: retrieve this info FROM DATABASE ideally or from the server-side anyway
+    var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames;
     var Constants = xtens.module("xtensconstants").Constants; 
     var FieldTypes = xtens.module("xtensconstants").FieldTypes;
     var ModalDialog = xtens.module("xtensdialog").Views.ModalDialog;
@@ -117,14 +120,16 @@
                 },
                 selectOptions: { 
                     collection: function() {
-                    return this.fieldList.map(function(field) {
-                        return {value: field.name, label: replaceUnderscoreAndCapitalize(field.name)};
-                    });
-                },
-                defaultOption: {
-                    label: "",
-                    value: null
-                }
+                        return this.fieldList.map(function(field) {
+                            // pick up formatted or unformatted name
+                            var fieldName = useFormattedNames ? field.formattedName : field.name;
+                            return {value: fieldName, label: field.name};
+                        });
+                    },
+                    defaultOption: {
+                        label: "",
+                        value: null
+                    }
                 }
 
             }
@@ -162,7 +167,11 @@
 
         generateStatementOptions: function(model, fieldName) {
             this.$("input[type=hidden]").select2('destroy');
-            var selectedField = _.findWhere(this.fieldList, {name: fieldName});
+
+            // set match criteria on formatted or unformatted names depending of the application usage
+            var matchCriteria = useFormattedNames ? {"formattedName": fieldName} : {"name": fieldName};
+
+            var selectedField = _.findWhere(this.fieldList, matchCriteria);
             this.model.set("fieldType", selectedField.fieldType.toLowerCase());
             this.model.set("isList", selectedField.isList);
             this.generateComparisonItem(selectedField);
@@ -414,7 +423,7 @@
     });
 
     Query.Views.Sample = Query.Views.Component.fullExtend({
-        
+
         className: 'query-sample',
 
         bindings: {
@@ -695,7 +704,7 @@
                 this.tableView.destroy();
             }
             if (!result) throw new Error("Missing result object");
-            
+
             if (_.isEmpty(result.data)) {
                 this.modal = new ModalDialog({
                     title: i18n('no-result-found'),

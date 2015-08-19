@@ -1,4 +1,5 @@
 (function(xtens, XtensConstants) {
+
     XtensConstants.Constants = {
         DATA: 'DATA',
         DATA_TYPE: 'DATA TYPE',
@@ -32,5 +33,7 @@
         UNKNOWN: 'N.D.' /*,
         UNDIFFERENTIATED: 'UNDIFFERENTIATED' */
     };
+
+    XtensConstants.useFormattedMetadataFieldNames = true; // TODO: retrieve this info FROM DATABASE ideally or from the server-side anyway
 
 } (xtens, xtens.module("xtensconstants")));

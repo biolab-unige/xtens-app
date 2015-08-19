@@ -7,7 +7,7 @@
 (function(xtens, Data) {
     
     // TODO: retrieve this info FROM DATABASE ideally or from the server-side anyway
-    var useFormattedNames = true; 
+    var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames; 
 
     var i18n = xtens.module("i18n").en;
     var Constants = xtens.module("xtensconstants").Constants;

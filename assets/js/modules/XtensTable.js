@@ -19,7 +19,9 @@ function renderDatatablesDate(data, type) {
 
 (function(xtens, XtensTable) {
 
-    var i18n = xtens.module("i18n").en;
+    var i18n = xtens.module("i18n").en; 
+
+    var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames;
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
     var DataTypeModel = xtens.module("datatype").Model;
@@ -96,11 +98,13 @@ function renderDatatablesDate(data, type) {
             var fieldsToShow = this.dataType.getFlattenedFields(true); // get the names of all the madatafields but those within loops;
             this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), true);  // TODO manage permission for personalDetails
                 _.each(fieldsToShow, function(field) {
-                        var colTitle = replaceUnderscoreAndCapitalize(field.name);
+                        var colTitle = field.name;
+
+                        var fieldName = useFormattedNames ? field.formattedName : field.name;
                         
                         var columnOpts = {
                             "title": colTitle,
-                            "data": "metadata." + field.name + ".value",
+                            "data": "metadata." + fieldName + ".value",
                             "visible": field.visible,
                             "defaultContent": ""
                         };
@@ -116,7 +120,7 @@ function renderDatatablesDate(data, type) {
                         if (field.hasUnit) {
                             this.columns.push({
                                 "title": colTitle + " Unit",
-                                "data": "metadata." + field.name + ".unit",
+                                "data": "metadata." + fieldName + ".unit",
                                 "visible": field.visible,
                                 "defaultContent": ""
                             });
