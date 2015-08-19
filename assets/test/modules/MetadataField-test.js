@@ -4,6 +4,60 @@ var MetadataField = xtens.module("metadatafield");
 var Constants = xtens.module("xtensconstants").Constants;
 var FieldTypes = xtens.module("xtensconstants").FieldTypes;
 
+describe("MetadataField.Model", function() {
+    
+    describe('#formatName', function() {
+        
+        beforeEach(function() {
+            this.model = new MetadataField.Model();
+        });
+
+        it('formats correctly a single word name', function() {
+            this.model.set("name", "test");
+            this.model.formatName();
+            expect(this.model.get("formattedName")).to.equal("test");
+        });
+
+        it('formats correctly whitespaces and capitals', function() {
+            this.model.set("name", "Test name");
+            this.model.formatName();
+            expect(this.model.get("formattedName")).to.equal("test_name");
+        });
+
+
+        it('formats correctly a name with parentheses and whitespaces', function() {
+            this.model.set("name", "test name (with parentheses)");
+            this.model.formatName();
+            expect(this.model.get("formattedName")).to.equal("test_name__with_parentheses_");
+        });
+
+        it('formats correctly a name with numbers', function() {
+            this.model.set("name", "2force80");
+            this.model.formatName();
+            expect(this.model.get("formattedName")).to.equal("_2force80");
+        });
+
+        it('formats correctly a name with numbers and slashes and tabs', function() {
+            this.model.set("name", "280/230 test");
+            this.model.formatName();
+            expect(this.model.get("formattedName")).to.equal("_280_230_test");
+        });
+        
+        it('formats correctly a name with capital letters', function() {
+            this.model.set("name", "Capitalized Name CN");
+            this.model.formatName();
+            expect(this.model.get("formattedName")).to.equal("capitalized_name_cn");
+        });
+
+        it("formats correctly a name with dots", function() {
+            this.model.set("name", "Dotted Name S.P.E.C.T.R.E.");
+            this.model.formatName();
+            expect(this.model.get("formattedName")).to.equal("dotted_name_s_p_e_c_t_r_e_");
+        });
+    });
+
+});
+
 describe('MetadataField.Views.Edit', function() {
     beforeEach(function() {
         this.model = new MetadataField.Model({

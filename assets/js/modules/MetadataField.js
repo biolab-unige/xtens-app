@@ -5,12 +5,20 @@
     var MetadataComponent = xtens.module("metadatacomponent");
     var i18n = xtens.module("i18n").en;
 
+    // var metadataFieldNameNotAllowedCharset = /[^A-Za-z_][^A-Za-z_0-9]*/g;    
+    var metadataFieldNameNotAllowedCharset = /[^A-Za-z_0-9:]/g;   
+    
     /*
        function addChoiceToSelect2(term, data) {
        if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
        return {id:term, text:term};
        }
        } */
+
+    /**
+     * @method
+     * @name initializeSelect2Field
+     */
     function initializeSelect2Field($el, model, option) {
         var property =  $el.attr('name'); 
         if (_.isArray(model.get(property))) {
@@ -69,10 +77,38 @@
         isNumeric: function() {
             var type = this.get("fieldType"); 
             return (type === fieldTypes.INTEGER || type === fieldTypes.FLOAT);
+        },
+        
+        /**
+         * @method
+         * @name formatName
+         * @description format the metadata field name in order to make it a valid JavaScript property name
+         *              for dot notation
+         */
+        formatName: function() {
+            var name = this.get("name");
+            
+            // if name starts with digit add underscore at the beginning
+            if (/^\d/.test(name)) {
+                name = "_" + name;
+            }
+            
+            // replace with underscore all the not allowed charsets 
+            // (all the chars that  cannot be used in Javascript property names with dot notation)
+            name = name.toLowerCase().replace(metadataFieldNameNotAllowedCharset, "_");
+            
+            console.log(name);
+            // set the formatted name in the metadata field
+            this.set("formattedName", name);
         }
 
     });
-
+    
+    /**
+     * @class
+     * @name MetadataField.Views.Edit
+     * @extends MetadataComponent.Views.Edit
+     */
     MetadataField.Views.Edit = MetadataComponent.Views.Edit.fullExtend({
 
         tagName: 'div',
@@ -92,13 +128,13 @@
                 }
             },
             '[name=name]': {
-                observe: 'name',
+                observe: 'name' /*,
                 onGet: function(value) {
-                    return value && value.toLowerCase().replace(/_/g," ");
+                    return value && value.toLowerCase().replace(/_/g, " ");
                 },
                 onSet: function(value) {
-                    return value && value.toLowerCase().replace(/ /g,"_");
-                }
+                    return value && value.toLowerCase().replace(metadataFieldNameNotAllowedCharset, "_");
+                } */
             },
             '[name=customValue]': 'customValue',
             '[name=visible]': {
@@ -106,9 +142,6 @@
                 getVal: function($el, ev, options) {
                     return $el.prop('checked');
                 }
-            },
-            '[name=displayName]': {
-                observe: 'displayName'
             },
             '[name=required]': {
                 observe: 'required',
@@ -214,6 +247,17 @@
 
         add: function(child) {
             return null;
+        },
+
+        /**
+         * @method
+         * @name serialize
+         * @extends MetadataComponent.Views.Edit.serialize
+         */
+        serialize: function() {
+            // store the formatted name
+            this.model.formatName();
+            return _.clone(this.model.attributes);
         },
 
         events: {
