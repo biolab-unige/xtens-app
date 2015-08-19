@@ -5,6 +5,9 @@
  */
 
 (function(xtens, Data) {
+    
+    // TODO: retrieve this info FROM DATABASE ideally or from the server-side anyway
+    var useFormattedNames = true; 
 
     var i18n = xtens.module("i18n").en;
     var Constants = xtens.module("xtensconstants").Constants;
@@ -120,15 +123,19 @@
 
         initialize: function(attributes, options) {
             var field = options.field || {};
+
             this.set("name", field.name);
+            this.set("formattedName", field.formattedName);
             this.set("groupName", options.groupName);
             if (options.loopParams) {
                 this.set("loop", options.loopParams.name);
             }
 
+            var fieldName = useFormattedNames ? field.formattedName : field.name;
+
             // it is an existing data instance
-            if (options.metadata && options.metadata[field.name]) {
-                var fieldRecord = options.metadata[field.name];
+            if (options.metadata && options.metadata[fieldName]) {
+                var fieldRecord = options.metadata[fieldName];
 
                 // if it is a field from a loop retrieve the value/unit pair from the values & units arrays
                 if (options.loopParams) {
@@ -271,12 +278,12 @@
          * @description iterate the serialize call through all the nested (i.e. children) views.
          * @return {Array} an array containg all the serialized components.
          */
-        serialize: function() {
+        serialize: function(useFormattedNames) {
             // var json = {name: this.component.name, instances: []};
             var arr = [];
             if (this.nestedViews && this.nestedViews.length) {
                 for (var i=0, len=this.nestedViews.length; i<len; i++) {
-                    arr.push(this.nestedViews[i].serialize());
+                    arr.push(this.nestedViews[i].serialize(useFormattedNames));
                 }
             }
             return arr;
@@ -308,38 +315,42 @@
          *  @method
          *  @name serialize
          *  @description serialize the metadadata schema to a JSON object
+         *  @param{boolean} useFormattedNames - if set to true use name formatted to support JavaScript properties in dot notation (i.e. variable.property) 
          *  @return {Object} - an array containing all the metadata name-value-unit properties
          *  @override 
          */
-        serialize: function() {
+        serialize: function(useFormattedNames) {
             var arr = [];
             var i, len;
             if (this.nestedViews && this.nestedViews.length) {
                 for (i=0, len=this.nestedViews.length; i<len; i++) {
-                    arr.push(this.nestedViews[i].serialize());
+                    arr.push(this.nestedViews[i].serialize(useFormattedNames));
                 }
             }
             var serialized = _.flatten(arr);
             var metadata = {};
             for (i=0, len=serialized.length; i<len; i++) {
                 var unit = serialized[i].unit || undefined;
+                
+                // if formattedNames are used select the appropriate fieldName
+                var fieldName = useFormattedNames ? serialized[i].formattedName : serialized[i].name;
 
                 // if it's not a field of a loop just store the value/unit pair as an object
                 if (!serialized[i].loop) {
-                    metadata[serialized[i].name] = {value: serialized[i].value, unit: unit, group: serialized[i].groupName};
+                    metadata[fieldName] = {value: serialized[i].value, unit: unit, group: serialized[i].groupName};
                 }
 
                 // if it's a field within a loop store the value unit pair within two arrays
                 else {
-                    if (!metadata[serialized[i].name]) {    
-                        metadata[serialized[i].name] = {values: [serialized[i].value], group: serialized[i].groupName, loop: serialized[i].loop};
-                        metadata[serialized[i].name].units = unit ? [unit] : undefined;
+                    if (!metadata[fieldName]) {    
+                        metadata[fieldName] = {values: [serialized[i].value], group: serialized[i].groupName, loop: serialized[i].loop};
+                        metadata[fieldName].units = unit ? [unit] : undefined;
                     }
                     // if the loop value/unit arrays already exists push them in the arrays
                     else {
-                        metadata[serialized[i].name].values.push(serialized[i].value);
-                        if (unit && _.isArray(metadata[serialized[i].name].units)) {
-                            metadata[serialized[i].name].units.push(serialized[i].unit);
+                        metadata[fieldName].values.push(serialized[i].value);
+                        if (unit && _.isArray(metadata[fieldName].units)) {
+                            metadata[fieldName].units.push(serialized[i].unit);
                         }
                     }
                 }
@@ -750,7 +761,7 @@
         saveData: function(ev) {
             var targetRoute = $(ev.currentTarget).data('targetRoute') || 'data';
             if (this.schemaView && this.schemaView.serialize) {
-                var metadata = this.schemaView.serialize();
+                var metadata = this.schemaView.serialize(useFormattedNames);
                 this.model.set("metadata", metadata);
                 // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
                 this.retrieveAndSetFiles();
