@@ -182,7 +182,9 @@
             var dataTypes = new DataType.List();
             var data = new Data.List();
             var _this = this;
-            var $dataTypesDeferred = dataTypes.fetch();
+            var $dataTypesDeferred = dataTypes.fetch({
+                data: $.param({ populate: ['children'] })
+            });
             var $dataDeferred = data.fetch();
             $.when($dataTypesDeferred, $dataDeferred).then(function(dataTypesRes, dataRes) {
                 _this.loadView(new Data.Views.List({
