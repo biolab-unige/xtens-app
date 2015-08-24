@@ -35,6 +35,7 @@ module.exports = {
     dataSearch: function(req, res) {
         var queryArgs = req.param('queryArgs');
         var data = null;
+        var idDataType = queryArgs.pivotDataType;
         DataService.advancedQueryAsync(queryArgs)
 
         /* commenting out this additional search
@@ -48,7 +49,7 @@ module.exports = {
                 return;
             }
             else {
-                return DataType.findOne(data[0].type);
+                return DataType.findOne(idDataType);
             }
         })
 
