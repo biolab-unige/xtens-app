@@ -59,6 +59,14 @@ module.exports = {
 
     create: function(req, res) {
         var data = req.body;
+
+        /*TODO every data instance must be associated to a subject
+        if (_.isEmpty(data.parentSubject)) {
+            throw new Error("missing parent Subject ID.");
+        } */
+
+        DataService.simplify(data);
+
         DataType.findOne(data.type)
         .then(function(dataType) {
             var dataTypeName = dataType && dataType.name;
@@ -84,11 +92,13 @@ module.exports = {
     update: function(req, res) {
         var data = req.body;
 
+        DataService.simplify(data);
+        /*
         ["type", "parentSubject", "parentSample", "parentData"].forEach(function(elem) {
             if (data[elem]) {
                 data[elem] = data[elem].id || data[elem];
             }
-        });
+        }); */
 
         transactionHandler.updateData(data)
         .then(function(idData) {
