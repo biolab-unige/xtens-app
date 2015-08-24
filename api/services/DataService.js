@@ -9,6 +9,19 @@ var fileSystemManager = sails.config.xtens.fileSystemManager;
 var transactionHandler = sails.config.xtens.transactionHandler;
 
 var DataService = BluebirdPromise.promisifyAll({
+    
+    /**
+     * @method
+     * @name simplify
+     * @description removes all associated Objects if present keeping only their primary keys (i.e. IDs)
+     */
+    simplify: function(data) {
+        ["type", "parentSubject", "parentSample", "parentData"].forEach(function(elem) {
+            if (data[elem]) {
+                data[elem] = data[elem].id || data[elem];
+            }
+        });
+    },
 
     
     /**
