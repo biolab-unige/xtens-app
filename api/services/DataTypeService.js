@@ -63,6 +63,39 @@ var DataTypeService = {
         });
     },
 
+
+    /**
+     * @method
+     * @name getByOperatorAndParentDataType
+     * @param idOperator
+     * @param params {Object} contains the model name and the parent DataType ID
+     * @param next - a callback
+     * @return {Array} - list of found DataType entities
+     * @description find the list of allowed DataTypes for a specific Operator, through its Groups
+     */
+
+    getByOperatorAndParentDataType: function(idOperator, params, next) {
+        DataType.query({
+            name: 'findDataTypeByOperator',
+            text: ['SELECT d.id, d.name, d.schema FROM data_type d ',
+                'INNER JOIN datatype_groups__group_datatypes dggd ON d.id = dggd.datatype_groups ',
+                'INNER JOIN xtens_group g ON g.id = dggd."group_dataTypes" ',
+                'INNER JOIN group_members__operator_groups gmog ON g.id = gmog.group_members ',
+                'INNER JOIN operator o ON o.id = gmog.operator_groups ',
+                'INNER JOIN datatype_children__datatype_parents dcdp ON d.id = dcdp.datatype_parents ',
+                'WHERE o.id = $1 AND d.model = $2 AND dcdp.datatype_children = $3;'
+            ].join(""),
+            values: [idOperator, params.model, params.idDataType]
+        }, function(err, result) {
+            if (err) {
+                next(err);
+            }
+            else {
+                next(null, result.rows);
+            }
+        });
+    },
+
     /**
      * @method
      * @name getFlattenedFields

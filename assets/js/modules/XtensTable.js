@@ -95,7 +95,7 @@ function renderDatatablesDate(data, type) {
                 return; //TODO add alert box
             } */
             // var dataType = new DataTypeModel(this.dataType);
-            var fieldsToShow = this.dataType.getFlattenedFields(true); // get the names of all the madatafields but those within loops;
+            var fieldsToShow = this.dataType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
             this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), true);  // TODO manage permission for personalDetails
                 _.each(fieldsToShow, function(field) {
                         var colTitle = field.name;
@@ -109,6 +109,11 @@ function renderDatatablesDate(data, type) {
                             "defaultContent": ""
                         };
                         
+                        // if field is loop retrieve multiple values
+                        if (field._loop) {
+                            columnOpts.data = "metadata." + fieldName + ".values"; 
+                        }
+                        
                         switch(field.fieldType) {
                             case "Date":    // if the column has dates render them in the desired format
                                 columnOpts.render = renderDatatablesDate;
@@ -118,12 +123,20 @@ function renderDatatablesDate(data, type) {
                         this.columns.push(columnOpts);
 
                         if (field.hasUnit) {
-                            this.columns.push({
+
+                            columnOpts = {
                                 "title": colTitle + " Unit",
                                 "data": "metadata." + fieldName + ".unit",
                                 "visible": field.visible,
                                 "defaultContent": ""
-                            });
+                            };
+
+                            // if field is loop retrieve multiple units
+                            if (field._loop) {
+                                columnOpts.data = "metadata." + fieldName + ".units"; 
+                            }
+                    
+                            this.columns.push(columnOpts);
                         }
 
                 }, this);

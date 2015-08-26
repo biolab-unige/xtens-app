@@ -174,6 +174,7 @@
             var selectedField = _.findWhere(this.fieldList, matchCriteria);
             this.model.set("fieldType", selectedField.fieldType.toLowerCase());
             this.model.set("isList", selectedField.isList);
+            this.model.set("isInLoop", selectedField._loop);
             this.generateComparisonItem(selectedField);
             this.generateComparedValueItem(selectedField);
             if (selectedField.hasUnit && selectedField.possibleUnits) {
@@ -188,18 +189,23 @@
                 data = [{id: '=', text: '='}];
             }
             else if (metadataField.isList) {
-                data = [ { id: 'IN', text: '=' }, { id: 'NOT IN', text: '≠' }];
+                if (metadataField._loop) {
+                    data = [{id: '?&', text: 'MATCH ALL'}, {id: '?|', text: 'MATCH ANY'}];
+                }
+                else {
+                    data = [{ id: 'IN', text: '=' }, { id: 'NOT IN', text: '≠' }];
+                }
             }
             else if (fieldType === FieldTypes.INTEGER || fieldType === FieldTypes.FLOAT) {
-                data = [ { id: '=', text: '=' }, { id: '<=', text: '≤' },
+                data = [{ id: '=', text: '=' }, { id: '<=', text: '≤' },
                     { id: '>=', text: '≥' }, { id: '<', text: '<' },
                     { id: '>', text: '>' }, { id: '<>', text: '≠' }];
             }
             else if (fieldType === FieldTypes.TEXT) {
-                data = [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }];
+                data = [{ id: '=', text: '=' }, { id: '<>', text: '≠' }];
             }
             else {
-                data = [ { id: '=', text: '=' }, { id: '<>', text: '≠' }];
+                data = [{ id: '=', text: '=' }, { id: '<>', text: '≠' }];
             }
             this.addBinding(null, 'input[name=comparator]', {
                 observe: 'comparator',
