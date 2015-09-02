@@ -21,6 +21,7 @@ var cssFilesToInject = [
     'dependencies/datatables/styles/jquery.dataTables.css',
     'dependencies/datatables-plugins/integration-bootstrap/styles/dataTables.bootstrap.css',
     'dependencies/datatables-plugins/integration-fontAwesome/styles/dataTables.fontAwesome.css',
+    'dependencies/datatables-buttons/styles/buttons.bootstrap.css',
     'dependencies/**/*.css',
     'styles/xtens.css'
 ];
@@ -47,6 +48,11 @@ var jsFilesToInject = [
     'dependencies/**/dropzone.js',
     'dependencies/**/jquery.dataTables.js',
     'dependencies/**/dataTables.bootstrap.js',
+    'dependencies/**/dataTables.buttons.js',
+    'dependencies/**/buttons.bootstrap.js',
+    'dependencies/**/buttons.html5.js',
+    'dependencies/**/jszip.js',
+    'dependencies/**/buttons.colvis.js',
     'dependencies/**/async.js',
     'dependencies/**/d3.js',
     
