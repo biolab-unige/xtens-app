@@ -21,22 +21,24 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "~1.11.3",
-    "bootstrap": "~3.3.5",
-    "underscore": null,
     "backbone": null,
-    "font-awesome": "~4.2.0",
-    "select2": "https://github.com/ivaynberg/select2.git#~3.5.1",
-    "select2-bootstrap-css": "https://github.com/t0m/select2-bootstrap-css.git#~1.4.1",
     "backbone.stickit": "~0.8.0",
-    "parsleyjs": "~2.0.5",
-    "moment": "~2.8.3",
-    "lodash": "~2.4.1",
+    "bootstrap": "~3.3.5",
     "d3": "~3.4.13",
     "datatables": "~1.10.7",
+    "datatables-buttons": "~1.0.3",
     "datatables-plugins": "~1.10.7",
     "dropzone": "~4.0.1",
-    "pikaday": "https://github.com/dbushell/Pikaday.git#~1.2.0"
+    "font-awesome": "~4.2.0",
+    "jquery": "~1.11.3",
+    "jszip": "Stuk/jszip#~2.5.0",
+    "lodash": "~2.4.1",
+    "moment": "~2.8.3",
+    "parsleyjs": "~2.0.5",
+    "pikaday": "https://github.com/dbushell/Pikaday.git#~1.2.0",
+    "select2": "https://github.com/ivaynberg/select2.git#~3.5.3",
+    "select2-bootstrap-css": "https://github.com/t0m/select2-bootstrap-css.git#~1.4.1",
+    "underscore": null
   },
   "exportsOverride": {
     "jquery": {
@@ -82,6 +84,13 @@
       "integration-bootstrap/js": "integration/bootstrap/3/dataTables.bootstrap.js",
       "integration-bootstrap/styles": "integration/bootstrap/3/dataTables.bootstrap.css",
       "integration-fontAwesome/styles": "integration/font-awesome/dataTables.fontAwesome.css"
+    },
+    "datatables-buttons": {
+      "js": "js/*.js",
+      "sass": "css/*.scss"
+    },
+    "jszip": {
+        "js": "dist/jszip.js"
     },
     "dropzone": {
       "js": "dist/*.js",
