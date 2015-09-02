@@ -76,6 +76,14 @@ function renderDatatablesDate(data, type) {
         displayDataTable: function() {
             if (this.tableOpts && !_.isEmpty(this.tableOpts.data)) {
                 this.table = this.$el.DataTable(this.tableOpts);
+                
+                // display the buttons option
+                new $.fn.dataTable.Buttons(this.table, {
+                    buttons: [
+                        'copy', 'excel', 'pdf'
+                    ]
+                });
+                this.table.buttons().container().appendTo($('.col-sm-6:eq(0)', this.table.table().container()));
             }
 
             // the returned dataset is empty
@@ -147,10 +155,11 @@ function renderDatatablesDate(data, type) {
             this.tableOpts = {
                 data: this.data,
                 columns: this.columns,
-                "paging": true,
-                "info": true,
-                "pagingType": "full_numbers" // DOES NOT WORK!!
+                paging: true,
+                info: true,
+                pagingType: "full_numbers" // DOES NOT WORK!!
             };
+
         },
 
         /**
