@@ -184,7 +184,11 @@
         "derived-samples": "Derived Samples",
         "derived-data": "Derived Data",
         /* assets/js/modules/XtensTable.js */
-        "actions": "Actions"
+        "actions": "Actions",
+        /* assets/js/modules/FileManager.js */
+        "file-successfully-uploaded": "File Successfully Uploaded!",
+        "the-file": "The file",
+        "has-been-successfully-uploaded": "has beeen successfully uploaded."
     };
 
     var it = {
