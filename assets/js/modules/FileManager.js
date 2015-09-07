@@ -41,7 +41,6 @@
             this.fileList = new FileManager.List();
             this.fileSystem = options.fileSystem;
             this.dropzoneOpts.url = this.computeFileUploadUrl();
-            this.$queryModal = this.$(".query-modal");  // the modal dialog HTML element
         },
 
         computeFileUploadUrl: function() {
@@ -60,6 +59,7 @@
 
         render: function() {
             this.$el.html(this.template({__:i18n}));
+            this.$queryModal = this.$(".query-modal");  // the modal dialog HTML element
             this.dropzoneDiv = this.$(".dropzone")[0];       // the dropzone HTML element
             return this;
         },
