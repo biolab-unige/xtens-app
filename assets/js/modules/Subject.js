@@ -4,6 +4,9 @@
  */
 
 (function(xtens, Subject) {
+    
+    // TODO: retrieve this info FROM DATABASE ideally or from the server-side anyway
+    var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames; 
 
     var i18n = xtens.module("i18n").en;
     var Data = xtens.module("data");
@@ -125,7 +128,7 @@
          * @override 
          */
         saveData: function() {
-            var metadata = this.schemaView && this.schemaView.serialize();
+            var metadata = this.schemaView && this.schemaView.serialize(useFormattedNames);
             this.model.set("metadata", metadata);
             // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
             if (this.personalDetailsView && this.personalDetailsView.model) {
