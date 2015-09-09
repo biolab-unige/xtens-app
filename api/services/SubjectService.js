@@ -4,7 +4,7 @@
 var BluebirdPromise = require('bluebird');
 
 var SubjectService = BluebirdPromise.promisifyAll({
-    
+
     /**
      * @method
      * @name simplify
@@ -16,10 +16,27 @@ var SubjectService = BluebirdPromise.promisifyAll({
                 subject[elem] = subject[elem].id || subject[elem];
             }
         });
+        
+        // replace each project with its ID
+        if (_.isArray(subject.projects)) {
+            
+            var simplifiedProjects = [];
+
+            subject.projects.forEach(function(project) {
+                simplifiedProjects.push(project.id || project);
+            });
+            
+            subject.projects = simplifiedProjects;
+
+        }
+
+        console.log("simplified project array: " + subject.projects);
+
     }, 
 
+
     anonymize: function() {},
-    
+
     /**
      * @method 
      * @name getOne
