@@ -1,6 +1,12 @@
-var expect = require('chai').expect, assert = require('chai').assert,
-sinon = require('sinon');
+var chai = require("chai");
+var chaiAsPromised = require("chai-as-promised");
+chai.use(chaiAsPromised);
+
+var expect = chai.expect, assert = chai.assert, sinon = require('sinon');
+
 var BluebirdPromise = require('bluebird');
+
+
 
 var foundRecords = [
     {"type": "sometype", "metadata": {"somemetadata": {"value": "val"}}},
@@ -16,7 +22,25 @@ callback.returns(1);
 
 describe('DataService', function() {
 
+    describe("#validate", function() {
 
+        it("should correctly validate a valid data using its schema", function() {
+            var data = fixtures.data[0];
+            var dataType = _.findWhere(fixtures.dataType, {id: data.type});
+            res = DataService.validate(data, true); // skip metadata validation
+            expect(res.error).to.be.null;
+            expect(_.omit(res.value,'date')).to.eql(_.omit(data,'date'));
+        });
+
+        it("should raise an Error if the data is not valid", function() {
+            var invalidData = _.cloneDeep(fixtures.data[0], true);
+            var dataType = _.findWhere(fixtures.dataType, {id: invalidData.type});
+            invalidData.metadata.radius = {value: "Unknown", unit: "M☉"};
+            expect(res.error).to.be.not.null;
+            console.log(res.error);
+        });
+
+    });
 
     describe('#getOneAsync', function() {
 
@@ -44,7 +68,7 @@ describe('DataService', function() {
     });
 
     describe("#queryAndPopulateItemsById", function() {
-        
+
         var dataSpy, subjectSpy, sampleSpy;
 
         beforeEach(function() {
@@ -71,7 +95,7 @@ describe('DataService', function() {
             DataService.queryAndPopulateItemsById(sampleParam, this.dataTypeClasses.SAMPLE, callback);
             expect(sampleSpy.called).to.be.true;
         });
-        
+
         it("#should fire a the proper Model.find call depending on the classTemplate", function() {
             var dataParam = [{id: 3}];
             DataService.queryAndPopulateItemsById(dataParam, this.dataTypeClasses.GENERIC, callback);
@@ -85,7 +109,7 @@ describe('DataService', function() {
 
         var composeStub, queryStub;
         var queryStatement = 'SELECT * FROM data WHERE type = $1';
-                
+
         /**
          * @description BEFORE HOOK: stub all the methods wrapped inside DataService.advancedQuery()
          */
@@ -111,35 +135,35 @@ describe('DataService', function() {
             sails.config.xtens.queryBuilder.compose.restore();
             Data.query.restore();
         });
-        
+
         /*
-        it("should return the query result", function() {
-            var queryArgs = {type: 1};
-            expect(composeStub.called).to.be.false;
-            DataService.advancedQuery(queryArgs, callback);
-            expect(composeStub.called).to.be.true;
-            expect(queryStub.called).to.be.true;
-        }); */
-    
+           it("should return the query result", function() {
+           var queryArgs = {type: 1};
+           expect(composeStub.called).to.be.false;
+           DataService.advancedQuery(queryArgs, callback);
+           expect(composeStub.called).to.be.true;
+           expect(queryStub.called).to.be.true;
+           }); */
+
     });
 
     describe("#storeMetadataIntoEAV", function() {
-        
+
         it("#should call the transactionHandler to execute the storage of metadata value", function() {
-            
+
             var stub = sinon.stub(sails.config.xtens.transactionHandler, 'putMetadataValuesIntoEAV', function() {
                 return BluebirdPromise.try(function() { return [1]; } );
             });
-            
+
             return DataService.storeMetadataIntoEAV(1)
-            
+
             .then(function() {
                 console.log('DataService.test.storeMetadataIntoEAV - testing after promise fulfilled');
                 expect(stub.calledOnce).to.be.true;
                 sails.config.xtens.transactionHandler.putMetadataValuesIntoEAV.restore();
             })
             .catch(function(error) {
-               assert.fail("DataService.test.storeMetadataIntoEAV - error caught"); 
+                assert.fail("DataService.test.storeMetadataIntoEAV - error caught"); 
             });
 
         });

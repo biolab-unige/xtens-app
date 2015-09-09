@@ -7,9 +7,10 @@ var queryBuilder = sails.config.xtens.queryBuilder;
 var DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
 var fileSystemManager = sails.config.xtens.fileSystemManager;
 var transactionHandler = sails.config.xtens.transactionHandler;
+var Joi = require('joi');
 
 var DataService = BluebirdPromise.promisifyAll({
-    
+
     /**
      * @method
      * @name simplify
@@ -23,7 +24,59 @@ var DataService = BluebirdPromise.promisifyAll({
         });
     },
 
-    
+    /**
+     * @method 
+     * @name validate
+     * @param{Object} data - the data to be validated
+     * @param{Object} dataType - the dataType containing the schema aginst which the data's metadata are to be validated
+     * @param{boolean} skipMetadataValidation - if true it skips the metadata validation
+     * @return {Object} null if the value is valid, Error object otherwise
+     */
+    validate: function(data, skipMetadataValidation, dataType) {
+
+        var validationSchema = {
+            id: Joi.number().integer(),
+            type: Joi.number().integer().required(),
+            date: Joi.date().iso().default(Date.now, 'time of creation'),
+            tags: Joi.array(),
+            notes: Joi.string(),
+            metadata: Joi.object().required(),
+            files: Joi.array(),
+            parentSubject: Joi.number().integer(),
+            parentSample: Joi.number().integer(),
+            parentData: Joi.number().integer(),
+            createdAt: Joi.date(),
+            updatedAt: Joi.date()
+        };
+
+        // validate metadata against metadata schema if skipMetadataValidation is set to false
+        if (!skipMetadataValidation) {
+            var metadataValidationSchema = {};
+            var flattenedFields = dataType.getFlattenedFields();  // DataTypeService.getFlattenedFields(dataType);
+            _.each(flattenedFields, function(field) {
+                metadataValidationSchema[field.formattedName] = DataService.buildMetadataFieldValidationSchema(field);
+            });
+            validationSchema.metadata = Joi.object().required().keys(metadataValidationSchema);
+        }
+
+        validationSchema = Joi.object().keys(validationSchema);
+        return Joi.validate(data, validationSchema);
+
+    },
+
+    /**
+     * @method
+     * @name buildMetadataFieldValidationSchema
+     * @description builds the JOI validation schema for a given metadata field
+     * @param{Object} metadataField - the schema of the field
+     * @return{Object} fieldValidatorSchema - the JOI validation schema for the field
+     */
+    buildMetadataFieldValidationSchema: function(metadataField) {
+        var fieldValidatorSchema = {};
+        // TODO
+        return fieldValidatorSchema;
+    },
+
     /**
      * @method
      * @name getOne
@@ -55,7 +108,7 @@ var DataService = BluebirdPromise.promisifyAll({
             text: query.statement, 
             values: query.parameters
         }, next);
-    },
+    },  
 
     /**
      * @method
@@ -85,7 +138,7 @@ var DataService = BluebirdPromise.promisifyAll({
             Data.find({id: ids}).exec(next);
         }
     },
-    
+
     /**
      * @method
      * @name moveFiles
@@ -103,7 +156,7 @@ var DataService = BluebirdPromise.promisifyAll({
             }
         });
     },
-    
+
     /**
      * @method
      * @name saveFileEntities
@@ -147,7 +200,7 @@ var DataService = BluebirdPromise.promisifyAll({
         });
 
     },
-    
+
     /**
      * TODO
      * @method
@@ -158,13 +211,13 @@ var DataService = BluebirdPromise.promisifyAll({
     storeEAVAll: function(limit) {
         var offset = 0; 
         limit = limit || 100000;
-        
+
         var modelName = arguments.length < 2 ? 'data' : 
             (arguments[1].toLowerCase() === 'subject' || arguments[1].toLowerCase() === 'sample') ? arguments[1].toLowerCase() : 'data';
         console.log("modelName: " + modelName);
 
         var query = BluebirdPromise.promisify(Data.query, Data);
-        
+
         return query("SELECT count(*) FROM " + modelName +  ";")
 
         .then(function(res) {

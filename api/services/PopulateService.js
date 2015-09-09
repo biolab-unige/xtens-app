@@ -106,7 +106,7 @@ var PopulateService = {
         var min = field.min || MIN;
         var max = field.max || MAX;
         var res = {
-            "value": (parseFloat(getRandomArbitrary(min,max)).toFixed(3)),
+            "value": parseFloat(parseFloat(getRandomArbitrary(min,max)).toFixed(3)),
             "unit": (field.hasUnit) ? field.possibleUnits[0] : undefined
         };
         return res;
