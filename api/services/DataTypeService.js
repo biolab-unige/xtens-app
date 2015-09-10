@@ -124,7 +124,10 @@ var DataTypeService = {
                     var loopContent = groupContent[j] && groupContent[j].content;
                     for (var k=0; k<loopContent.length; k++) {
                         if (loopContent[k].label === Constants.METADATA_FIELD) {
-                            flattened.push(loopContent[k]);
+                            
+                            // add to the field a private flag that specifies its belonging to a loop
+                            flattened.push(_.extend(loopContent[k], {_loop: true}));                         
+                        
                         }
                     }
                 }

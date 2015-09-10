@@ -5,6 +5,7 @@ var http = require('http');
 var BluebirdPromise = require('bluebird');
 var queryBuilder = sails.config.xtens.queryBuilder;
 var DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
+var FieldTypes = sails.config.xtens.constants.FieldTypes;
 var fileSystemManager = sails.config.xtens.fileSystemManager;
 var transactionHandler = sails.config.xtens.transactionHandler;
 var Joi = require('joi');
@@ -28,11 +29,11 @@ var DataService = BluebirdPromise.promisifyAll({
      * @method 
      * @name validate
      * @param{Object} data - the data to be validated
+     * @param{boolean} performMetadataValidation - if true perform the metadata validation
      * @param{Object} dataType - the dataType containing the schema aginst which the data's metadata are to be validated
-     * @param{boolean} skipMetadataValidation - if true it skips the metadata validation
      * @return {Object} null if the value is valid, Error object otherwise
      */
-    validate: function(data, skipMetadataValidation, dataType) {
+    validate: function(data, performMetadataValidation, dataType) {
 
         var validationSchema = {
             id: Joi.number().integer(),
@@ -50,13 +51,15 @@ var DataService = BluebirdPromise.promisifyAll({
         };
 
         // validate metadata against metadata schema if skipMetadataValidation is set to false
-        if (!skipMetadataValidation) {
+        if (performMetadataValidation) {
+            console.log("Performing metadata validation: " + performMetadataValidation);
             var metadataValidationSchema = {};
-            var flattenedFields = dataType.getFlattenedFields();  // DataTypeService.getFlattenedFields(dataType);
+            var flattenedFields = DataTypeService.getFlattenedFields(dataType);
             _.each(flattenedFields, function(field) {
                 metadataValidationSchema[field.formattedName] = DataService.buildMetadataFieldValidationSchema(field);
             });
             validationSchema.metadata = Joi.object().required().keys(metadataValidationSchema);
+            console.log(validationSchema.metadata);
         }
 
         validationSchema = Joi.object().keys(validationSchema);
@@ -72,8 +75,72 @@ var DataService = BluebirdPromise.promisifyAll({
      * @return{Object} fieldValidatorSchema - the JOI validation schema for the field
      */
     buildMetadataFieldValidationSchema: function(metadataField) {
-        var fieldValidatorSchema = {};
-        // TODO
+        var fieldValidatorSchema = Joi.object();
+
+        var value, unit, group;
+
+        switch(metadataField.fieldType) {
+            case FieldTypes.INTEGER:
+                value = Joi.number().integer();
+            break;
+            case FieldTypes.FLOAT:
+                value = Joi.number();
+            break;
+            case FieldTypes.BOOLEAN:
+                value = Joi.boolean().default(false);
+            break;
+            case FieldTypes.DATE:
+                value = Joi.date();
+            break;
+            default:
+                value = Joi.string();
+        }
+
+        if (metadataField.required) {
+            fieldValidatorSchema = fieldValidatorSchema.required();
+            value = value.required();
+        }
+
+        if (metadataField.customValue) {
+            value = value.default(metadataField.customValue);
+        }
+
+        if (metadataField.isList) {
+            value = value.valid(metadataField.possibleValues);
+        }
+
+        group = Joi.string();
+
+        if (metadataField._loop) {
+            values = Joi.array();
+            if (metadataField.required) values = values.required();
+
+            fieldValidatorSchema = fieldValidatorSchema.keys({
+                values: values.items(value),
+                group: group,
+                loop: Joi.string()
+            });
+            if (metadataField.hasUnit) {
+                units = Joi.array().required();
+                fieldValidatorSchema = fieldValidatorSchema.keys({
+                    units: units.items(Joi.string().required().valid(metadataField.possibleUnits))
+                });
+                // TODO the length of values and units arrys must be equal
+            }
+        }
+
+        else {
+            fieldValidatorSchema = fieldValidatorSchema.keys({
+                value: value,
+                group: group
+            });
+            if (metadataField.hasUnit) {
+                fieldValidatorSchema = fieldValidatorSchema.keys({
+                    unit: Joi.string().required().valid(metadataField.possibleUnits)
+                });
+            }
+        }
+
         return fieldValidatorSchema;
     },
 
