@@ -38,9 +38,9 @@ var DataService = BluebirdPromise.promisifyAll({
         var validationSchema = {
             id: Joi.number().integer(),
             type: Joi.number().integer().required(),
-            date: Joi.date().iso().default(Date.now, 'time of creation'),
-            tags: Joi.array(),
-            notes: Joi.string(),
+            date: Joi.date().iso().allow(null),
+            tags: Joi.array().allow(null),
+            notes: Joi.string().allow(null),
             metadata: Joi.object().required(),
             files: Joi.array(),
             parentSubject: Joi.number().integer(),
@@ -99,6 +99,9 @@ var DataService = BluebirdPromise.promisifyAll({
         if (metadataField.required) {
             fieldValidatorSchema = fieldValidatorSchema.required();
             value = value.required();
+        }
+        else {      // allow "null" value if value is not required
+            value = value.allow(null);
         }
 
         if (metadataField.customValue) {
