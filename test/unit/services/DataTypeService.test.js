@@ -15,14 +15,14 @@ describe('DataTypeService', function() {
                 flattened.forEach(function(field){
                     expect(field.label).to.equal("METADATA FIELD");
                 });
-                expect(flattened[0].name).to.equal('name');
-                expect(flattened[1].name).to.equal('constellation');
-                expect(flattened[2].name).to.equal('classification');
-                expect(flattened[3].name).to.equal('designation');
-                expect(flattened[4].name).to.equal('mass');
-                expect(flattened[5].name).to.equal('radius');
-                expect(flattened[6].name).to.equal('luminosity');
-                expect(flattened[7].name).to.equal('temperature');
+                expect(flattened[0].name).to.equal('Name');
+                expect(flattened[1].name).to.equal('Constellation');
+                expect(flattened[2].name).to.equal('Classification');
+                expect(flattened[3].name).to.equal('Designation');
+                expect(flattened[4].name).to.equal('Mass');
+                expect(flattened[5].name).to.equal('Radius');
+                expect(flattened[6].name).to.equal('Luminosity');
+                expect(flattened[7].name).to.equal('Temperature');
             });
         });
 
@@ -54,16 +54,7 @@ describe('DataTypeService', function() {
                 console.log('testing after promise fulfilled');
                 expect(_this.transactionalPutMetadataFieldsIntoEAV.calledOnce).to.be.true;
             });
-            /*
-            expect(this.eavAttributeCreate.called).to.be.true;
-            expect(this.eavAttributeCreate.calledCount).to.equal(this.fields.length);
-            expect(this.eavLoopCreate.calledOnce).to.be.true;
-            for (i=0; i<this.fields.length; i++) {
-                var spyCall = this.eavAttributeCreate.getCall(i);
-                var field = _.merge(_.pick(this.fields[i], ['name', 'fieldType', 'hasUnit']), {'dataType': this.dataType.id});
-                expect(spyCall.calledWith(field));
-            } */
-            
+                        
         });
     });
 

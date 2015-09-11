@@ -127,11 +127,11 @@ describe('PopulateService', function() {
             var variantFields = fixtures.datatype[3];
              var fields = {};
 
-            fields.fields = DataTypeService.getFlattenedFields(variantFields,false);
+            fields.fields = DataTypeService.getFlattenedFields(variantFields, false);
             fields.id = variantFields.id;
 
-        
-            var variant = PopulateService.generateVariantData(fields);
+            // generateVariantData using formattedNames (second param set to TRUE)
+            var variant = PopulateService.generateVariantData(fields, true);
 
             expect(variant).to.be.a('object');
             expect(variant.metadata.chromosome.value).to.be.a('string');
@@ -149,15 +149,14 @@ describe('PopulateService', function() {
 
             fields.fields = DataTypeService.getFlattenedFields(annotationFields);
             fields.id = annotationFields.id;
-
-            var annotation = PopulateService.generateVariantAnnotationData(fields);
+            
+            // generateVariantData using formattedNames (second param set to TRUE)
+            var annotation = PopulateService.generateVariantAnnotationData(fields, true);
 
             expect(annotation).to.be.a('object');
             expect(annotation.metadata.gene_id.value).to.be.a('string');
         
-        
         });
-    
     
     });
 

@@ -61,7 +61,7 @@ describe('DataService', function() {
             var integerField = fixtures.datatype[2].schema.body[1].content[3]; // temperature of star
             var schema = DataService.buildMetadataFieldValidationSchema(integerField);
             var expectedSchema = Joi.object().keys({
-                value: Joi.number().integer(),
+                value: Joi.number().integer().allow(null),
                 group: Joi.string(),
                 unit: Joi.string().required().valid(integerField.possibleUnits)
             });
