@@ -4,6 +4,7 @@
  * @description :: Server-side logic for managing data
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
+var ControllerOut = require("xtens-utils").ControllerOut;
 var transactionHandler = sails.config.xtens.transactionHandler;
 var DATA = sails.config.xtens.constants.DataTypeClasses.DATA;
 
@@ -59,18 +60,20 @@ module.exports = {
 
     create: function(req, res) {
         var data = req.body;
-
-        /*TODO every data instance must be associated to a subject
-        if (_.isEmpty(data.parentSubject)) {
-            throw new Error("missing parent Subject ID.");
-        } */
+        var co = new ControllerOut(res);
 
         DataService.simplify(data);
 
-        DataType.findOne(data.type)
-        .then(function(dataType) {
-            var dataTypeName = dataType && dataType.name;
-            return transactionHandler.createData(data, dataTypeName);
+        DataType.findOne(data.type).then(function(dataType) {
+            var validationRes = DataService.validate(data, true, dataType);
+            if (validationRes.error === null) {
+                data = validationRes.value;
+                var dataTypeName = dataType && dataType.name;
+                return transactionHandler.createData(data, dataTypeName);
+            }
+            else {
+                throw new Error(validationRes.error);
+            } 
         })
         .then(function(idData) {
             console.log(idData);
@@ -80,8 +83,8 @@ module.exports = {
             return res.json(result);
         })
         .catch(function(error) {
-            console.log(error.message);
-            return res.serverError(error.message);
+            console.log("Error: " + error.message);
+            return co.error(error);
         });
     },
 
@@ -91,16 +94,20 @@ module.exports = {
      */
     update: function(req, res) {
         var data = req.body;
+        var co = new ControllerOut(res);
 
         DataService.simplify(data);
-        /*
-        ["type", "parentSubject", "parentSample", "parentData"].forEach(function(elem) {
-            if (data[elem]) {
-                data[elem] = data[elem].id || data[elem];
-            }
-        }); */
 
-        transactionHandler.updateData(data)
+        DataType.findOne(data.type).then(function(dataType) {
+            var validationRes = DataService.validate(data, true, dataType);
+            if (validationRes.error === null) {
+                data = validationRes.value;
+                return transactionHandler.updateData(data);
+            }
+            else {
+                throw new Error(validationRes.error);
+            } 
+        })
         .then(function(idData) {
             return Data.findOne(idData).populateAll();
         })
@@ -108,8 +115,8 @@ module.exports = {
             return res.json(result);
         })
         .catch(function(error) {
-            console.log(error.message);
-            return res.serverError(error.message);
+            console.log("Error: " + error.message);
+            return co.error(error);
         });
     } 
 };
