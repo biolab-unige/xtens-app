@@ -153,7 +153,7 @@ var DataTypeService = {
         .then(function(foundType) {
             console.log("DataTypeService.putMetadataFieldsIntoEAV - found type" + foundType);
             var fields = DataTypeService.getFlattenedFields(foundType, false);
-            return transactionHandler.putMetadataFieldsIntoEAV(foundType.id, fields);
+            return transactionHandler.putMetadataFieldsIntoEAV(foundType.id, fields, true);
         })
         .then(function(inserted) {
             console.log("new EavAttributes inserted: " + inserted);
