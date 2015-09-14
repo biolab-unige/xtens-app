@@ -25,6 +25,9 @@ function renderDatatablesDate(data, type) {
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
     var DataTypeModel = xtens.module("datatype").Model;
+    var Data = xtens.module("data");
+    var Sample = xtens.module("sample");
+    // var FileManager = xtens.module("filemanager");
     
     /**
      * @class Views.Datatable
@@ -45,6 +48,8 @@ function renderDatatablesDate(data, type) {
         },
 
         events: {
+            "click .xtenstable-files": "showFileList",
+            "click .xtenstable-derivedsamples": "showDerivedSampleList",
             "click .xtenstable-deriveddata": "showDerivedDataList"
         },
         
@@ -272,10 +277,66 @@ function renderDatatablesDate(data, type) {
         /**
          * @method
          * @name showDerivedDataList
+         * @param{Object} ev - the current event
          * @description returns a list of the data stored as children of the given data instance
          */
-        showDerivedDataList: function() {
-            
+        showDerivedDataList: function(ev) {
+            var currRow = this.table.row($(ev.currentTarget).parents('tr'));
+            var data = currRow.data();
+            var childrenData = new Data.List();
+            var model = this.dataType.get("model");
+            var parentProperty = model === Classes.SUBJECT ? 'parentSubject' : model === Classes.SAMPLE ? 'parentSample' : 'parentData';
+            var params = {};
+            params[parentProperty] = data.id;
+            childrenData.fetch({
+                data: $.param(params),
+                success: function(results) {
+                    // TODO
+                    console.log(results);
+                },
+                error: function(coll, err) {
+                    console.log(err);
+                }
+
+            });
+        },
+
+        /**
+         * @method
+         * @name showDerivedSampleList
+         * @param{Object} ev - the current event
+         * @description returns a list of the samples stored as children of the given data instance
+         *
+         */
+        showDerivedSampleList: function(ev) {
+            var currRow = this.table.row($(ev.currentTarget).parents('tr'));
+            var data = currRow.data();
+            var childrenSample = new Sample.List();
+            var model = this.dataType.get("model");
+            var parentProperty = model === Classes.SUBJECT ? 'donor' : 'parentSample';
+            var params = {};
+            params[parentProperty] = data.id;
+            childrenSample.fetch({
+                data: $.param(params),
+                success: function(results) {
+                    console.log(results);
+                },
+                error: function(coll, err) {
+                    console.log(err);
+                }
+            });
+        },
+
+        /**
+         * @method
+         * @name showFileList
+         * @param{Object} ev- the current event
+         * @description returns the list of files associated to the current data instance
+         */
+        showFileList: function(ev) {
+            var currRow = this.table.row($(ev.currentTarget).parents('tr'));
+            var data = currRow.data();
+            // TODO model for files;
         }
 
     });
