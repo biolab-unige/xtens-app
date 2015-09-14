@@ -162,16 +162,43 @@ var DataTypeService = {
      */
 
     getByOperator: function(idOperator, params, next) {
+        var statement = ['SELECT d.id, d.name, d.schema FROM data_type d ',
+                'INNER JOIN datatype_groups__group_datatypes dggd ON d.id = dggd.datatype_groups ',
+                'INNER JOIN xtens_group g ON g.id = dggd."group_dataTypes" ',
+                'INNER JOIN group_members__operator_groups gmog ON g.id = gmog.group_members ',
+                'INNER JOIN operator o ON o.id = gmog.operator_groups '].join("");
+        var whereClause = 'WHERE o.id = $1 AND d.model = $2';
+        var vals = [idOperator, params.model];
+
+        if (params.idDataType) {
+            statement = [statement, 'INNER JOIN datatype_children__datatype_parents dcdp ON dcdp.datatype_parents = d.id ',
+                'INNER JOIN data_type dp ON dp.id = dcdp.datatype_children '].join();
+            whereClause = whereClause + ' AND dp.id = $3';
+            vals.push(params.idDataType);
+        }
+        else if (params.idDataTypes) {
+            var idDataTypes = params.idDataTypes.split(',').map(function(val) {return _.parseInt(val);});
+            var fragments = [];
+            for (var i=0; i<idDataTypes.length; i++) {
+                fragments.push('$' + (vals.length + i + 1));
+            } 
+            whereClause += ' AND d.id IN (' + fragments.join(",") + ')';
+            vals.push(idDataTypes);
+            vals = _.flatten(vals);
+        }
+        
         DataType.query({
-            name: 'findDataTypeByOperator',
+            // name: 'findDataTypeByOperator',
+            text: [statement, whereClause, ';'].join(""),
+            /*
             text: ['SELECT d.id, d.name, d.schema FROM data_type d ',
                 'INNER JOIN datatype_groups__group_datatypes dggd ON d.id = dggd.datatype_groups ',
                 'INNER JOIN xtens_group g ON g.id = dggd."group_dataTypes" ',
                 'INNER JOIN group_members__operator_groups gmog ON g.id = gmog.group_members ',
                 'INNER JOIN operator o ON o.id = gmog.operator_groups ',
                 'WHERE o.id = $1 AND d.model = $2;'
-            ].join(""),
-            values: [idOperator, params.model]
+            ].join(""), */
+            values: vals
         }, function(err, result) {
             if (err) {
                 next(err);

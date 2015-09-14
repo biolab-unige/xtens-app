@@ -15,7 +15,7 @@ module.exports = {
      */
 
     edit: function(req, res) {
-
+        var co = new ControllerOut(res);
         var params = req.allParams();
         params.model = DATA;
         var idOperator = TokenService.getToken(req);
@@ -45,7 +45,7 @@ module.exports = {
 
         }, function(err, results) {
             if (err) {
-                return res.serverError("error");
+                return co.error(err);
             }
             return res.json(results);
 
@@ -57,7 +57,6 @@ module.exports = {
      *  @description POST /data -> create a new Data Instance; transaction-safe implementation 
      *                   
      */
-
     create: function(req, res) {
         var data = req.body;
         var co = new ControllerOut(res);
