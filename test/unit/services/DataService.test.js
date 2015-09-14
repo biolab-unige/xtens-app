@@ -26,8 +26,8 @@ describe('DataService', function() {
     describe("#validate", function() {
 
         it("should correctly validate a valid data using its schema", function() {
-            var data = fixtures.data[0];
-            var dataType = _.findWhere(fixtures.datatype, {id: data.type});
+            var data = _.cloneDeep(fixtures.data[0]);
+            var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: data.type}));
             var res = DataService.validate(data); // skip metadata validation
             expect(res.error).to.be.null;
             expect(_.omit(res.value,'date')).to.eql(_.omit(data,'date'));
@@ -35,7 +35,7 @@ describe('DataService', function() {
 
         it("should raise an Error if the data is not valid", function() {
             var invalidData = _.cloneDeep(fixtures.data[0]);
-            var dataType = _.findWhere(fixtures.datatype, {id: invalidData.type});
+            var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: invalidData.type}));
             invalidData.metadata.radius = {value: "Unknown", unit: "M☉"};
             var res = DataService.validate(invalidData, true, dataType);
             expect(res.error).to.be.not.null;
@@ -47,7 +47,7 @@ describe('DataService', function() {
     describe("#buildMetadataFieldValidationSchema", function() {
         
         it("should create the correct schema for an textual metadata field", function() {
-            var textField = fixtures.datatype[2].schema.body[0].content[0];  // name of star
+            var textField = _.cloneDeep(fixtures.datatype[2].schema.body[0].content[0]);  // name of star
             var schema = DataService.buildMetadataFieldValidationSchema(textField);
             var expectedSchema = Joi.object().required().keys({
                 value: Joi.string().required(),
@@ -58,7 +58,7 @@ describe('DataService', function() {
         });
         
         it("should create the correct schema for an integer metadata field", function() {
-            var integerField = fixtures.datatype[2].schema.body[1].content[3]; // temperature of star
+            var integerField = _.cloneDeep(fixtures.datatype[2].schema.body[1].content[3]); // temperature of star
             var schema = DataService.buildMetadataFieldValidationSchema(integerField);
             var expectedSchema = Joi.object().keys({
                 value: Joi.number().integer().allow(null),
@@ -69,7 +69,7 @@ describe('DataService', function() {
         });
 
         it("should create the correct schema for a float metadata field", function() {
-            var floatField = fixtures.datatype[2].schema.body[1].content[0]; // mass of star 
+            var floatField = _.cloneDeep(fixtures.datatype[2].schema.body[1].content[0]); // mass of star 
             var schema = DataService.buildMetadataFieldValidationSchema(floatField);
             var expectedSchema = Joi.object().required().keys({
                 value: Joi.number().required(),
@@ -80,7 +80,7 @@ describe('DataService', function() {
         });
         
         it("should create the correct schema for an textual metadata field from controlled vocabulary", function() {
-            var controlledVocField = fixtures.datatype[2].schema.body[0].content[1]; // constellation of star
+            var controlledVocField = _.cloneDeep(fixtures.datatype[2].schema.body[0].content[1]); // constellation of star
             var schema = DataService.buildMetadataFieldValidationSchema(controlledVocField);
             var expectedSchema = Joi.object().required().keys({
                 value: Joi.string().required().valid(controlledVocField.possibleValues),
@@ -90,7 +90,7 @@ describe('DataService', function() {
         });
 
         it("should create the correct schema for an textual metadata field from controlled vocabulary", function() {
-            var loopTextField = _.extend(fixtures.datatype[2].schema.body[0].content[3].content[0], {_loop: true});
+            var loopTextField = _.extend(_.cloneDeep(fixtures.datatype[2].schema.body[0].content[3].content[0]), {_loop: true});
             var schema = DataService.buildMetadataFieldValidationSchema(loopTextField);
             var expectedSchema = Joi.object().required().keys({
                 values: Joi.array().required().items(Joi.string().required()),

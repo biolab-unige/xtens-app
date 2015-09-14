@@ -1,11 +1,130 @@
 /** 
  *  @module
+ *  @name DataTypeService
  *  @author Massimiliano Izzo
  */
+var Joi = require("joi");
 var Constants = sails.config.xtens.constants;
 var transactionHandler = sails.config.xtens.transactionHandler;
 
 var DataTypeService = {
+
+    /**
+     * @method
+     * @name validateMetadataField
+     */
+    validateMetadataField: function(field) {
+        var metadataFieldValidationSchema = Joi.object().keys({
+                name: Joi.string().required(),
+                formattedName: Joi.string().required(),
+                fieldType: Joi.string().required().valid(_.values(Constants.FieldTypes)),
+                label: Joi.string().required().valid(Constants.METADATA_FIELD),
+                isList: Joi.boolean().required(),
+                possibleValues: Joi.array().allow(null),
+                hasUnit: Joi.boolean().required(),
+                possibleUnits: Joi.array().allow(null),
+                required: Joi.boolean().required(),
+                sensitive: Joi.boolean().default(false),
+                visible: Joi.boolean().default(true),
+                hasRange: Joi.boolean().required(),
+                min: Joi.number().allow(null),
+                max: Joi.number().allow(null),
+                step: Joi.number().allow(null),
+                customValue: Joi.any().allow(null),
+                ontologyUri: Joi.string().allow(null),
+                _loop: Joi.boolean()     // optional boolean field that specifies whether the current field belongs to a metadata loop
+        });
+        return Joi.validate(field, metadataFieldValidationSchema);
+    },
+
+    /**
+     * @method
+     * @name validate
+     * @description validata a DataType, especially its schema
+     * @param{Object} dataType - the data type to be validated
+     * @param{boolean} performSchemaValidation - if true perform also DataType schema validation
+     * @return {Object} - the result object contains two properties:
+     *                      - error: null if the DataType is validated, an Error object otherwise
+     *                      - value: the validated DataType object if no error is returned
+     */
+    validate: function(dataType, performSchemaValidation) {
+
+        var validationSchema = {
+            id: Joi.number().integer().positive(),
+            name: Joi.string().required(),
+            model: Joi.string().required().valid(_.values(Constants.DataTypeClasses)),
+            schema: Joi.object().required(),
+            parents: Joi.array().allow(null),
+            children: Joi.array().allow(null),
+            data: Joi.array().allow(null),
+            createdAt: Joi.date(),
+            updatedAt: Joi.date()
+        };
+
+        if (performSchemaValidation) {
+
+            var metadataFieldValidationSchema = Joi.object().keys({
+                name: Joi.string().required(),
+                formattedName: Joi.string().required(),
+                fieldType: Joi.string().required().valid(_.values(Constants.FieldTypes)),
+                label: Joi.string().required().valid(Constants.METADATA_FIELD),
+                isList: Joi.boolean().required(),
+                possibleValues: Joi.array().allow(null),
+                hasUnit: Joi.boolean().required(),
+                possibleUnits: Joi.array().allow(null),
+                required: Joi.boolean().required(),
+                sensitive: Joi.boolean().default(false),
+                visible: Joi.boolean().default(true),
+                hasRange: Joi.boolean().required(),
+                min: Joi.number().allow(null),
+                max: Joi.number().allow(null),
+                step: Joi.number().allow(null),
+                customValue: Joi.any().allow(null),
+                ontologyUri: Joi.string().allow(null),
+                _loop: Joi.boolean()     // optional boolean field that specifies whether the current field belongs to a metadata loop
+            });
+
+            var metadataLoopValidationSchema = Joi.object().keys({
+                name: Joi.string().required(),
+                label: Joi.string().required().valid(Constants.METADATA_LOOP),
+                content: Joi.array().required().items(metadataFieldValidationSchema)
+            });
+
+            var metadataGroupValidationSchema = Joi.object().keys({
+                name: Joi.string().required(),
+                label: Joi.string().required().valid(Constants.METADATA_GROUP),
+                content: Joi.array().required().items(metadataLoopValidationSchema, metadataFieldValidationSchema)
+            });
+
+            var metadataHeaderValidationSchema = Joi.object().keys({
+                name: Joi.string().required(),
+                description: Joi.string().required(),
+                model: Joi.string().valid(_.values(Constants.DataTypeClasses)),
+                fileUpload: Joi.boolean().required(),
+                version: Joi.string().allow(""),
+                ontology: Joi.string().allow("")
+            });
+
+            validationSchema.schema = Joi.object().required().keys({
+                header: metadataHeaderValidationSchema,
+                body: Joi.array().required().items(metadataGroupValidationSchema)
+            });
+
+
+        }
+
+        validationSchema = Joi.object().keys(validationSchema);
+        return Joi.validate(dataType, validationSchema);
+
+    },
+
+    /**
+     * @method
+     * @name getChildrenRecursive
+     * @description given a list (array) of DataType find recursively all the children data types
+     * @param{Array} parents - an array of DataType whose children are to be sought
+     * @return{Array} an array of children data types
+     */
 
     getChildrenRecursive: function(parents) {
         parents.forEach(function(parent, index) {
@@ -124,10 +243,10 @@ var DataTypeService = {
                     var loopContent = groupContent[j] && groupContent[j].content;
                     for (var k=0; k<loopContent.length; k++) {
                         if (loopContent[k].label === Constants.METADATA_FIELD) {
-                            
+
                             // add to the field a private flag that specifies its belonging to a loop
                             flattened.push(_.extend(loopContent[k], {_loop: true}));                         
-                        
+
                         }
                     }
                 }
@@ -136,7 +255,7 @@ var DataTypeService = {
         }
         return flattened;
     },
-    
+
     /**
      * @method
      * @name putMetadataFieldIntoEAV
@@ -145,10 +264,10 @@ var DataTypeService = {
      * @param {Integer} dataType - the id of the DataType
      */
     putMetadataFieldsIntoEAV: function(dataType) {
-        
+
         // check whether the dataType effectively exists
         return DataType.findOne(dataType)
-        
+
         // extract and store all metadata fields
         .then(function(foundType) {
             console.log("DataTypeService.putMetadataFieldsIntoEAV - found type" + foundType);
@@ -161,7 +280,7 @@ var DataTypeService = {
         .catch(function(err) {
             console.log("DataTypeService.putMetadataFieldsIntoEAV - error caught");
         });
-    
+
     },
 
 

@@ -31,12 +31,14 @@ var DataService = BluebirdPromise.promisifyAll({
      * @param{Object} data - the data to be validated
      * @param{boolean} performMetadataValidation - if true perform the metadata validation
      * @param{Object} dataType - the dataType containing the schema aginst which the data's metadata are to be validated
-     * @return {Object} null if the value is valid, Error object otherwise
+     * @return {Object} - the result object contains two properties:
+     *                      - error: null if the Data is validated, an Error object otherwise
+     *                      - value: the validated data object if no error is returned
      */
     validate: function(data, performMetadataValidation, dataType) {
 
         var validationSchema = {
-            id: Joi.number().integer(),
+            id: Joi.number().integer().positive(),
             type: Joi.number().integer().required(),
             date: Joi.date().iso().allow(null),
             tags: Joi.array().allow(null),
