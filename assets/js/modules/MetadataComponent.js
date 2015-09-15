@@ -48,7 +48,12 @@
             }
             return null;
         },
-
+        
+        /**
+         * @method
+         * @name closeMe
+         * @description trigger a 'closeMe' for the parent view to get it and close this child
+         */
         closeMe: function(ev) {
             this.trigger('closeMe', this);
         },
@@ -66,15 +71,4 @@
 
     });
     
-    /*
-    MetadataComponent.Views.Form = Backbone.View.extend({
-        
-        initialize: function() {
-            this.template = null;   // no template implemented at this stage
-        },
-
-        render: function() {}
-
-    }); */
-
 } (xtens, xtens.module("metadatacomponent")));

@@ -2,15 +2,16 @@
  * @author Massimiliano Izzo
  *
  */
-(function(xtens, XtensDialog) {
+(function(xtens, XtensBootstrap) {
 
     var i18n = xtens.module("i18n").en;
 
     /**
      * @class
+     * @name XtensBootstrap.Views.ModalDialog
      * @description A class to implement a modal dialog based on Bootstrap Library
      */
-    XtensDialog.Views.ModalDialog = Backbone.View.extend({
+    XtensBootstrap.Views.ModalDialog = Backbone.View.extend({
         
         className: 'xtens-modal',
 
@@ -47,4 +48,22 @@
 
     });
 
-} (xtens, xtens.module("xtensdialog")));
+    /**
+     * @class
+     * @name XtensBootstrap.Views.Popover
+     */
+    XtensBootstrap.Views.Popover = Backbone.View.extend({
+        
+        className: 'xtens-popover',
+
+        initialize: function(options) {
+            this.template = JST["views/templates/popover-bootstrap.ejs"];
+        },
+
+        render: function() {
+            return this;
+        }
+
+    });
+
+} (xtens, xtens.module("xtensbootstrap")));

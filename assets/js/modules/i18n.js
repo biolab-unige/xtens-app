@@ -188,7 +188,10 @@
         /* assets/js/modules/FileManager.js */
         "file-successfully-uploaded": "File Successfully Uploaded!",
         "the-file": "The file",
-        "has-been-successfully-uploaded": "has beeen successfully uploaded."
+        "has-been-successfully-uploaded": "has beeen successfully uploaded.",
+        /* views/templates/datafile-list.ejs */
+        "file-list": "File List",
+        "download": "Download"
     };
 
     var it = {

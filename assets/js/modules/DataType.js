@@ -27,7 +27,9 @@
         errorTemplate: "<span></span>"
     };
 
-    /**
+    /** 
+     * @class
+     * @name DataType.Model
      *  define a DataType model
      */
     DataType.Model = Backbone.Model.extend({
@@ -93,6 +95,8 @@
         },
 
         /**
+         * @method
+         * @name validate
          * @description customized client-side validation for DataType Model
          */
         validate: function(attrs, opts) {
@@ -249,7 +253,6 @@
 
             this.model.set("parents", _.pluck(this.model.get("parents"),'id'));
 
-            //var dataType = new DataType.Model();
             this.model.save(dataTypeDetails, {
                 //  patch: true,
                 success: function(dataType) {

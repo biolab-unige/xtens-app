@@ -1,4 +1,5 @@
 /**
+ * @module
  * @author Massimiliano Izzo
  * 
  */
@@ -20,17 +21,17 @@ function renderDatatablesDate(data, type) {
 (function(xtens, XtensTable) {
 
     var i18n = xtens.module("i18n").en; 
-
     var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames;
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
     var DataTypeModel = xtens.module("datatype").Model;
     var Data = xtens.module("data");
     var Sample = xtens.module("sample");
-    // var FileManager = xtens.module("filemanager");
+    var DataFile = xtens.module("datafile");
     
     /**
-     * @class Views.Datatable
+     * @class 
+     * @name Views.Datatable
      */
     XtensTable.Views.DataTable = Backbone.View.extend({
 
@@ -43,6 +44,7 @@ function renderDatatablesDate(data, type) {
             }
             this.dataType = new DataTypeModel(options.dataType);
             this.data = options.data;
+            this.childrenViews = [];
             this.prepareDataForRenderingJSON();
             // this.render();
         },
@@ -334,9 +336,50 @@ function renderDatatablesDate(data, type) {
          * @description returns the list of files associated to the current data instance
          */
         showFileList: function(ev) {
+            var that = this;
             var currRow = this.table.row($(ev.currentTarget).parents('tr'));
-            var data = currRow.data();
-            // TODO model for files;
+            var id = currRow.data().id;
+            var data = new Data.Model();
+            data.set("id", currRow.data().id);
+            data.fetch({
+                success: function(result) {
+                    var files = result.get("files");
+                    var dataFiles = new DataFile.List(files);
+                    var view = new DataFile.Views.List({collection: dataFiles});
+                    console.log(dataFiles);
+                    
+                    // if there is any open popover close it
+                    $('[data-original-title]').popover('hide');
+
+                    $(ev.currentTarget).popover({
+                        html: true,
+                        content: view.render().el
+                    }).popover('show');
+                    that.listenTo(view, 'closeMe', that.removeChild);
+                    that.childrenViews.push(view);
+                },
+                error: function(model, err) {
+                    console.log(err);
+                }
+            });
+        },
+        
+        /**
+         * @method
+         * @name removeChild
+         * @param{Backbone.View} - the child view to be removed
+         * @description safely remove a child view (such as a popover) from the table
+         */
+        removeChild: function(child) {
+            for (var i=0, len = this.childrenViews.length; i<len; i++) {
+                if (_.isEqual(this.childrenViews[i], child)) {
+                    this.stopListening(child);
+                    child.remove();
+                    // if contained within a popover remove it
+                    $('[data-original-title]').popover('hide');
+                    this.childrenViews.splice(i, 1);
+                }
+            }
         }
 
     });
