@@ -1,6 +1,6 @@
 (function(xtens,FileManager) {
     var i18n = xtens.module("i18n").en;
-    var ModalDialog = xtens.module("xtensdialog").Views.ModalDialog;    
+    var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;    
     var router = xtens.router;
 
     // TODO: move this to server side config

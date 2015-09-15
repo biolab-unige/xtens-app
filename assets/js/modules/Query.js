@@ -6,7 +6,7 @@
     var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames;
     var Constants = xtens.module("xtensconstants").Constants; 
     var FieldTypes = xtens.module("xtensconstants").FieldTypes;
-    var ModalDialog = xtens.module("xtensdialog").Views.ModalDialog;
+    var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
     var QueryStrategy = xtens.module("querystrategy");
     var Data = xtens.module("data");
     var DataType = xtens.module("datatype");
