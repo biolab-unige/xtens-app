@@ -6,7 +6,7 @@
     var i18n = xtens.module("i18n").en;
 
     // var metadataFieldNameNotAllowedCharset = /[^A-Za-z_][^A-Za-z_0-9]*/g;    
-    var metadataFieldNameNotAllowedCharset = /[^A-Za-z_0-9:]/g;   
+    var metadataFieldNameNotAllowedCharset = /[^A-Za-z_$0-9:]/g;   
     
     /*
        function addChoiceToSelect2(term, data) {
@@ -88,9 +88,9 @@
         formatName: function() {
             var name = this.get("name");
             
-            // if name starts with digit add underscore at the beginning
+            // if name starts with digit add a dollar char ($) at the beginning
             if (/^\d/.test(name)) {
-                name = "_" + name;
+                name = "$" + name;
             }
             
             // replace with underscore all the not allowed charsets 

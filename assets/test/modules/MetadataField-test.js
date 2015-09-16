@@ -34,13 +34,13 @@ describe("MetadataField.Model", function() {
         it('formats correctly a name with numbers', function() {
             this.model.set("name", "2force80");
             this.model.formatName();
-            expect(this.model.get("formattedName")).to.equal("_2force80");
+            expect(this.model.get("formattedName")).to.equal("$2force80");
         });
 
         it('formats correctly a name with numbers and slashes and tabs', function() {
             this.model.set("name", "280/230 test");
             this.model.formatName();
-            expect(this.model.get("formattedName")).to.equal("_280_230_test");
+            expect(this.model.get("formattedName")).to.equal("$280_230_test");
         });
         
         it('formats correctly a name with capital letters', function() {
