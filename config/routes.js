@@ -60,6 +60,8 @@ module.exports.routes = {
     'GET /fileManager': {controller: 'main', action: 'getFileSystemStrategy'},
 
     'POST /migrate': {controller: 'main', action: 'migrate'},
+
+    'GET /fileContent': {controller: 'main', action: 'downloadFileContent'},
        
     // REST API for subject (with personal info)
     // 'GET /subjectWithPersonalDetails': {controller: 'subject', action: 'findWithPersonalDetails'},

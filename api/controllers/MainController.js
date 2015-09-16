@@ -4,6 +4,9 @@
  * @description :: Server-side logic for managing mains
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
+var BluebirdPromise = require("bluebird");
+var fileSystemManager = BluebirdPromise.promisifyAll(sails.config.xtens.fileSystemManager);
+var ControllerOut = require("xtens-utils").ControllerOut;
 var MainController = {
 
     /**
@@ -59,6 +62,38 @@ var MainController = {
         return res.json(conn);
     },
 
+    /**
+     * @method
+     * @name downloadFile
+     * @description download a file from the remote file system
+     * @param{integer} - id: the file unique ID
+     * TODO move to another controller (?)
+     */
+    downloadFileContent: function(req, res) {
+
+        var co = new ControllerOut(res);
+        var fileId = _.parseInt(req.param('id'));
+
+        DataFile.findOne(fileId).then(function(dataFile) {
+            
+            var pathFrags = dataFile.uri.split("/");
+            var fileName = pathFrags[pathFrags.length-1];
+
+            // set response headers for file download 
+            res.setHeader('Content-disposition', 'attachment;filename='+fileName);
+            
+            return fileSystemManager.downloadFileContentAsync(dataFile.uri, res);
+        
+        })
+        .then(function() {
+            return res.ok(); // res.json() ??
+        })
+        .catch(function(err) {
+            return co.error(err);
+        });
+        
+    },
+
     upload: function(req, res) {
         req.file('uploadFile').upload(function (err, files) {
             if (err)
@@ -70,26 +105,6 @@ var MainController = {
             });
         });
     },
-
-    /*
-     * @method
-     * @test
-     * TODO remove this one! Only for testing EAV catalogue
-     *
-populateEAV: function(req, res) {
-var idData = _.parseInt(req.param("idData"));
-console.log("MainController.populateEav - idData = " + idData);
-DataService.storeMetadataIntoEAV(idData)
-
-.then(function(res) {
-console.log(res);
-return res.json(res);
-})
-
-.catch(function(err) {
-console.log("MainController.populateEav - error caught: " + err);
-});
-} */
 
     /**
      * @method

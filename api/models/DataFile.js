@@ -13,6 +13,7 @@ module.exports = {
 
         uri: {
             type: 'text',
+            required: true,
             unique: true,
             columnName: 'uri'
         },
