@@ -200,7 +200,7 @@
 
     /**
      * @class
-     * @name MetadataComponent
+     * @name Data.Views.MetadataComponent
      * @description Implements a generic metadata component view according to the Composite pattern
      */
 
