@@ -44,12 +44,15 @@ var MainController = {
             } 
         });
     },
-
+    
+    /**
+     * @method
+     * @name logout
+     * @deprecated
+     */    
     logout: function (req,res){
-
         req.session.destroy();
         res.redirect('#/login');
-
     },
 
     /**
@@ -94,7 +97,7 @@ var MainController = {
         
     },
 
-    upload: function(req, res) {
+    uploadFileContent: function(req, res) {
         req.file('uploadFile').upload(function (err, files) {
             if (err)
                 return res.serverError(err);
@@ -140,6 +143,21 @@ var MainController = {
         })
         .catch(function(err) {
             return res.serverError(err.details || err.message);
+        });
+    },
+
+    /**
+     * @method
+     * @name migrateCGH
+     * TODO remove this one
+     */
+    migrateCGH: function(req, res) {
+        MigrateService.migrateCGHAsync()
+        .then(function() {
+            return res.ok();
+        })
+        .catch(function(err) {
+            return res.serverError(err.message);
         });
     }
 

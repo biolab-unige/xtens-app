@@ -61,6 +61,8 @@ module.exports.routes = {
 
     'POST /migrate': {controller: 'main', action: 'migrate'},
 
+    'POST /migrateCGH': {controller: 'main', action: 'migrateCGH'},
+
     'GET /fileContent': {controller: 'main', action: 'downloadFileContent'},
        
     // REST API for subject (with personal info)
