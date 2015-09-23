@@ -4,7 +4,7 @@
  *  @author Massimiliano Izzo
  */
 var Joi = require("joi");
-var Constants = sails.config.xtens.constants;
+var constants = sails.config.xtens.constants;
 var transactionHandler = sails.config.xtens.transactionHandler;
 
 var DataTypeService = {
@@ -17,8 +17,8 @@ var DataTypeService = {
         var metadataFieldValidationSchema = Joi.object().keys({
                 name: Joi.string().required(),
                 formattedName: Joi.string().required(),
-                fieldType: Joi.string().required().valid(_.values(Constants.FieldTypes)),
-                label: Joi.string().required().valid(Constants.METADATA_FIELD),
+                fieldType: Joi.string().required().valid(_.values(constants.FieldTypes)),
+                label: Joi.string().required().valid(constants.METADATA_FIELD),
                 isList: Joi.boolean().required(),
                 possibleValues: Joi.array().allow(null),
                 hasUnit: Joi.boolean().required(),
@@ -52,7 +52,7 @@ var DataTypeService = {
         var validationSchema = {
             id: Joi.number().integer().positive(),
             name: Joi.string().required(),
-            model: Joi.string().required().valid(_.values(Constants.DataTypeClasses)),
+            model: Joi.string().required().valid(_.values(constants.DataTypeClasses)),
             schema: Joi.object().required(),
             parents: Joi.array().allow(null),
             children: Joi.array().allow(null),
@@ -66,8 +66,8 @@ var DataTypeService = {
             var metadataFieldValidationSchema = Joi.object().keys({
                 name: Joi.string().required(),
                 formattedName: Joi.string().required(),
-                fieldType: Joi.string().required().valid(_.values(Constants.FieldTypes)),
-                label: Joi.string().required().valid(Constants.METADATA_FIELD),
+                fieldType: Joi.string().required().valid(_.values(constants.FieldTypes)),
+                label: Joi.string().required().valid(constants.METADATA_FIELD),
                 isList: Joi.boolean().required(),
                 possibleValues: Joi.array().allow(null),
                 hasUnit: Joi.boolean().required(),
@@ -86,20 +86,20 @@ var DataTypeService = {
 
             var metadataLoopValidationSchema = Joi.object().keys({
                 name: Joi.string().required(),
-                label: Joi.string().required().valid(Constants.METADATA_LOOP),
+                label: Joi.string().required().valid(constants.METADATA_LOOP),
                 content: Joi.array().required().items(metadataFieldValidationSchema)
             });
 
             var metadataGroupValidationSchema = Joi.object().keys({
                 name: Joi.string().required(),
-                label: Joi.string().required().valid(Constants.METADATA_GROUP),
+                label: Joi.string().required().valid(constants.METADATA_GROUP),
                 content: Joi.array().required().items(metadataLoopValidationSchema, metadataFieldValidationSchema)
             });
 
             var metadataHeaderValidationSchema = Joi.object().keys({
                 name: Joi.string().required(),
                 description: Joi.string().required(),
-                model: Joi.string().valid(_.values(Constants.DataTypeClasses)),
+                model: Joi.string().valid(_.values(constants.DataTypeClasses)),
                 fileUpload: Joi.boolean().required(),
                 version: Joi.string().allow(""),
                 ontology: Joi.string().allow("")
@@ -263,13 +263,13 @@ var DataTypeService = {
 
             // iterate through all the fields/loops
             for (var j=0, l=groupContent.length; j<l; j++) {
-                if (groupContent[j].label === Constants.METADATA_FIELD) {
+                if (groupContent[j].label === constants.METADATA_FIELD) {
                     flattened.push(groupContent[j]);
                 }
-                else if (groupContent[j].label === Constants.METADATA_LOOP && !skipFieldsWithinLoops) {
+                else if (groupContent[j].label === constants.METADATA_LOOP && !skipFieldsWithinLoops) {
                     var loopContent = groupContent[j] && groupContent[j].content;
                     for (var k=0; k<loopContent.length; k++) {
-                        if (loopContent[k].label === Constants.METADATA_FIELD) {
+                        if (loopContent[k].label === constants.METADATA_FIELD) {
 
                             // add to the field a private flag that specifies its belonging to a loop
                             flattened.push(_.extend(loopContent[k], {_loop: true}));                         

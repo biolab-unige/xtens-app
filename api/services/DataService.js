@@ -39,7 +39,7 @@ var DataService = BluebirdPromise.promisifyAll({
 
         var validationSchema = {
             id: Joi.number().integer().positive(),
-            type: Joi.number().integer().required(),
+            type: Joi.number().integer().positive().required(),
             date: Joi.date().iso().allow(null),
             tags: Joi.array().allow(null),
             notes: Joi.string().allow(null),
