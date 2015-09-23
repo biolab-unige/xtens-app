@@ -1,6 +1,7 @@
 var SampleService = require('../../../api/services/SampleService.js'),
     expect = require('chai').expect;
 
+
 describe('SampleService', function() {
 
     var populatedSample = {
@@ -30,6 +31,27 @@ describe('SampleService', function() {
         parentSample: undefined,
         biobank: 1 // Biobank is already "simplified"
     };
+
+    describe("#validate", function() {
+        
+        it("should correctly validate a valid sample using its schema", function() {
+            var sample = _.cloneDeep(fixtures.sample[0]);
+            var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: sample.type}));
+            var res = SampleService.validate(sample, true, dataType);
+            expect(res.error).to.be.null;
+            expect(res.value).to.eql(sample);
+        });
+
+        it("should raise an Error if the data is not valid", function() {
+            var invalidSample = _.cloneDeep(fixtures.sample[0]);
+            var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: invalidSample.type}));
+            invalidSample.metadata.location = {value: "nose"};
+            var res = SampleService.validate(invalidSample, true, dataType);
+            expect(res.error).not.to.be.null;
+        });
+
+
+    });
 
     it("should replace the populated properties (e.g. type, donor, parentSample...) with their id (i.e. type -> type.id)", function() {
          var typeId = populatedSample.type.id;

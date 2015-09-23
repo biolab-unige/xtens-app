@@ -53,7 +53,9 @@ module.exports = {
 
     },
 
-    /**
+    /** 
+     *  @method
+     *  @name create
      *  @description POST /data -> create a new Data Instance; transaction-safe implementation 
      *                   
      */
@@ -87,7 +89,9 @@ module.exports = {
         });
     },
 
-    /**
+    /** 
+     *  @method
+     *  @name update
      *  @description PUT /data/id -> update an existing Data Instance; transaction-safe implementation
      *
      */

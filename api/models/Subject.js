@@ -19,7 +19,7 @@ var Subject= {
         sex: {
             type: 'string',
             required: true,
-            enum: ['M', 'F', 'N.D.', 'N.A.', 'UNDIFFERENTIATED']
+            enum: _.values(sails.config.xtens.constants.SexOptions)
         },
 
         // one-way association to PersonalDetails model

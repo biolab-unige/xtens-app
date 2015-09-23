@@ -1,10 +1,8 @@
 var chai = require("chai");
 var chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
-
 var expect = chai.expect, assert = chai.assert, sinon = require('sinon');
 var Joi = require("joi");
-
 var BluebirdPromise = require('bluebird');
 
 
@@ -28,7 +26,7 @@ describe('DataService', function() {
         it("should correctly validate a valid data using its schema", function() {
             var data = _.cloneDeep(fixtures.data[0]);
             var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: data.type}));
-            var res = DataService.validate(data); // skip metadata validation
+            var res = DataService.validate(data, true, dataType); // skip metadata validation
             expect(res.error).to.be.null;
             expect(_.omit(res.value,'date')).to.eql(_.omit(data,'date'));
         });

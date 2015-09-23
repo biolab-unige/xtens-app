@@ -29,14 +29,14 @@ module.exports.xtens = {
         SexOptions: {
             MALE: 'M',
             FEMALE: 'F',
-            UNKNOWN: 'N.A.',
-            UNDIFFERENTIATED: 'N.D.'
+            UNAVAILABLE: 'N.A.',
+            UNKNOWN: 'N.D.',
+            UNDIFFERENTIATED: 'UNDIFFERENTIATED'
         },
 
         DataTypeClasses: {
             SUBJECT: 'Subject',
             SAMPLE: 'Sample',
-            GENERIC: 'Data',
             DATA: 'Data'
         },
 

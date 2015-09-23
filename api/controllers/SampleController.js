@@ -63,8 +63,15 @@ module.exports = {
 
         DataType.findOne(sample.type)
         .then(function(sampleType) {
-            var sampleTypeName = sampleType && sampleType.name;
-            return transactionHandler.createSample(sample, sampleTypeName);
+            var validationRes = SampleService.validate(sample, true, sampleType);
+            if (validationRes.error === null) {
+                sample = validationRes.value;
+                var sampleTypeName = sampleType && sampleType.name;
+                return transactionHandler.createSample(sample, sampleTypeName);
+            }
+            else {
+                throw new Error(validationRes.error);
+            }
         })
         .then(function(idSample) {
             console.log(idSample);
@@ -89,7 +96,16 @@ module.exports = {
         var sample = req.body;
         SampleService.simplify(sample);
 
-        transactionHandler.updateSample(sample)
+        DataType.findOne(sample.type).then(function(dataType) {
+            var validationRes = SampleService.validate(sample, true, dataType);
+            if (validationRes.error === null) {
+                sample = validationRes.value;
+                return transactionHandler.updateSample(sample);
+            }
+            else {
+                throw new Error(validationRes.error);
+            }
+        })
         .then(function(idSample) {
             console.log(idSample);
             return Sample.findOne(idSample).populateAll();

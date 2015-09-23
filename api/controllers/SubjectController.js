@@ -19,8 +19,15 @@ module.exports = {
         var subject = req.body;
         DataType.findOne(subject.type)
         .then(function(subjectType) {
-            var subjectTypeName = subjectType && subjectType.name;
-            return transactionHandler.createSubject(subject, subjectTypeName);
+            var validationRes = SubjectService.validate(subject, true, dataType);
+            if (validationRes.error === null) {
+                subject = validationRes.value;
+                var subjectTypeName = subjectType && subjectType.name;
+                return transactionHandler.createSubject(subject, subjectTypeName);
+            }
+            else {
+                throw new Error(validationRes.error);
+            }
         })
         .then(function(idSubject) {
             console.log(idSubject);
@@ -44,7 +51,17 @@ module.exports = {
     update: function(req, res) {
         var subject = req.body;
         SubjectService.simplify(subject);
-        transactionHandler.updateSubject(subject)
+
+        DataType.findOne(subject.type).then(function(dataType) {
+            var validationRes = SubjectService.validate(subject, true, dataType);
+            if (validationRes.error === null) {
+                subject = validationRes.value;
+                return transactionHandler.updateSubject(subject);
+            }
+            else {
+                throw new Error(validationRes.error);
+            }
+        })
         .then(function(idSubject) {
             console.log(idSubject);
             return Subject.findOne(idSubject).populateAll();
@@ -157,7 +174,7 @@ module.exports = {
         var idPatient = req.param("idPatient");
         console.log(idPatient);
 
-        Subject.query('select data_type.id from data_type inner join sample on data_type.id = sample.type where parent_subject ='+idPatient+' union select data_type.id from data_type inner join data on data_type.id = data.type where parent_subject ='+idPatient+';',function(err,resp){
+        Subject.query('select data_type.id from data_type inner join sample on data_type.id = sample.type where parent_subject ='+idPatient+' union select data_type.id from data_type inner join data on data_type.id = data.type where parent_subject =' + idPatient + ';', function(err,resp) {
 
             //Subject.query('select s.metadata,d.name from sample s inner join data_type d on d.id = s.type where parent_subject ='+idPatient+';',function(err,resp){
 
