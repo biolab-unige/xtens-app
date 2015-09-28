@@ -49,12 +49,20 @@ var SubjectService = BluebirdPromise.promisifyAll({
      *                      - value: the validated data object if no error is returned
      */
     validate: function(subject, performMetadataValidation, dataType) {
+        
+        var personalInfoValidationSchema = {
+            id: Joi.number().integer().positive(),
+            givenName: Joi.string().regex(/^[A-Za-z ]+$/).trim(),            
+            surname: Joi.string().regex(/^[A-Za-z ]+$/).trim(),
+            birthDate: Joi.date()
+        };
+
         var validationSchema = {
             id: Joi.number().integer().positive(),
             type: Joi.number().integer().positive().required(),
             code: Joi.string(),
             sex: Joi.string().required().valid(_.values(sails.config.xtens.constants.SexOptions)),
-            personalInfo: Joi.number().integer().positive(),
+            personalInfo: Joi.object().keys(personalInfoValidationSchema).allow(null),
             projects: Joi.array().allow(null),
             samples: Joi.array().allow(null),
             childrenData: Joi.array().allow(null),
@@ -65,6 +73,7 @@ var SubjectService = BluebirdPromise.promisifyAll({
             updatedAt: Joi.date()
         };
 
+        
         if (performMetadataValidation) {
             var metadataValidationSchema = {};
             var flattenedFields = DataTypeService.getFlattenedFields(dataType);
