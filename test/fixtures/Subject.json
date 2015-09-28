@@ -1,7 +1,11 @@
 [
     {
         "id": 2,
-        "personalInfo": 12,
+        "personalInfo": {
+            "givenName": "Marco",
+            "surname": "Marci",
+            "birthDate": "1982-12-29"
+        },
         "code": "PAT-002",
         "sex": "M",
         "type": 1,
@@ -11,7 +15,12 @@
     },
     {
         "id": 3,
-        "personalInfo": 13,
+        "personalInfo": {
+            "id": 13,
+            "givenName": "Luigi Valerio",
+            "surname": "De Marcis",
+            "birthDate": "2008-06-19"
+        },
         "code": "PAT0067",
         "sex": "N.D.",
         "type": 1,

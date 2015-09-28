@@ -62,7 +62,7 @@ describe('SubjectService', function() {
             var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: subject.type}));
             var res = SubjectService.validate(subject, true, dataType);
             expect(res.error).to.be.null;
-            expect(res.value).to.eql(subject);
+            expect(_.omit(res.value, 'personalInfo')).to.eql(_.omit(subject, 'personalInfo'));
        });
 
         it("should correctly validate a valid subject with complete metadata using its schema", function() {
@@ -70,7 +70,7 @@ describe('SubjectService', function() {
             var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: subject.type}));
             var res = SubjectService.validate(subject, true, dataType);
             expect(res.error).to.be.null;
-            expect(res.value).to.eql(subject);
+            expect(_.omit(res.value, 'personalInfo')).to.eql(_.omit(subject, 'personalInfo'));
        });
 
 
