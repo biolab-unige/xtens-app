@@ -152,6 +152,7 @@ var DataService = BluebirdPromise.promisifyAll({
     /**
      * @method
      * @name getOne
+     * @description return a data instance, given its id and populate all its associations
      * @param {integer} id
      * @param {function} next - callaback function
      */

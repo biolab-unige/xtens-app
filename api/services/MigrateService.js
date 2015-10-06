@@ -6,8 +6,7 @@ var Migrator = require('migrate-utils').Migrator;
 
 var MigrateService = BluebirdPromise.promisifyAll({
 
-    execute: function(idSubj) {
-        console.log(Migrator);
+    execute: function() {
         var migrator = new Migrator();
         // migrator.migrateProjects()
         return migrator.migrateAllSubjects()
@@ -24,8 +23,8 @@ var MigrateService = BluebirdPromise.promisifyAll({
 
     migrateCGH: function(next) {
         var migrator = new Migrator();
-        var path = "/home/massi/Projects/aCGH/FileBIT/15-H-00455.xlsx";
-        migrator.migrateCGHRecord(path, next);
+        var path = "/home/massi/Projects/aCGH/FileBIT/";
+        return migrator.migrateCGH(path, '.xlsx');
     }
 });
 
