@@ -684,10 +684,25 @@
         events : {
             'click #search': 'sendQuery'
         },
-
+        
+        /**
+         * @method
+         * @name sendQuery
+         * @description compose the object with query parameters and send it through AJAX request to the server for executing a (sanitised) query
+         * @return{boolean} false
+         */
         sendQuery: function() {
-            var queryParameters = JSON.stringify({queryArgs: this.queryView.serialize()});
+            // extend queryArgs with flags to retrieve subject and personal informations
+            var queryArgs = _.extend({
+                wantsSubject: true,
+                wantsPersonalInfo: true,
+            }, this.queryView.serialize());
+
+            var queryParameters = JSON.stringify({queryArgs: queryArgs});
             console.log(this.queryView.serialize());
+            var path = '/query/dataSearch?query=' + queryParameters;
+            xtens.router.navigate(path, {trigger: true});
+            /* 
             $.ajax({
                 method: 'POST',
                 headers: {
@@ -702,9 +717,14 @@
                 }
 
             });
+           */
             return false;
         },
 
+        /**
+         * @method
+         * @name queryOnSuccess
+         */
         queryOnSuccess: function(result) {
             if (this.tableView) {
                 this.tableView.destroy();

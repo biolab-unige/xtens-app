@@ -43,6 +43,7 @@ function renderDatatablesDate(data, type) {
                 throw new Error("Missing required options: dataType");
             }
             this.dataType = new DataTypeModel(options.dataType);
+            console.log(options.data);
             this.data = options.data;
             this.childrenViews = [];
             this.prepareDataForRenderingJSON();
@@ -236,9 +237,9 @@ function renderDatatablesDate(data, type) {
 
         insertPersonalDetailsColumns: function() {
             return [
-                {"title": i18n("surname"), "data": "personalInfo.surname"},
-                {"title": i18n("given-name"), "data": "personalInfo.givenName"},
-                {"title": i18n("birth-date"), "data": "personalInfo.birthDate"}
+                {"title": i18n("surname"), "data": "surname"},
+                {"title": i18n("given-name"), "data": "given_name"},
+                {"title": i18n("birth-date"), "data": "birth_date", "render": renderDatatablesDate}
             ];
         },
 
@@ -288,19 +289,9 @@ function renderDatatablesDate(data, type) {
             var childrenData = new Data.List();
             var model = this.dataType.get("model");
             var parentProperty = model === Classes.SUBJECT ? 'parentSubject' : model === Classes.SAMPLE ? 'parentSample' : 'parentData';
-            var params = {};
-            params[parentProperty] = data.id;
-            childrenData.fetch({
-                data: $.param(params),
-                success: function(results) {
-                    // TODO
-                    console.log(results);
-                },
-                error: function(coll, err) {
-                    console.log(err);
-                }
-
-            });
+            var path = "data?" + parentProperty + "=" + data.id;
+            xtens.router.navigate(path, {trigger: true});
+            return false;
         },
 
         /**
@@ -316,17 +307,9 @@ function renderDatatablesDate(data, type) {
             var childrenSample = new Sample.List();
             var model = this.dataType.get("model");
             var parentProperty = model === Classes.SUBJECT ? 'donor' : 'parentSample';
-            var params = {};
-            params[parentProperty] = data.id;
-            childrenSample.fetch({
-                data: $.param(params),
-                success: function(results) {
-                    console.log(results);
-                },
-                error: function(coll, err) {
-                    console.log(err);
-                }
-            });
+            var path = "samples?" + parentProperty + "=" + data.id;
+            xtens.router.navigate(path, {trigger: true});
+            return false;
         },
 
         /**

@@ -69,6 +69,7 @@
             "biobanks/new": "biobankEdit",
             "biobanks/edit/:id": "biobankEdit",
             "query": "queryBuilder",
+            "query/dataSearch?*queryString": "performAdvancedSearch",
             "operators": "operatorList",
             "operators/new": "operatorEdit",
             "operators/edit/:id": "operatorEdit",
@@ -177,15 +178,30 @@
                 }
             });
         },
+        
+        /**
+         * @method
+         * @name dataList
+         * @param{string} queryString - a query string containing parameters to filter the sample search
+         *                      allowed params are:
+         *                      donor [integer] - ID of subject
+         *                      parentSample [integer] - ID of the parent sample (if derivative)
+         *                      type [integer] - ID of the sample type
+         * @description retrieve a list of semples (optionally filtered by a set of parameters sent as query string)
+         *              and load them on a view
+         */
 
-        dataList: function() {
+        dataList: function(queryString) {
+            var queryParams = parseQueryString(queryString);
             var dataTypes = new DataType.List();
             var data = new Data.List();
             var _this = this;
             var $dataTypesDeferred = dataTypes.fetch({
                 data: $.param({ populate: ['children'] })
             });
-            var $dataDeferred = data.fetch();
+            var $dataDeferred = data.fetch({
+                data: $.param(queryParams)
+            });
             $.when($dataTypesDeferred, $dataDeferred).then(function(dataTypesRes, dataRes) {
                 _this.loadView(new Data.Views.List({
                     data: new Data.List(dataRes && dataRes[0]),
@@ -196,7 +212,14 @@
             });
             // this.loadView(new Data.Views.List());
         },
-
+        
+        /**
+         * @method
+         * @name dataEdit
+         * @param{integer} id - the sample ID
+         * @param{string} queryString
+         * @description retrieve the sample model and open Edit view
+         */
         dataEdit: function(id, queryString) {
             // var dataTypes = new DataType.List(); 
             var params = parseQueryString(queryString);
@@ -300,15 +323,29 @@
         subjectGraph: function() {
             this.loadView(new Subject.Views.Graph());
         },
-         
-        sampleList: function() {
+        
+        /**
+         * @method
+         * @name sampleList
+         * @param queryString - a query string containing parameters to filter the sample search
+         *                      allowed params are:
+         *                      donor [integer] - ID of subject
+         *                      parentSample [integer] - ID of the parent sample (if derivative)
+         *                      type [integer] - ID of the sample type
+         * @description retrieve a list of semples (optionally filtered by a set of parameters sent as query string)
+         *              and load them on a view
+         */
+        sampleList: function(queryString) {
+            var queryParams = parseQueryString(queryString);
             var dataTypes = new DataType.List();
             var samples = new Sample.List();
             var _this = this;
             var $dataTypesDeferred = dataTypes.fetch({
                 data: $.param({populate:['children']})
             });
-            var $samplesDeferred = samples.fetch();
+            var $samplesDeferred = samples.fetch({
+                data: $.param(queryParams)
+            });
             $.when($dataTypesDeferred, $samplesDeferred).then( function(dataTypesRes, samplesRes) {
                 _this.loadView(new Sample.Views.List({ 
                     samples: new Sample.List(samplesRes && samplesRes[0]),
@@ -383,6 +420,32 @@
                     xtens.error(res);
                 }
             });
+        },
+
+        performAdvancedSearch: function(queryString) {
+            var queryParameters = parseQueryString(queryString).query;
+            $.ajax({
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                },
+                contentType: 'application/json;charset:utf-8',
+                url: '/query/dataSearch',
+                data: queryParameters,
+                success: function(res) {
+                    if (this.view && this.view.queryOnSuccess) {
+                        this.view.queryOnSuccess(res);
+                    }
+                    else {
+                        // TODO you must implement state memorization
+                    }
+                },
+                error: function(jqXHR, textStatus, err) {
+                    alert(err);
+                }
+
+            });
+
         }
 
     });
