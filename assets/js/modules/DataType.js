@@ -71,7 +71,8 @@
         },
 
         /**
-         * @description returns true if the DataType contains at least a loop
+         * @description checks whether the DataType contains at least a loop
+         * @return{boolean} - true if the DataType contains at least a loop, false otherwise
          */
         hasLoops: function() {
             var body = this.get("schema") && this.get("schema").body;
@@ -84,6 +85,12 @@
             return false;
         },
 
+        /**
+         * @method
+         * @name getLoops
+         * @description returns a list of the metadata loops contained in the current DataType
+         * @return{Array} - an array containing all the Metadata loops
+         */
         getLoops: function() {
             var body = this.get("schema") && this.get("schema").body;
             var res = [];
@@ -277,7 +284,6 @@
             this.listenTo(view, 'closeMe', this.removeChild);
             this.nestedViews.push(view);
         }
-
 
     });
 

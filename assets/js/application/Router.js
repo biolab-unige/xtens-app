@@ -17,7 +17,16 @@
     var Group = xtens.module("group");
     var AdminAssociation = xtens.module("adminassociation");
     var FileManager= xtens.module("filemanager");
-
+    
+    /**
+     * @method
+     * @name parseQueryString
+     * @private
+     * @description parses a query string (key1=val1&key2=val2...) and returns an object {key1:val1, key2:val2}
+     * @param{string} queryString
+     * @returns{Object} an object containing key-value pairs
+     *
+     */
     function parseQueryString(queryString){
         var params = {};
         if(queryString){
@@ -69,6 +78,7 @@
             "biobanks/new": "biobankEdit",
             "biobanks/edit/:id": "biobankEdit",
             "query": "queryBuilder",
+            "query?*queryString": "queryBuilder",
             "query/dataSearch?*queryString": "performAdvancedSearch",
             "operators": "operatorList",
             "operators/new": "operatorEdit",
@@ -402,7 +412,17 @@
             }
         },
 
-        queryBuilder: function(id) {
+        queryBuilder: function(queryString) {
+            var params;
+            if (queryString) {
+               try { 
+                    params = JSON.parse(parseQueryString(queryString).queryObj);
+               }
+               catch(err) {
+                    console.log("Error while trying to parse the JSON query object");
+               }
+            }
+            console.log(params);
             var dataTypes = new DataType.List();
             var that = this;
             dataTypes.fetch({
@@ -412,7 +432,8 @@
                 success: function(dataTypes) {
                     console.log(dataTypes);
                     that.loadView(new Query.Views.Builder({
-                        id: _.parseInt(id),
+                        // id: _.parseInt(id),
+                        queryObj: params,
                         dataTypes: dataTypes
                     }));    
                 },
@@ -424,6 +445,7 @@
 
         performAdvancedSearch: function(queryString) {
             var queryParameters = parseQueryString(queryString).query;
+            var that = this;
             $.ajax({
                 method: 'POST',
                 headers: {
@@ -433,11 +455,11 @@
                 url: '/query/dataSearch',
                 data: queryParameters,
                 success: function(res) {
-                    if (this.view && this.view.queryOnSuccess) {
-                        this.view.queryOnSuccess(res);
+                    if (that.view && that.view.queryOnSuccess) {
+                        that.view.queryOnSuccess(res);
                     }
                     else {
-                        // TODO you must implement state memorization
+                        this.navigate('/query');
                     }
                 },
                 error: function(jqXHR, textStatus, err) {

@@ -17,7 +17,7 @@
 
         this.compose = function(serializedCriteria) {
             var query = "SELECT * FROM data WHERE type = $1 AND (";
-            var parameters = [ serializedCriteria.pivotDataType.id ];
+            var parameters = [ serializedCriteria.dataType.id ];
             if (serializedCriteria.content) {
                 var len = serializedCriteria.content.length;
                 for (var i=0; i<len; i++) {

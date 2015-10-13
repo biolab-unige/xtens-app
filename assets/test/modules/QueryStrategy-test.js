@@ -4,7 +4,7 @@ var QueryStrategy = xtens.module("querystrategy");
 describe("QueryStrategy.PostgresJSON", function() {
     
     var criteriaObj = {
-        pivotDataType: { id: 1, name: 'Star', schema: {} },
+        dataType: { id: 1, name: 'Star', schema: {} },
         content: [
         {
             fieldName: "constellation",
@@ -51,7 +51,7 @@ describe("QueryStrategy.PostgresJSON", function() {
                 "(metadata->$8->'value'->>0)::float >= $9 AND " + "(metadata->$8->'unit'->>0)::text = $10 AND " +
                 "(metadata->$11->'value'->>0)::integer > $12 AND " + "(metadata->$11->'unit'->>0)::text = $13" +
                 ");";
-            var parameters = [ criteriaObj.pivotDataType.id, 
+            var parameters = [ criteriaObj.dataType.id, 
                 criteriaObj.content[0].fieldName, criteriaObj.content[0].fieldValue, criteriaObj.content[0].fieldUnit,
                 criteriaObj.content[1].fieldName, criteriaObj.content[1].fieldValue, criteriaObj.content[1].fieldUnit, 
                 criteriaObj.content[2].fieldName, criteriaObj.content[2].fieldValue, criteriaObj.content[2].fieldUnit,

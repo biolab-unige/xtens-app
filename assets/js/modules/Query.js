@@ -39,6 +39,12 @@
     });
 
     // TODO: refactor this class together with MetadataComponent class
+    /**
+     * @class
+     * @name Query.Views.Component
+     * @extends Backbone.View
+     * @description the abstract class for a generic query view component
+     */
     Query.Views.Component = Backbone.View.extend({
 
         add: function(child) {
@@ -103,11 +109,31 @@
             "specializedQuery": DataTypeClasses.SAMPLE
         }
     });
-
+    
+    /**
+     * @class
+     * @name Query.RowModel
+     * @extends Backbone.Model
+     * @description the Backbone model for a leaf element in the query builder
+     *              Each leaf element contains the following attributes
+     *              - fieldName - [string]
+     *              - fieldType - [allowed options: TEXT/INTEGER/FLOAT/DATE/BOOLEAN]
+     *              - comparator - [one of the allowed comparators]
+     *              - junctor - [allowed options: AND(default)/OR]
+     *              - fieldValue - one or more values to feed the query
+     */
     Query.RowModel = Backbone.Model.extend({});
 
     Query.LoopModel = Backbone.Model.extend({});
-
+    
+    /**
+     * @class
+     * @name Query.Views.Row
+     * @extends Backbone.View
+     * @extends Query.Views.Component
+     * @description a row element in the query builder interface. Each row represents a metadata field that is not within a loop
+     *              each row contains the elements bound to the attributes of Query.RowModel
+     */
     Query.Views.Row = Query.Views.Component.fullExtend({
 
         className: 'form-group',
@@ -306,10 +332,14 @@
 
     });
 
-    /**
-     * @description subview to query PersonalInfo/Personal Details fields 
-     */
 
+    /**
+     * @name Query.Views.PersonalInfo
+     * @extends Backbone.View
+     * @extends Query.Views.Component 
+     * @description a leaf element for the query builder, containing all the specialized parameters pertaining to PersonalInfo 
+     *              (i.e. givenName, surname, birthDate)
+     */   
     Query.Views.PersonalInfo = Query.Views.Component.fullExtend({
 
         className: 'query-personalinfo',
@@ -364,7 +394,14 @@
         }
 
     });
+   
 
+    /**
+     * @name Query.Views.Subject
+     * @extends Backbone.View
+     * @extends Query.Views.Component 
+     * @description a leaf element for the query builder, containing all the specialized parameters pertaining to Subject (i.e. code, sex)
+     */
     Query.Views.Subject = Query.Views.Component.fullExtend({
 
         className: 'query-subject',
@@ -427,7 +464,14 @@
             return serialized;
         }
     });
+    
 
+    /**
+     * @name Query.Views.Sample
+     * @extends Backbone.View
+     * @extends Query.Views.Component 
+     * @description a leaf element for the query builder, containing all the specialized parameters pertaining to Sample (i.e. biobank code)
+     */
     Query.Views.Sample = Query.Views.Component.fullExtend({
 
         className: 'query-sample',
@@ -465,7 +509,16 @@
         }
 
     });
+    
 
+    /**
+     * @class
+     * @name Query.Views.Loop
+     * @extends Backbone.View
+     * @extends Query.Views.Component
+     * @description another possible leaf of the query builder, this one (instead of Query.Views.Rows) describes metadata fields contained within a loop
+     *
+     */
     Query.Views.Loop = Query.Views.Component.fullExtend({
 
         className: 'query-loop',
@@ -514,14 +567,22 @@
             }
         }
     });
-
+    
+    /**
+     * @class
+     * @name Query.Views.Composite
+     * @extends Backbone.View
+     * @extends Query.Views.Component
+     * @description the composite query view, containing various (nested) leaves (i.e. Query.Views.Rows)
+     *
+     */
     Query.Views.Composite = Query.Views.Component.fullExtend({
 
         className: 'query-composite',
 
         bindings: {
             '[name="pivot-data-type"]': {
-                observe: 'pivotDataType',
+                observe: 'dataType',
                 initialize: function($el) {
                     $el.select2({placeholder: i18n('please-select')});
                 },
@@ -541,6 +602,13 @@
                 },
                 getVal: function($el, ev, options) {
                     return parseInt($el.val());
+                },
+                onGet: function(val) { // TODO fix this fucking error
+                    var id;
+                    if (val) {
+                        id = _.parseInt(val);
+                    }
+                    return this.dataTypes.get(id);
                 }
             },
             '[name="junction"]': {
@@ -562,18 +630,18 @@
             this.nestedViews = [];
             this.dataTypes = options.dataTypes || [];
             this.dataTypesComplete = options.dataTypesComplete || [];
-            // this.listenTo(this.model, 'change:pivotDataType', this.pivotDataTypeOnChange);
+            // this.listenTo(this.model, 'change:dataType', this.dataTypeOnChange);
         },
 
         events: {
             'click [name="add-field"]': 'addQueryRow',
             'click [name="add-loop"]': 'addLoopQuery',
-            'click [name="add-nested"]': 'addNestedQuery'
+            'click [name="add-nested"]': 'nestedQueryBtnOnClick'
         },
 
         addQueryRow: function(ev) {
             ev.stopPropagation();
-            var childView = new Query.Views.Row({fieldList: this.dataTypes.get(this.model.get('pivotDataType')).getFlattenedFields(),
+            var childView = new Query.Views.Row({fieldList: this.dataTypes.get(this.model.get('dataType')).getFlattenedFields(),
                                                 model: new Query.RowModel()});
                                                 this.$el.append(childView.render().el);
                                                 this.add(childView);
@@ -581,25 +649,48 @@
 
         addLoopQuery: function(ev) {
             ev.stopPropagation();
-            var childView = new Query.Views.Loop({loopList: this.dataTypes.get(this.model.get('pivotDataType')).getLoops(),
+            var childView = new Query.Views.Loop({loopList: this.dataTypes.get(this.model.get('dataType')).getLoops(),
                                                  model: new Query.LoopModel()});
                                                  this.$el.append(childView.render().el);
                                                  this.add(childView);
         },
 
-        addNestedQuery: function(ev) {
+        nestedQueryBtnOnClick: function(ev) {
             ev.stopPropagation();
+            this.addNestedQuery();
+        },
+        
+        /**
+         * @method
+         * @name addNestedQuery
+         * @description add a nested query element to the current composite view
+         *
+         */
+        addNestedQuery: function(queryObj) {
             var childrenIds = _.pluck(this.selectedDataType.get("children"), 'id');
             var childrenDataTypes = new DataType.List(_.filter(this.dataTypesComplete.models, function(dataType) {
                 return childrenIds.indexOf(dataType.id) > -1;
             }));
             if (!childrenDataTypes.length) return;
-            var childView = new Query.Views.Composite({dataTypes: childrenDataTypes, dataTypesComplete: this.dataTypesComplete, model: new Query.Model()});
+            
+            // create composite subview 
+            var childView = new Query.Views.Composite({
+                dataTypes: childrenDataTypes,
+                dataTypesComplete: this.dataTypesComplete, 
+                model: new Query.Model(queryObj)
+            });
+
             this.$el.append(childView.render({}).el);
             this.add(childView);
         },
-
-        pivotDataTypeOnChange: function(model, idDataType) {
+        
+        /**
+         * @method
+         * @name dataTypeOnChange
+         * @param{DataType.Model} model - the Backbone current model, not used in the function         
+         * @param{integer} idDataType - the ID of the selected Data Type 
+         */
+        dataTypeOnChange: function(model, idDataType) {
             this.clear();
             if (!idDataType) {
                 this.$addFieldButton.addClass('hidden');
@@ -609,6 +700,8 @@
                 this.model.set("model", null);
                 return;
             }
+            this.createDataTypeRow(idDataType); 
+            /*
             this.selectedDataType = this.dataTypes.get(idDataType);
             this.model.set("model", this.selectedDataType.get("model"));
             if (this.model.get("model") === DataTypeClasses.SUBJECT) {      //TODO add policy to filter those not allowed to see personal info 
@@ -619,31 +712,89 @@
             if (modelQueryView) {
                 this.addSubqueryView(modelQueryView);
             }
-            /*  // removed "improved loop search"
-                if (selectedDataType.hasLoops()) {
-                this.$addLoopButton.removeClass('hidden');
-                } */
             this.$addFieldButton.removeClass('hidden');
             this.$addNestedButton.removeClass('hidden');
             var childView = new Query.Views.Row({fieldList: this.selectedDataType.getFlattenedFields(), model: new Query.RowModel()});
             this.$el.append(childView.render().el);
             // this.model.set("model", this.selectedDataType.get("model"));
             this.add(childView);
-
+            */
         },
 
+        /**
+         * @method
+         * @name createDataTypeRow
+         * @param{integer} idDataType
+         */
+        createDataTypeRow: function(idDataType) {
+            var personalInfoQueryView, modelQueryView, childView, queryContent;
+            this.selectedDataType = this.dataTypes.get(idDataType);
+            this.model.set("model", this.selectedDataType.get("model"));
+            if (this.model.get("model") === DataTypeClasses.SUBJECT) {      //TODO add policy to filter those not allowed to see personal info 
+                personalInfoQueryView = new Query.Views.PersonalInfo({ model: new Query.PersonalInfoModel() });
+                this.addSubqueryView(personalInfoQueryView);
+            }
+            modelQueryView = factory.createModelQueryView(this.model.get("model"));
+            if (modelQueryView) {
+                this.addSubqueryView(modelQueryView);
+            }
+            /*  // removed "improved loop search"
+                if (selectedDataType.hasLoops()) {
+                this.$addLoopButton.removeClass('hidden');
+                } */
+            this.$addFieldButton.removeClass('hidden');
+            this.$addNestedButton.removeClass('hidden');
+            // this.model.set("model", this.selectedDataType.get("model"));
+            queryContent = this.model.get("content");
+            if (_.isArray(queryContent) && queryContent.length > 0) {
+                _.each(queryContent, function(queryElem) {
+                    // it is a nested a nested composite element 
+                    if (queryElem.dataType) {
+                        this.addNestedQuery(queryElem);
+                    }
+                    // it is a leaf query element
+                    else {
+                        childView = new Query.Views.Row({fieldList: this.selectedDataType.getFlattenedFields(), model: new Query.RowModel()});
+                        this.addSubqueryView(childView);
+                    } 
+                }, this);
+            }
+            else {
+                childView = new Query.Views.Row({fieldList: this.selectedDataType.getFlattenedFields(), model: new Query.RowModel()});
+                this.$el.append(childView.render().el);
+                this.add(childView);
+            }
+        },
+
+        
+        /**
+         * @method
+         * @name addSubqueryView
+         * @description add a subquery view to the composite view
+         * @param{Query.View.Component} subqueryView 
+         */
         addSubqueryView: function(subqueryView) {
             this.$el.append(subqueryView.render().el);
             this.add(subqueryView);
         },
-
+        
+        /**
+         * @method
+         * @name clear
+         * @description removes all the nested subviews, if present
+         */
         clear: function() {
             var len = this.nestedViews.length; 
             for(var i=len-1; i>=0; i--) {
                 this.removeChild(this.nestedViews[i]);
             }
         },
-
+        
+        /**
+         * @method
+         * @name render
+         * @extends Backbone.View.render
+         */
         render: function(options) {
             if (options.id) {} // load an existing query TODO
             else {
@@ -653,27 +804,54 @@
             this.$addFieldButton = this.$("[name='add-field']");
             this.$addLoopButton = this.$("[name='add-loop']");
             this.$addNestedButton = this.$("[name='add-nested']");
-            this.listenTo(this.model, 'change:pivotDataType', this.pivotDataTypeOnChange);
+            if (this.model.get("dataType")) {
+                
+            }
+            this.listenTo(this.model, 'change:dataType', this.dataTypeOnChange);
             return this;
         }
 
     });
 
+    /**
+     * @class
+     * @name Query.Views.Builder
+     * @extends Backbone.View
+     * @description the main container for the query builder form
+     *
+     */
     Query.Views.Builder = Backbone.View.extend({
 
         className: 'query',
 
+        /**
+         * @method
+         * @name initialize
+         * @extends Backbone.View.initialize
+         * @param{Object} - options, which contains the following properties:
+         *                  - dataTypes - a list/array of available DataTypes
+         *                  - queryObj - a (possibly nested) query object, as the one sent to server side requests
+         */
         initialize: function(options) {
             _.bindAll(this, 'queryOnSuccess');
             this.template = JST["views/templates/query-builder.ejs"];
             $('#main').html(this.el);
             this.dataTypes = options.dataTypes || [];
             this.render(options);
-            this.queryView = new Query.Views.Composite({dataTypes: this.dataTypes, dataTypesComplete: this.dataTypes, model: new Query.Model()});
+            this.queryView = new Query.Views.Composite({
+                dataTypes: this.dataTypes, 
+                dataTypesComplete: this.dataTypes, 
+                model: new Query.Model(options.queryObj)
+            });
             this.$tableCnt = this.$("#result-table-cnt");
             this.$queryModal = this.$(".query-modal");
             this.tableView = null;
             this.$("#query-form").append(this.queryView.render({}).el);
+            
+            // if a query object exists trigger a server-side search
+            if (options.queryObj) {
+                this.trigger('search');
+            }
         },
 
         render: function() {
@@ -682,7 +860,8 @@
         },
 
         events : {
-            'click #search': 'sendQuery'
+            'click #search': 'sendQuery',
+            'search': 'sendQuery'
         },
         
         /**
@@ -700,9 +879,8 @@
 
             var queryParameters = JSON.stringify({queryArgs: queryArgs});
             console.log(this.queryView.serialize());
-            var path = '/query/dataSearch?query=' + queryParameters;
-            xtens.router.navigate(path, {trigger: true});
-            /* 
+            var path = '/query?queryObj=' + queryParameters;
+            xtens.router.navigate(path, {trigger: false}); 
             $.ajax({
                 method: 'POST',
                 headers: {
@@ -717,7 +895,6 @@
                 }
 
             });
-           */
             return false;
         },
 

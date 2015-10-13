@@ -106,8 +106,11 @@
     // local Data.Factory instance - to be used inside the model
     var factory = new Data.Factory();
 
-    /**
-     *  Backbone Model for a metadata field
+    /** 
+     *  @class
+     *  @name Data.MetadataFieldModel
+     *  @extends Backbone.Model
+     *  @description Backbone Model for a metadata field
      */
 
     Data.MetadataFieldModel = Backbone.Model.extend({
@@ -118,6 +121,7 @@
         },
 
         /**
+         * @extends Backbone.Model.initialize
          * @description initialize a generic MetadataField for editing purposes 
          */
 
@@ -172,7 +176,7 @@
     });
 
     /**
-     *  Backbone Model for a metadata group
+     *  @description Backbone Model for a metadata group
      */
     Data.MetadataGroupModel = Backbone.Model.extend({
         initialize: function(attributes, options) {
@@ -299,7 +303,13 @@
             }
         }
     });
-
+    
+    /**
+     * @class 
+     * @name Data.Views.MetadataSchema
+     * @extends Data.Views.MetadataComponent
+     * @description the view for the metadata schema - the composite element - of a Data instance
+     */
     Data.Views.MetadataSchema = Data.Views.MetadataComponent.fullExtend({
 
         id: 'metadata-schema',
