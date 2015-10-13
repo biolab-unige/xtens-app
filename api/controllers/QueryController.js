@@ -35,7 +35,7 @@ module.exports = {
     dataSearch: function(req, res) {
         var queryArgs = req.param('queryArgs');
         var data = null;
-        var idDataType = queryArgs.pivotDataType;
+        var idDataType = queryArgs.dataType;
         DataService.advancedQueryAsync(queryArgs)
 
         /* commenting out this additional search
