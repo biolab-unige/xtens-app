@@ -512,13 +512,14 @@
     
 
     /**
+     * @deprecated
      * @class
      * @name Query.Views.Loop
      * @extends Backbone.View
      * @extends Query.Views.Component
      * @description another possible leaf of the query builder, this one (instead of Query.Views.Rows) describes metadata fields contained within a loop
      *
-     */
+     *
     Query.Views.Loop = Query.Views.Component.fullExtend({
 
         className: 'query-loop',
@@ -566,7 +567,7 @@
                                                 this.add(childView);
             }
         }
-    });
+    }); */
     
     /**
      * @class
@@ -603,12 +604,8 @@
                 getVal: function($el, ev, options) {
                     return parseInt($el.val());
                 },
-                onGet: function(val) { // TODO fix this fucking error
-                    var id;
-                    if (val) {
-                        id = _.parseInt(val);
-                    }
-                    return this.dataTypes.get(id);
+                onGet: function(val) {
+                    return val;
                 }
             },
             '[name="junction"]': {
@@ -635,7 +632,7 @@
 
         events: {
             'click [name="add-field"]': 'addQueryRow',
-            'click [name="add-loop"]': 'addLoopQuery',
+            // 'click [name="add-loop"]': 'addLoopQuery',
             'click [name="add-nested"]': 'nestedQueryBtnOnClick'
         },
 
@@ -646,14 +643,16 @@
                                                 this.$el.append(childView.render().el);
                                                 this.add(childView);
         },
-
+        
+        /**
+         * @deprecated
         addLoopQuery: function(ev) {
             ev.stopPropagation();
             var childView = new Query.Views.Loop({loopList: this.dataTypes.get(this.model.get('dataType')).getLoops(),
                                                  model: new Query.LoopModel()});
                                                  this.$el.append(childView.render().el);
                                                  this.add(childView);
-        },
+        }, */
 
         nestedQueryBtnOnClick: function(ev) {
             ev.stopPropagation();
@@ -752,9 +751,13 @@
                     if (queryElem.dataType) {
                         this.addNestedQuery(queryElem);
                     }
+                    // TODO implement LOOP logic
                     // it is a leaf query element
                     else {
-                        childView = new Query.Views.Row({fieldList: this.selectedDataType.getFlattenedFields(), model: new Query.RowModel()});
+                        childView = new Query.Views.Row({
+                            fieldList: this.selectedDataType.getFlattenedFields(), 
+                            model: new Query.RowModel(queryElem)
+                        });
                         this.addSubqueryView(childView);
                     } 
                 }, this);
@@ -805,7 +808,7 @@
             this.$addLoopButton = this.$("[name='add-loop']");
             this.$addNestedButton = this.$("[name='add-nested']");
             if (this.model.get("dataType")) {
-                
+               this.createDataTypeRow(this.model.get("dataType"));
             }
             this.listenTo(this.model, 'change:dataType', this.dataTypeOnChange);
             return this;
@@ -879,7 +882,7 @@
 
             var queryParameters = JSON.stringify({queryArgs: queryArgs});
             console.log(this.queryView.serialize());
-            var path = '/query?queryObj=' + queryParameters;
+            var path = '/query/' + queryParameters;
             xtens.router.navigate(path, {trigger: false}); 
             $.ajax({
                 method: 'POST',
