@@ -78,7 +78,7 @@
             "biobanks/new": "biobankEdit",
             "biobanks/edit/:id": "biobankEdit",
             "query": "queryBuilder",
-            "query?*queryString": "queryBuilder",
+            "query/:queryString": "queryBuilder",
             "query/dataSearch?*queryString": "performAdvancedSearch",
             "operators": "operatorList",
             "operators/new": "operatorEdit",
@@ -413,15 +413,7 @@
         },
 
         queryBuilder: function(queryString) {
-            var params;
-            if (queryString) {
-               try { 
-                    params = JSON.parse(parseQueryString(queryString).queryObj);
-               }
-               catch(err) {
-                    console.log("Error while trying to parse the JSON query object");
-               }
-            }
+            var params = queryString ? JSON.parse(queryString) : undefined;
             console.log(params);
             var dataTypes = new DataType.List();
             var that = this;
@@ -433,7 +425,7 @@
                     console.log(dataTypes);
                     that.loadView(new Query.Views.Builder({
                         // id: _.parseInt(id),
-                        queryObj: params,
+                        queryObj: params && params.queryArgs,
                         dataTypes: dataTypes
                     }));    
                 },
