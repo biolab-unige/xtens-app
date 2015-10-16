@@ -23,9 +23,7 @@
         urlRoot: '/subject',
 
         defaults: {
-            defaults: {
-                sex: sexOptions.UNKNOWN
-            },
+            sex: sexOptions.UNKNOWN,
             projects: []
         }
     });
