@@ -22,12 +22,12 @@
 
     // Factory method class to create specialized query views
     function QueryViewFactory() {
-        this.createModelQueryView = function(model) {
-            switch(model) {
+        this.createModelQueryView = function(dataTypeModel, specializedFieldsObj) {
+            switch(dataTypeModel) {
                 case DataTypeClasses.SUBJECT:
-                    return new Query.Views.Subject({ model: new Query.SubjectModel() });
+                    return new Query.Views.Subject({ model: new Query.SubjectModel(specializedFieldsObj) });
                 case DataTypeClasses.SAMPLE:
-                    return new Query.Views.Sample({ model: new Query.SampleModel() });
+                    return new Query.Views.Sample({ model: new Query.SampleModel(specializedFieldsObj) });
             }
         };
     }
@@ -700,24 +700,6 @@
                 return;
             }
             this.createDataTypeRow(idDataType); 
-            /*
-            this.selectedDataType = this.dataTypes.get(idDataType);
-            this.model.set("model", this.selectedDataType.get("model"));
-            if (this.model.get("model") === DataTypeClasses.SUBJECT) {      //TODO add policy to filter those not allowed to see personal info 
-                var personalInfoQueryView = new Query.Views.PersonalInfo({ model: new Query.PersonalInfoModel() });
-                this.addSubqueryView(personalInfoQueryView);
-            }
-            var modelQueryView = factory.createModelQueryView(this.model.get("model"));
-            if (modelQueryView) {
-                this.addSubqueryView(modelQueryView);
-            }
-            this.$addFieldButton.removeClass('hidden');
-            this.$addNestedButton.removeClass('hidden');
-            var childView = new Query.Views.Row({fieldList: this.selectedDataType.getFlattenedFields(), model: new Query.RowModel()});
-            this.$el.append(childView.render().el);
-            // this.model.set("model", this.selectedDataType.get("model"));
-            this.add(childView);
-            */
         },
 
         /**
@@ -726,32 +708,37 @@
          * @param{integer} idDataType
          */
         createDataTypeRow: function(idDataType) {
-            var personalInfoQueryView, modelQueryView, childView, queryContent;
+            var personalInfoQueryView, modelQueryView, childView, queryContent = this.model.get("content");
             this.selectedDataType = this.dataTypes.get(idDataType);
             this.model.set("model", this.selectedDataType.get("model"));
             if (this.model.get("model") === DataTypeClasses.SUBJECT) {      //TODO add policy to filter those not allowed to see personal info 
-                personalInfoQueryView = new Query.Views.PersonalInfo({ model: new Query.PersonalInfoModel() });
+                personalInfoQueryView = new Query.Views.PersonalInfo({ 
+                    model: new Query.PersonalInfoModel(_.findWhere(queryContent, {personalDetails: true})) 
+                });
                 this.addSubqueryView(personalInfoQueryView);
             }
-            modelQueryView = factory.createModelQueryView(this.model.get("model"));
+            var specializedFieldsArr =  _.where(queryContent, {specializedQuery: this.model.get("model")});
+            // compress al the elements in the specialized query in a single object
+            var specializedFieldsObj = _.reduce(specializedFieldsArr, function(obj, elem) {
+                return _.merge(obj, elem);
+            }, {});
+            modelQueryView = factory.createModelQueryView(this.model.get("model"), specializedFieldsObj);
             if (modelQueryView) {
                 this.addSubqueryView(modelQueryView);
             }
-            /*  // removed "improved loop search"
-                if (selectedDataType.hasLoops()) {
-                this.$addLoopButton.removeClass('hidden');
-                } */
             this.$addFieldButton.removeClass('hidden');
             this.$addNestedButton.removeClass('hidden');
             // this.model.set("model", this.selectedDataType.get("model"));
-            queryContent = this.model.get("content");
+            // queryContent = this.model.get("content");
             if (_.isArray(queryContent) && queryContent.length > 0) {
                 _.each(queryContent, function(queryElem) {
                     // it is a nested a nested composite element 
-                    if (queryElem.dataType) {
+                    if (queryElem.specializedQuery || queryElem.personalDetails) {
+                        return true;  // continue to next iteration
+                    }
+                    else if (queryElem.dataType) {
                         this.addNestedQuery(queryElem);
                     }
-                    // TODO implement LOOP logic
                     // it is a leaf query element
                     else {
                         childView = new Query.Views.Row({
@@ -850,7 +837,7 @@
             this.$queryModal = this.$(".query-modal");
             this.tableView = null;
             this.$("#query-form").append(this.queryView.render({}).el);
-            
+            this.listenToOnce(this, 'search', this.sendQuery); 
             // if a query object exists trigger a server-side search
             if (options.queryObj) {
                 this.trigger('search');
@@ -864,7 +851,6 @@
 
         events : {
             'click #search': 'sendQuery',
-            'search': 'sendQuery'
         },
         
         /**
