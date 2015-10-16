@@ -19,7 +19,7 @@ module.exports = {
         var subject = req.body;
         DataType.findOne(subject.type)
         .then(function(subjectType) {
-            var validationRes = SubjectService.validate(subject, true, dataType);
+            var validationRes = SubjectService.validate(subject, true, subjectType);
             if (validationRes.error === null) {
                 subject = validationRes.value;
                 var subjectTypeName = subjectType && subjectType.name;
