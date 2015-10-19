@@ -54,7 +54,9 @@ var SubjectService = BluebirdPromise.promisifyAll({
             id: Joi.number().integer().positive(),
             givenName: Joi.string().regex(/^[A-Za-z ]+$/).trim(),            
             surname: Joi.string().regex(/^[A-Za-z ]+$/).trim(),
-            birthDate: Joi.date()
+            birthDate: Joi.date(),
+            createdAt: Joi.date(),
+            updatedAt: Joi.date()
         };
 
         var validationSchema = {
