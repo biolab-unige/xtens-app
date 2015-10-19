@@ -67,7 +67,7 @@ var MainController = {
 
     /**
      * @method
-     * @name downloadFile
+     * @name downloadFileContent
      * @description download a file from the remote file system
      * @param{integer} - id: the file unique ID
      * TODO move to another controller (?)
@@ -96,15 +96,40 @@ var MainController = {
         });
         
     },
-
+    
+    /**
+     * @method
+     * @name uploadFileContent
+     * @description upload a file to the local server storage
+     * TODO move to another controller (?)
+     */
     uploadFileContent: function(req, res) {
-        req.file('uploadFile').upload(function (err, files) {
-            if (err)
-                return res.serverError(err);
-            console.log(err);
+
+        // if the local-fs strategy is not in use, don't allow local file upload
+        if (fileSystemManager.type && fileSystemManager.type !== 'local-fs') {
+            return res.badRequest('Files cannot be uploaded on server local file system.');
+        }
+        
+        var dirname = require('path').resolve(sails.config.xtens.fileSystemConnection.path, sails.config.xtens.fileSystemConnection.landingDirectory);
+        var fileName = req.param("fileName");
+        console.log("MainController.uploadFileContent - dirname: " + dirname);
+        console.log("MainController.uploadFileContent - filename: " + fileName);
+        req.file('uploadFile').upload({
+            dirname: dirname,
+            saveAs: fileName
+        },function whenDone(err, files) {
+            if (err) {
+                console.log(err);
+                return res.negotiate(err);
+            }
+
+            if (files.length === 0) {
+                return res.badRequest('No file was uploaded');
+            }
+            console.log("MainController.uploadFileContent - file uploaded: " + files[0]);
 
             return res.json({
-                message: files.length + ' file(s) uploaded successfully!',
+                name: files[0]
             });
         });
     },
