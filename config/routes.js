@@ -45,9 +45,9 @@ module.exports.routes = {
     //
     'POST /populateDB': {controller: 'main', action: 'populateDB'},
 
-    '/upload-file':{controller:'dataFile',action:'upload'},
+    // '/upload-file':{controller:'dataFile',action:'upload'},
     
-    'POST /download-file':{controller:'dataFile',action:'download'},
+    // 'POST /download-file':{controller:'dataFile',action:'download'},
     
     '/groupOperator/associate':{controller:'group', action:'addOperator'},
     
@@ -64,6 +64,8 @@ module.exports.routes = {
     'POST /migrateCGH': {controller: 'main', action: 'migrateCGH'},
 
     'GET /fileContent': {controller: 'main', action: 'downloadFileContent'},
+
+    'POST /fileContent': {controller: 'main', action: 'uploadFileContent'},
        
     // REST API for subject (with personal info)
     // 'GET /subjectWithPersonalDetails': {controller: 'subject', action: 'findWithPersonalDetails'},
