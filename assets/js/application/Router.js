@@ -93,7 +93,8 @@
             "downIrods":"downIrods",
             "datatypes/graph":"dataTypeGraph",
             "subjects/graph":"subjectGraph",
-            "homepage":"homepage"
+            "homepage":"homepage",
+            "file-download/:id": "downloadFile"
         },
 
         publicRoutes: ["login"],
@@ -460,6 +461,10 @@
 
             });
 
+        },
+
+        downloadFile: function(id) {
+            // TODO implement file download
         }
 
     });

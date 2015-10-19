@@ -5,8 +5,80 @@
 
     // TODO: move this to server side config
     // var baseUri = "http://130.251.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/xtensdevel";
-    var landingRepo = "landing";
+    // var landingRepo = "landing";
     Dropzone.autoDiscover = false;
+    
+    /** 
+     * @class
+     * @name LocalFileSystemStrategy
+     * @description class implemented according to the strategy pattern to implement client interaction with local server file storage
+     */
+    function LocalFileSystemStrategy(fsConf) {
+        this.url = '/fileContent';
+    }
+
+    LocalFileSystemStrategy.prototype = {
+
+        getUrl: function() {
+            return this.url;
+        },
+    
+        onProcessing: function() {
+            return this.url;
+        },
+
+        onSending: function(file, xhr, formData) {
+            xhr.setRequestHeader("Authorization", "Bearer " + xtens.session.get("accessToken"));
+            formData.append("fileName", file.name);
+        }
+
+    };
+
+    /**
+     * @class
+     * @name IrodsRestStrategy
+     * @description class implemented according to the strategy pattern to implement client interaction with irods-rest API
+     */
+    function IrodsRestStrategy(fsConf) {
+
+        this.username = fsConf.username;
+        this.password = fsConf.password;
+        this.url = "http://" + fsConf.restURL.hostname + ':' + fsConf.restURL.port + fsConf.restURL.path + '/fileContents' + fsConf.irodsHome + "/" +
+            fsConf.landingCollection;
+    }
+    
+    IrodsRestStrategy.prototype = {
+        
+        /**
+         * @method
+         * @name getUrl
+         *
+         */
+        getUrl: function() {
+            return this.url;    
+        },
+
+        /**
+         * @method
+         * @name onProcessing
+         * @param{string} fileName - the full name of the file (i.e. "fileName.ext")
+         * @return{url} the URL for the POST request
+         */
+        onProcessing: function(fileName) {
+           return this.url + "/" + fileName;
+        },
+        
+        /**
+         * @method
+         * @name onSending
+         * @param xhr
+         * @description add custom header on xhr methods
+         */
+        onSending: function(file, xhr, formData) {
+            xhr.setRequestHeader("Authorization", "Basic " + btoa(this.username + ":" + this.password));
+        },
+
+    };
 
     FileManager.Model = Backbone.Model.extend({
         urlRoot: '/file'
@@ -39,8 +111,18 @@
         initialize: function(options) {
             this.template = JST['views/templates/filemanager-dropzone.ejs'];
             this.fileList = new FileManager.List();
+            switch(options.fileSystem && options.fileSystem.type) {
+                case "irods-rest":
+                    this.fsStrategy = new IrodsRestStrategy(options.fileSystem);
+                    break;
+                default:
+                    this.fsStrategy = new LocalFileSystemStrategy(options.fileSystem);
+            }
+            /*
             this.fileSystem = options.fileSystem;
-            this.dropzoneOpts.url = this.computeFileUploadUrl();
+            */
+            this.dropzoneOpts.url = this.fsStrategy.getUrl();
+            
         },
 
         computeFileUploadUrl: function() {
@@ -72,7 +154,7 @@
          *              Set event listeners and related functions 
          */
         initializeDropzone: function(files) {
-            var _this = this;
+            var that = this;
             console.log("DROPZONE opts: " + this.dropzoneOpts);
             this.dropzone = new Dropzone(this.dropzoneDiv, this.dropzoneOpts);
             if (files) {
@@ -85,22 +167,25 @@
             }
 
             this.dropzone.on("processing", function(file) {
-                this.options.url = _this.dropzoneOpts.url + "/" + landingRepo + "/" + file.name;
+                // this.options.url = _this.dropzoneOpts.url + "/" + landingRepo + "/" + file.name;
+                this.options.url = that.fsStrategy.onProcessing(file.name);
             });
 
             this.dropzone.on("sending", function(file, xhr, formData) {
-                xhr.setRequestHeader("Authorization", "Basic " + btoa(_this.fileSystem.username + ":" + _this.fileSystem.password));
+                // xhr.setRequestHeader("Authorization", "Basic " + btoa(_this.fileSystem.username + ":" + _this.fileSystem.password));
+                that.fsStrategy.onSending(file, xhr, formData);
             });
 
             this.dropzone.on("success", function(file, xhr, formData) {
-                var name = _.last(this.options.url.split("/"));
-                _this.fileList.add(new FileManager.Model({name: name}));
-                _this.modal = new ModalDialog({
+                var name = file.name;
+                // var name = _.last(this.options.url.split("/"));
+                that.fileList.add(new FileManager.Model({name: name}));
+                that.modal = new ModalDialog({
                     title: i18n('file-successfully-uploaded'),
                     body: i18n('the-file') + ' ' + name + ' ' + i18n('has-been-successfully-uploaded')
                 });
-                _this.$queryModal.append(_this.modal.render().el);
-                _this.modal.show();
+                that.$queryModal.append(that.modal.render().el);
+                that.modal.show();
             });
 
             //TODO: error handling on upload 
