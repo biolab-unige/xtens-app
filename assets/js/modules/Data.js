@@ -759,7 +759,8 @@
         },
 
         events: {
-            "submit .edit-data-form": "saveData"
+            "click #save": "saveData",
+            "click button.delete": "deleteData"
         },
         
         /**
@@ -787,6 +788,16 @@
                     } 
                 });
             }
+            return false;
+        },
+
+        /**
+         * @method
+         * @name deleteDate
+         * TODO - not implemented yet
+         */
+        deleteData: function(ev) {
+            ev.preventDefault();
             return false;
         },
 
