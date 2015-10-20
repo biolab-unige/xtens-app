@@ -884,6 +884,12 @@
                 }
 
             });
+            this.modal = new ModalDialog({
+                title: i18n('please-wait-for-query-to-complete'),
+                body: JST["views/templates/progressbar.ejs"]({valuemin: 0, valuemax: 100, valuenow: 100})
+            });
+            this.$queryModal.append(this.modal.render().el);
+            this.modal.show();
             return false;
         },
 
@@ -892,6 +898,7 @@
          * @name queryOnSuccess
          */
         queryOnSuccess: function(result) {
+            this.modal && this.modal.hide();
             if (this.tableView) {
                 this.tableView.destroy();
             }

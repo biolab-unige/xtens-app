@@ -174,11 +174,12 @@
         /* views/templates/dialog-bootstrap.ejs */
         "close": "Close",
         "default-title": "Default Title",
-        "default-body": "Dafault Body",
+        "default-body": "Default Body",
         /* assets/js/modules/Query.js */
         "no-result-found": "No Result Found",
         "no-data-was-found-to-match-your-search-options": "No data was found to match your search options.",
         "please-try-again-with-different-parameters": "Please try again with different parameters",
+        "please-wait-for-query-to-complete": "Please wait for query to complete",
         /* views/templates/xtenstable-buttongroup.ejs  */
         "files": "Files",
         "derived-samples": "Derived Samples",
@@ -191,7 +192,9 @@
         "has-been-successfully-uploaded": "has beeen successfully uploaded.",
         /* views/templates/datafile-list.ejs */
         "file-list": "File List",
-        "download": "Download"
+        "download": "Download",
+        /* assets/js/modules/DataFile.js */
+        "could-not-download-file": "Could Not Download File"
     };
 
     var it = {

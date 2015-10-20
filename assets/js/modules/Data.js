@@ -175,7 +175,9 @@
         }
     });
 
-    /**
+    /** 
+     *  @class
+     *  @name Data.MetadataGroupModel
      *  @description Backbone Model for a metadata group
      */
     Data.MetadataGroupModel = Backbone.Model.extend({
@@ -189,7 +191,7 @@
 
     /**
      * @class
-     * @name MetadataLoopModel
+     * @name Data.MetadataLoopModel
      * @description Backbone Model for a metadata loop
      */
     Data.MetadataLoopModel = Backbone.Model.extend({
