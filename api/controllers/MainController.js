@@ -78,6 +78,9 @@ var MainController = {
         var fileId = _.parseInt(req.param('id'));
 
         DataFile.findOne(fileId).then(function(dataFile) {
+
+            console.log("downloadFileContent - dataFile");
+            console.log(dataFile);
             
             var pathFrags = dataFile.uri.split("/");
             var fileName = pathFrags[pathFrags.length-1];
