@@ -11,6 +11,50 @@ var fileSystemConnections = require('./local.js').fileSystemConnections;
  */
 module.exports.xtens = {
 
+    /**
+     * Database connection
+     *  
+     *  postgresqltest: {
+     *       adapter: 'sails-postgresql',
+     *       host: 'localhost',
+     *       port: 5432,
+     *       user: 'myuser',
+     *       password: 'passw',
+     *       database: 'xtensdb',
+     *       pool: true,
+     *       ssl: false,
+     *       schema: true
+     *  }
+     *
+     */
+
+    /**
+     * Local File System connection 
+     * 
+     * localFileSystemExample: {
+     *      type: 'local-fs',
+     *      path: '/var/xtens/dataFiles',
+     *      landingDirectory: 'landing',
+     *      repoDirectory: 'xtens-repo' 
+     * }
+     *
+     * irods-rest File System connection
+     *
+     * irodsRest: {
+     *     type: 'irods-rest',
+     *       restURL: {
+     *           hostname: 'localhost',
+     *           port: 8080,
+     *           path: '/irods-rest/rest'
+     *       },
+     *       irodsHome: '/myZone/home/myUser',
+     *       repoCollection: 'xtens-repo',
+     *       landingCollection: 'landing',
+     *       username: 'username',
+     *       password: 'password'
+     *   }
+     */
+
     name: 'xtens',
 
     queryBuilder: new QueryBuilder(),
