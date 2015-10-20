@@ -41,6 +41,10 @@
             this.$modal.modal();
         },
 
+        hide: function() {
+            this.$modal.modal('hide');
+        },
+
         removeMe: function() {
             console.log("removing XtensDialog");
             this.remove();
