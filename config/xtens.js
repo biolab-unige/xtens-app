@@ -55,6 +55,31 @@ module.exports.xtens = {
      *   }
      */
 
+    /* 
+     * Default operators (created at the first application startup):
+     *
+     * defaultOperators: [
+     * {
+     *   firstName: 'default administrator',
+     *   lastName: 'sysadmin',
+     *   birthDate: '1970-01-01',
+     *   sex: 'N.A.',
+     *   email: 'massimorgon@gmail.com',
+     *   login: 'admin',
+     *   password: 'admin1982'
+     * }, 
+     * {
+     *   firstName: 'default user',
+     *   lastName: 'demo user',
+     *   birthDate: '1970-01-01',
+     *   sex: 'N.A.',
+     *   email: 'none@none.com',
+     *   login: 'demouser',
+     *   password: 'demouser'
+     * }]
+     *
+     */
+
     name: 'xtens',
 
     queryBuilder: new QueryBuilder(),
