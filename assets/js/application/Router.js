@@ -1,6 +1,6 @@
 /**
  * @author  Massimiliano Izzo
- * @description This is the main Backbone router
+ * @description This is the main Backbone router for XTENS web client
  */
 
 (function(xtens) {
@@ -434,9 +434,10 @@
                     xtens.error(res);
                 }
             });
-        },
-
-        performAdvancedSearch: function(queryString) {
+        }
+        
+        /*      
+        , performAdvancedSearch: function(queryString) {
             var queryParameters = parseQueryString(queryString).query;
             var that = this;
             $.ajax({
@@ -461,11 +462,7 @@
 
             });
 
-        },
-
-        downloadFile: function(id) {
-            // TODO implement file download
-        }
+        }, */
 
     });
 
