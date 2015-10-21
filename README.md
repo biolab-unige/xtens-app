@@ -1,13 +1,13 @@
-#xtensjs
+# XTENS 2
 
-a [Sails](http://sailsjs.org) application
+a digital repository for heterogeneous data in life science. 
 
 ##Dependencies:
 
-* [Node.js](http://nodejs.org/);
-* [Sails.js](http://sailjs.org);
+* [Node.js 4.1+](http://nodejs.org/);
+* [Sails.js 0.11+](http://sailjs.org);
 * [Bower](http://bower.io/);
-* [PostgreSQL](http://www.postgresql.org/).
+* [PostgreSQL 9.4+](http://www.postgresql.org/).
 
 ##Download:
 
@@ -21,15 +21,15 @@ Two methods:
 
 ## To Start:
 
-You need to go in the xtens-app directory:
+Go into the xtens-app directory:
 
         cd xtens-app/
 
-You need to install the npm (node.js) packages:
+Install the npm (node.js) packages:
 
         npm install
 
-and then you need to install bower packages:
+Install bower packages:
 
         bower install
 
