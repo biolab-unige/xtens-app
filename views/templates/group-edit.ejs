@@ -1,31 +1,53 @@
 <div id="group">
-   <script>
+    <script>
         $(document).ready(function() { $("select#association").select2(); });
         $(document).ready(function() { $("select#dissociation").select2(); });
         $(document).ready(function() { $("select#associationop").select2(); });
         $(document).ready(function() { $("select#dissociationop").select2(); });
-
-
     </script>
-    
-<form name = "Myform" class="form-horizontal edit-group-form" role="form">
-    <legend class="legend"align="center"><%= group ? 'Edit' : 'New' %> Group</legend>
-    <div class="form-group row">
-        <label  class="col-md-3 control-label"><%= __("name") %></label>
-        <input class = "col-md-6" name="name" id="first" type="text" value="<%= group ? group.get('name') : '' %>">
+
+    <form name = "Myform" class="form-horizontal edit-group-form" role="form">
+
+        <legend class="legend"align="center"><%= group ? 'Edit' : 'New' %> Group</legend>
+        
+        <div class="form-group row">
+            <label for="name" class="col-md-3 control-label"><%= __("name") %></label>
+            <div class="col-md-6">
+                <input class ="form-control" name="name" id="name" type="text" value="<%= group ? group.get('name') : '' %>">
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="privilege-level" class="col-md-3 control-label"><%= __("privilege-level") %></label>
+            <div class="col-md-6">
+                <select class ="form-control" name="privilege-level" id="privilege-level" ></select>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="can-access-personal-data" class="checkbox-inline">
+                <input type="checkbox" name="can-access-personal-data" id="can-access-personal-data">
+                <%= __("can-access-personal-data") %>
+            </label>
         </div>
         
-    <hr />
-    <div id="buttonbardiv" class="row text-center">
-         <% if(!group) { %>
-        <button type="submit" class="btn" >Create Group</button>
-        <% } %>
+        <div class="form-group row">
+            <label for="can-access-sensitive-data" class="checkbox-inline">
+                <input type="checkbox" name="can-access-sensitive-data" id="can-access-sensitive-data">
+                <%= __("can-access-sensitive-data") %>
+            </label>
+        </div>
+                 
+        <hr />
+        
+        <div id="buttonbardiv" class="row text-center">
+            <input type="submit" id="save" class="btn btn-primary" value="<%= __('save-group') %>" >
 
-        <% if(group) { %>
-         <button id="update"type="hidden" class="btn update" name="update">Update Group</button>
-        <input type="hidden" name="id" value="<%= group.id %>" />
-        <button data-group-id="<%= group.id %>" class="btn btn-danger delete">Delete</button>
-        <% }; %>
-    </div>
-</form>
+            <% if(group) { %>
+                <input type="hidden" name="id" value="<%= group.id %>" />
+                <button id="delete" data-group-id="<%= group.id %>" class="btn btn-danger delete"><%= __('delete') %></button>
+            <% }; %>
+        </div>
+
+    </form>
 </div>

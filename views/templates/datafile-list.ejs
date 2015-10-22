@@ -1,0 +1,31 @@
+<h4>
+    <%= __("file-list") %>
+    <a class="remove-me">
+        <span class="fa fa-times-circle"></span>
+    </a>
+</h4>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th><%=__("id") %></th>
+                        <th><%= __("name") %></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                <% _.each(dataFiles, function(dataFile) { %> 
+                <tr>
+                    <td><%= dataFile.id %></td>
+                    <td><%= dataFile.get("uri").split("/")[dataFile.get("uri").split("/").length-1] %></td>
+                    <td><a href="" class="download-file-content" data-id=<%= dataFile.id %> ><%=__("download") %></a></td>
+                </tr>
+                <% }) %> 
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class='query-modal'></div>
