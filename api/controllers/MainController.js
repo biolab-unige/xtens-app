@@ -12,8 +12,9 @@ var MainController = {
     /**
      * @method
      * @name login
+     * @deprecated
      * @description authenticate a user against a password stored on the database
-     */
+     *
     login:function(req, res){
         var login = req.param("login");
         var password = req.param("password");
@@ -43,17 +44,17 @@ var MainController = {
                 }
             } 
         });
-    },
+    }, */
     
     /**
      * @method
      * @name logout
      * @deprecated
-     */    
+     *   
     logout: function (req,res){
         req.session.destroy();
         res.redirect('#/login');
-    },
+    }, */
 
     /**
      * @method

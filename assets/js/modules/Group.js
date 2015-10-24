@@ -1,108 +1,118 @@
+/**
+ * @module Group
+ * @author Valentina Tedone
+ * @author Massimiliano Izzo
+ */
+
 (function(xtens, Group) {
-
-
-
 
     // dependencies
     var i18n = xtens.module("i18n").en;    
     var router = xtens.router;
+    var GroupPrivilegeLevels = xtens.module("xtensconstants").GroupPrivilegeLevels;
     var Datatype = xtens.module("datatype");
     var Operator = xtens.module("operator");
-   
+
+
     Group.Model = Backbone.Model.extend({
-
         urlRoot: '/group',
-	
-	
-
     });
+
 
     Group.List = Backbone.Collection.extend({
         url: '/group',
         model: Group.Model,
-	
     });
 
 
-
+    /**
+     * @class
+     * @name Group.Views.Edit
+     * @extends Backbone.Views
+     */
     Group.Views.Edit = Backbone.View.extend({
 
         tagName: 'div',
         className: 'group',
 
         initialize: function(options) {
-             _.bindAll(this,'fetchSuccess');
+            // _.bindAll(this,'fetchSuccess');
             $("#main").html(this.el);
             this.template = JST["views/templates/group-edit.ejs"]; 
-            this.render(options);
-                   },
+            this.render();
+        },
 
-     render: function(options)  {
-            
-           
-                 if(options.id) {
-                this.group = new Group.Model({id: options.id});
-                this.group.fetch({
-                    success:this.fetchSuccess, error:function(group,res){xtens.error(res);}  });
-            } else {
-		
-                this.$el.html(this.template({__: i18n,group:null}));
-                return this;
-            }},
+        bindings: {
+            '#name': 'name',
 
-            events: {
-                'submit .edit-group-form': 'saveGroup',
-                'click .delete': 'deleteGroup',
-                'click .update':'updateGroup'
-            },
-
-            fetchSuccess: function (group) {
-                        this.$el.html(this.template({__: i18n, group: group}));
-                        return this;
-
-                    },
-
-
-            saveGroup: function(ev) {
-
-                var groupDetails = $(ev.currentTarget).serializeObject();
-                groupDetails = {name: groupDetails.name};
-                var group = new Group.Model();
-
-                group.save(groupDetails, {
-                    patch:true,	
-                    success: function(group) {
-                        router.navigate('groups', {trigger: true});
-                    },
-                    error: function() {
-                        console.log("Error saving the Group");
+            '#privilege-level': { 
+                observe: 'privilegeLevel',
+                selectOptions: {
+                    collection: function() {
+                        var coll = [];
+                        _.each(GroupPrivilegeLevels, function(value) {
+                            coll.push({
+                                label: value.toUpperCase(),
+                                value: value
+                            });
+                        });
+                        return coll;
                     }
-                });
-                return false;
+                }
             },
-            updateGroup: function(ev) {
-              this.group.set({name:document.Myform.name.value});
-             this.group.save();
-        
-                  
 
-                    router.navigate('groups', {trigger:true});
-                    window.location.reload();
-
-                    return false;
+            "#can-access-personal-data": {
+                observe: "canAccessPersonalData",
+                getVal: function($el) {
+                    return $el.prop('checked');
+                }
 
             },
-            deleteGroup: function (ev) {
-                var that = this;
-                var rif_id = that.group.id;
-                that.group.destroy({
-                    success: function () {
-                        console.log('destroyed');
-                        router.navigate('groups', {trigger:true});
-                    }
-                });
-                return false;
+
+            "#can-access-sensitive-data": {
+                observe: "canAccessSensitiveData",
+                getVal: function($el) {
+                    return $el.prop("checked");
+                }
             }
+
+
+        },
+
+        render: function()  {
+            this.$el.html(this.template({__:i18n, group: this.model}));
+            this.stickit();
+            return this;
+        },
+
+        events: {
+            'click #save': 'saveGroup',
+            'click #delete': 'deleteGroup'
+        },
+        
+        saveGroup: function(ev) {
+            this.model.save({
+                success: function(group) {
+                    console.log("Group.Views.Edit.saveGroup - group correctly inserted/updated!");
+                    // router.navigate('groups', {trigger: true});
+                },
+                error: xtens.error,    
+            });
+
+            router.navigate('groups', {trigger: true});
+            return false;
+        },
+        
+        deleteGroup: function (ev) {
+            this.group.destroy({
+                success: function () {
+                    console.log('Group.Views.Edit - group destroyed');
+                    router.navigate('groups', {trigger:true});
+                },
+                error: xtens.error
+            });
+            return false;
+        }
     });
 
     Group.Views.List = Backbone.View.extend({
@@ -125,16 +135,10 @@
                     _this.$el.html(_this.template({__: i18n, groups: groups.models}));
                     return _this;
                 },
-                error: 	function(groups,res){xtens.error(res)},
-		/*function() {
-
-                    // _this.$el.html(_this.template({__: i18n}));
-                   // return _this;    
-                }*/
-
+                error: 	xtens.error
             });
-
         }
+
     });
 
 } (xtens, xtens.module("group")));
