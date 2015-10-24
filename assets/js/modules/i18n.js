@@ -39,6 +39,7 @@
         "type": "Type",
         "required": "Required",
         "visible": "Visible",
+        "case-insensitive": "Case Insensitive",
         "display-name": "Display Name",
         "sensitive": "Sensitive",
         "hasRange": "Has Range",
@@ -92,8 +93,13 @@
         /* views/templates/... */
         "associate-datatype":"Associate a Datatype",
         "dissociate-datatype":"Dissociate a Datatype",
-        /*views/templates/group-list.ejs */
+        /* views/templates/group-list.ejs */
 	"member":"Member",
+        /* views/templates/group-edit.ejs */
+        "privilege-level": "Privilege Level",
+        "can-access-personal-data": "Can Access Personal Data",
+        "can-access-sensitive-data": "Can Access Sensitive Data",
+        "save-group": "Save Group",
         /*views/templates/association.ejs */
         "associated":"Associated",
         "no-associated":"Not Associated",

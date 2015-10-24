@@ -1,3 +1,5 @@
+// TODO: retrieve this info FROM DATABASE ideally or from the server-side anyway
+
 (function(xtens, XtensConstants) {
 
     XtensConstants.Constants = {
@@ -34,6 +36,15 @@
         UNDIFFERENTIATED: 'UNDIFFERENTIATED' */
     };
 
-    XtensConstants.useFormattedMetadataFieldNames = true; // TODO: retrieve this info FROM DATABASE ideally or from the server-side anyway
+    /**
+     * @description available Group privilege statuses
+     */
+    XtensConstants.GroupPrivilegeLevels = {
+        WHEEL: 'wheel', // superusers
+        MANAGER: 'manager', // can edit DataTypes/Biobanks and so on
+        STANDARD: 'standard' 
+    };
+
+    XtensConstants.useFormattedMetadataFieldNames = true; 
 
 } (xtens, xtens.module("xtensconstants")));

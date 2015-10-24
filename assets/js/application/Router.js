@@ -132,11 +132,11 @@
         },
 
         associationDataType:function(id){
-            var _this = this;
+            var that = this;
             var dominant = new Group.Model({id:id});
             var nondominant = new DataType.List();
             $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes, dominantRes) {
-                _this.loadView(new AdminAssociation.Views.Edit({
+                that.loadView(new AdminAssociation.Views.Edit({
                     dominant:new Group.Model(dominantRes && dominantRes[0]),
                     nondominant: nondominantRes && nondominantRes[0],
                     nondominantName:'dataTypes',
@@ -146,11 +146,11 @@
         },
 
         associationOperator: function(id){
-            var _this = this;
+            var that = this;
             var dominant = new Group.Model({id:id});
             var nondominant = new Operator.List();
             $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes, dominantRes){
-                _this.loadView(new AdminAssociation.Views.Edit({
+                that.loadView(new AdminAssociation.Views.Edit({
                     dominant:new Group.Model(dominantRes && dominantRes[0]),
                     nondominant: nondominantRes && nondominantRes[0],
                     nondominantName:'members',
@@ -170,9 +170,15 @@
         dataTypeGraph : function() {
             this.loadView(new DataType.Views.Graph());
         },
-
+        
+        /**
+         * @method
+         * @name dataTypeEdit
+         * @description retrieved a dataType a renders its Edit View
+         * @param{Integer} id - the dataType ID
+         */
         dataTypeEdit: function(id) {
-            var model, _this = this;
+            var model, that = this;
             var dataTypes = new DataType.List();
             dataTypes.fetch({
                 success: function(dataTypes) {
@@ -182,7 +188,7 @@
                     else {
                         model = new DataType.Model();
                     }
-                    _this.loadView(new DataType.Views.Edit({id: id, dataTypes: dataTypes.toJSON(), model: model}));
+                    that.loadView(new DataType.Views.Edit({id: id, dataTypes: dataTypes.toJSON(), model: model}));
                 },
                 error: function(model, res) {
                     xtens.error(res);
@@ -206,7 +212,7 @@
             var queryParams = parseQueryString(queryString);
             var dataTypes = new DataType.List();
             var data = new Data.List();
-            var _this = this;
+            var that = this;
             var $dataTypesDeferred = dataTypes.fetch({
                 data: $.param({ populate: ['children'] })
             });
@@ -214,7 +220,7 @@
                 data: $.param(queryParams)
             });
             $.when($dataTypesDeferred, $dataDeferred).then(function(dataTypesRes, dataRes) {
-                _this.loadView(new Data.Views.List({
+                that.loadView(new Data.Views.List({
                     data: new Data.List(dataRes && dataRes[0]),
                     dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])    
                 }));
@@ -238,7 +244,7 @@
                 params.id = id;
             }
             // var dataTypeParams = { classTemplate: xtens.module("xtensconstants").DataTypeClasses.GENERIC };
-            var _this = this;
+            var that = this;
             $.ajax({ 
                 url: '/data/edit', 
                 type: 'GET',
@@ -248,7 +254,7 @@
                 data: params,
                 contentType: 'application/json', 
                 success: function(results) {
-                    _this.loadView(new Data.Views.Edit(results));
+                    that.loadView(new Data.Views.Edit(results));
                 },
                 error: function(err) {
                     xtens.error(err);
@@ -264,9 +270,31 @@
         groupList:function() {
             this.loadView(new Group.Views.List());
         },
-
+        
+        /**
+         * @method
+         * @name groupEdit
+         * @description retrieved a user group a renders its Edit View
+         * @param{Integer} id - the user group ID
+         */
         groupEdit:function(id) {
-            this.loadView(new Group.Views.Edit({id:id}));
+            var group = new Group.Model({id: id}), that = this;
+            if (id) {
+                group.fetch({
+                    success: function(group) {
+                        that.loadView(new Group.Views.Edit({
+                            model: group
+                        }));
+                    },
+                    
+                    error: function(group, res) {
+                        xtens.error(res);
+                    }
+                });
+            }
+            else {
+                 this.loadView(new Group.Views.Edit(group));
+            }
         },
 
         homepage:function() {
@@ -293,13 +321,13 @@
         subjectList: function() {
             var dataTypes = new DataType.List();
             var subjects = new Subject.List();
-            var _this = this;
+            var that = this;
             var $dataTypesDeferred = dataTypes.fetch({
                 data: $.param({ populate: ['children'] })
             });
             var $subjectsDeferred = subjects.fetch();
             $.when($dataTypesDeferred, $subjectsDeferred).then(function(dataTypesRes, subjectsRes) {
-                _this.loadView(new Subject.Views.List({
+                that.loadView(new Subject.Views.List({
                     subjects: new Subject.List(subjectsRes && subjectsRes[0]),
                     dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])    
                 }));
@@ -313,7 +341,7 @@
             if (id && _.parseInt(id) > 0) {
                 params.id = id;
             }
-            var _this = this;
+            var that = this;
             $.ajax({ 
                 url: '/subject/edit', 
                 type: 'GET',
@@ -323,7 +351,7 @@
                 data: params,
                 contentType: 'application/json; charset=utf-8', 
                 success: function(results) {
-                    _this.loadView(new Subject.Views.Edit(results));
+                    that.loadView(new Subject.Views.Edit(results));
                 },
                 error: function(err) {
                     xtens.error(err);
@@ -350,7 +378,7 @@
             var queryParams = parseQueryString(queryString);
             var dataTypes = new DataType.List();
             var samples = new Sample.List();
-            var _this = this;
+            var that = this;
             var $dataTypesDeferred = dataTypes.fetch({
                 data: $.param({populate:['children']})
             });
@@ -358,7 +386,7 @@
                 data: $.param(queryParams)
             });
             $.when($dataTypesDeferred, $samplesDeferred).then( function(dataTypesRes, samplesRes) {
-                _this.loadView(new Sample.Views.List({ 
+                that.loadView(new Sample.Views.List({ 
                     samples: new Sample.List(samplesRes && samplesRes[0]),
                     dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])                                    
                 }));
@@ -372,7 +400,7 @@
             if (id && _.parseInt(id) > 0) {
                 params.id = id;
             }
-            var _this = this;
+            var that = this;
             $.ajax({ 
                 url: '/sample/edit', 
                 type: 'GET',
@@ -382,7 +410,7 @@
                 data: params,
                 contentType: 'application/json; charset=utf-8', 
                 success: function(results) {
-                    _this.loadView(new Sample.Views.Edit(results));
+                    that.loadView(new Sample.Views.Edit(results));
                 },
                 error: function(jqxhr) {
                     xtens.error(jqxhr);

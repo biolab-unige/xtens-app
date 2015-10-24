@@ -28,7 +28,7 @@ module.exports.routes = {
     //
     // (Alternatively, remove this and add an `index.html` file in your `assets` directory)
     
-    'POST /logout' : {controller:'main',action:'logout'},
+    // 'POST /logout' : {controller:'main',action:'logout'},
 
     'GET /': {controller: 'home'},
     /*

@@ -94,7 +94,10 @@ module.exports.xtens = {
      * constants of the XTENS platform
      */
     constants: {
-
+        
+        /**
+         * @description available sex options
+         */
         SexOptions: {
             MALE: 'M',
             FEMALE: 'F',
@@ -103,6 +106,18 @@ module.exports.xtens = {
             UNDIFFERENTIATED: 'UNDIFFERENTIATED'
         },
 
+        /**
+         * @description available Group privilege statuses
+         */
+        GroupPrivilegeLevels: {
+            WHEEL: 'wheel', // superusers
+            MANAGER: 'manager', // can edit DataTypes/Biobanks and so on
+            STANDARD: 'standard' 
+        },
+        
+        /**
+         * @description available DataType models (i.e. classes/relations/collections in the database)
+         */
         DataTypeClasses: {
             SUBJECT: 'Subject',
             SAMPLE: 'Sample',
