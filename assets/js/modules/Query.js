@@ -200,6 +200,7 @@
             var selectedField = _.findWhere(this.fieldList, matchCriteria);
             this.model.set("fieldType", selectedField.fieldType.toLowerCase());
             this.model.set("isList", selectedField.isList);
+            this.model.set("caseInsensitive", selectedField.caseInsensitive);
             this.model.set("isInLoop", selectedField._loop);
             this.generateComparisonItem(selectedField);
             this.generateComparedValueItem(selectedField);

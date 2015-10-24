@@ -26,6 +26,9 @@ var DataTypeService = {
                 required: Joi.boolean().required(),
                 sensitive: Joi.boolean().default(false),
                 visible: Joi.boolean().default(true),
+                caseInsensitive: Joi.boolean().invalid(true)
+                    .when('fieldType', {is: constants.FieldTypes.TEXT, then: Joi.boolean().default(false)})
+                    .concat(Joi.boolean().when('isList', {is: true, then: Joi.boolean().invalid(true).default(false)})),
                 hasRange: Joi.boolean().required(),
                 min: Joi.number().allow(null),
                 max: Joi.number().allow(null),
@@ -75,6 +78,9 @@ var DataTypeService = {
                 required: Joi.boolean().required(),
                 sensitive: Joi.boolean().default(false),
                 visible: Joi.boolean().default(true),
+                caseInsensitive: Joi.boolean().invalid(true)
+                    .when('fieldType', {is: constants.FieldTypes.TEXT, then: Joi.boolean()})
+                    .concat(Joi.boolean().when('isList', {is: true, then: Joi.boolean().invalid(true).default(false)})),
                 hasRange: Joi.boolean().required(),
                 min: Joi.number().allow(null),
                 max: Joi.number().allow(null),
@@ -159,6 +165,7 @@ var DataTypeService = {
      * @param next - a callback
      * @return {Array} - list of found DataType entities
      * @description find the list of allowed DataTypes for a specific Operator, through its Groups
+     * TODO move to xtens-transact
      */
 
     getByOperator: function(idOperator, params, next) {
@@ -218,6 +225,7 @@ var DataTypeService = {
      * @param next - a callback
      * @return {Array} - list of found DataType entities
      * @description find the list of allowed DataTypes for a specific Operator, through its Groups
+     * TODO move to xtens-transact  
      */
 
     getByOperatorAndParentDataType: function(idOperator, params, next) {

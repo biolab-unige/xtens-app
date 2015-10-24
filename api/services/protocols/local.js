@@ -151,7 +151,7 @@ exports.login = function (req, identifier, password, next) {
         query.login = identifier;
     }
 
-    Operator.findOne(query, function (err, user) {
+    Operator.findOne(query).populate('groups').exec(function (err, user) {
         if (err) {
             return next(err);
         }

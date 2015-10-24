@@ -38,6 +38,30 @@ describe('DataTypeService', function() {
             expect(result.error).to.be.an.instanceof(Error);
         });
 
+        it("should validate a correctly structured data type schema with a case-insensitive textual field", function() {
+            var dataType = _.cloneDeep(fixtures.datatype[2]);
+            dataType.schema.body[0].content[0].caseInsensitive = true;
+            var result = DataTypeService.validate(dataType, true);  // validate schema as well
+            expect(result.error).to.be.null;
+            expect(result.value).to.eql(dataType);
+        });
+
+        it("should validate a correctly structured data type schema with a case sensitive list field", function() {
+            var dataType = _.cloneDeep(fixtures.datatype[2]);
+            dataType.schema.body[0].content[1].caseInsensitive = false;
+            var result = DataTypeService.validate(dataType, true);  // validate schema as well
+            expect(result.error).to.be.null;
+            expect(result.value).to.eql(dataType);
+        });
+
+        it("should not validate a wrongly structured data type schema with a case-insensitive metadata field from list", function() {
+            var dataType = _.cloneDeep(fixtures.datatype[2]);
+            dataType.schema.body[0].content[1].caseInsensitive = true;  // this is not allowed cause Constellation is from list
+            var result = DataTypeService.validate(dataType, true);  
+            expect(result.error).not.to.be.null;
+            expect(result.error).to.be.an.instanceof(Error);
+        });
+
     });
 
  

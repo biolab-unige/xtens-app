@@ -39,6 +39,12 @@
             });
         }
     }
+    
+    function initializeCaseInsensitive($el, model, option) {
+        if (model.get("fieldType") !== fieldTypes.TEXT || model.get("isList")) {
+            $el.parent().hide();
+        }
+    }
 
     function initializeRange($el, model, option) {
         if (!model.isNumeric()) {
@@ -61,6 +67,7 @@
             ontologyUri: null,
             customValue: null,
             visible: true,
+            caseInsensitive: false,
             required: false,
             sensitive: false,
             hasRange: false,
@@ -127,21 +134,20 @@
                     }
                 }
             },
-            '[name=name]': {
-                observe: 'name' /*,
-                onGet: function(value) {
-                    return value && value.toLowerCase().replace(/_/g, " ");
-                },
-                onSet: function(value) {
-                    return value && value.toLowerCase().replace(metadataFieldNameNotAllowedCharset, "_");
-                } */
-            },
-            '[name=customValue]': 'customValue',
+            '[name=name]': 'name',
+            '[name=custom-value]': 'customValue',
             '[name=visible]': {
                 observe: 'visible',
                 getVal: function($el, ev, options) {
                     return $el.prop('checked');
                 }
+            },
+            '[name=caseInsensitive]': {
+                observe: 'caseInsensitive',
+                getVal: function($el, ev, options) {
+                    return $el.prop('checked');
+                },
+                initialize: initializeCaseInsensitive
             },
             '[name=required]': {
                 observe: 'required',
@@ -281,6 +287,7 @@
                 this.$('.value-list').select2('destroy');
                 this.$(".value-list").val("");
             }
+            this.toggleCaseInsensitiveCheckbox();
         },
 
         hasUnitOnChange: function() {
@@ -305,13 +312,28 @@
                 this.$('select[name=dbCollection]').parent().hide();
             }
         },
-
+        
+        /**
+         * @method
+         * @name fieldTypeOnChange
+         * @description toggle additional HTML elements in view if field Type is changing
+         */
         fieldTypeOnChange: function() {
             if (this.model.isNumeric()) {
                 this.$('input[name=hasRange]').parent().show();
             }
             else {
                 this.$('input[name=hasRange]').parent().hide();
+            }
+            this.toggleCaseInsensitiveCheckbox();
+        },
+
+        toggleCaseInsensitiveCheckbox: function() {
+            if (this.model.get('fieldType') === fieldTypes.TEXT && !this.model.get("isList")) {
+                this.$('input[name=caseInsensitive]').parent().show();
+            }
+            else {
+                this.$('input[name=caseInsensitive]').parent().hide();
             }
         },
 

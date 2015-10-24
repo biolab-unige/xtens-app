@@ -27,8 +27,9 @@ describe('DataService', function() {
             var data = _.cloneDeep(fixtures.data[0]);
             var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: data.type}));
             var res = DataService.validate(data, true, dataType); // skip metadata validation
+            data.metadata.name.value = data.metadata.name.value.toUpperCase(); // set case insensitive value to uppercase;
             expect(res.error).to.be.null;
-            expect(_.omit(res.value,'date')).to.eql(_.omit(data,'date'));
+            expect(res.value).to.eql(data);
         });
 
         it("should raise an Error if the data is not valid", function() {
@@ -48,7 +49,7 @@ describe('DataService', function() {
             var textField = _.cloneDeep(fixtures.datatype[2].schema.body[0].content[0]);  // name of star
             var schema = DataService.buildMetadataFieldValidationSchema(textField);
             var expectedSchema = Joi.object().required().keys({
-                value: Joi.string().required(),
+                value: Joi.string().uppercase().required(),
                 // unit: Joi.string().required().valid(textField.unit),
                 group: Joi.string()
             });
@@ -87,11 +88,22 @@ describe('DataService', function() {
             expect(schema).to.eql(expectedSchema);
         });
 
-        it("should create the correct schema for an textual metadata field from controlled vocabulary", function() {
+        it("should create the correct schema for an textual metadata field in loop (case sensitive)", function() {
             var loopTextField = _.extend(_.cloneDeep(fixtures.datatype[2].schema.body[0].content[3].content[0]), {_loop: true});
             var schema = DataService.buildMetadataFieldValidationSchema(loopTextField);
             var expectedSchema = Joi.object().required().keys({
                 values: Joi.array().required().items(Joi.string().required()),
+                group: Joi.string(),
+                loop: Joi.string()
+            });
+            expect(schema).to.eql(expectedSchema);
+        });
+
+        it("should create the correct schema for an textual metadata field in loop (case insensitive/uppercase)", function() {
+            var loopTextField = _.extend(_.cloneDeep(fixtures.datatype[2].schema.body[0].content[3].content[0]), {_loop: true, caseInsensitive: true});
+            var schema = DataService.buildMetadataFieldValidationSchema(loopTextField);
+            var expectedSchema = Joi.object().required().keys({
+                values: Joi.array().required().items(Joi.string().uppercase().required()),
                 group: Joi.string(),
                 loop: Joi.string()
             });

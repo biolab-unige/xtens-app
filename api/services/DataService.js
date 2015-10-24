@@ -40,7 +40,7 @@ var DataService = BluebirdPromise.promisifyAll({
         var validationSchema = {
             id: Joi.number().integer().positive(),
             type: Joi.number().integer().positive().required(),
-            date: Joi.date().iso().allow(null),
+            date: Joi.string().isoDate().allow(null),
             tags: Joi.array().allow(null),
             notes: Joi.string().allow(null),
             metadata: Joi.object().required(),
@@ -92,10 +92,15 @@ var DataService = BluebirdPromise.promisifyAll({
                 value = Joi.boolean().default(false);
             break;
             case FieldTypes.DATE:
-                value = Joi.date();
+                value = Joi.string().isoDate();
             break;
+            // default is TEXT
             default:
                 value = Joi.string();
+                if (metadataField.caseInsensitive && !metadataField.isList) {
+                    value = value.uppercase();
+                }
+                
         }
 
         if (metadataField.required) {
@@ -105,6 +110,8 @@ var DataService = BluebirdPromise.promisifyAll({
         else {      // allow "null" value if value is not required
             value = value.allow(null);
         }
+
+        
 
         if (metadataField.customValue) {
             value = value.default(metadataField.customValue);
