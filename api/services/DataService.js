@@ -183,7 +183,8 @@ var DataService = BluebirdPromise.promisifyAll({
         console.log(query.statement);
         console.log(query.parameters);
         // Using Prepared Statements for efficiency and SQL-injection protection
-        // https://github.com/brianc/node-postgres/wiki/Client#method-query-prepared 
+        // https://github.com/brianc/node-postgres/wiki/Client#method-query-prepared
+        // TODO move to xtens-transact 
         Data.query({
             text: query.statement, 
             values: query.parameters
