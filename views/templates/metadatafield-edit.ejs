@@ -18,7 +18,7 @@
         </div>
         <div class="metadataField-third">
             <label class="control-label"><%= __('custom-value') %></label>
-            <input text class="form-control input-sm" placeholder="Custom Value" name="customValue">
+            <input text class="form-control input-sm" placeholder="Custom Value" name="custom-value">
         </div>
     </div>
 </div>
@@ -28,6 +28,12 @@
             <label class="checkbox-inline">
                 <input type="checkbox" name="visible" value="visible">
                 <%=__('visible') %>
+            </label>
+        </div>
+        <div class="metadataField-sixth">
+            <label class="checkbox-inline">
+                <input type="checkbox" name="caseInsensitive" value="caseInsensitive" class="no-edit">
+                <%=__('case-insensitive') %>
             </label>
         </div>
     </div>
