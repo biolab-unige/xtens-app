@@ -43,7 +43,7 @@ CREATE DOMAIN dom_componentdatatypename AS text
 	CONSTRAINT dom_componentdatatypename_check CHECK ((((length(VALUE) > 2) AND (length(VALUE) < 100)) AND (VALUE ~ '^[A-Za-z][A-Za-z0-9]+$'::text)));
 
 
-ALTER DOMAIN dom_componentdatatypename OWNER TO massipg;
+ALTER DOMAIN dom_componentdatatypename OWNER TO xtenspg;
 
 --
 -- Name: dom_leaftype; Type: DOMAIN; Schema: public; Owner: massipg
@@ -53,7 +53,7 @@ CREATE DOMAIN dom_leaftype AS text NOT NULL
 	CONSTRAINT dom_leaftype_check CHECK (((length(VALUE) > 3) AND (length(VALUE) <= 50)));
 
 
-ALTER DOMAIN dom_leaftype OWNER TO massipg;
+ALTER DOMAIN dom_leaftype OWNER TO xtenspg;
 
 --
 -- Name: dom_nodename; Type: DOMAIN; Schema: public; Owner: massipg
@@ -63,7 +63,7 @@ CREATE DOMAIN dom_nodename AS text COLLATE pg_catalog."C.UTF-8"
 	CONSTRAINT dom_nodename_check CHECK (((length(VALUE) > 2) AND (length(VALUE) < 100)));
 
 
-ALTER DOMAIN dom_nodename OWNER TO massipg;
+ALTER DOMAIN dom_nodename OWNER TO xtenspg;
 
 --
 -- Name: xtens_group_privileges; Type: TYPE; Schema: public; Owner: xtenspg
