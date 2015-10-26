@@ -278,8 +278,9 @@
          * @param{Integer} id - the user group ID
          */
         groupEdit:function(id) {
-            var group = new Group.Model({id: id}), that = this;
+            var group = new Group.Model(), that = this;
             if (id) {
+                group.set('id', id);
                 group.fetch({
                     success: function(group) {
                         that.loadView(new Group.Views.Edit({
@@ -293,7 +294,7 @@
                 });
             }
             else {
-                 this.loadView(new Group.Views.Edit(group));
+                 this.loadView(new Group.Views.Edit({model: group}));
             }
         },
 
