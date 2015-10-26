@@ -32,9 +32,8 @@ module.exports = {
         },
         // MIABIS-07D
         email: {
-            type: 'string',
-            required: true,
-            email: true
+            type: 'email',
+            required: true
         },
         // MIABIS-07E
         address: {
