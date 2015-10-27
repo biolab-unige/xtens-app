@@ -864,7 +864,7 @@
          *                  - queryObj - a (possibly nested) query object, as the one sent to server side requests
          */
         initialize: function(options) {
-            _.bindAll(this, 'queryOnSuccess');
+            _.bindAll(this, ['queryOnSuccess', 'queryOnError']);
             this.template = JST["views/templates/query-builder.ejs"];
             $('#main').html(this.el);
             this.biobanks = options.biobanks || [];
@@ -878,6 +878,8 @@
             });
             this.$tableCnt = this.$("#result-table-cnt");
             this.$queryModal = this.$(".query-modal");
+            this.$queryNoResultCnt = this.$("#queryNoResultCnt");
+            this.$queryErrorCnt = this.$("#queryErrorCnt")
             this.tableView = null;
             this.$("#query-form").append(this.queryView.render({}).el);
             this.listenToOnce(this, 'search', this.sendQuery); 
@@ -922,10 +924,7 @@
                 url: '/query/dataSearch',
                 data: queryParameters,
                 success: this.queryOnSuccess,
-                error: function(jqXHR, textStatus, err) {
-                    alert(err);
-                }
-
+                error: this.queryOnError
             });
             this.modal = new ModalDialog({
                 title: i18n('please-wait-for-query-to-complete'),
@@ -941,25 +940,42 @@
          * @name queryOnSuccess
          */
         queryOnSuccess: function(result) {
+            this.$(".query-hidden").hide();
             this.modal && this.modal.hide();
             if (this.tableView) {
                 this.tableView.destroy();
             }
-            if (!result) throw new Error("Missing result object");
+            if (!result) this.queryOnError(null, null, "Missing result object");
 
             if (_.isEmpty(result.data)) {
+                this.$queryNoResultCnt.show();
+                /*
                 this.modal = new ModalDialog({
                     title: i18n('no-result-found'),
                     body: i18n("no-data-was-found-to-match-your-search-options") + ' ' + i18n('please-try-again-with-different-parameters')
                 });
                 this.$queryModal.append(this.modal.render().el);
-                this.modal.show();
+                this.modal.show(); */
                 return;
             }
 
             this.tableView = new XtensTable.Views.DataTable(result);
             this.$tableCnt.append(this.tableView.render().el);
             this.tableView.displayDataTable();
+        },
+
+        /**
+         * @method
+         * @name queryOnError
+         * @description
+         */
+        queryOnError: function(jqXHR, textStatus, err) {
+            this.$(".query-hidden").hide();
+            this.modal && this.modal.hide();
+            if (this.tableView) {
+                this.tableView.destroy();
+            }
+            this.$queryErrorCnt.show();
         }
 
     });

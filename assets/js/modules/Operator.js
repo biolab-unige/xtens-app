@@ -15,7 +15,7 @@
         classHandler: function(el) {
             return el.$element.parent();
         },
-        errorsWrapper: "<span class='help-block'></span>",
+        errorsWrapper: "<span class='help-block col-sm-4 col-sm-offset-2'></span>",
         errorTemplate: "<span></span>"
     };
 
@@ -151,13 +151,13 @@
 
         render: function(options) {
 
-            var self = this;
+            var that = this;
             var operators= new Operator.List();
             operators.fetch({
                 
                 success: function(operators) {
-                    self.$el.html(self.template({__: i18n, operators: operators.models}));
-                    return self;
+                    that.$el.html(that.template({__: i18n, operators: operators.models}));
+                    return that;
                 },
 
                 error:function(operators, res) { 
@@ -191,6 +191,8 @@
         },
 
         logIn: function() {
+            var that = this;
+            this.$("#loginFailed").hide();
             var username = this.$("#username").val();
             var password = this.$("#password").val();
 
@@ -204,7 +206,8 @@
                 })
                 .fail(function(jqxhr) {
                     // alert("Error: " + res.responseJSON.error);
-                    console.log("Operator.Views.Login.logIn() - error logging in.");                
+                    console.log("Operator.Views.Login.logIn() - error logging in.");
+                    that.$("#loginFailed").show();            
                 });
             }
             return false;

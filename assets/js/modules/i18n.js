@@ -78,6 +78,10 @@
         "group-list": "Group List",
         "new-group": "New Group",
         "xtens-login":"XTENS Login",
+        /* views/templates/login.ejs */
+        "username": "Username",
+        "sign-in": "Sign in",
+        "wrong-username-and-or-password!": "Wrong username and/or password!",
         /* views/templates/data-edit.ejs */
         "data-manager": "Data Manager",
         "select-a-data-type": "Select a Data Type",
@@ -186,6 +190,8 @@
         "no-data-was-found-to-match-your-search-options": "No data was found to match your search options.",
         "please-try-again-with-different-parameters": "Please try again with different parameters",
         "please-wait-for-query-to-complete": "Please wait for query to complete",
+        "the-query-is-not-correctly-composed": "The query is not correctly composed.",
+        "please-check-it-and-submit-it-again": "Please check it and submit it again.",
         /* views/templates/xtenstable-buttongroup.ejs  */
         "files": "Files",
         "derived-samples": "Derived Samples",
