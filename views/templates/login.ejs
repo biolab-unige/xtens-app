@@ -55,10 +55,10 @@ h2#account{
 
 <form name = "LForm" id="form" class="form-horizontal login-form" role="form">
     <div id="log">  
-        <input name="user" type="text" id="username" placeholder="User Name"><br /><br />
-        <input type="password" id="password" placeholder=" Password"><br /><br/>   
+        <input name="user" type="text" id="username" placeholder="User Name" required><br /><br />
+        <input type="password" id="password" placeholder=" Password" required><br /><br/>   
     </div>
     <div>
-        <a id="login" class="btn btn-primary">Log in</a>
+        <input type="submit" id="login" class="btn btn-primary" value="__('log-in')">
     </div>
 </form>

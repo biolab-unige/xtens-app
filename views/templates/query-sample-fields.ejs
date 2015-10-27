@@ -1,4 +1,11 @@
 <div class="query-row form-group">
+    <span class="query-label"><%= __("biobank") %></span>
+    <div class="query-comparator">
+        <input type="hidden" name="biobank-comparator" class="form-control">
+    </div>
+    <div name="biobank-div" class="query-value-div">
+        <select name="biobank" class="form-control"></select>
+    </div>
     <span class="query-label"><%= __("biobank-code") %></span>
     <div class="query-comparator">
         <input type="hidden" name="biobank-code-comparator" class="form-control">
