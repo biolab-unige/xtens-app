@@ -11,7 +11,7 @@
         STRING: 'string',
         PERSONAL_DETAILS: 'Personal Details',
         SUBJECT_PROPERTIES: ['code', 'sex'],
-        SAMPLE_PROPERTIES: ['biobankCode']
+        SAMPLE_PROPERTIES: ['biobank', 'biobankCode']
     };
 
     XtensConstants.DataTypeClasses = {

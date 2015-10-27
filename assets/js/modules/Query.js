@@ -27,7 +27,7 @@
                 case DataTypeClasses.SUBJECT:
                     return new Query.Views.Subject({ model: new Query.SubjectModel(specializedFieldsObj) });
                 case DataTypeClasses.SAMPLE:
-                    return new Query.Views.Sample({ model: new Query.SampleModel(specializedFieldsObj) });
+                    return new Query.Views.Sample({ model: new Query.SampleModel(specializedFieldsObj) , biobanks: arguments[2]});
             }
         };
     }
@@ -478,6 +478,42 @@
         className: 'query-sample',
 
         bindings: {
+            '[name="biobank-comparator"]': {
+                observe: 'biobankComparator',
+                initialize: function($el) {
+                    $el.select2({
+                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' }] 
+                    });
+                }
+            },
+
+            '[name="biobank"]': {
+                observe: 'biobank',
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n('please-select')});
+                },
+                selectOptions: {
+                    collection: function() {
+                        return this.biobanks.map(function(biobank) {
+                            return {
+                                label: biobank.get("acronym"),
+                                value: biobank.id
+                            };
+                        });
+                    },
+                    defaultOption: {
+                        label: "",
+                        value: null
+                    }
+                },
+                getVal: function($el, ev, options) {
+                    return parseInt($el.val());
+                },
+                onGet: function(val) {
+                    return val;
+                }
+            },
+
             '[name="biobank-code-comparator"]': {
                 observe: 'biobankCodeComparator',
                 initialize: function($el) {
@@ -493,6 +529,7 @@
 
         initialize: function(options) {
             this.template = JST['views/templates/query-sample-fields.ejs'];
+            this.biobanks = options.biobanks;
         },
 
         render: function() {
@@ -626,6 +663,7 @@
         initialize: function(options) {
             this.template = JST["views/templates/query-composite.ejs"];
             this.nestedViews = [];
+            this.biobanks = options.biobanks || [];
             this.dataTypes = options.dataTypes || [];
             this.dataTypesComplete = options.dataTypesComplete || [];
             // this.listenTo(this.model, 'change:dataType', this.dataTypeOnChange);
@@ -675,6 +713,7 @@
             
             // create composite subview 
             var childView = new Query.Views.Composite({
+                biobanks: this.biobanks,
                 dataTypes: childrenDataTypes,
                 dataTypesComplete: this.dataTypesComplete, 
                 model: new Query.Model(queryObj)
@@ -723,7 +762,7 @@
             var specializedFieldsObj = _.reduce(specializedFieldsArr, function(obj, elem) {
                 return _.merge(obj, elem);
             }, {});
-            modelQueryView = factory.createModelQueryView(this.model.get("model"), specializedFieldsObj);
+            modelQueryView = factory.createModelQueryView(this.model.get("model"), specializedFieldsObj, this.biobanks);
             if (modelQueryView) {
                 this.addSubqueryView(modelQueryView);
             }
@@ -779,6 +818,7 @@
             for(var i=len-1; i>=0; i--) {
                 this.removeChild(this.nestedViews[i]);
             }
+            // this.model.clear(); // clear your model
         },
         
         /**
@@ -827,9 +867,11 @@
             _.bindAll(this, 'queryOnSuccess');
             this.template = JST["views/templates/query-builder.ejs"];
             $('#main').html(this.el);
+            this.biobanks = options.biobanks || [];
             this.dataTypes = options.dataTypes || [];
             this.render(options);
             this.queryView = new Query.Views.Composite({
+                biobanks: this.biobanks,
                 dataTypes: this.dataTypes, 
                 dataTypesComplete: this.dataTypes, 
                 model: new Query.Model(options.queryObj)

@@ -6,6 +6,19 @@
     var router = xtens.router;
     var Group = xtens.module("group");
     var GroupsOperator =xtens.module("groupsOperator"); 
+    
+    var parsleyOpts = {
+        priorityEnabled: false,
+        // excluded: "select[name='fieldUnit']",
+        successClass: "has-success",
+        errorClass: "has-error",
+        classHandler: function(el) {
+            return el.$element.parent();
+        },
+        errorsWrapper: "<span class='help-block'></span>",
+        errorTemplate: "<span></span>"
+    };
+
     // define an Operator
     Operator.Model = Backbone.Model.extend({
         urlRoot: '/operator',
@@ -164,24 +177,13 @@
         initialize:function() {
             $("#main").html(this.el);
             this.template = JST["views/templates/login.ejs"];
-            this.render();
+            this.render();          
         },
 
-        render: function(options) {
-
-            var self = this;
-            var operators= new Operator.List();
-            operators.fetch({
-                success: function(operators) {
-                    self.$el.html(self.template({__: i18n, operators: operators.models}));
-                    return self;
-                },
-                error: function() {
-                    self.$el.html(self.template({__: i18n}));
-                    return self;    
-                }
-            });
-
+        render: function() {
+            this.$el.html(this.template({__:i18n}));
+            this.$("form").parsley(parsleyOpts);
+            return this;
         },
 
         events: {
@@ -192,7 +194,7 @@
             var username = this.$("#username").val();
             var password = this.$("#password").val();
 
-            if (username && password) {
+            if (this.$('form').parsley().validate()) {
                 $.post('/login', {
                     identifier: username,
                     password: password
@@ -200,14 +202,12 @@
                     xtens.session.load(data);
                     router.navigate("#/homepage", {trigger: true});
                 })
-                .fail(function(res) {
-                    alert("Error: " + res.responseJSON.error);
+                .fail(function(jqxhr) {
+                    // alert("Error: " + res.responseJSON.error);
+                    console.log("Operator.Views.Login.logIn() - error logging in.");                
                 });
             }
-
-            else {  
-                alert("A username and password is required");
-            }
+            return false;
         }
 
     });

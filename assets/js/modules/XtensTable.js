@@ -251,10 +251,10 @@ function renderDatatablesDate(data, type) {
         },
 
         insertSampleColumns: function() {
-            return [{
-                "title": i18n("biobank-code"),
-                "data": "biobank_code"
-            }];
+            return [
+                {"title": i18n("biobank"), "data": "biobank_acronym"},
+                {"title": i18n("biobank-code"), "data": "biobank_code"},
+            ];
         },
 
         /**

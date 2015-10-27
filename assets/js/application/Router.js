@@ -446,7 +446,22 @@
             var params = queryString ? JSON.parse(queryString) : undefined;
             console.log(params);
             var dataTypes = new DataType.List();
+            var biobanks = new Biobank.List();
+            var $dataTypesDeferred = dataTypes.fetch({
+                data: $.param({populate:['children']})
+            });
+            var $biobanksDeferred = biobanks.fetch();
             var that = this;
+            $.when($dataTypesDeferred, $biobanksDeferred).then( function(dataTypesRes, biobanksRes) {
+                that.loadView(new Query.Views.Builder({
+                    queryObj: params && params.queryArgs,
+                    biobanks: new Biobank.List(biobanksRes && biobanksRes[0]),
+                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])                                    
+                }));
+            }, function(jqxhr) {
+                xtens.error(jqxhr);
+            });
+            /*
             dataTypes.fetch({
                 data: $.param({
                     populate: ['children']
@@ -462,37 +477,9 @@
                 error: function(model, res) {
                     xtens.error(res);
                 }
-            });
+            }); */
         }
         
-        /*      
-        , performAdvancedSearch: function(queryString) {
-            var queryParameters = parseQueryString(queryString).query;
-            var that = this;
-            $.ajax({
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
-                },
-                contentType: 'application/json;charset:utf-8',
-                url: '/query/dataSearch',
-                data: queryParameters,
-                success: function(res) {
-                    if (that.view && that.view.queryOnSuccess) {
-                        that.view.queryOnSuccess(res);
-                    }
-                    else {
-                        this.navigate('/query');
-                    }
-                },
-                error: function(jqXHR, textStatus, err) {
-                    alert(err);
-                }
-
-            });
-
-        }, */
-
     });
 
     xtens.router = new XtensRouter();
