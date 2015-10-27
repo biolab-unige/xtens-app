@@ -180,7 +180,7 @@ var DataService = BluebirdPromise.promisifyAll({
      */
     advancedQuery: function(queryArgs, next) {
         var query = queryBuilder.compose(queryArgs);
-        console.log(query.statement);
+        console.log("DataService.advanced query - query: " + query.statement);
         console.log(query.parameters);
         // Using Prepared Statements for efficiency and SQL-injection protection
         // https://github.com/brianc/node-postgres/wiki/Client#method-query-prepared
