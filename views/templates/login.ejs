@@ -4,8 +4,8 @@
     $("#login").click(function(){
         var username = $("#userName").val();
         var password = $("#userPass").val();
-    	 var router = xtens.router; 
-        
+         var router = xtens.router; 
+
         if (username && password) {
            $.post( '/login',
                 {login: username, password:password},
@@ -50,15 +50,32 @@ h2#account{
     font-family: 'Helvetica',Gadget, sans-serif;
     font-weight: normal;
 }
+.hidden-div {
+    display: none;
+}
 
 </style>
 
-<form name = "LForm" id="form" class="form-horizontal login-form" role="form">
-    <div id="log">  
-        <input name="user" type="text" id="username" placeholder="User Name" required><br /><br />
-        <input type="password" id="password" placeholder=" Password" required><br /><br/>   
+<form name="login-form" id="login-form" class="form-horizontal login-form" role="form">
+    <div id="loginFailed" class="form-group has-error hidden-div">
+        <span class="control-label col-sm-4 col-sm-offset-2">
+            <strong> <%= __("wrong-username-and-or-password!") %></strong>
+        </span>
     </div>
-    <div>
-        <input type="submit" id="login" class="btn btn-primary" value="__('log-in')">
+    <div class="form-group">
+        <label for="username" class="col-sm-2 control-label"><%= __('username') %></label>
+        <div class "col-sm-4"> 
+            <input name="user" type="text" id="username" class="form-control" placeholder="User Name" required>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="password" class="col-sm-2 control-label"><%= __('password') %></label>
+        <div class "col-sm-4"> 
+            <input type="password" id="password" class="form-control" placeholder="Password" required>
+        </div>
+    </div>
+     
+    <div class="col-sm-offset-4">
+        <input type="submit" id="login" class="btn btn-primary" value="<%=__('sign-in') %>">
     </div>
 </form>

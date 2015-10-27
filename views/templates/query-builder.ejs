@@ -9,6 +9,20 @@
     </div>
     <div id="result-table-cnt" class="row"></div>
     
+    <div id="queryNoResultCnt" class="has-warning query-hidden">
+        <span class="control-label col-sm-4">
+            <strong> <%= __("no-data-was-found-to-match-your-search-options") %> </strong> <br /> 
+            <strong> <%= __("please-try-again-with-different-parameters") %></strong>
+        </span>
+    </div>
+
+    <div id="queryErrorCnt" class="has-error query-hidden">
+        <span class="control-label col-sm-4">
+            <strong> <%= __("the-query-is-not-correctly-composed") %> </strong> <br /> 
+            <strong> <%= __("please-check-it-and-submit-it-again") %></strong>
+        </span>
+    </div> 
+
     <!-- Div for BOOTSTRAP Dialog --> 
     <div class="query-modal"></div>
 </div>
