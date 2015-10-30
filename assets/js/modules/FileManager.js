@@ -102,7 +102,7 @@
         dropzoneOpts: {
             url: null,
             paramName: "uploadFile",
-            maxFileSize: 2048, // max 2 GiB
+            maxFilesize: 2048, // max 2 GiB
             uploadMultiple: false,
             method: "POST",
             // withCredentials: true
