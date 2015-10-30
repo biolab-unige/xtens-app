@@ -17,7 +17,7 @@
     var Group = xtens.module("group");
     var AdminAssociation = xtens.module("adminassociation");
     var FileManager= xtens.module("filemanager");
-    
+
     /**
      * @method
      * @name parseQueryString
@@ -48,8 +48,8 @@
         }
         return params;
     }
-    
- 
+
+
     /**
      * @class
      * @name XtensRouter
@@ -66,6 +66,7 @@
             "data/new": "dataEdit",
             "data/new/:skipme?*queryString": "dataEdit",
             "data/edit/:id": "dataEdit",
+            "data/details/:id": "dataDetails",
             "subjects": "subjectList",
             "subjects/new": "subjectEdit",
             "subjects/new/:skipme?*queryString": "subjectEdit",
@@ -98,7 +99,7 @@
         },
 
         publicRoutes: ["login"],
-        
+
         /**
          * @method
          * @name execute
@@ -113,8 +114,8 @@
             var restricted = !_.contains(this.publicRoutes, path);
 
             if (restricted && !isAuth) {
-                    this.navigate('login', {trigger: true});
-                    return false;
+                this.navigate('login', {trigger: true});
+                return false;
             }
 
             if (callback) {
@@ -170,7 +171,7 @@
         dataTypeGraph : function() {
             this.loadView(new DataType.Views.Graph());
         },
-        
+
         /**
          * @method
          * @name dataTypeEdit
@@ -195,7 +196,7 @@
                 }
             });
         },
-        
+
         /**
          * @method
          * @name dataList
@@ -229,13 +230,13 @@
             });
             // this.loadView(new Data.Views.List());
         },
-        
+
         /**
          * @method
          * @name dataEdit
          * @param{integer} id - the sample ID
          * @param{string} queryString
-         * @description retrieve the sample model and open Edit view
+         * @description retrieve the data model and open Edit view
          */
         dataEdit: function(id, queryString) {
             // var dataTypes = new DataType.List(); 
@@ -262,6 +263,22 @@
             });
         },
 
+        /**
+         * @name dataDetails
+         * @description retrieve the data model and open the Details view
+         */
+        dataDetails: function(id) {
+            var that = this, model = new Data.Model({id: id});
+            model.fetch({
+                success: function(data) {
+                    that.loadView(new Data.Views.Details({model: data})); 
+                },
+                error: function(model, res) {
+                    xtens.error(res);
+                }
+            });
+        },
+
 
         downloadView:function() {
             this.loadView(new FileManager.Views.Download());
@@ -270,7 +287,7 @@
         groupList:function() {
             this.loadView(new Group.Views.List());
         },
-        
+
         /**
          * @method
          * @name groupEdit
@@ -287,14 +304,14 @@
                             model: group
                         }));
                     },
-                    
+
                     error: function(group, res) {
                         xtens.error(res);
                     }
                 });
             }
             else {
-                 this.loadView(new Group.Views.Edit({model: group}));
+                this.loadView(new Group.Views.Edit({model: group}));
             }
         },
 
@@ -363,7 +380,7 @@
         subjectGraph: function() {
             this.loadView(new Subject.Views.Graph());
         },
-        
+
         /**
          * @method
          * @name sampleList
@@ -462,24 +479,24 @@
                 xtens.error(jqxhr);
             });
             /*
-            dataTypes.fetch({
-                data: $.param({
-                    populate: ['children']
-                }),
-                success: function(dataTypes) {
-                    console.log(dataTypes);
-                    that.loadView(new Query.Views.Builder({
-                        // id: _.parseInt(id),
-                        queryObj: params && params.queryArgs,
-                        dataTypes: dataTypes
-                    }));    
-                },
-                error: function(model, res) {
-                    xtens.error(res);
-                }
-            }); */
+               dataTypes.fetch({
+data: $.param({
+populate: ['children']
+}),
+success: function(dataTypes) {
+console.log(dataTypes);
+that.loadView(new Query.Views.Builder({
+            // id: _.parseInt(id),
+queryObj: params && params.queryArgs,
+dataTypes: dataTypes
+}));    
+},
+error: function(model, res) {
+xtens.error(res);
+}
+}); */
         }
-        
+
     });
 
     xtens.router = new XtensRouter();

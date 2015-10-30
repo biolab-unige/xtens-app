@@ -907,12 +907,24 @@
         }
 
     });
+    
+    /**
+     * @class
+     * @name Data.Views.Details
+     * @description view containing the details (metadata and files) of a Data (Data.Model) instance
+     */
+    Data.Views.Details = Backbone.View.extend({
+    
+    });
 
     Data.Views.List = Backbone.View.extend({
 
         tagName: 'div',
         className: 'data',
-
+        
+        /**
+         * @extends Backbone.View.initialize
+         */
         initialize: function(options) {
             $("#main").html(this.el);
             this.dataTypes = options.dataTypes;
