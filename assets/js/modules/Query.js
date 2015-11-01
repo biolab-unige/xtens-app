@@ -913,7 +913,7 @@
 
             var queryParameters = JSON.stringify({queryArgs: queryArgs});
             console.log(this.queryView.serialize());
-            var path = '/query/' + queryParameters;
+            var path = '/query/' + encodeURI(queryParameters);
             xtens.router.navigate(path, {trigger: false}); 
             $.ajax({
                 method: 'POST',

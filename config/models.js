@@ -13,6 +13,6 @@ module.exports.models = {
     //
     // (defaults to localDiskDbi)
     migrate: 'safe',
-    connection: 'pgbiobanks'
+    connection: 'pgigg'
 
 };
