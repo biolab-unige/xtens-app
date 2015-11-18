@@ -87,7 +87,7 @@ var MainController = {
             var fileName = pathFrags[pathFrags.length-1];
 
             // set response headers for file download 
-            res.setHeader('Content-disposition', 'attachment;filename='+fileName);
+            res.setHeader('Content-Disposition', 'attachment;filename='+fileName);
             
             return fileSystemManager.downloadFileContentAsync(dataFile.uri, res);
         
