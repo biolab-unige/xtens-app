@@ -43,8 +43,9 @@
 
         this.username = fsConf.username;
         this.password = fsConf.password;
-        this.url = "http://" + fsConf.restURL.hostname + ':' + fsConf.restURL.port + fsConf.restURL.path + '/fileContents' + fsConf.irodsHome + "/" +
-            fsConf.landingCollection;
+        this.url = fsConf.restURL.protocol + '//' + fsConf.restURL.hostname + ':' + 
+            fsConf.restURL.port + fsConf.restURL.path + '/fileContents' +
+            fsConf.irodsHome + "/" + fsConf.landingCollection;
     }
     
     IrodsRestStrategy.prototype = {
@@ -131,7 +132,8 @@
             // set the upload URL based on the Distributed FileSystem adopted
             switch(fs.type) {
                 case "irods-rest":
-                    url = "http://" + fs.restURL.hostname + ':' + fs.restURL.port + fs.restURL.path + '/fileContents' + fs.irodsHome;
+                    url = fs.restURL.protocol + '//' + fs.restURL.hostname + 
+                        ':' + fs.restURL.port + fs.restURL.path + '/fileContents' + fs.irodsHome;
                 break;
                 default:
                     url = null;                    
