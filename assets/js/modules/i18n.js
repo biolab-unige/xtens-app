@@ -98,7 +98,7 @@
         "associate-datatype":"Associate a Datatype",
         "dissociate-datatype":"Dissociate a Datatype",
         /* views/templates/group-list.ejs */
-	"member":"Member",
+	      "member":"Member",
         /* views/templates/group-edit.ejs */
         "privilege-level": "Privilege Level",
         "can-access-personal-data": "Can Access Personal Data",
@@ -109,6 +109,8 @@
         "no-associated":"Not Associated",
         /* views/templates/data-list.ejs */
         "data-list": "Data List",
+        "data-details": "Data Details",
+        "missing-value": "Missing Value",
         "metadata": "Metadata",
         "new-data": "New Data",
         /* views/templates/personal-details-edit.ejs */
@@ -203,7 +205,7 @@
         "the-file": "The file",
         "has-been-successfully-uploaded": "has beeen successfully uploaded.",
         /* views/templates/datafile-list.ejs */
-        "file-list": "File List",
+        "file-list" : "File List",
         "download": "Download",
         /* assets/js/modules/DataFile.js */
         "could-not-download-file": "Could Not Download File"
