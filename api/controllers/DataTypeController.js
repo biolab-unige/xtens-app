@@ -5,7 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 var ControllerOut = require("xtens-utils").ControllerOut;
-var transactionHandler = sails.config.xtens.transactionHandler;
+var crudManager = sails.config.xtens.crudManager;
 
 var DataTypeController = {
 
@@ -65,7 +65,7 @@ var DataTypeController = {
             return co.error(validationRes.error);
         }
         else {
-            transactionHandler.createDataType(dataType).then(function(idDataType) {
+            crudManager.createDataType(dataType).then(function(idDataType) {
                 return DataType.findOne(idDataType).populate('parents');
             })
             .then(function(dataType) {
@@ -93,7 +93,7 @@ var DataTypeController = {
             return co.error(validationRes.error);
         }
         else {
-            transactionHandler.updateDataType(dataType).then(function(idDataType) {
+            crudManager.updateDataType(dataType).then(function(idDataType) {
                 return DataType.findOne(idDataType).populate('parents');
             })
             .then(function(dataType) {
@@ -131,20 +131,29 @@ var DataTypeController = {
 
     buildGraph : function(req,res) {
 
-        console.log(req.param("idDataType"));
         var name = req.param("idDataType");
-        return DataType.findOne({name:name}).then(function(result) {
+        var fetchDataTypeTree = sails.config.xtens.databaseManager.recursiveQueries.fetchDataTypeTree;
+        console.log(req.param("idDataType"));
+        
+        return DataType.findOne({name:name})
+        
+        .then(function(result) {
             var id = result.id;
             var template = result.model;
             // This query returns the parent-child associations among the datatypes
-            DataType.query('WITH RECURSIVE nodes(parentId, parentName,parentTemplate,childId, childName,childTemplate, path, depth) AS (select r.datatype_children,p1.name,p1.model,r.datatype_parents,p2.name,p2.model,ARRAy[r.datatype_parents],1 from datatype_children__datatype_parents as r, data_type as p1,data_type as p2 where r.datatype_children = $1 and p1.id = r.datatype_children and p2.id = r.datatype_parents union all select r.datatype_children,p1.name,p1.model,r.datatype_parents,p2.name,p2.model,path || r.datatype_children, nd.depth + 1 from datatype_children__datatype_parents as r,data_type as p1,data_type as p2,nodes as nd where r.datatype_children = nd.childId and p1.id = r.datatype_children and p2.id = r.datatype_parents ) select * from nodes;',[id], function(err,resp) {
+            
+            function dataTypeTreeCb (err, resp) {
 
                 var links = [];
 
                 // if there aren't children do not print any link
                 if(resp.rows.length === 0) {
                     links.push({
-                        'source':name,'depth':0 ,'target':null,'source_template':template,'target_template':null
+                        'source': name,
+                        'depth': 0,
+                        'target': null,
+                        'source_template': template,
+                        'target_template': null
                     });
                 }
                 // populate the links array
@@ -161,8 +170,11 @@ var DataTypeController = {
                 var json = {'links':links};
                 console.log(json);
                 return res.json(json);
-            });  
-        });      
+            }
+            
+            fetchDataTypeTree(id, dataTypeTreeCb);
+        });
+
     }
 
 

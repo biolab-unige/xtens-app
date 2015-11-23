@@ -3,12 +3,13 @@
  */
 var http = require('http');
 var BluebirdPromise = require('bluebird');
-var queryBuilder = sails.config.xtens.queryBuilder;
 var DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
 var FieldTypes = sails.config.xtens.constants.FieldTypes;
 var fileSystemManager = sails.config.xtens.fileSystemManager;
-var transactionHandler = sails.config.xtens.transactionHandler;
 var Joi = require('joi');
+
+var crudManager = sails.config.xtens.crudManager;
+var queryBuilder = sails.config.xtens.queryBuilder;
 
 var DataService = BluebirdPromise.promisifyAll({
 
@@ -174,21 +175,23 @@ var DataService = BluebirdPromise.promisifyAll({
 
     /**
      * @method
-     * @name advancedQuery
+     * @name executeAdvancedQuery
      * @param{Object} queryArgs - a nested object containing all the query arguments
-     * @param{function} next - callback function
+     * @return{Promise} promise with argument a list of retrieved items matching the query
      */
-    advancedQuery: function(queryArgs, next) {
-        var query = queryBuilder.compose(queryArgs);
-        console.log("DataService.advanced query - query: " + query.statement);
-        console.log(query.parameters);
+    executeAdvancedQuery: function(queryArgs, next) {
+        var queryObj = queryBuilder.compose(queryArgs);
+        console.log("DataService.executeAdvancedQuery - query: " + queryObj.statement);
+        console.log(queryObj.parameters);
         // Using Prepared Statements for efficiency and SQL-injection protection
         // https://github.com/brianc/node-postgres/wiki/Client#method-query-prepared
         // TODO move to xtens-transact 
+        return crudManager.query(queryObj, next);
+        /*
         Data.query({
             text: query.statement, 
             values: query.parameters
-        }, next);
+        }, next); */
     },  
 
     /**
@@ -267,7 +270,7 @@ var DataService = BluebirdPromise.promisifyAll({
         return global[modelName].find(ids).then(function(foundData) {
             console.log("DataService.storeMetadataIntoEAV - EAV value table map is: " + sails.config.xtens.constants.EavValueTableMap);
             return BluebirdPromise.map(foundData, function(datum) {
-                return transactionHandler.putMetadataValuesIntoEAV(datum, sails.config.xtens.constants.EavValueTableMap);
+                return crudManager.putMetadataValuesIntoEAV(datum, sails.config.xtens.constants.EavValueTableMap);
             }, {concurrency: 100});
         })
 

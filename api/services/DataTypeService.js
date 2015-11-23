@@ -5,7 +5,7 @@
  */
 var Joi = require("joi");
 var constants = sails.config.xtens.constants;
-var transactionHandler = sails.config.xtens.transactionHandler;
+var crudManager = sails.config.xtens.crudManager;
 
 var DataTypeService = {
 
@@ -307,7 +307,7 @@ var DataTypeService = {
         .then(function(foundType) {
             console.log("DataTypeService.putMetadataFieldsIntoEAV - found type" + foundType);
             var fields = DataTypeService.getFlattenedFields(foundType, false);
-            return transactionHandler.putMetadataFieldsIntoEAV(foundType.id, fields, true);
+            return crudManager.putMetadataFieldsIntoEAV(foundType.id, fields, true);
         })
         .then(function(inserted) {
             console.log("new EavAttributes inserted: " + inserted);

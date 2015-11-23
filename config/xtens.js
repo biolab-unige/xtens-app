@@ -1,10 +1,19 @@
-var QueryBuilder = require('xtens-query').QueryBuilder;
-var IrodsRestStrategy = require('xtens-fs').IrodsRestStrategy;
-var FileSystemManager = require('xtens-fs').FileSystemManager;
-var TransactionHandler = require('xtens-transact').TransactionHandler;
-var connections = require('./local.js').connections;
-var connName = require('./models.js').models.connection;
-var fileSystemConnections = require('./local.js').fileSystemConnections;
+/**
+ * @author Massimiliano Izzo
+ */
+/* jshint esnext: true */
+/* jshint node: true */
+"use strict";
+
+let dbConnectionMap = new Map([['sails-postgresql', 'xtens-pg']]);
+let IrodsRestStrategy = require('xtens-fs').IrodsRestStrategy;
+let FileSystemManager = require('xtens-fs').FileSystemManager;
+
+let databaseConnections = require('./local.js').connections;
+let connName = require('./models.js').models.connection;
+
+let databaseManager = require(dbConnectionMap.get(databaseConnections[connName].adapter));
+let fileSystemConnections = require('./local.js').fileSystemConnections;
 
 /**
  *  @description XTENS configuration parameters
@@ -33,7 +42,7 @@ module.exports.xtens = {
      * 
      * localFileSystemExample: {
      *      type: 'local-fs',
-     *      path: '/var/xtens/dataFiles',
+     *      path: '/let/xtens/dataFiles',
      *      landingDirectory: 'landing',
      *      repoDirectory: 'xtens-repo' 
      * }
@@ -81,14 +90,16 @@ module.exports.xtens = {
      */
 
     name: 'xtens',
-
-    queryBuilder: new QueryBuilder(),
-
+    
     fileSystemManager: new FileSystemManager(fileSystemConnections[fileSystemConnections.default]),
 
-    transactionHandler: new TransactionHandler(null, connections[connName], fileSystemConnections[fileSystemConnections.default]),
-
     fileSystemConnection: fileSystemConnections[fileSystemConnections.default],
+
+    databaseManager: databaseManager,
+
+    crudManager: new databaseManager.CrudManager(null, databaseConnections[connName], fileSystemConnections.default),
+
+    queryBuilder: new databaseManager.QueryBuilder(),
 
     /***
      * constants of the XTENS platform
@@ -160,17 +171,17 @@ module.exports.xtens = {
 
 Object.defineProperty(global, '__stack', {
     get: function() {
-        var orig = Error.prepareStackTrace;
+        let orig = Error.prepareStackTrace;
 
         Error.prepareStackTrace = function(_, stack) {
             return stack;
         };
 
-        var err = new Error();
+        let err = new Error();
 
-        Error.captureStackTrace(err, arguments.callee);
+        Error.captureStackTrace(err, err.constructor);
 
-        var stack = err.stack;
+        let stack = err.stack;
 
         Error.prepareStackTrace = orig;
 
@@ -180,12 +191,12 @@ Object.defineProperty(global, '__stack', {
 
 Object.defineProperty(global, '__line', {
     get: function() {
-        return __stack[1].getLineNumber();
+        return global.__stack && global.__stack[1] && global.__stack[1].getLineNumber();
     }
 });
 
 Object.defineProperty(global, '__function', {
     get: function() {
-        return __stack[1].getFunctionName();
+        return global.__stack && global.__stack[1] && global.__stack[1].getFunctionName();
     }
 });

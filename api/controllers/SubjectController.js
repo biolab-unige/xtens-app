@@ -4,7 +4,7 @@
  * @description :: Server-side logic for managing subjects
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
-var transactionHandler = sails.config.xtens.transactionHandler;
+var crudManager = sails.config.xtens.crudManager;
 var BluebirdPromise = require('bluebird');
 var SUBJECT = sails.config.xtens.constants.DataTypeClasses.SUBJECT;
 
@@ -23,7 +23,7 @@ module.exports = {
             if (validationRes.error === null) {
                 subject = validationRes.value;
                 var subjectTypeName = subjectType && subjectType.name;
-                return transactionHandler.createSubject(subject, subjectTypeName);
+                return crudManager.createSubject(subject, subjectTypeName);
             }
             else {
                 throw new Error(validationRes.error);
@@ -56,7 +56,7 @@ module.exports = {
             var validationRes = SubjectService.validate(subject, true, dataType);
             if (validationRes.error === null) {
                 subject = validationRes.value;
-                return transactionHandler.updateSubject(subject);
+                return crudManager.updateSubject(subject);
             }
             else {
                 throw new Error(validationRes.error);
@@ -120,18 +120,18 @@ module.exports = {
      */
     createGraph:function(req,res){
 
-        var idPatient = req.param("idPatient");
+        var idSubject = req.param("idPatient");
+        var fetchSubjectDataTree = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTree;
 
-        Subject.query('SELECT concat(\'s_\',s.id) AS id , dt.name as type , s.metadata, CASE WHEN s.parent_sample > 0 THEN concat(\'s_\',s.parent_sample) ELSE NULL END AS parent_sample, NULL AS parent_data FROM sample s  inner join data_type dt on s.type =dt.id  WHERE s.parent_subject=$1UNION ALL SELECT concat(\'d_\',d.id) AS id,dt.name as type, d.metadata, CASE WHEN d.parent_sample > 0 THEN concat(\'s_\',d.parent_sample) ELSE NULL END AS parent_sample, CASE WHEN d.parent_data > 0 THEN concat(\'d_\',d.parent_data) ELSE NULL END AS parent_data FROM data d inner join data_type dt on d.type =dt.id WHERE d.parent_subject=$1  LIMIT 100;',[idPatient], function(err,resp){
-
-            if(err){
+        function subjectTreeCb(err, resp) {
+            
+            if (err){
                 console.log(err);
             }
-            else{
+            
+            else {
                 console.log(resp.rows);
-
                 var links = [];
-
                 BluebirdPromise.map(resp.rows, function(row) {
 
                     if (row.parent_data !== null) {
@@ -144,7 +144,8 @@ module.exports = {
                         return {'source':'Patient','target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata};
                     }
 
-                }).then(function(link){
+                })
+                .then(function(link){
 
                     console.log(link);
                     links = link;
@@ -152,12 +153,14 @@ module.exports = {
                     return res.json(json);
 
 
-                }).catch(function(err){
+                })
+                .catch(function(err){
                     console.log(err);
-
                 });
             }
-        });
+        }
+
+        fetchSubjectDataTree(idSubject, subjectTreeCb);
 
     },
     /**
@@ -170,29 +173,26 @@ module.exports = {
      */
     createGraphSimple: function(req,res){
 
+        var fetchSubjectDataTreeSimple = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTreeSimple;
+        var idSubject = req.param("idPatient");
+        console.log(idSubject);
+        
+        function subjectTreeSimpleCb(err,resp) {
 
-        var idPatient = req.param("idPatient");
-        console.log(idPatient);
-
-        Subject.query('select data_type.id from data_type inner join sample on data_type.id = sample.type where parent_subject ='+idPatient+' union select data_type.id from data_type inner join data on data_type.id = data.type where parent_subject =' + idPatient + ';', function(err,resp) {
-
-            //Subject.query('select s.metadata,d.name from sample s inner join data_type d on d.id = s.type where parent_subject ='+idPatient+';',function(err,resp){
-
-            var children = [];
-
-            var child;
-
-            var links = [];
-            console.log("qui");
+            var children = [], child, links = [];
+            
             console.log(resp);
 
-            if(resp.rows.length === 0) {
-                links = [{'source':'Patient','target':null}];
-                var json = {'links':links};
-                return res.json(json);
+            if (resp.rows.length === 0) {
+                links = [{
+                    'source': 'Patient', 
+                    'target': null
+                }];
+                // var json = {'links':links};
+                return res.json({links: links});
             }
 
-            for(var i = 0;i<resp.rows.length;i++) {
+            for(var i = 0; i<resp.rows.length; i++) {
                 children.push(resp.rows[i].id);
             }
 
@@ -201,25 +201,30 @@ module.exports = {
             BluebirdPromise.map(children,function(child){
 
                 var childName;
-
                 return DataType.findOne(child).then(function(dataType){
                     childName = dataType.name;
                     console.log(childName);
                     return {'source':'Patient','target':childName};
                 });
 
-            }).then(function(link){
+            })
+            
+            .then(function(link){
                 console.log(link);
                 links = link;
                 var json = {'links':links};
                 console.log(json);
                 return res.json(json);
 
-            }).catch(function(err){
+            })
+            
+            .catch(function(err){
                 console.log(err);
             });
 
-        });
+        }
+
+        fetchSubjectDataTreeSimple(idSubject, subjectTreeSimpleCb);
     }
 };
 

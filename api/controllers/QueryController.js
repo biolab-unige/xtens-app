@@ -36,7 +36,7 @@ module.exports = {
         var queryArgs = req.param('queryArgs');
         var data = null;
         var idDataType = queryArgs.dataType;
-        DataService.advancedQueryAsync(queryArgs)
+        DataService.executeAdvancedQueryAsync(queryArgs)
 
         /* commenting out this additional search
         .then(function(results) {

@@ -4,13 +4,19 @@
  * @description :: Server-side logic for managing data
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
+/* jshint esnext: true */
+/* jshint node: true */
+
 var ControllerOut = require("xtens-utils").ControllerOut;
-var transactionHandler = sails.config.xtens.transactionHandler;
-var DATA = sails.config.xtens.constants.DataTypeClasses.DATA;
+var xtensConf = global.sails.config.xtens;
+var crudManager = xtensConf.crudManager;
+var DATA = xtensConf.constants.DataTypeClasses.DATA;
 
 module.exports = {
 
     /**
+     * @method
+     * @name edit
      * @description retrieve all required information to create an EditData form
      */
 
@@ -70,7 +76,7 @@ module.exports = {
             if (validationRes.error === null) {
                 data = validationRes.value;
                 var dataTypeName = dataType && dataType.name;
-                return transactionHandler.createData(data, dataTypeName);
+                return crudManager.createData(data, dataTypeName);
             }
             else {
                 throw new Error(validationRes.error);
@@ -105,7 +111,7 @@ module.exports = {
             var validationRes = DataService.validate(data, true, dataType);
             if (validationRes.error === null) {
                 data = validationRes.value;
-                return transactionHandler.updateData(data);
+                return crudManager.updateData(data);
             }
             else {
                 throw new Error(validationRes.error);

@@ -4,7 +4,7 @@
  * @description :: Server-side logic for managing samples
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
-var transactionHandler = sails.config.xtens.transactionHandler;
+var crudManager = sails.config.xtens.crudManager;
 var SAMPLE = sails.config.xtens.constants.DataTypeClasses.SAMPLE;
 
 module.exports = {
@@ -67,7 +67,7 @@ module.exports = {
             if (validationRes.error === null) {
                 sample = validationRes.value;
                 var sampleTypeName = sampleType && sampleType.name;
-                return transactionHandler.createSample(sample, sampleTypeName);
+                return crudManager.createSample(sample, sampleTypeName);
             }
             else {
                 throw new Error(validationRes.error);
@@ -100,7 +100,7 @@ module.exports = {
             var validationRes = SampleService.validate(sample, true, dataType);
             if (validationRes.error === null) {
                 sample = validationRes.value;
-                return transactionHandler.updateSample(sample);
+                return crudManager.updateSample(sample);
             }
             else {
                 throw new Error(validationRes.error);
