@@ -1,0 +1,126 @@
+<h1>
+  <%= __("data-details") %>
+</h1>
+
+<div id="content">
+  <div class="container data-header-cnt">
+    <div id="data-header-row" class="row data-header-row">
+      <div id="data-header" class="col-md-offset-2 col-md-6">
+        <div class="row margin-row">
+          <% if (data.get("parentSubject")) {%>
+            <label for="parentSubject" class="data-label">
+              <%= __("subject") %>: </label>
+            <span class="data-span">
+              <%= data.get("parentSubject").code %>
+            </span>
+            <%} %>
+              <% if (data.get("parentSample")) {%>
+                <label for="parentSample" class="data-label">
+                  <%= __("sample") %>: </label>
+                <span class="data-span">
+                  <%= data.get("parentSample").biobankCode %>
+                </span>
+                <%} %>
+        </div>
+        <div class="row margin-row">
+          <label for="dataType" class="data-label">
+            <%= __("data-type") %>
+          </label>
+          <div class="data-input-div">
+            <div class="" id="dataType" name="dataType">
+              <%= data.get("type").name %>
+            </div>
+          </div>
+        </div>
+        <div class="row margin-row">
+          <label for="date" class="data-label">
+            <%= __('date') %>
+          </label>
+          <div class="data-input-div">
+            <div text class="" id="date" name="date"></div>
+          </div>
+        </div>
+        <div class="row margin-row">
+          <label for="tags" class="data-label">
+            <%= __('tags') %>
+          </label>
+          <div class="data-input-div">
+            <div type="hidden" class="" id="tags" name="tags"></div>
+          </div>
+        </div>
+        <div class="row margin-row">
+          <label for="notes" class="data-label">
+            <%= __('notes') %>
+          </label>
+          <div class="data-input-div">
+            <div class="" id="notes" name="notes" rows="4"></div>
+          </div>
+        </div>
+      </div>
+      <div id="file-header" class="col-md-4">
+        <%var files= data.filename;%>
+          <%if (files.length>0) { %>
+            <h4>
+              <%=__("file-list")%>
+            </h4>
+            <% _.forEach(files,function(file,index,files) {%>
+              <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-file"></i></span>
+                <div class="form-control" type="text">
+                  <%=file%>
+                </div>
+              </div>
+              <%});
+        }%>
+      </div>
+    </div>
+  </div>
+  <div id="metadata-schema" class="metadata-schema">
+    <div id="metadata-body" class="metadata-body">
+      <% _.forEach(fields,function(field,index,fields) {%>
+        <%var groupname=metadata[field.formattedName].group%>
+          <%if (index ==0 || metadata[fields[index-1].formattedName].group != groupname ){%>
+            <div class="metadatagroup span7 center">
+              <h4 class="metadatagroup-header text-uppercase">
+                <%=groupname%>
+              </h4>
+              <div class="metadatacomponent-body">
+                <%}%>
+
+                  <div class="row margin-row">
+                    <span name="metadata-name" class="col-md-4 text-right" style="padding-left:29px">
+                      <%=field.name%>
+                    </span>
+                    <div class="col-md-5 text-left">
+                      <% var value = metadata[field.formattedName].value %>
+                      <% var unit = metadata[field.formattedName].unit %>
+                        <div name="metadata-value">
+                          <% if (Array.isArray(value)) {
+                          _.forEach (value,function(val,i) {%>
+                            <%= val %>
+                              <%});}
+                      else{%>
+                                <%= value && unit ? value + " [" + unit + "]" :
+                                value ? value : "" %>
+                                  <%};%>
+                        </div>
+                    </div>
+                    <!--
+                    <% if (value) {%>
+                      <% if (metadata[field.formattedName].unit) {%>
+                        <div class="col-md-2 text-left">
+                          <div name="metadata-unit">
+                            [<%=metadata[field.formattedName].unit%>]
+                          </div>
+                        </div>
+                        <%}}%>
+                      -->
+                  </div>
+                  <% if (index === fields.length-1 || groupname !== metadata[fields[index+1].formattedName].group ) {%>
+              </div>
+            </div>
+                  <%}%>
+              <%});%>
+    </div>
+  </div>
+</div>

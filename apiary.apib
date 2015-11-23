@@ -1,0 +1,162 @@
+FORMAT: 1A
+HOST: http://xtens2.api.org/
+
+# XTENS 2
+
+A digital repository for heterogeneous data in life science.
+
+## Subjects Collection [/subject]
+
+### List All Subjects [GET]
+
++ Response 200 (application/json)
+
+        []
+
+### Create a New Subject [POST]
+
+You may create a new subject using this method. It takes a JSON
+object containing a type (DataType ID), sex (allowed values are: M, F, N.D.),
+code (a unique subject code), personalInfo (optional, it can be null or empty object),
+and metadata (can be an empty obect, must contain only metadata fields allowed
+for the DataType specified in "type")
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.MQ.Lu-KcR4aCeuT9hi1K474zV3s4VaopLDCcf4nZvH6DQo
+            Cache-Control: no-cache
+    
+    + Body
+
+            {
+                "type":1,
+                "sex": "M",
+                "code": "PAT-0001",
+                "personalInfo": {
+                    "givenName": "Mario",
+                    "surname": "Verdi",
+                    "birthDate": "1987-04-23"
+                },
+                "metadata": {}
+            }
+
++ Response 200 (application/json)
+
+    + Body
+    
+            {
+                "projects": [],
+                "samples": [],
+                "childrenData": [],
+                "personalInfo": {
+                    "surname": "Verdi",
+                    "id": 5,
+                    "givenName": "Mario",
+                    "birthDate": "1987-04-23T00:00:00.000Z",
+                    "createdAt": "2015-11-19T16:45:49.395Z",
+                    "updatedAt": "2015-11-19T16:45:49.395Z"
+                },
+                "type": {
+                    "name": "Patient",
+                    "schema": {
+                        "body": [],
+                        "header": {
+                            "name": "Patient",
+                            "model": "Subject",
+                            "version": "1.0",
+                            "ontology": "",
+                            "fileUpload": false,
+                            "description": "A real human patient"
+                        }
+                    },
+                    "model": "Subject",
+                    "id": 1,
+                    "createdAt": "2015-10-11T16:22:33.087Z",
+                    "updatedAt": "2015-11-05T10:18:30.420Z"
+                },
+                "code": "PAT-0001",
+                "sex": "M",
+                "tags": null,
+                "notes": null,
+                "metadata": {},
+                "id": 7,
+                "createdAt": "2015-11-19T16:45:49.482Z",
+                "updatedAt": "2015-11-19T16:45:49.482Z"
+            }
+
+
+# Subject [/subject/:id]
+
+### Update an Existing Subject [PUT]
+You may update an existing subject using this method. It takes a JSON
+object containing an id (Subject unique identifier, primary key), type (DataType ID), sex (allowed values are: M, F, N.D.),
+code (a unique subject code), personalInfo (optional, it can be null or empty object),
+and metadata (can be an empty obect, must contain only metadata fields allowed
+for the DataType specified in "type")
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.MQ.Lu-KcR4aCeuT9hi1K474zV3s4VaopLDCcf4nZvH6DQo
+            Cache-Control: no-cache
+    
+    + Body
+
+            {   
+                "id": 7,
+                "type":1,
+                "sex": "F",
+                "code": "PAT-0001",
+                "personalInfo": {
+                    "id": 5,
+                    "givenName": "Maria",
+                    "surname": "Verdi",
+                    "birthDate": "1987-04-23"
+                },
+                "metadata": {}
+            }
+
++ Response 200 (application/json)
+
+        {
+        "projects": [],
+        "samples": [],
+        "childrenData": [],
+        "personalInfo": {
+            "surname": "Verdi",
+            "id": 5,
+            "givenName": "Maria",
+            "birthDate": "1987-04-23T00:00:00.000Z",
+            "createdAt": "2015-11-19T16:45:49.395Z",
+            "updatedAt": "2015-11-19T16:45:49.395Z"
+        },
+        "type": {
+            "name": "Patient",
+            "schema": {
+                "body": [],
+                "header": {
+                    "name": "Patient",
+                    "model": "Subject",
+                    "version": "1.0",
+                    "ontology": "",
+                    "fileUpload": false,
+                    "description": "A real human patient"
+                }
+            },
+            "model": "Subject",
+            "id": 1,
+            "createdAt": "2015-10-11T16:22:33.087Z",
+            "updatedAt": "2015-11-05T10:18:30.420Z"
+        },
+        "code": "PAT-0001",
+        "sex": "M",
+        "tags": null,
+        "notes": null,
+        "metadata": {},
+        "id": 7,
+        "createdAt": "2015-11-19T16:45:49.482Z",
+        "updatedAt": "2015-11-19T17:20:34.362Z"
+        }

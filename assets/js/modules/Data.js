@@ -5,9 +5,9 @@
  */
 
 (function(xtens, Data) {
-    
+
     // TODO: retrieve this info FROM DATABASE ideally or from the server-side anyway
-    var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames; 
+    var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames;
 
     var i18n = xtens.module("i18n").en;
     var Constants = xtens.module("xtensconstants").Constants;
@@ -19,6 +19,8 @@
     var FileManager = xtens.module("filemanager");
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
     var dateUtil = xtens.module("utils").date;
+
+    var MISSING_VALUE_ALERT = true;
 
     var parsleyOpts = {
         priorityEnabled: false,
@@ -38,10 +40,10 @@
      */
     function getFieldValue($el, ev, options) {
         switch (options.view.component.fieldType) {
-            
+
             case FieldTypes.INTEGER:
                 return parseInt($el.val());
-            
+
             case FieldTypes.FLOAT:
                 return parseFloat($el.val());
 
@@ -49,13 +51,13 @@
             case FieldTypes.DATE:
                 var dateArray = $el.val().split("/");
                 return dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0];
-            
+
             default:
                 return $el.val();
 
         }
     }
-    
+
     /**
      * @description render a Date from the model to a view
      */
@@ -68,7 +70,7 @@
 
     /**
      * @class
-     * @name Factory 
+     * @name Factory
      * @description Factory Method implementation for the Data.Views.* components
      */
 
@@ -91,7 +93,7 @@
                     return new Data.Views.MetadataFieldCheckbox({model: model, component: component});
                 }
                 if (component.isList) {
-                    return new Data.Views.MetadataFieldSelect({model: model, component: component}); 
+                    return new Data.Views.MetadataFieldSelect({model: model, component: component});
                 }
                 /* else if (component.hasRange) {
                    return new Data.Views.MetadataFieldRange({model: model, component: component});
@@ -106,7 +108,7 @@
     // local Data.Factory instance - to be used inside the model
     var factory = new Data.Factory();
 
-    /** 
+    /**
      *  @class
      *  @name Data.MetadataFieldModel
      *  @extends Backbone.Model
@@ -122,7 +124,7 @@
 
         /**
          * @extends Backbone.Model.initialize
-         * @description initialize a generic MetadataField for editing purposes 
+         * @description initialize a generic MetadataField for editing purposes
          */
 
         initialize: function(attributes, options) {
@@ -175,7 +177,7 @@
         }
     });
 
-    /** 
+    /**
      *  @class
      *  @name Data.MetadataGroupModel
      *  @description Backbone Model for a metadata group
@@ -197,7 +199,7 @@
     Data.MetadataLoopModel = Backbone.Model.extend({
         initialize: function(attributes, options) {
             this.set("name", options && options.name);
-            this.set("groupName", options && options.groupName); 
+            this.set("groupName", options && options.groupName);
             if (options && options.metadata) {
                 this.metadata = options.metadata;
             }
@@ -236,7 +238,7 @@
             }
             return this;
         },
-        
+
         /**
          * @method
          * @name add
@@ -251,7 +253,7 @@
             this.$el.children('.metadatacomponent-body').last().append(view.render().el);
             this.nestedViews.push(view);
         },
-        
+
         /**
          * @method
          * @name removeMe
@@ -261,12 +263,12 @@
             var len = this.nestedViews || this.nestedViews.length;
             for (var i=0; i<len; i++) {
                 this.nestedViews[i].removeMe();
-                delete this.nestedViews[i]; 
+                delete this.nestedViews[i];
             }
             this.remove();
             return true;
         },
-        
+
         /**
          * @method
          * @name getChild
@@ -277,7 +279,7 @@
         getChild: function(index) {
             return this.nestedViews[i];
         },
-        
+
         /**
          * @method
          * @name serialize
@@ -305,9 +307,9 @@
             }
         }
     });
-    
+
     /**
-     * @class 
+     * @class
      * @name Data.Views.MetadataSchema
      * @extends Data.Views.MetadataComponent
      * @description the view for the metadata schema - the composite element - of a Data instance
@@ -327,9 +329,9 @@
          *  @method
          *  @name serialize
          *  @description serialize the metadadata schema to a JSON object
-         *  @param{boolean} useFormattedNames - if set to true use name formatted to support JavaScript properties in dot notation (i.e. variable.property) 
+         *  @param{boolean} useFormattedNames - if set to true use name formatted to support JavaScript properties in dot notation (i.e. variable.property)
          *  @return {Object} - an array containing all the metadata name-value-unit properties
-         *  @override 
+         *  @override
          */
         serialize: function(useFormattedNames) {
             var arr = [];
@@ -343,7 +345,7 @@
             var metadata = {};
             for (i=0, len=serialized.length; i<len; i++) {
                 var unit = serialized[i].unit || undefined;
-                
+
                 // if formattedNames are used select the appropriate fieldName
                 var fieldName = useFormattedNames ? serialized[i].formattedName : serialized[i].name;
 
@@ -354,7 +356,7 @@
 
                 // if it's a field within a loop store the value unit pair within two arrays
                 else {
-                    if (!metadata[fieldName]) {    
+                    if (!metadata[fieldName]) {
                         metadata[fieldName] = {values: [serialized[i].value], group: serialized[i].groupName, loop: serialized[i].loop};
                         metadata[fieldName].units = unit ? [unit] : undefined;
                     }
@@ -432,7 +434,7 @@
         events: {
             'click input[type=button]': 'addLoopBody'
         },
-        
+
         /**
          * @method
          * @name addLoopBody
@@ -440,7 +442,7 @@
          * @param {integer} the index of the body element, starting from 0
          */
         addLoopBody: function(index) {
-            var newLoopbody = '<div class="metadatacomponent-body"></div>'; 
+            var newLoopbody = '<div class="metadatacomponent-body"></div>';
             this.$metadataloopBody.append(newLoopbody);
             /*
                var $last = this.$el.children('.metadatacomponent-body').last();
@@ -457,7 +459,7 @@
     Data.Views.MetadataField = Data.Views.MetadataComponent.fullExtend({
 
         className: 'metadatafield',
-        
+
         /**
          * @method
          * @name add
@@ -465,7 +467,7 @@
          * @override
          */
         add: function() {},
-        
+
         /**
          * @method
          * @name getChild
@@ -519,13 +521,13 @@
                 getVal: getFieldValue,
                 onGet: function(value, options) {
                     if (options.view.component && options.view.component.fieldType === FieldTypes.DATE) {
-                       return renderDateValue(value); 
+                       return renderDateValue(value);
                     }
                     else {
                         return value;
                     }
                 }
-            }        
+            }
         },
 
         initialize: function(options) {
@@ -541,7 +543,7 @@
          */
         setValidationOptions: function() {
             if (this.component.required) {
-                this.$fieldValue.prop('required', true); 
+                this.$fieldValue.prop('required', true);
             }
             switch (this.component.fieldType) {
                 case FieldTypes.INTEGER:
@@ -580,7 +582,7 @@
                 getVal: function($el, ev, options) {
                     return $el.prop('checked');
                 }
-            } 
+            }
         },
 
         initialize: function(options) {
@@ -601,7 +603,7 @@
                     labelPath: '',
                     valuePath: ''
                 }
-            }        
+            }
         },
 
         initialize: function(options) {
@@ -616,7 +618,7 @@
         bindings: {
             'input[name=fieldValue]': {
                 observe: 'value'
-            }        
+            }
         },
 
         initialize: function(options) {
@@ -686,7 +688,7 @@
             }
             return this;
         },
-        
+
         /**
          * @description Backbone.stickit bindings
          */
@@ -700,7 +702,7 @@
                     defaultOption: {
                         label: i18n("please-select"),
                         value: null
-                    } 
+                    }
                 },
                 getVal: function($el, ev, options) {
                     var value = parseInt($el.val());
@@ -724,9 +726,9 @@
 
                 // format date on model as ISO (YYYY-MM-DD)
                 onSet: function(val, options) {
-                    var dateArray = val.split("/");
-                    return new Date(dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0]);
-                },
+                        var dateArray = val.split("/");
+                        return new Date(dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0]);
+                    },
 
                 // store data in view (from model) as DD/MM/YYYY (European format)
                 onGet: function(value, options) {
@@ -762,14 +764,14 @@
             "click #save": "saveData",
             "click button.delete": "deleteData"
         },
-        
+
         /**
          * @method
          * @name saveData
          * @description retrieve all the Data properties from the form (the metadata value(s)-unit(s) pairs, the files' paths, etc...)
          *              and save the Data model on the server
          * @param {event} - the form submission event
-         * @return {false} - to suppress the HTML form submission 
+         * @return {false} - to suppress the HTML form submission
          */
         saveData: function(ev) {
             var targetRoute = $(ev.currentTarget).data('targetRoute') || 'data';
@@ -785,7 +787,7 @@
                     },
                     error: function(model, res) {
                         xtens.error(res);
-                    } 
+                    }
                 });
             }
             return false;
@@ -815,7 +817,7 @@
         dataTypeOnChange: function() {
             this.renderDataTypeSchema();
         },
-        
+
         /**
          * @method
          * @name renderDataTypeSchema
@@ -851,7 +853,7 @@
             // reinitialize parsley
             this.$form.parsley(parsleyOpts).reset();
         },
-        
+
         /**
          * @method
          * @name enableFileUpload
@@ -907,21 +909,96 @@
         }
 
     });
-    
+
     /**
      * @class
      * @name Data.Views.Details
      * @description view containing the details (metadata and files) of a Data (Data.Model) instance
      */
     Data.Views.Details = Backbone.View.extend({
-    
+      tagName: 'div',
+      className: 'data',
+
+      /**
+       * @extends Backbone.View.initialize
+       */
+      initialize: function(options) {
+          $("#main").html(this.el);
+          this.template = JST["views/templates/data-details.ejs"];
+          this.data = options.model;
+          this.model.filename=this.getFileName(this.model);
+          this.render();
+      },
+
+      render: function() {
+        var dtmodel= new DataTypeModel(this.model.get("type"));
+        var metarr=dtmodel.getFlattenedFields();
+        var metadata = this.model.get("metadata");
+        this.$el.html(this.template({__: i18n, data: this.model, fields: metarr, metadata: metadata}));
+        //this.$fileCnt = this.$("#data-header-row");
+        
+        if (MISSING_VALUE_ALERT) {
+          this.$('div[name="metadata-value"]').filter(function() {
+            return $(this).text().trim() === '';
+          }).addClass("text-warning").html(i18n("missing-value"));
+        }
+        this.stickit();
+        //this.listenTo(this.model, 'change:type', this.dataTypeOnChange);
+        //this.$('#tags').select2({tags: []});
+
+        /*if (this.model.get("type")) {
+          this.renderDataTypeSchema(this.model);  }
+        return this;*/
+      },
+
+      bindings: {
+
+          '#date': {
+              observe: 'date',
+
+              // store data in view (from model) as DD/MM/YYYY (European format)
+              onGet: function(value, options) {
+                  if (value) {
+                      var dateArray = value instanceof Date ? value.toISOString().split('-') : value.split('-');
+                      var dateArray2 = dateArray[2].split('T');
+                      dateArray[2]=dateArray2[0];
+                      return dateArray[2] + '/' + dateArray[1] + '/' + dateArray[0];
+                  }
+              },
+
+          },
+          '#tags': {
+              observe: 'tags',
+              getVal: function($el, ev, option) {
+                  return $el.val().split(", ");
+              }
+          },
+
+          '#notes': {
+              observe: 'notes'
+          }
+
+      },
+
+      getFileName:function(model) {
+        var files=model.attributes.files;
+        this.filename= new Array(files.length);
+        for(var i=0; i<files.length;i++){
+        var filename1 = files[i].uri.split('/');
+        this.filename[i]=filename1[7];
+      }
+      return this.filename;
+      }
+
+
+
     });
 
     Data.Views.List = Backbone.View.extend({
 
         tagName: 'div',
         className: 'data',
-        
+
         /**
          * @extends Backbone.View.initialize
          */
@@ -938,8 +1015,9 @@
             _.each(this.data.models, function(data) {
                 var type = this.dataTypes.get(data.get("type").id);
                 data.set("editLink", "#/data/edit/" + data.id);
+                data.set("detailsLink", "#/data/details/" + data.id);
                 var dataTypeChildren = _.where(type.get("children"), {"model": Classes.DATA});
-                if (dataTypeChildren.length > 0) { 
+                if (dataTypeChildren.length > 0) {
                     var dids = _.pluck(dataTypeChildren, 'id').join();
                     data.set("newDataLink", "#/data/new/0?idDataTypes="+dids+"&parentData="+data.id);
                 }
