@@ -56,7 +56,9 @@ var DataService = BluebirdPromise.promisifyAll({
         // validate metadata against metadata schema if skipMetadataValidation is set to false
         if (performMetadataValidation) {
             console.log("Performing metadata validation: " + performMetadataValidation);
-            var metadataValidationSchema = {};
+            var metadataValidationSchema = {
+                __DATA: Joi.any()   // key to store any possible data object or "blob"
+            };
             var flattenedFields = DataTypeService.getFlattenedFields(dataType);
             _.each(flattenedFields, function(field) {
                 metadataValidationSchema[field.formattedName] = DataService.buildMetadataFieldValidationSchema(field);

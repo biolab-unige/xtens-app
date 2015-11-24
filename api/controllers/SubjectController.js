@@ -4,6 +4,7 @@
  * @description :: Server-side logic for managing subjects
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
+var ControllerOut = require("xtens-utils").ControllerOut;
 var crudManager = sails.config.xtens.crudManager;
 var BluebirdPromise = require('bluebird');
 var SUBJECT = sails.config.xtens.constants.DataTypeClasses.SUBJECT;
@@ -16,6 +17,7 @@ module.exports = {
      *  @description: POST /subject: create a new subject; transaction-safe implementation
      */
     create: function(req, res) {
+        var co = new ControllerOut(res);
         var subject = req.body;
         DataType.findOne(subject.type)
         .then(function(subjectType) {
@@ -38,7 +40,7 @@ module.exports = {
         })
         .catch(function(error) {
             console.log(error.message);
-            return res.serverError(error.message);
+            return co.error(error);
         });
     },
 
@@ -49,6 +51,7 @@ module.exports = {
      *              Transaction-safe implementation
      */
     update: function(req, res) {
+        var co = new ControllerOut(res);
         var subject = req.body;
         SubjectService.simplify(subject);
 
@@ -71,8 +74,45 @@ module.exports = {
         })
         .catch(function(error) {
             console.log(error.message);
-            return res.serverError(error.message);
+            return co.error(error);
         });
+    },
+
+    /**
+     * @method
+     * @name destroy
+     * @description DELETE /subject/:id
+     */
+    destroy: function(req, res) {
+        var co = new ControllerOut(res);
+        var id = req.param('id');
+        var idOperator = TokenService.getToken(req);
+
+        return BluebirdPromise.props({
+            subject: Subject.findOne({id: id}),
+            dataTypes: crudManager.getDataTypesByRolePrivileges({
+                idOperator: idOperator,
+                model: SUBJECT
+            })
+        })
+        .then(function(result) {
+            var allowedDataTypes = _.pluck(result.dataTypes, 'id');
+            if (allowedDataTypes.indexOf(result.subject.type) > -1) {
+                return crudManager.deleteSubject(id);
+            }
+        })
+
+        .then(function(deleted) {
+            if (deleted === undefined) {
+                return co.forbidden({message: 'User nor authorized to delete Subject with ID: ' + id});
+            }
+            return res.json(deleted);
+        })
+
+        .catch(function(err) {
+            return co.error(err);
+        });
+
     },
 
     /**
@@ -81,35 +121,27 @@ module.exports = {
      * @description retrieve all required models for editing/creating a Subject via client web-form
      */
     edit: function(req, res) {
-
+        var co = new ControllerOut(res);
         var id = req.param("id");
-        // var idOperator = req.session.operator && req.session.operator.id;
         var idOperator = TokenService.getToken(req);
+        
         console.log("SubjectController.edit - Decoded ID is: " + idOperator);  
 
-        async.parallel({
-
-            projects: function(callback) {
-                Project.find().exec(callback);
-            },
-
-            dataTypes: function(callback) {
-                // DataTypeService.get(callback, { classTemplate: 'Subject'});
-                DataTypeService.getByOperator(idOperator, {model: SUBJECT}, callback);
-            },
-
-            subject: function(callback) {
-                SubjectService.getOne(id, callback);
-            }
-
-        }, function(err, results) {
-            if (err) {
-                return res.serverError(err);
-            }
+        return BluebirdPromise.props({
+            projects: Project.find(),
+            subject: SubjectService.getOneAsync(id),
+            dataTypes: crudManager.getDataTypesByRolePrivileges({
+                idOperator: idOperator,
+                model: SUBJECT
+            }),
+        })
+        .then(function(results) {
             return res.json(results);
-
+        })
+        .catch(function(err) {
+            return co.error(err); 
         });
-
+        
     },
 
     /**
@@ -119,7 +151,7 @@ module.exports = {
      *              Note: The current limit for the number of instances is 100.
      */
     createGraph:function(req,res){
-
+        var co = new ControllerOut(res);
         var idSubject = req.param("idPatient");
         var fetchSubjectDataTree = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTree;
 
@@ -156,6 +188,7 @@ module.exports = {
                 })
                 .catch(function(err){
                     console.log(err);
+                    return co.error(err);
                 });
             }
         }
@@ -172,7 +205,7 @@ module.exports = {
      *
      */
     createGraphSimple: function(req,res){
-
+        var co = new ControllerOut(res);
         var fetchSubjectDataTreeSimple = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTreeSimple;
         var idSubject = req.param("idPatient");
         console.log(idSubject);
@@ -219,7 +252,7 @@ module.exports = {
             })
             
             .catch(function(err){
-                console.log(err);
+                return co.error(err);
             });
 
         }

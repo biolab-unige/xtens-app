@@ -6,7 +6,7 @@
  */
 /* jshint esnext: true */
 /* jshint node: true */
-
+var BluebirdPromise = require('bluebird');
 var ControllerOut = require("xtens-utils").ControllerOut;
 var xtensConf = global.sails.config.xtens;
 var crudManager = xtensConf.crudManager;
@@ -23,38 +23,26 @@ module.exports = {
     edit: function(req, res) {
         var co = new ControllerOut(res);
         var params = req.allParams();
-        params.model = DATA;
         var idOperator = TokenService.getToken(req);
 
-        async.parallel({
+        return BluebirdPromise.props({
+            data: DataService.getOneAsync(params.id),
+            dataTypes: crudManager.getDataTypesByRolePrivileges({
+                idOperator: idOperator,
+                model: DATA,
+                idDataTypes: params.idDataTypes
+            }),
+            parentSubject: SubjectService.getOneAsync(params.parentSubject),
+            parentSample: SampleService.getOneAsync(params.parentSample),
+            parentData: DataService.getOneAsync(params.parentData)
+        })
 
-            data: function(callback) {
-                DataService.getOne(params.id, callback);
-            },
-
-            dataTypes: function(callback) {
-                // DataTypeService.get(callback, params);
-                DataTypeService.getByOperator(idOperator, params, callback);
-            },
-
-            parentSubject: function(callback) {
-                SubjectService.getOne(params.parentSubject, callback);
-            },
-
-            parentSample: function(callback) {
-                SampleService.getOne(params.parentSample, callback);
-            },
-
-            parentData: function(callback) {
-                DataService.getOne(params.parentData, callback);
-            }
-
-        }, function(err, results) {
-            if (err) {
-                return co.error(err);
-            }
+        .then(function(results) {
             return res.json(results);
+        })
 
+        .catch(function(err) {
+            return co.error(err);
         });
 
     },
@@ -127,6 +115,46 @@ module.exports = {
             console.log("Error: " + error.message);
             return co.error(error);
         });
+    },
+
+    /**
+     * @method
+     * @name delete
+     * @description DELETE /data/:id
+     */
+    destroy: function(req, res) {
+        var co = new ControllerOut(res);
+        var id = req.param('id');
+        var idOperator = TokenService.getToken(req);
+
+        return BluebirdPromise.props({
+            data: Data.findOne({id: id}),
+            dataTypes: crudManager.getDataTypesByRolePrivileges({
+                idOperator: idOperator,
+                model: DATA
+            })
+        })
+        .then(function(result) {
+            var allowedDataTypes = _.pluck(result.dataTypes, 'id');
+            console.log('idOperator: ' + idOperator);
+            console.log(allowedDataTypes);
+            console.log(result.data.type);
+            if (allowedDataTypes.indexOf(result.data.type) > -1) {
+                return crudManager.deleteData(id);
+            }
+        })
+
+        .then(function(deleted) {
+            if (deleted === undefined) {
+                return co.forbidden({message: 'User nor authorized to delete Data with ID: ' + id});
+            }
+            return res.json(deleted);
+        })
+
+        .catch(function(err) {
+            return co.error(err);
+        });
+
     } 
 };
 

@@ -197,14 +197,6 @@ var DataTypeService = {
         DataType.query({
             // name: 'findDataTypeByOperator',
             text: [statement, whereClause, ';'].join(""),
-            /*
-            text: ['SELECT d.id, d.name, d.schema FROM data_type d ',
-                'INNER JOIN datatype_groups__group_datatypes dggd ON d.id = dggd.datatype_groups ',
-                'INNER JOIN xtens_group g ON g.id = dggd."group_dataTypes" ',
-                'INNER JOIN group_members__operator_groups gmog ON g.id = gmog.group_members ',
-                'INNER JOIN operator o ON o.id = gmog.operator_groups ',
-                'WHERE o.id = $1 AND d.model = $2;'
-            ].join(""), */
             values: vals
         }, function(err, result) {
             if (err) {
