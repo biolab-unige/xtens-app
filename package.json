@@ -41,8 +41,6 @@
     "validator": "^3.40.0",
     "xtens-fs": "git+https://github.com/biolab-unige/xtens-fs.git",
     "xtens-pg": "git+https://git@github.com/biolab-unige/xtens-pg.git",
-    "xtens-query": "git+https://github.com/biolab-unige/xtens-query.git",
-    "xtens-transact": "git+https://github.com/biolab-unige/xtens-transact.git",
     "xtens-utils": "git+https://github.com/biolab-unige/xtens-utils.git"
   },
   "scripts": {
