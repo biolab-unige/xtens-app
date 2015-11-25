@@ -97,7 +97,7 @@ module.exports.xtens = {
 
     databaseManager: databaseManager,
 
-    crudManager: new databaseManager.CrudManager(null, databaseConnections[connName], fileSystemConnections.default),
+    crudManager: new databaseManager.CrudManager(null, databaseConnections[connName], fileSystemConnections[fileSystemConnections.default]),
 
     queryBuilder: new databaseManager.QueryBuilder(),
 
