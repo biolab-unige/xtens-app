@@ -75,7 +75,8 @@ module.exports = {
             return Data.findOne(idData).populateAll();
         })
         .then(function(result) {
-            return res.json(result);
+            res.set('Location', req.baseUrl + req.url + '/'  + result.id);
+            return res.json(201, result);
         })
         .catch(function(error) {
             console.log("Error: " + error.message);
@@ -119,13 +120,17 @@ module.exports = {
 
     /**
      * @method
-     * @name delete
+     * @name destroy
      * @description DELETE /data/:id
      */
     destroy: function(req, res) {
         var co = new ControllerOut(res);
         var id = req.param('id');
         var idOperator = TokenService.getToken(req);
+
+        if (!id) {
+            return co.badRequest({message: 'Missing data ID on DELETE request'});
+        }
 
         return BluebirdPromise.props({
             data: Data.findOne({id: id}),
@@ -148,7 +153,9 @@ module.exports = {
             if (deleted === undefined) {
                 return co.forbidden({message: 'User nor authorized to delete Data with ID: ' + id});
             }
-            return res.json(deleted);
+            return res.json({
+                deleted: deleted
+            });
         })
 
         .catch(function(err) {

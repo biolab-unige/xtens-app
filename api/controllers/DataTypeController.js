@@ -69,7 +69,8 @@ var DataTypeController = {
                 return DataType.findOne(idDataType).populate('parents');
             })
             .then(function(dataType) {
-                return res.json(dataType);
+                res.set('Location', req.baseUrl + req.url + '/'  + result.id);
+                return res.json(201, dataType);
             })
             .catch(function(error) {
                 return co.error(error);
@@ -105,6 +106,33 @@ var DataTypeController = {
         }
     },
 
+    /**
+     * @method
+     * @name destroy
+     * @description DELETE /dataType/:id
+     */
+    destroy: function(req, res) {
+        var co = new ControllerOut(res);
+        var id = req.param('id');
+        // var idOperator = TokenService.getToken(req);
+        
+        if (!id) {
+            return co.badRequest({message: 'Missing dataType ID on DELETE request'});
+        }
+
+        return crudManager.deleteDataType(id)
+
+        .then(function(deleted) {
+            return res.json({
+                deleted: deleted
+            });
+        })
+
+        .catch(function(err) {
+            return co.error(err);
+        });
+
+    }, 
 
     /**
      * @deprecated
