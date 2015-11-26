@@ -43,7 +43,7 @@ CREATE DOMAIN dom_componentdatatypename AS text
 	CONSTRAINT dom_componentdatatypename_check CHECK ((((length(VALUE) > 2) AND (length(VALUE) < 100)) AND (VALUE ~ '^[A-Za-z][A-Za-z0-9]+$'::text)));
 
 
-ALTER DOMAIN dom_componentdatatypename OWNER TO xtenspg;
+ALTER DOMAIN dom_componentdatatypename OWNER TO massipg;
 
 --
 -- Name: dom_leaftype; Type: DOMAIN; Schema: public; Owner: massipg
@@ -53,7 +53,7 @@ CREATE DOMAIN dom_leaftype AS text NOT NULL
 	CONSTRAINT dom_leaftype_check CHECK (((length(VALUE) > 3) AND (length(VALUE) <= 50)));
 
 
-ALTER DOMAIN dom_leaftype OWNER TO xtenspg;
+ALTER DOMAIN dom_leaftype OWNER TO massipg;
 
 --
 -- Name: dom_nodename; Type: DOMAIN; Schema: public; Owner: massipg
@@ -63,7 +63,7 @@ CREATE DOMAIN dom_nodename AS text COLLATE pg_catalog."C.UTF-8"
 	CONSTRAINT dom_nodename_check CHECK (((length(VALUE) > 2) AND (length(VALUE) < 100)));
 
 
-ALTER DOMAIN dom_nodename OWNER TO xtenspg;
+ALTER DOMAIN dom_nodename OWNER TO massipg;
 
 --
 -- Name: xtens_group_privileges; Type: TYPE; Schema: public; Owner: xtenspg
@@ -2427,11 +2427,19 @@ CREATE INDEX data_type_idx ON data USING btree (type);
 
 
 --
+-- Name: biobank_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY sample
+    ADD CONSTRAINT biobank_fkey FOREIGN KEY (biobank) REFERENCES biobank(id) MATCH FULL ON DELETE CASCADE;
+
+
+--
 -- Name: contact_information_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
 --
 
 ALTER TABLE ONLY biobank
-    ADD CONSTRAINT contact_information_fkey FOREIGN KEY (contact_information) REFERENCES contact_information(id) MATCH FULL;
+    ADD CONSTRAINT contact_information_fkey FOREIGN KEY (contact_information) REFERENCES contact_information(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2439,7 +2447,7 @@ ALTER TABLE ONLY biobank
 --
 
 ALTER TABLE ONLY data_files__datafile_data
-    ADD CONSTRAINT data_files_fkey FOREIGN KEY (data_files) REFERENCES data(id) MATCH FULL;
+    ADD CONSTRAINT data_files_fkey FOREIGN KEY (data_files) REFERENCES data(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2447,7 +2455,7 @@ ALTER TABLE ONLY data_files__datafile_data
 --
 
 ALTER TABLE ONLY data_files__datafile_data
-    ADD CONSTRAINT datafile_data_fkey FOREIGN KEY (datafile_data) REFERENCES data_file(id) MATCH FULL;
+    ADD CONSTRAINT datafile_data_fkey FOREIGN KEY (datafile_data) REFERENCES data_file(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2463,7 +2471,7 @@ ALTER TABLE ONLY datafile_samples__sample_files
 --
 
 ALTER TABLE ONLY datatype_children__datatype_parents
-    ADD CONSTRAINT datatype_children_fkey FOREIGN KEY (datatype_children) REFERENCES data_type(id) MATCH FULL;
+    ADD CONSTRAINT datatype_children_fkey FOREIGN KEY (datatype_children) REFERENCES data_type(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2471,7 +2479,7 @@ ALTER TABLE ONLY datatype_children__datatype_parents
 --
 
 ALTER TABLE ONLY datatype_groups__group_datatypes
-    ADD CONSTRAINT datatype_groups_fkey FOREIGN KEY (datatype_groups) REFERENCES data_type(id) MATCH FULL;
+    ADD CONSTRAINT datatype_groups_fkey FOREIGN KEY (datatype_groups) REFERENCES data_type(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2479,7 +2487,7 @@ ALTER TABLE ONLY datatype_groups__group_datatypes
 --
 
 ALTER TABLE ONLY datatype_children__datatype_parents
-    ADD CONSTRAINT datatype_parents_fkey FOREIGN KEY (datatype_parents) REFERENCES data_type(id) MATCH FULL;
+    ADD CONSTRAINT datatype_parents_fkey FOREIGN KEY (datatype_parents) REFERENCES data_type(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2487,7 +2495,7 @@ ALTER TABLE ONLY datatype_children__datatype_parents
 --
 
 ALTER TABLE ONLY datatype_groups__group_datatypes
-    ADD CONSTRAINT group_datatypes_fkey FOREIGN KEY ("group_dataTypes") REFERENCES xtens_group(id) MATCH FULL;
+    ADD CONSTRAINT group_datatypes_fkey FOREIGN KEY ("group_dataTypes") REFERENCES xtens_group(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2495,7 +2503,7 @@ ALTER TABLE ONLY datatype_groups__group_datatypes
 --
 
 ALTER TABLE ONLY group_members__operator_groups
-    ADD CONSTRAINT group_members_fkey FOREIGN KEY (group_members) REFERENCES xtens_group(id) MATCH FULL;
+    ADD CONSTRAINT group_members_fkey FOREIGN KEY (group_members) REFERENCES xtens_group(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2511,7 +2519,7 @@ ALTER TABLE ONLY passport
 --
 
 ALTER TABLE ONLY group_members__operator_groups
-    ADD CONSTRAINT operator_groups_fkey FOREIGN KEY (operator_groups) REFERENCES operator(id) MATCH FULL;
+    ADD CONSTRAINT operator_groups_fkey FOREIGN KEY (operator_groups) REFERENCES operator(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2519,15 +2527,7 @@ ALTER TABLE ONLY group_members__operator_groups
 --
 
 ALTER TABLE ONLY data
-    ADD CONSTRAINT parent_data_fkey FOREIGN KEY (parent_data) REFERENCES data(id) MATCH FULL;
-
-
---
--- Name: parent_sample_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
---
-
-ALTER TABLE ONLY data
-    ADD CONSTRAINT parent_sample_fkey FOREIGN KEY (parent_sample) REFERENCES sample(id) MATCH FULL;
+    ADD CONSTRAINT parent_data_fkey FOREIGN KEY (parent_data) REFERENCES data(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2535,15 +2535,15 @@ ALTER TABLE ONLY data
 --
 
 ALTER TABLE ONLY sample
-    ADD CONSTRAINT parent_sample_fkey FOREIGN KEY (parent_sample) REFERENCES sample(id) MATCH FULL;
+    ADD CONSTRAINT parent_sample_fkey FOREIGN KEY (parent_sample) REFERENCES sample(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
--- Name: parent_subject_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+-- Name: parent_sample_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
 --
 
 ALTER TABLE ONLY data
-    ADD CONSTRAINT parent_subject_fkey FOREIGN KEY (parent_subject) REFERENCES subject(id) MATCH FULL;
+    ADD CONSTRAINT parent_sample_fkey FOREIGN KEY (parent_sample) REFERENCES sample(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2551,7 +2551,15 @@ ALTER TABLE ONLY data
 --
 
 ALTER TABLE ONLY sample
-    ADD CONSTRAINT parent_subject_fkey FOREIGN KEY (parent_subject) REFERENCES subject(id) MATCH FULL;
+    ADD CONSTRAINT parent_subject_fkey FOREIGN KEY (parent_subject) REFERENCES subject(id) MATCH FULL ON DELETE CASCADE;
+
+
+--
+-- Name: parent_subject_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY data
+    ADD CONSTRAINT parent_subject_fkey FOREIGN KEY (parent_subject) REFERENCES subject(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2559,7 +2567,7 @@ ALTER TABLE ONLY sample
 --
 
 ALTER TABLE ONLY subject
-    ADD CONSTRAINT personal_info_fkey FOREIGN KEY (personal_info) REFERENCES personal_details(id) MATCH FULL;
+    ADD CONSTRAINT personal_info_fkey FOREIGN KEY (personal_info) REFERENCES personal_details(id) MATCH FULL ON DELETE RESTRICT;
 
 
 --
@@ -2567,7 +2575,7 @@ ALTER TABLE ONLY subject
 --
 
 ALTER TABLE ONLY project_subjects__subject_projects
-    ADD CONSTRAINT project_subjects_fkey FOREIGN KEY (project_subjects) REFERENCES project(id) MATCH FULL;
+    ADD CONSTRAINT project_subjects_fkey FOREIGN KEY (project_subjects) REFERENCES project(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2583,7 +2591,7 @@ ALTER TABLE ONLY datafile_samples__sample_files
 --
 
 ALTER TABLE ONLY project_subjects__subject_projects
-    ADD CONSTRAINT subject_projects_fkey FOREIGN KEY (subject_projects) REFERENCES subject(id) MATCH FULL;
+    ADD CONSTRAINT subject_projects_fkey FOREIGN KEY (subject_projects) REFERENCES subject(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2591,7 +2599,7 @@ ALTER TABLE ONLY project_subjects__subject_projects
 --
 
 ALTER TABLE ONLY data
-    ADD CONSTRAINT type_fkey FOREIGN KEY (type) REFERENCES data_type(id) MATCH FULL;
+    ADD CONSTRAINT type_fkey FOREIGN KEY (type) REFERENCES data_type(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2599,7 +2607,7 @@ ALTER TABLE ONLY data
 --
 
 ALTER TABLE ONLY sample
-    ADD CONSTRAINT type_fkey FOREIGN KEY (type) REFERENCES data_type(id) MATCH FULL;
+    ADD CONSTRAINT type_fkey FOREIGN KEY (type) REFERENCES data_type(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2607,7 +2615,7 @@ ALTER TABLE ONLY sample
 --
 
 ALTER TABLE ONLY subject
-    ADD CONSTRAINT type_fkey FOREIGN KEY (type) REFERENCES data_type(id) MATCH FULL;
+    ADD CONSTRAINT type_fkey FOREIGN KEY (type) REFERENCES data_type(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
