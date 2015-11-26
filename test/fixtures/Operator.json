@@ -1,0 +1,24 @@
+[{
+    "sex": "N.A.",
+    "email": "admin@admin.com",
+    "login": "admin",
+    "id": 1,
+    "firstName": "default administrator",
+    "lastName": "sysadmin",
+    "birthDate": "1970-01-01T00:00:00.000Z",
+    "createdAt": "2015-06-18T10:13:11.000Z",
+    "updatedAt": "2015-06-18T10:13:11.000Z",
+    "groups": [1, 2]
+  },
+  {
+    "sex": "N.A.",
+    "email": "none@none.com",
+    "login": "demouser",
+    "id": 2,
+    "firstName": "default user",
+    "lastName": "demo user",
+    "birthDate": "1970-01-01T00:00:00.000Z",
+    "createdAt": "2015-06-18T10:13:11.000Z",
+    "updatedAt": "2015-06-18T10:13:11.000Z",
+    "groups": [3]
+  }]
