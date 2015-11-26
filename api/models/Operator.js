@@ -2,6 +2,7 @@
  * Operator.js
  */
 var bcrypt = require('bcrypt');
+var constants = sails.config.xtens.constants;
 
 var Operator = {
     tableName: 'operator',
@@ -45,13 +46,7 @@ var Operator = {
             required: true,
             max: 64
         },
-
-        /* moved to the Passport 
-        password: {
-            type: 'string',
-            required: true
-        }, */
-       
+        
         passports: {
             collection: 'passport',
             via: 'user'
@@ -66,7 +61,7 @@ var Operator = {
             type:'datetime',
             columnName: 'updated_at'
         },
-        groups:{
+        groups: {
             collection:'group',
             via:'members'
         }, 
@@ -77,6 +72,31 @@ var Operator = {
             var obj = this.toObject();
             delete obj.password;
             return obj;
+        },
+        
+        /**
+         * @method
+         * @name formatForTokenPayload
+         * @description remove personal details from operator entity and set privilege levels.
+         *              The result will be used as the payload for the Json Web Token
+         * @return{Object} - formatted operator with the following properties:
+         *                      1) id - primary key
+         *                      2) login[string]
+         *                      3) groups [array]
+         *                      4) isWheel [boolean]
+         *                      5) isManager [boolean]
+         *                      6) canAccessPersonalData [boolean]
+         *                      7) canAccessSensitiveData [boolean]
+         */
+        formatForTokenPayload: function() {
+            var operator = _.pick(this.toObject(), ['id', 'groups']);
+            var privilegesArray = _.pluck(operator.groups, 'privilegeLevel');
+            operator.isWheel = privilegesArray.indexOf(constants.GroupPrivilegeLevels.WHEEL) > -1;
+            operator.isManager = operator.isWheel || privilegesArray.indexOf(constants.GroupPrivilegeLevels.MANAGER) > -1;
+            operator.canAccessPersonalData = _.pluck(operator.groups, 'canAccessPersonalData').indexOf(true) > -1;
+            operator.canAccessSensitiveData = _.pluck(operator.groups, 'canAccessSensitiveData').indexOf(true) > -1;
+            delete operator.groups;
+            return operator;
         }
 
         
