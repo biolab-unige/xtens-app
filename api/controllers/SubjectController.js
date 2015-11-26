@@ -11,10 +11,11 @@ var SUBJECT = sails.config.xtens.constants.DataTypeClasses.SUBJECT;
 
 module.exports = {
 
-    /**
+    /** 
+     *  POST /subject
      *  @method
      *  @name create
-     *  @description: POST /subject: create a new subject; transaction-safe implementation
+     *  @description:  create a new subject; transaction-safe implementation
      */
     create: function(req, res) {
         var co = new ControllerOut(res);
@@ -45,19 +46,21 @@ module.exports = {
     },
 
     /**
+     * GET /subject/:id
      * @method
      * @name findOne
-     * @description GET /subject/:id - retrieve an existing subject
+     * @description - retrieve an existing subject
      */
     findOne: function(req, res) {
         var co = new ControllerOut(res);
         var id = req.param('id');
         var query = Subject.findOne(id);
+        var operator = TokenService.getToken(req);
         
-        query = QueryService.populateEach(query, req);
+        query = QueryService.populateRequest(query, req, { blacklist: ['personalInfo'] });
         
         // TODO replace true in IF condition with check on getting personal details
-        if (true) {
+        if (operator.canAccessPersonalData) {
             query.populate('personalInfo');
         }
 
@@ -71,9 +74,42 @@ module.exports = {
     },
 
     /**
+     * GET /subject
+     * GET /subject/find
+     *
+     * @method
+     * @name find
+     * @description Find samples based on criteria provided in the request
+     */
+    find: function(req, res) {
+        var co = new ControllerOut(res);
+        var operator = TokenService.getToken(req);
+
+        var query = Subject.find()
+        .where(QueryService.parseCriteria(req))
+        .limit(QueryService.parseLimit(req))
+        .skip(QueryService.parseSkip(req))
+        .sort(QueryService.parseSort(req));
+
+        query = QueryService.populateRequest(query, req, { blacklist: ['personalInfo'] });
+
+        if (operator.canAccessPersonalData) {
+            query.populate('personalInfo');
+        }
+
+        query.then(function(subject) {
+            res.json(subject);
+        })
+        .catch(function(err) {
+            return co.error(err);
+        });
+    },
+
+    /**
+     * PUT /subject/:id
      * @method
      * @name update
-     * @description PUT /subject/:id - update an existing subject.
+     * @description - update an existing subject.
      *              Transaction-safe implementation
      */
     update: function(req, res) {
@@ -106,14 +142,15 @@ module.exports = {
     },
 
     /**
+     * DELETE /subject/:id
      * @method
      * @name destroy
-     * @description DELETE /subject/:id
+     * @description      
      */
     destroy: function(req, res) {
         var co = new ControllerOut(res);
         var id = req.param('id');
-        var idOperator = TokenService.getToken(req);
+        var idOperator = TokenService.getToken(req).id;
 
         if (!id) {
             return co.badRequest({message: 'Missing subject ID on DELETE request'});
@@ -156,7 +193,7 @@ module.exports = {
     edit: function(req, res) {
         var co = new ControllerOut(res);
         var id = req.param("id");
-        var idOperator = TokenService.getToken(req);
+        var idOperator = TokenService.getToken(req).id;
         
         console.log("SubjectController.edit - Decoded ID is: " + idOperator);  
 

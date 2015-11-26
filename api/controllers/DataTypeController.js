@@ -31,7 +31,7 @@ var DataTypeController = {
             query.populate('parents');  // by default populate only with 'parents' dataTypes
         }
         else {
-            query = QueryService.populateEach(query, req);
+            query = QueryService.populateRequest(query, req);
         }
 
         query.then(function(dataTypes) {
@@ -114,7 +114,6 @@ var DataTypeController = {
     destroy: function(req, res) {
         var co = new ControllerOut(res);
         var id = req.param('id');
-        // var idOperator = TokenService.getToken(req);
         
         if (!id) {
             return co.badRequest({message: 'Missing dataType ID on DELETE request'});

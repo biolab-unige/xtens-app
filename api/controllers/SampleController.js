@@ -11,42 +11,11 @@ var SAMPLE = sails.config.xtens.constants.DataTypeClasses.SAMPLE;
 
 module.exports = {
     
-    /**
-     * @method
-     * @name edit
-     * @description retrieve all required models for editing/creating a Sample via client web-form
-     */
-    edit: function(req, res) {
-        var co = new ControllerOut(res);
-        var params = req.allParams();
-        var idOperator = TokenService.getToken(req);
-        
-        return BluebirdPromise.props({
-            sample: SampleService.getOneAsync(params.id),
-            dataTypes: crudManager.getDataTypesByRolePrivileges({
-                idOperator: idOperator,
-                model: SAMPLE,
-                idDataTypes: params.idDataTypes 
-            }),
-            biobanks: BiobankService.getAsync(params),
-            donor: SubjectService.getOneAsync(params.donor),
-            parentSample: SampleService.getOneAsync(params.parentSample)
-        }) 
-        
-        .then(function(results) {
-            return res.json(results);
-        })
-
-        .catch(function(err) {
-            return co.error(err);
-        });
-
-    },
-
-    /**
+    /** 
+     *  POST /sample
      *  @method
      *  @name create
-     *  @description: POST /sample: create a new sample; transaction-safe implementation
+     *  @description: create a new sample; transaction-safe implementation
      */
     create: function(req, res) {
         var co = new ControllerOut(res);
@@ -80,16 +49,17 @@ module.exports = {
     },
 
     /**
+     * GET /sample/:id
      * @method
      * @name findOne
-     * @description GET /subject/:id - retrieve an existing subject
+     * @description - retrieve an existing subject
      */
     findOne: function(req, res) {
         var co = new ControllerOut(res);
         var id = req.param('id');
         var query = Sample.findOne(id);
         
-        query = QueryService.populateEach(query, req);
+        query = QueryService.populateRequest(query, req);
         
         query.then(function(result) {
             return res.json(result);
@@ -100,11 +70,39 @@ module.exports = {
         });
 
     },
-    
+
     /**
+     * GET /sample
+     * GET /sample/find
+     *
+     * @method
+     * @name find
+     * @description Find samples based on criteria provided in the request
+     */
+    find: function(req, res) {
+        var co = new ControllerOut(res);
+
+        var query = Sample.find()
+        .where(QueryService.parseCriteria(req))
+        .limit(QueryService.parseLimit(req))
+        .skip(QueryService.parseSkip(req))
+        .sort(QueryService.parseSort(req));
+
+        query = QueryService.populateRequest(query, req);
+
+        query.then(function(sample) {
+            res.json(sample);
+        })
+        .catch(function(err) {
+            return co.error(err);
+        });
+    },
+    
+    /** 
+     * PUT /sample/:ID
      * @method
      * @name update
-     * @description PUT /sample/:ID - update an existing sample.
+     * @description - update an existing sample.
      *              Transaction-safe implementation
      */
     update: function(req, res) {
@@ -136,14 +134,15 @@ module.exports = {
     },
 
     /**
+     * DELETE /sample/:id
      * @method
      * @name destroy
-     * @description DELETE /subject/:id
+     * @description 
      */
     destroy: function(req, res) {
         var co = new ControllerOut(res);
         var id = req.param('id');
-        var idOperator = TokenService.getToken(req);
+        var idOperator = TokenService.getToken(req).id;
 
         if (!id) {
             return co.badRequest({message: 'Missing sample ID on DELETE request'});
@@ -170,6 +169,38 @@ module.exports = {
             return res.json({
                 deleted: deleted
             });
+        })
+
+        .catch(function(err) {
+            return co.error(err);
+        });
+
+    },
+
+     /**
+     * @method
+     * @name edit
+     * @description retrieve all required models for editing/creating a Sample via client web-form
+     */
+    edit: function(req, res) {
+        var co = new ControllerOut(res);
+        var params = req.allParams();
+        var idOperator = TokenService.getToken(req).id;
+        
+        return BluebirdPromise.props({
+            sample: SampleService.getOneAsync(params.id),
+            dataTypes: crudManager.getDataTypesByRolePrivileges({
+                idOperator: idOperator,
+                model: SAMPLE,
+                idDataTypes: params.idDataTypes 
+            }),
+            biobanks: BiobankService.getAsync(params),
+            donor: SubjectService.getOneAsync(params.donor),
+            parentSample: SampleService.getOneAsync(params.parentSample)
+        }) 
+        
+        .then(function(results) {
+            return res.json(results);
         })
 
         .catch(function(err) {

@@ -14,43 +14,12 @@ var DATA = xtensConf.constants.DataTypeClasses.DATA;
 
 module.exports = {
 
-    /**
-     * @method
-     * @name edit
-     * @description retrieve all required information to create an EditData form
-     */
-
-    edit: function(req, res) {
-        var co = new ControllerOut(res);
-        var params = req.allParams();
-        var idOperator = TokenService.getToken(req);
-
-        return BluebirdPromise.props({
-            data: DataService.getOneAsync(params.id),
-            dataTypes: crudManager.getDataTypesByRolePrivileges({
-                idOperator: idOperator,
-                model: DATA,
-                idDataTypes: params.idDataTypes
-            }),
-            parentSubject: SubjectService.getOneAsync(params.parentSubject),
-            parentSample: SampleService.getOneAsync(params.parentSample),
-            parentData: DataService.getOneAsync(params.parentData)
-        })
-
-        .then(function(results) {
-            return res.json(results);
-        })
-
-        .catch(function(err) {
-            return co.error(err);
-        });
-
-    },
-
+    
     /** 
+     *  POST /data
      *  @method
      *  @name create
-     *  @description POST /data -> create a new Data Instance; transaction-safe implementation 
+     *  @description -> create a new Data Instance; transaction-safe implementation 
      *                   
      */
     create: function(req, res) {
@@ -85,9 +54,10 @@ module.exports = {
     },
 
     /**
+     * GET /data/:id 
      * @method
      * @name findOne
-     * @description GET /subject/:id - retrieve an existing subject
+     * @description - retrieve an existing subject
      */
     findOne: function(req, res) {
         var co = new ControllerOut(res);
@@ -95,7 +65,7 @@ module.exports = {
         
         var query = Data.findOne(id);
 
-        query = QueryService.populateEach(query, req);
+        query = QueryService.populateRequest(query, req);
         
         query.then(function(result) {
             return res.json(result);
@@ -107,10 +77,38 @@ module.exports = {
 
     },
 
+    /**
+     * GET /data
+     * GET /data/find
+     *
+     * @method
+     * @name find
+     * @description Find data based on criteria
+     */
+    find: function(req, res) {
+        var co = new ControllerOut(res);
+
+        var query = Data.find()
+        .where(QueryService.parseCriteria(req))
+        .limit(QueryService.parseLimit(req))
+        .skip(QueryService.parseSkip(req))
+        .sort(QueryService.parseSort(req));
+
+        query = QueryService.populateRequest(query, req);
+
+        query.then(function(data) {
+            res.json(data);
+        })
+        .catch(function(err) {
+            return co.error(err);
+        });
+    },
+
     /** 
+     *  PUT /data/:id
      *  @method
      *  @name update
-     *  @description PUT /data/id -> update an existing Data Instance; transaction-safe implementation
+     *  @description  -> update an existing Data Instance; transaction-safe implementation
      *
      */
     update: function(req, res) {
@@ -142,14 +140,15 @@ module.exports = {
     },
 
     /**
+     * DELETE /data/:id
      * @method
      * @name destroy
-     * @description DELETE /data/:id
+     * @description      
      */
     destroy: function(req, res) {
         var co = new ControllerOut(res);
         var id = req.param('id');
-        var idOperator = TokenService.getToken(req);
+        var idOperator = TokenService.getToken(req).id;
 
         if (!id) {
             return co.badRequest({message: 'Missing data ID on DELETE request'});
@@ -185,6 +184,40 @@ module.exports = {
             return co.error(err);
         });
 
-    } 
+    },
+
+    /**
+     * @method
+     * @name edit
+     * @description retrieve all required information to create an EditData form
+     */
+
+    edit: function(req, res) {
+        var co = new ControllerOut(res);
+        var params = req.allParams();
+        var idOperator = TokenService.getToken(req).id;
+
+        return BluebirdPromise.props({
+            data: DataService.getOneAsync(params.id),
+            dataTypes: crudManager.getDataTypesByRolePrivileges({
+                idOperator: idOperator,
+                model: DATA,
+                idDataTypes: params.idDataTypes
+            }),
+            parentSubject: SubjectService.getOneAsync(params.parentSubject),
+            parentSample: SampleService.getOneAsync(params.parentSample),
+            parentData: DataService.getOneAsync(params.parentData)
+        })
+
+        .then(function(results) {
+            return res.json(results);
+        })
+
+        .catch(function(err) {
+            return co.error(err);
+        });
+
+    }
+
 };
 
