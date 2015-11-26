@@ -42,7 +42,11 @@ for the DataType specified in "type")
                 "metadata": {}
             }
 
-+ Response 200 (application/json)
++ Response 201 (application/json)
+
+    + Headers
+    
+            Location: /subject/7
 
     + Body
     
@@ -58,24 +62,7 @@ for the DataType specified in "type")
                     "createdAt": "2015-11-19T16:45:49.395Z",
                     "updatedAt": "2015-11-19T16:45:49.395Z"
                 },
-                "type": {
-                    "name": "Patient",
-                    "schema": {
-                        "body": [],
-                        "header": {
-                            "name": "Patient",
-                            "model": "Subject",
-                            "version": "1.0",
-                            "ontology": "",
-                            "fileUpload": false,
-                            "description": "A real human patient"
-                        }
-                    },
-                    "model": "Subject",
-                    "id": 1,
-                    "createdAt": "2015-10-11T16:22:33.087Z",
-                    "updatedAt": "2015-11-05T10:18:30.420Z"
-                },
+                "type": 1,
                 "code": "PAT-0001",
                 "sex": "M",
                 "tags": null,
@@ -88,6 +75,42 @@ for the DataType specified in "type")
 
 
 # Subject [/subject/:id]
+
+### Retrieve an Existing Subject [GET]
+You may retrieve a single existing subject by its id
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.MQ.Lu-KcR4aCeuT9hi1K474zV3s4VaopLDCcf4nZvH6DQo
+            Cache-Control: no-cache
+    
++ Response 200 (application/json)
+    
+        {
+            "projects": [],
+            "samples": [],
+            "childrenData": [],
+            "personalInfo": {
+                "surname": "Verdi",
+                "id": 5,
+                "givenName": "Maria",
+                "birthDate": "1987-04-22T22:00:00.000Z",
+                "createdAt": "2015-11-19T16:45:49.395Z",
+                "updatedAt": "2015-11-19T16:45:49.395Z"
+            },
+            "type": 1,
+            "code": "PAT-0001",
+            "sex": "M",
+            "tags": null,
+            "notes": null,
+            "metadata": {},
+            "id": 7,
+            "createdAt": "2015-11-19T16:45:49.482Z",
+            "updatedAt": "2015-11-19T17:20:34.362Z"
+        }
+
 
 ### Update an Existing Subject [PUT]
 You may update an existing subject using this method. It takes a JSON
@@ -133,24 +156,7 @@ for the DataType specified in "type")
             "createdAt": "2015-11-19T16:45:49.395Z",
             "updatedAt": "2015-11-19T16:45:49.395Z"
         },
-        "type": {
-            "name": "Patient",
-            "schema": {
-                "body": [],
-                "header": {
-                    "name": "Patient",
-                    "model": "Subject",
-                    "version": "1.0",
-                    "ontology": "",
-                    "fileUpload": false,
-                    "description": "A real human patient"
-                }
-            },
-            "model": "Subject",
-            "id": 1,
-            "createdAt": "2015-10-11T16:22:33.087Z",
-            "updatedAt": "2015-11-05T10:18:30.420Z"
-        },
+        "type": 1,
         "code": "PAT-0001",
         "sex": "M",
         "tags": null,
@@ -160,3 +166,21 @@ for the DataType specified in "type")
         "createdAt": "2015-11-19T16:45:49.482Z",
         "updatedAt": "2015-11-19T17:20:34.362Z"
         }
+
+### Delete an Existing Subject [DELETE]
+You may delete an existing subject using this method. You must provide an
+existing ID
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.MQ.Lu-KcR4aCeuT9hi1K474zV3s4VaopLDCcf4nZvH6DQo
+            Cache-Control: no-cache
+
++ Response 200 (application/json)
+
+        {
+            "deleted": 1
+        }
+            
