@@ -325,6 +325,7 @@ function renderDatatablesDate(data, type) {
             var data = new Data.Model();
             data.set("id", currRow.data().id);
             data.fetch({
+                data: $.param({populate: ['files']}),
                 success: function(result) {
                     var files = result.get("files");
                     var dataFiles = new DataFile.List(files);
