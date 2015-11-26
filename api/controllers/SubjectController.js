@@ -33,10 +33,10 @@ module.exports = {
         })
         .then(function(idSubject) {
             console.log(idSubject);
-            return Subject.findOne(idSubject).populateAll();
+            return Subject.findOne(idSubject).populate('personalInfo');
         })
         .then(function(result) {
-            return res.json(result);
+            return res.json(201, result);
         })
         .catch(function(error) {
             console.log(error.message);
@@ -46,8 +46,34 @@ module.exports = {
 
     /**
      * @method
+     * @name findOne
+     * @description GET /subject/:id - retrieve an existing subject
+     */
+    findOne: function(req, res) {
+        var co = new ControllerOut(res);
+        var id = req.param('id');
+        var query = Subject.findOne(id);
+        
+        query = QueryService.populateEach(query, req);
+        
+        // TODO replace true in IF condition with check on getting personal details
+        if (true) {
+            query.populate('personalInfo');
+        }
+
+        query.then(function(result) {
+            return res.json(result);
+        })
+        .catch(function(error) {
+            return co.error(error);
+        });
+
+    },
+
+    /**
+     * @method
      * @name update
-     * @description PUT /subject/:ID - update an existing subject.
+     * @description PUT /subject/:id - update an existing subject.
      *              Transaction-safe implementation
      */
     update: function(req, res) {
@@ -67,11 +93,11 @@ module.exports = {
         })
         .then(function(idSubject) {
             console.log(idSubject);
-            return Subject.findOne(idSubject).populateAll();
+            return Subject.findOne(idSubject).populate('personalInfo');
         })
         .then(function(result) {
             res.set('Location', req.baseUrl + req.url + '/'  + result.id);
-            return res.json(201, result);
+            return res.json(result);
         })
         .catch(function(error) {
             console.log(error.message);

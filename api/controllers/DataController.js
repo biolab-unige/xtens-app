@@ -72,7 +72,7 @@ module.exports = {
         })
         .then(function(idData) {
             console.log(idData);
-            return Data.findOne(idData).populateAll();
+            return Data.findOne(idData).populate('files');
         })
         .then(function(result) {
             res.set('Location', req.baseUrl + req.url + '/'  + result.id);
@@ -82,6 +82,29 @@ module.exports = {
             console.log("Error: " + error.message);
             return co.error(error);
         });
+    },
+
+    /**
+     * @method
+     * @name findOne
+     * @description GET /subject/:id - retrieve an existing subject
+     */
+    findOne: function(req, res) {
+        var co = new ControllerOut(res);
+        var id = req.param('id');
+        
+        var query = Data.findOne(id);
+
+        query = QueryService.populateEach(query, req);
+        
+        query.then(function(result) {
+            return res.json(result);
+        })
+
+        .catch(function(error) {
+            return co.error(error);
+        });
+
     },
 
     /** 
@@ -107,7 +130,7 @@ module.exports = {
             } 
         })
         .then(function(idData) {
-            return Data.findOne(idData).populateAll();
+            return Data.findOne(idData).populate('files');
         })
         .then(function(result) {
             return res.json(result);
