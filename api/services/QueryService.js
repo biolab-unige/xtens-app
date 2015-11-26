@@ -1,8 +1,12 @@
 /**
  *  @author Massimiliano Izzo
  */
+/* jshint node: true */
+/* jshint esnext: true */
+/* globals _, sails, Data, DataService */
+"use strict";
 
-var QueryService = {
+let QueryService = {
 
     /**
      * @method
@@ -31,7 +35,7 @@ var QueryService = {
     parseCriteria: function(req) {
 
         // Look for explicitly specified `where` parameter.
-        var where = req.allParams().where;
+        let where = req.allParams().where;
 
         // If `where` parameter is a string, try to interpret it as JSON
         if (_.isString(where)) {
@@ -47,7 +51,7 @@ var QueryService = {
             where = _.omit(where, ['limit', 'skip', 'sort', 'populate']);
 
             // Omit any params w/ undefined values
-            where = _.omit(where, function (p){ if (_.isUndefined(p)) return true; });
+            where = _.omit(where, p => { if (_.isUndefined(p)) return true; });
         }
 
         return where;
@@ -59,8 +63,8 @@ var QueryService = {
      * mutuated by: https://github.com/balderdashy/sails/blob/master/lib/hooks/blueprints/actionUtil.js
      */
     parseLimit: function(req) {
-        var DEFAULT_LIMIT = sails.config.blueprints.defaultLimit || 30;
-        var limit = req.param('limit') || DEFAULT_LIMIT;
+        let DEFAULT_LIMIT = sails.config.blueprints.defaultLimit || 30;
+        let limit = req.param('limit') || DEFAULT_LIMIT;
         if (limit) { limit = +limit; }
         return limit;
     },
@@ -71,8 +75,8 @@ var QueryService = {
      * mutuated by: https://github.com/balderdashy/sails/blob/master/lib/hooks/blueprints/actionUtil.js
      */
     parseSkip: function (req) {
-        var DEFAULT_SKIP = 0;
-        var skip = req.param('skip') || DEFAULT_SKIP;
+        let DEFAULT_SKIP = 0;
+        let skip = req.param('skip') || DEFAULT_SKIP;
         if (skip) { skip = +skip; }
         return skip;
     },
@@ -88,8 +92,8 @@ var QueryService = {
     },
 
     dataSearch: function(queryParams) {
-        var queryBuilder = sails.config.xtens.queryBuilder;
-        var query = queryBuilder.compose(queryParams);
+        let queryBuilder = sails.config.xtens.queryBuilder;
+        let query = queryBuilder.compose(queryParams);
         console.log(query.statement);
         console.log(query.parameters);
         // Using prepared statements as an additional protection against SQL injection
@@ -106,23 +110,25 @@ var QueryService = {
         });
     },
 
-
     /**
-      TODO test this tomorrow with DataType (by Massi)
-     * Given a Waterline query, populate the appropriate/specified
-     * association attributes and return it so it can be chained
-     * further ( i.e. so you can .exec() it )
+     * Given a Waterline query and an express request, populate
+     * the appropriate/specified association attributes and
+     * return it so it can be chained further ( i.e. so you can
+     * .exec() it )
+     *
+     * mutuated by: https://github.com/balderdashy/sails/blob/master/lib/hooks/blueprints/actionUtil.js
      *
      * @param  {Query} query         [waterline query object]
      * @param  {Request} req
+     * @param {Object} options, it may contain:
+     *                 - blacklist{Array}: a list of items that must not be populated
      * @return {Query}
-     * mutuated by: https://github.com/balderdashy/sails/blob/master/lib/hooks/blueprints/actionUtil.js
      */
-    populateEach: function(query, req) {
-        var DEFAULT_POPULATE_LIMIT = sails.config.blueprints.defaultLimit || 30;
-        var _options = req.options;
-        var aliasFilter = req.param('populate');
-        var shouldPopulate = _options.populate;
+    populateRequest: function(query, req, options) {
+        let DEFAULT_POPULATE_LIMIT = req._sails.config.blueprints.defaultLimit || 30;
+        let _options = req.options;
+        let aliasFilter = req.param('populate');
+        let shouldPopulate = _options.populate;
 
         // Convert the string representation of the filter list to an Array. We
         // need this to provide flexibility in the request param. This way both
@@ -134,8 +140,9 @@ var QueryService = {
             aliasFilter = (aliasFilter) ? aliasFilter.split(',') : [];
         }
 
-        return _(_options.associations).reduce(function populateEachAssociation (query, association) {
+        let associations = [];
 
+        _.each(_options.associations, association => {
             // If an alias filter was provided, override the blueprint config.
             if (aliasFilter) {
                 shouldPopulate = _.contains(aliasFilter, association.alias);
@@ -149,17 +156,50 @@ var QueryService = {
             // name of the association attribute, and value is true/false
             // (true to populate, false to not)
             if (shouldPopulate) {
-                var populationLimit =
-                    _options['populate_'+association.alias+'_limit'] ||
+                let populationLimit =
+                    _options['populate_' + association.alias + '_limit'] ||
                     _options.populate_limit ||
                     _options.limit ||
                     DEFAULT_POPULATE_LIMIT;
 
-                return query.populate(association.alias, {limit: populationLimit});
+                associations.push({
+                    alias: association.alias,
+                    limit: populationLimit
+                });
             }
-            else return query;
+        });
+
+        // omit blacklisted populated items (added by Massi)
+        if (options && _.isArray(options.blacklist)) {
+            associations = _.remove(associations, association => {
+                return options.blacklist.indexOf(association.alias) < 0; 
+            });
+        }
+
+        return QueryService.populateQuery(query, associations, req._sails);
+    },
+
+    /**
+     * Given a Waterline query, populate the appropriate/specified
+     * association attributes and return it so it can be chained
+     * further ( i.e. so you can .exec() it )
+     *
+     * mutuated by: https://github.com/balderdashy/sails/blob/master/lib/hooks/blueprints/actionUtil.js
+     *
+     * @param  {Query} query         [waterline query object]
+     * @param  {Array} associations  [array of objects with an alias
+     *                                and (optional) limit key]
+     * @return {Query}
+     */
+    populateQuery: function(query, associations, sails) {
+        let DEFAULT_POPULATE_LIMIT = (sails && sails.config.blueprints.defaultLimit) || 30;
+
+        return _.reduce(associations, (query, association) => {
+            return query.populate(association.alias, {
+                limit: association.limit || DEFAULT_POPULATE_LIMIT
+            });
         }, query);
-    }
+    },
 
 };
 
