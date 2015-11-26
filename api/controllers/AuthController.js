@@ -4,8 +4,12 @@
  * @description :: Server-side logic for managing authentication (and authorisation)
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
+/* jshint esnext:true */
+/* jshint node:true */
+/* globals _, sails, PassportService, TokenService, Passport */
 
-var AuthController = {
+"use strict";
+let AuthController = {
 
 
     /**
@@ -19,7 +23,7 @@ var AuthController = {
     login: function(req, res) {
         console.log("AuthController - here we are");
 
-        var protocol = req.param("protocol") || 'local';
+        let protocol = req.param("protocol") || 'local';
 
         PassportService.callback(req, res, function (err, operator) {
             // If an error was thrown, return the JSON content of the error
@@ -36,33 +40,14 @@ var AuthController = {
             else {
                 // Upon successful login, send back user data and JWT token
                 // sails.services.logger.login(user, req);
-                 
+                
+                let payload = operator.formatForTokenPayload(); 
                 console.log("AuthController - successfully logged in");
                 return res.json(200, {
                     user: operator,
-                    token: TokenService.issue(_.isObject(operator.id) ? JSON.stringify(operator.id) : operator.id)
+                    token: TokenService.issue(_.isObject(payload) ? JSON.stringify(payload) : payload)
                 });
                
-                /*
-                Passport.findOne({ protocol: protocol, user: operator.id})
-                
-            
-                .then(function(passport) {
-                    passport.accessToken = TokenService.issue(_.isObject(operator.id) ? JSON.stringify(operator.id) : operator.id);
-                    return Passport.update(passport);
-                }) 
-
-                .then(function(passport) {
-                    return res.json(200, {
-                        user: operator,
-                        token: TokenService.issue(_.isObject(operator.id) ? JSON.stringify(operator.id) : operator.id)
-                    });
-
-                })
-                
-                .catch(function(err) {
-                    return res.serverError("Error while authenticating. Please try again later.");
-                }); */
             }
         });
     },
@@ -76,8 +61,8 @@ var AuthController = {
      */
     logout: function(req, res) {
         
-        var protocol = req.param("protocol") || 'local';
-        var user = req.user;
+        let protocol = req.param("protocol") || 'local';
+        let user = req.user;
 
         Passport.findOne({protocol: protocol, user: user.id})
 

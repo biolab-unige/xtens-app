@@ -65,7 +65,8 @@ exports.createUser = function (_user, next) {
 
         // Generating accessToken for API authentication
         // var token = crypto.randomBytes(48).toString('base64');
-        var token = TokenService.issue(_.isObject(operator.id) ? JSON.stringify(operator.id) : operator.id); // modified by Massi
+        var payload = operator.formatForTokenPayload(operator);
+        var token = TokenService.issue(_.isObject(payload) ? JSON.stringify(payload) : payload); // modified by Massi
 
         Passport.create({
             protocol    : 'local', 
