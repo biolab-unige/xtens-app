@@ -132,14 +132,19 @@
             this.view = view; 
         },
 
-        associationDataType:function(id){
+        associationDataType: function(id){
             var that = this;
-            var dominant = new Group.Model({id:id});
-            var nondominant = new DataType.List();
-            $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes, dominantRes) {
+            var group = new Group.Model({id:id});
+            var dataTypes = new DataType.List();
+            var groupDeferred = group.fetch({
+                data: $.param({populate:['dataTypes']})
+            });
+
+            $.when(dataTypes.fetch(), groupDeferred)
+            .then(function(dataTypesRes, groupRes) {
                 that.loadView(new AdminAssociation.Views.Edit({
-                    dominant:new Group.Model(dominantRes && dominantRes[0]),
-                    nondominant: nondominantRes && nondominantRes[0],
+                    dominant: new Group.Model(groupRes && groupRes[0]),
+                    nondominant: dataTypesRes && dataTypesRes[0],
                     nondominantName:'dataTypes',
                     field:'name'
                 }));
@@ -148,12 +153,15 @@
 
         associationOperator: function(id){
             var that = this;
-            var dominant = new Group.Model({id:id});
-            var nondominant = new Operator.List();
-            $.when(nondominant.fetch(),dominant.fetch()).then(function(nondominantRes, dominantRes){
+            var group = new Group.Model({id:id});
+            var members = new Operator.List();
+            var groupDeferred = group.fetch({
+                data: $.param({populate:['members']})
+            });
+            $.when(members.fetch(),groupDeferred).then(function(membersRes, groupRes){
                 that.loadView(new AdminAssociation.Views.Edit({
-                    dominant:new Group.Model(dominantRes && dominantRes[0]),
-                    nondominant: nondominantRes && nondominantRes[0],
+                    dominant:new Group.Model(groupRes && groupRes[0]),
+                    nondominant: membersRes && membersRes[0],
                     nondominantName:'members',
                     field:'login'
                 }));
@@ -182,6 +190,7 @@
             var model, that = this;
             var dataTypes = new DataType.List();
             dataTypes.fetch({
+                data: $.param({populate: ['parents']}),
                 success: function(dataTypes) {
                     if (id) {
                         model = dataTypes.get(id);
@@ -218,7 +227,7 @@
                 data: $.param({ populate: ['children'] })
             });
             var $dataDeferred = data.fetch({
-                data: $.param(queryParams)
+                data: $.param(_.assign(queryParams, {populate: ['type']}))
             });
             $.when($dataTypesDeferred, $dataDeferred).then(function(dataTypesRes, dataRes) {
                 that.loadView(new Data.Views.List({
@@ -270,6 +279,7 @@
         dataDetails: function(id) {
             var that = this, model = new Data.Model({id: id});
             model.fetch({
+                data: $.param({populate: ['type', 'files']}),
                 success: function(data) {
                     that.loadView(new Data.Views.Details({model: data})); 
                 },
@@ -343,7 +353,9 @@
             var $dataTypesDeferred = dataTypes.fetch({
                 data: $.param({ populate: ['children'] })
             });
-            var $subjectsDeferred = subjects.fetch();
+            var $subjectsDeferred = subjects.fetch({
+                data: $.param({ populate: ['type']})
+            });
             $.when($dataTypesDeferred, $subjectsDeferred).then(function(dataTypesRes, subjectsRes) {
                 that.loadView(new Subject.Views.List({
                     subjects: new Subject.List(subjectsRes && subjectsRes[0]),
@@ -401,7 +413,7 @@
                 data: $.param({populate:['children']})
             });
             var $samplesDeferred = samples.fetch({
-                data: $.param(queryParams)
+                data: $.param(_.assign(queryParams, {populate: ['type', 'biobank', 'donor']}))
             });
             $.when($dataTypesDeferred, $samplesDeferred).then( function(dataTypesRes, samplesRes) {
                 that.loadView(new Sample.Views.List({ 
@@ -444,6 +456,7 @@
             if (id) {
                 var biobank = new Biobank.Model({id: id}), that = this;
                 biobank.fetch({
+                    data: $.param({populate: ['contactInformation']}),
                     success: function(biobank) {
                         that.loadView(new Biobank.Views.Edit({
                             model: biobank
@@ -478,23 +491,6 @@
             }, function(jqxhr) {
                 xtens.error(jqxhr);
             });
-            /*
-               dataTypes.fetch({
-data: $.param({
-populate: ['children']
-}),
-success: function(dataTypes) {
-console.log(dataTypes);
-that.loadView(new Query.Views.Builder({
-            // id: _.parseInt(id),
-queryObj: params && params.queryArgs,
-dataTypes: dataTypes
-}));    
-},
-error: function(model, res) {
-xtens.error(res);
-}
-}); */
         }
 
     });
