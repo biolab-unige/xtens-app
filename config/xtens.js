@@ -22,7 +22,7 @@ module.exports.xtens = {
 
     /**
      * Database connection
-     *  
+     *
      *  postgresqltest: {
      *       adapter: 'sails-postgresql',
      *       host: 'localhost',
@@ -38,13 +38,13 @@ module.exports.xtens = {
      */
 
     /**
-     * Local File System connection 
-     * 
+     * Local File System connection
+     *
      * localFileSystemExample: {
      *      type: 'local-fs',
      *      path: '/let/xtens/dataFiles',
      *      landingDirectory: 'landing',
-     *      repoDirectory: 'xtens-repo' 
+     *      repoDirectory: 'xtens-repo'
      * }
      *
      * irods-rest File System connection
@@ -64,7 +64,7 @@ module.exports.xtens = {
      *   }
      */
 
-    /* 
+    /*
      * Default operators (created at the first application startup):
      *
      * defaultOperators: [
@@ -76,7 +76,7 @@ module.exports.xtens = {
      *   email: 'massimorgon@gmail.com',
      *   login: 'admin',
      *   password: 'admin1982'
-     * }, 
+     * },
      * {
      *   firstName: 'default user',
      *   lastName: 'demo user',
@@ -90,7 +90,7 @@ module.exports.xtens = {
      */
 
     name: 'xtens',
-    
+
     fileSystemManager: new FileSystemManager(fileSystemConnections[fileSystemConnections.default]),
 
     fileSystemConnection: fileSystemConnections[fileSystemConnections.default],
@@ -105,7 +105,7 @@ module.exports.xtens = {
      * constants of the XTENS platform
      */
     constants: {
-        
+
         /**
          * @description available sex options
          */
@@ -123,9 +123,19 @@ module.exports.xtens = {
         GroupPrivilegeLevels: {
             WHEEL: 'wheel', // superusers
             MANAGER: 'manager', // can edit DataTypes/Biobanks and so on
-            STANDARD: 'standard' 
+            STANDARD: 'standard'
         },
         
+        /**
+         * @description available Datatype-Group privilege statuses
+         */
+        DataGroupPrivilegeLevels: {
+            VIEW: 'view', // level 0
+            DETAILS: 'details', // level 1
+            DOWNLOAD: 'download', // level 2
+            EDIT: 'edit', // level 3
+        },
+
         /**
          * @description available DataType models (i.e. classes/relations/collections in the database)
          */
@@ -160,7 +170,7 @@ module.exports.xtens = {
         PERSONAL_DETAILS: 'Personal Details',
         SUBJECT_PROPERTIES: ['code', 'sex'],
         SAMPLE_PROPERTIES: ['biobankCode'],
-        
+
         // min and max values for PopulateService tests
         TEST_MIN: 0.0,
         TEST_MAX: 100.0
