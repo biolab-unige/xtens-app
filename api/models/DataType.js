@@ -22,7 +22,7 @@ var DataType = {
             enum: _.values(sails.config.xtens.constants.DataTypeClasses),
             defaultsTo: 'Data',
             columnName: 'model'
-        },        
+        },
         createdAt: {
             type: 'datetime',
             columnName: 'created_at'
@@ -49,10 +49,11 @@ var DataType = {
         // many-to-may association with Group
         groups: {
             collection: 'group',
-            via: 'dataTypes'
+            via: 'dataTypes',
+            through:'datatypeprivileges'
         }
     },
-    
+
         /**
          * @method
          * @name getFlattenedFields
@@ -62,10 +63,10 @@ var DataType = {
         getFlattenedFields: function(skipFieldsWithinLoops) {
             var flattened = [];
             var body = this.schema && this.schema.body;
-            
+
             // if no body return an empty array
             if (!body) return flattened;
-            
+
             // iterate through all groups within the body
             for (var i=0, len=body.length; i<len; i++) {
                 var groupContent = body[i] && body[i].content;
@@ -89,6 +90,6 @@ var DataType = {
             return flattened;
         },
 
-        
+
 };
 module.exports = DataType;

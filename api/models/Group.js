@@ -1,9 +1,9 @@
 var Group = {
     tableName: 'xtens_group',
     schema:true,
-   
+
     attributes: {
-        
+
         name: {
             type: 'string',
             required: true,
@@ -55,7 +55,7 @@ var Group = {
         dataTypes: {
             collection: 'dataType',
             via: 'groups',
-            dominant: true
+            through:'datatypeprivileges'
         }
 
     }
