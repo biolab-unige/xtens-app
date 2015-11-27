@@ -8,33 +8,52 @@
  * For more information on bootstrapping your app, check out:
  * http://links.sailsjs.org/docs/config/bootstrap
  */
-var BluebirdPromise = require("bluebird");
+/* jshint esnext: true */
+/* jshint node: true */
+/* globals sails, PassportService, Operator */
+"use strict";
 
+var BluebirdPromise = require("bluebird");
 
 module.exports.bootstrap = function(cb) {
 
     // loading passport strategies (local, bearer, ...)
     PassportService.loadStrategies();
-    
+
     // create default operators if no operator is available
     sails.on('lifted', function() {
-        
-        var createUser = BluebirdPromise.promisify(PassportService.protocols.local.createUser);
 
-        Operator.count().then(function(count) {
-            if (count) {
-                return [];
-            }
-            else {
-                return BluebirdPromise.map(sails.config.defaultOperators, function(operator) {
-                    return createUser(operator);
-                });
-            } 
-        })
+        if (sails.config.models.connection === 'test') {
+            let Barrels = require('barrels');
+            let barrels = new Barrels();
 
-        .then(function(createdOperators) {
-            console.log(createdOperators);
-        });
+            fixtures = barrels.data;
+
+            barrels.populate(function(err) {
+                console.log(err);
+            }, false);
+        }
+
+        else {
+
+            let createUser = BluebirdPromise.promisify(PassportService.protocols.local.createUser);
+
+            Operator.count().then(function(count) {
+                if (count) {
+                    return [];
+                }
+                else {
+                    return BluebirdPromise.map(sails.config.defaultOperators, function(operator) {
+                        return createUser(operator);
+                    });
+                } 
+            })
+
+            .then(function(createdOperators) {
+                console.log(createdOperators);
+            });
+
+        }
 
     });
 
