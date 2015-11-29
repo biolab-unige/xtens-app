@@ -57,7 +57,7 @@ module.exports = {
      * GET /data/:id 
      * @method
      * @name findOne
-     * @description - retrieve an existing subject
+     * @description - retrieve an existing data
      */
     findOne: function(req, res) {
         var co = new ControllerOut(res);
