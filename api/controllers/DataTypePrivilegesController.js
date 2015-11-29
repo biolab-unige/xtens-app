@@ -6,7 +6,7 @@
  */
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, QueryService */
+/* globals _, Group, DataType, DataTypeService, QueryService */
 "use strict";
 let ControllerOut = require("xtens-utils").ControllerOut;
 let BluebirdPromise = require("bluebird");
@@ -143,6 +143,33 @@ let DataTypePrivilegesController = {
         })
 
         .catch(function(err) {
+            return co.error(err);
+        });
+
+    },
+
+    /**
+     * @method
+     * @name edit
+     * @description return all the info required for a privileges edit
+     */
+    edit: function(req, res) {
+        var co = new ControllerOut(res);
+        var params = req.allParams();
+        var getDataTypePrivileges = BluebirdPromise.promisify(DataTypeService.getDataTypePrivileges);
+        
+        return BluebirdPromise.props({
+            group: Group.findOne({id: params.groupId}),
+            dataTypes: DataType.find({where: []}), // TODO add condition (??)
+            dataTypePrivileges: getDataTypePrivileges(params.id) 
+        })
+
+        .then(function(result) {
+            return res.json(result);
+        })
+
+        .catch(function(err) {
+            console.log(err);
             return co.error(err);
         });
 
