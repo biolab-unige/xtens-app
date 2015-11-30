@@ -1,0 +1,46 @@
+<h2><%= privilege.id ? __("update-data-type-privileges") : __("create-data-type-privileges") %></h2>
+
+<div id="content"> 
+
+    <form class="form-horizontal edit-datatypeprivileges-form" role="form">
+
+        <div class="form-group row">
+            <label for="group" class="col-md-3 control-label"><%= __("group") %></label>
+            <div class="col-md-6">
+                <span name="group" id="group"><%= group.name %></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="data-type" class="col-md-3 control-label"><%= __("data-type") %></label>
+            <div class="col-md-6">
+                <% if (!privilege.id) {%>
+                <select class ="form-control" name="data-type" id="data-type" ></select>
+                <% } else {%> 
+                <span class="form-control" name="data-type" id="data-type">
+                    <%= dataType.name %>
+                </span>
+                <%} %>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="privilege-level" class="col-md-3 control-label"><%= __("privilege-level") %></label>
+            <div class="col-md-6">
+                <select class ="form-control" name="privilege-level" id="privilege-level" ></select>
+            </div>
+        </div>
+
+        <div id="buttonbardiv" class="row text-center">
+            <div class="btn-group btn-group-margin">
+                <input id="save-privilege" type="submit" class="btn btn-primary" value="<%=__('save') %>" >
+                <% if (privilege.id) { %>
+                    <input type="hidden" id="id" name="id" value="<%= privilege.id %>" />
+                    <button data-privilege-id="<%= privilege.id %>" class="btn btn-danger delete"><%= __("delete") %></button>
+                <%} %>
+            </div>
+        </div>
+
+    </form>
+
+</div>
