@@ -129,7 +129,7 @@ module.exports.xtens = {
         /**
          * @description available Datatype-Group privilege statuses
          */
-        DataGroupPrivilegeLevels: {
+        DataTypePrivilegeLevels: {
             VIEW_OVERVIEW: 'view_overview', // level 0
             VIEW_DETAILS: 'view_details', // level 1
             DOWNLOAD: 'download', // level 2
