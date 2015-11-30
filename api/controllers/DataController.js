@@ -6,11 +6,14 @@
  */
 /* jshint esnext: true */
 /* jshint node: true */
-var BluebirdPromise = require('bluebird');
-var ControllerOut = require("xtens-utils").ControllerOut;
-var xtensConf = global.sails.config.xtens;
-var crudManager = xtensConf.crudManager;
-var DATA = xtensConf.constants.DataTypeClasses.DATA;
+/* globals _, sails, Data, DataType, DataService, SubjectService, SampleService, QueryService, TokenService */
+"use strict";
+
+let BluebirdPromise = require('bluebird');
+let ControllerOut = require("xtens-utils").ControllerOut;
+let xtensConf = global.sails.config.xtens;
+let crudManager = xtensConf.crudManager;
+let DATA = xtensConf.constants.DataTypeClasses.DATA;
 
 module.exports = {
 
@@ -23,16 +26,16 @@ module.exports = {
      *                   
      */
     create: function(req, res) {
-        var data = req.body;
-        var co = new ControllerOut(res);
+        let data = req.body;
+        let co = new ControllerOut(res);
 
         DataService.simplify(data);
 
         DataType.findOne(data.type).then(function(dataType) {
-            var validationRes = DataService.validate(data, true, dataType);
+            let validationRes = DataService.validate(data, true, dataType);
             if (validationRes.error === null) {
                 data = validationRes.value;
-                var dataTypeName = dataType && dataType.name;
+                let dataTypeName = dataType && dataType.name;
                 return crudManager.createData(data, dataTypeName);
             }
             else {
@@ -60,10 +63,10 @@ module.exports = {
      * @description - retrieve an existing data
      */
     findOne: function(req, res) {
-        var co = new ControllerOut(res);
-        var id = req.param('id');
+        let co = new ControllerOut(res);
+        let id = req.param('id');
         
-        var query = Data.findOne(id);
+        let query = Data.findOne(id);
 
         query = QueryService.populateRequest(query, req);
         
@@ -86,9 +89,9 @@ module.exports = {
      * @description Find data based on criteria
      */
     find: function(req, res) {
-        var co = new ControllerOut(res);
+        let co = new ControllerOut(res);
 
-        var query = Data.find()
+        let query = Data.find()
         .where(QueryService.parseCriteria(req))
         .limit(QueryService.parseLimit(req))
         .skip(QueryService.parseSkip(req))
@@ -112,16 +115,17 @@ module.exports = {
      *
      */
     update: function(req, res) {
-        var data = req.body;
-        var co = new ControllerOut(res);
+        let data = req.body;
+        let co = new ControllerOut(res);
 
         DataService.simplify(data);
 
         DataType.findOne(data.type).then(function(dataType) {
-            var validationRes = DataService.validate(data, true, dataType);
+            let validationRes = DataService.validate(data, true, dataType);
             if (validationRes.error === null) {
+                let dataTypeName = dataType && dataType.name;
                 data = validationRes.value;
-                return crudManager.updateData(data);
+                return crudManager.updateData(data, dataTypeName);
             }
             else {
                 throw new Error(validationRes.error);
@@ -146,9 +150,9 @@ module.exports = {
      * @description      
      */
     destroy: function(req, res) {
-        var co = new ControllerOut(res);
-        var id = req.param('id');
-        var idOperator = TokenService.getToken(req).id;
+        let co = new ControllerOut(res);
+        let id = req.param('id');
+        let idOperator = TokenService.getToken(req).id;
 
         if (!id) {
             return co.badRequest({message: 'Missing data ID on DELETE request'});
@@ -162,7 +166,7 @@ module.exports = {
             })
         })
         .then(function(result) {
-            var allowedDataTypes = _.pluck(result.dataTypes, 'id');
+            let allowedDataTypes = _.pluck(result.dataTypes, 'id');
             console.log('idOperator: ' + idOperator);
             console.log(allowedDataTypes);
             console.log(result.data.type);
@@ -193,9 +197,9 @@ module.exports = {
      */
 
     edit: function(req, res) {
-        var co = new ControllerOut(res);
-        var params = req.allParams();
-        var idOperator = TokenService.getToken(req).id;
+        let co = new ControllerOut(res);
+        let params = req.allParams();
+        let idOperator = TokenService.getToken(req).id;
 
         return BluebirdPromise.props({
             data: DataService.getOneAsync(params.id),
