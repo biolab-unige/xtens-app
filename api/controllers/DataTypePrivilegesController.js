@@ -11,10 +11,10 @@
 let ControllerOut = require("xtens-utils").ControllerOut;
 let BluebirdPromise = require("bluebird");
 let Joi = BluebirdPromise.promisifyAll(require('joi'));
-const DataGroupPrivilegeLevels = global.sails.config.xtens.constants.DataGroupPrivilegeLevels;
+const DataTypePrivilegeLevels = global.sails.config.xtens.constants.DataTypePrivilegeLevels;
 
 let DataTypePrivilegesController = {
-    
+
     /**
      * POST /dataTypePrivileges
      * @method
@@ -25,7 +25,7 @@ let DataTypePrivilegesController = {
         let validationSchema = {
             group: Joi.number().integer().positive().required(),
             dataType: Joi.number().integer().positive().required(),
-            privilegeLevel: Joi.string().valid(_.values(DataGroupPrivilegeLevels))
+            privilegeLevel: Joi.string().valid(_.values(DataTypePrivilegeLevels))
         };
         let payload = req.body;
         Joi.validateAsync(req.body, validationSchema)
@@ -55,11 +55,11 @@ let DataTypePrivilegesController = {
     findOne: function(req, res) {
         let co = new ControllerOut(res);
         let id = req.param('id');
-        
+
         let query = global.sails.models.datatypeprivileges.findOne(id);
 
         query = QueryService.populateRequest(query, req);
-        
+
         query.then(function(result) {
             return res.json(result);
         })
@@ -105,7 +105,7 @@ let DataTypePrivilegesController = {
             id: Joi.number().integer().positive().required(),
             group: Joi.number().integer().positive().required(),
             dataType: Joi.number().integer().positive().required(),
-            privilegeLevel: Joi.string().valid(_.values(DataGroupPrivilegeLevels)),
+            privilegeLevel: Joi.string().valid(_.values(DataTypePrivilegeLevels)),
             createdAt: Joi.date().required(),
             updatedAt: Joi.date().required()
         };
@@ -134,8 +134,8 @@ let DataTypePrivilegesController = {
      * @description      
      */
     destroy: function(req, res) {
-        var co = new ControllerOut(res);
-        var id = req.param('id');
+        let co = new ControllerOut(res);
+        let id = req.param('id');
         global.sails.models.datatypeprivileges.destroy(id)
 
         .then(function(results) {
@@ -154,15 +154,22 @@ let DataTypePrivilegesController = {
      * @description return all the info required for a privileges edit
      */
     edit: function(req, res) {
-        var co = new ControllerOut(res);
-        var params = req.allParams();
-        var getDataTypePrivileges = BluebirdPromise.promisify(DataTypeService.getDataTypePrivileges);
-        
+        let co = new ControllerOut(res);
+        let params = req.allParams();
+        let getDataTypePrivileges = BluebirdPromise.promisify(DataTypeService.getDataTypePrivileges);
+
+
         return BluebirdPromise.props({
             group: Group.findOne({id: params.groupId}),
-            dataTypes: DataType.find({where: []}), // TODO add condition (??)
+
+            // retrieve all dataTypes not yet authorized for this group
+            dataTypes: DataTypeService.getDataTypesToCreateNewPrivileges(params.groupId, params.id),
+            
+            dataType: DataTypeService.getDataTypeToEditPrivileges(params.id),
+
             dataTypePrivileges: getDataTypePrivileges(params.id) 
         })
+
 
         .then(function(result) {
             return res.json(result);

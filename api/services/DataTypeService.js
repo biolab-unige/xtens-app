@@ -3,18 +3,23 @@
  *  @name DataTypeService
  *  @author Massimiliano Izzo
  */
-var Joi = require("joi");
-var constants = sails.config.xtens.constants;
-var crudManager = sails.config.xtens.crudManager;
+/* jshint esnext: true */
+/* jshint node: true */
+/* globals _, sails, Group, DataType, QueryService */
+"use strict";
+let Joi = require("joi");
+let BluebirdPromise = require("bluebird");
+let constants = sails.config.xtens.constants;
+let crudManager = sails.config.xtens.crudManager;
 
-var DataTypeService = {
+let DataTypeService = {
 
     /**
      * @method
      * @name validateMetadataField
      */
     validateMetadataField: function(field) {
-        var metadataFieldValidationSchema = Joi.object().keys({
+        let metadataFieldValidationSchema = Joi.object().keys({
             name: Joi.string().required(),
             formattedName: Joi.string().required(),
             fieldType: Joi.string().required().valid(_.values(constants.FieldTypes)),
@@ -52,7 +57,7 @@ var DataTypeService = {
      */
     validate: function(dataType, performSchemaValidation) {
 
-        var validationSchema = {
+        let validationSchema = {
             id: Joi.number().integer().positive(),
             name: Joi.string().required(),
             model: Joi.string().required().valid(_.values(constants.DataTypeClasses)),
@@ -66,7 +71,7 @@ var DataTypeService = {
 
         if (performSchemaValidation) {
 
-            var metadataFieldValidationSchema = Joi.object().keys({
+            let metadataFieldValidationSchema = Joi.object().keys({
                 name: Joi.string().required(),
                 formattedName: Joi.string().required(),
                 fieldType: Joi.string().required().valid(_.values(constants.FieldTypes)),
@@ -90,19 +95,19 @@ var DataTypeService = {
                 _loop: Joi.boolean()     // optional boolean field that specifies whether the current field belongs to a metadata loop
             });
 
-            var metadataLoopValidationSchema = Joi.object().keys({
+            let metadataLoopValidationSchema = Joi.object().keys({
                 name: Joi.string().required(),
                 label: Joi.string().required().valid(constants.METADATA_LOOP),
                 content: Joi.array().required().items(metadataFieldValidationSchema)
             });
 
-            var metadataGroupValidationSchema = Joi.object().keys({
+            let metadataGroupValidationSchema = Joi.object().keys({
                 name: Joi.string().required(),
                 label: Joi.string().required().valid(constants.METADATA_GROUP),
                 content: Joi.array().required().items(metadataLoopValidationSchema, metadataFieldValidationSchema)
             });
 
-            var metadataHeaderValidationSchema = Joi.object().keys({
+            let metadataHeaderValidationSchema = Joi.object().keys({
                 name: Joi.string().required(),
                 description: Joi.string().required(),
                 model: Joi.string().valid(_.values(constants.DataTypeClasses)),
@@ -133,7 +138,7 @@ var DataTypeService = {
      */
 
     getChildrenRecursive: function(parents) {
-        parents.forEach(function(parent, index) {
+        parents.forEach( (parent, index) => {
             DataType.find({parent: parent.id}).populate('children').then(function(children) {
                 parent.children = children;
                 DataTypeService.getChildrenRecursive(children);
@@ -150,15 +155,16 @@ var DataTypeService = {
      */
 
     get: function(next, params) {
-        var criteriaObj = { model: params.model };
+        let criteriaObj = { model: params.model };
         if (params.idDataTypes) {
-            var ids = params.idDataTypes.split(",");
+            let ids = params.idDataTypes.split(",");
             criteriaObj.id = ids;
         }
         DataType.find(criteriaObj).populateAll().exec(next); // do we need populateAll here?
     },
 
     /**
+     * @deprecated
      * @method
      * @name getByOperator
      * @param idOperator
@@ -166,50 +172,51 @@ var DataTypeService = {
      * @return {Array} - list of found DataType entities
      * @description find the list of allowed DataTypes for a specific Operator, through its Groups
      * TODO move to xtens-transact
-     */
+     *
 
-    getByOperator: function(idOperator, params, next) {
-        var statement = ['SELECT d.id, d.name, d.schema FROM data_type d ',
-            'INNER JOIN datatype_groups__group_datatypes dggd ON d.id = dggd.datatype_groups ',
-            'INNER JOIN xtens_group g ON g.id = dggd."group_dataTypes" ',
-            'INNER JOIN group_members__operator_groups gmog ON g.id = gmog.group_members ',
-            'INNER JOIN operator o ON o.id = gmog.operator_groups '].join("");
-            var whereClause = 'WHERE o.id = $1 AND d.model = $2';
-            var vals = [idOperator, params.model];
+getByOperator: function(idOperator, params, next) {
+let statement = ['SELECT d.id, d.name, d.schema FROM data_type d ',
+'INNER JOIN datatype_groups__group_datatypes dggd ON d.id = dggd.datatype_groups ',
+'INNER JOIN xtens_group g ON g.id = dggd."group_dataTypes" ',
+'INNER JOIN group_members__operator_groups gmog ON g.id = gmog.group_members ',
+'INNER JOIN operator o ON o.id = gmog.operator_groups '].join("");
+let whereClause = 'WHERE o.id = $1 AND d.model = $2';
+let vals = [idOperator, params.model];
 
-            if (params.idDataType) {
-                statement = [statement, 'INNER JOIN datatype_children__datatype_parents dcdp ON dcdp.datatype_parents = d.id ',
-                    'INNER JOIN data_type dp ON dp.id = dcdp.datatype_children '].join();
-                    whereClause = whereClause + ' AND dp.id = $3';
-                    vals.push(params.idDataType);
-            }
-            else if (params.idDataTypes) {
-                var idDataTypes = params.idDataTypes.split(',').map(function(val) {return _.parseInt(val);});
-                var fragments = [];
-                for (var i=0; i<idDataTypes.length; i++) {
-                    fragments.push('$' + (vals.length + i + 1));
-                } 
-                whereClause += ' AND d.id IN (' + fragments.join(",") + ')';
-                vals.push(idDataTypes);
-                vals = _.flatten(vals);
-            }
+if (params.idDataType) {
+statement = [statement, 'INNER JOIN datatype_children__datatype_parents dcdp ON dcdp.datatype_parents = d.id ',
+'INNER JOIN data_type dp ON dp.id = dcdp.datatype_children '].join();
+whereClause = whereClause + ' AND dp.id = $3';
+vals.push(params.idDataType);
+}
+else if (params.idDataTypes) {
+let idDataTypes = params.idDataTypes.split(',').map(function(val) {return _.parseInt(val);});
+let fragments = [];
+for (let i=0; i<idDataTypes.length; i++) {
+fragments.push('$' + (vals.length + i + 1));
+} 
+whereClause += ' AND d.id IN (' + fragments.join(",") + ')';
+vals.push(idDataTypes);
+vals = _.flatten(vals);
+}
 
-            DataType.query({
-                // name: 'findDataTypeByOperator',
-                text: [statement, whereClause, ';'].join(""),
-                values: vals
-            }, function(err, result) {
-                if (err) {
-                    next(err);
-                }
-                else {
-                    next(null, result.rows);
-                }
-            });
-    },
+DataType.query({
+    // name: 'findDataTypeByOperator',
+text: [statement, whereClause, ';'].join(""),
+values: vals
+}, function(err, result) {
+if (err) {
+next(err);
+}
+else {
+next(null, result.rows);
+}
+});
+}, */
 
 
     /**
+     * @deprecated
      * @method
      * @name getByOperatorAndParentDataType
      * @param idOperator
@@ -218,29 +225,29 @@ var DataTypeService = {
      * @return {Array} - list of found DataType entities
      * @description find the list of allowed DataTypes for a specific Operator, through its Groups
      * TODO move to xtens-transact  
-     */
+     *
 
-    getByOperatorAndParentDataType: function(idOperator, params, next) {
-        DataType.query({
-            name: 'findDataTypeByOperator',
-            text: ['SELECT d.id, d.name, d.schema FROM data_type d ',
-                'INNER JOIN datatype_groups__group_datatypes dggd ON d.id = dggd.datatype_groups ',
-                'INNER JOIN xtens_group g ON g.id = dggd."group_dataTypes" ',
-                'INNER JOIN group_members__operator_groups gmog ON g.id = gmog.group_members ',
-                'INNER JOIN operator o ON o.id = gmog.operator_groups ',
-                'INNER JOIN datatype_children__datatype_parents dcdp ON d.id = dcdp.datatype_parents ',
-                'WHERE o.id = $1 AND d.model = $2 AND dcdp.datatype_children = $3;'
-            ].join(""),
-            values: [idOperator, params.model, params.idDataType]
-        }, function(err, result) {
-            if (err) {
-                next(err);
-            }
-            else {
-                next(null, result.rows);
-            }
-        });
-    },
+getByOperatorAndParentDataType: function(idOperator, params, next) {
+DataType.query({
+name: 'findDataTypeByOperator',
+text: ['SELECT d.id, d.name, d.schema FROM data_type d ',
+'INNER JOIN datatype_groups__group_datatypes dggd ON d.id = dggd.datatype_groups ',
+'INNER JOIN xtens_group g ON g.id = dggd."group_dataTypes" ',
+'INNER JOIN group_members__operator_groups gmog ON g.id = gmog.group_members ',
+'INNER JOIN operator o ON o.id = gmog.operator_groups ',
+'INNER JOIN datatype_children__datatype_parents dcdp ON d.id = dcdp.datatype_parents ',
+'WHERE o.id = $1 AND d.model = $2 AND dcdp.datatype_children = $3;'
+].join(""),
+values: [idOperator, params.model, params.idDataType]
+}, function(err, result) {
+if (err) {
+next(err);
+}
+else {
+next(null, result.rows);
+}
+});
+},*/
 
     /**
      * @method
@@ -251,24 +258,24 @@ var DataTypeService = {
      */
 
     getFlattenedFields: function(dataType, skipFieldsWithinLoops) {
-        var flattened = [];
-        var body = dataType.schema && dataType.schema.body;
+        let flattened = [];
+        let body = dataType.schema && dataType.schema.body;
 
         // if no body return an empty array
         if (!body) return flattened;
 
         // iterate through all groups within the body
-        for (var i=0, len=body.length; i<len; i++) {
-            var groupContent = body[i] && body[i].content;
+        for (let i=0, len=body.length; i<len; i++) {
+            let groupContent = body[i] && body[i].content;
 
             // iterate through all the fields/loops
-            for (var j=0, l=groupContent.length; j<l; j++) {
+            for (let j=0, l=groupContent.length; j<l; j++) {
                 if (groupContent[j].label === constants.METADATA_FIELD) {
                     flattened.push(groupContent[j]);
                 }
                 else if (groupContent[j].label === constants.METADATA_LOOP && !skipFieldsWithinLoops) {
-                    var loopContent = groupContent[j] && groupContent[j].content;
-                    for (var k=0; k<loopContent.length; k++) {
+                    let loopContent = groupContent[j] && groupContent[j].content;
+                    for (let k=0; k<loopContent.length; k++) {
                         if (loopContent[k].label === constants.METADATA_FIELD) {
 
                             // add to the field a private flag that specifies its belonging to a loop
@@ -298,7 +305,7 @@ var DataTypeService = {
         // extract and store all metadata fields
         .then(function(foundType) {
             console.log("DataTypeService.putMetadataFieldsIntoEAV - found type" + foundType);
-            var fields = DataTypeService.getFlattenedFields(foundType, false);
+            let fields = DataTypeService.getFlattenedFields(foundType, false);
             return crudManager.putMetadataFieldsIntoEAV(foundType.id, fields, true);
         })
         .then(function(inserted) {
@@ -323,6 +330,57 @@ var DataTypeService = {
         }
         else {
             return global.sails.models.datatypeprivileges.findOne({id: privilegesId}).exec(next);
+        }
+    },
+
+    /**
+     * @method
+     * @name getDataTypesToEditPrivileges
+     * @param{integer} privilegesId
+     * @param{function} next - callback function
+     * @description service function to retrieve the right set of dataType(s) when editing 
+     *              an existing DataTypePrivileges entity
+     */
+    getDataTypeToEditPrivileges: function(privilegesId) {
+        if (privilegesId) {
+            return sails.models.datatypeprivileges.findOne({ 
+                select: ['dataType'], where: {id: privilegesId} 
+            })
+
+            .then(function(privileges) {
+                console.log(privileges);
+                return DataType.findOne({id: privileges.dataType});
+            });
+        }
+        else {
+            return BluebirdPromise.resolve(undefined);
+        }
+    },
+
+    /**
+     * @method
+     * @name getDataTypesToCreateNewPrivileges
+     * @param{integer} groupId
+     * @param{integer} privilegesId
+     * @param{function} next - callback function
+     * @description service function to retrieve the right set of dataType(s) when creating 
+     *              a new DataTypePrivileges entity
+     */
+    getDataTypesToCreateNewPrivileges: function(groupId, privilegesId) {
+        if (!privilegesId) {
+            return sails.models.datatypeprivileges.find({
+                select: ['dataType'], where: {group: groupId}
+            })
+
+            .then(function(privileges) {
+                console.log(privileges);
+                return DataType.find({ where: {
+                    id: {'!': _.pluck(privileges, 'dataType')}
+                }});
+            });
+        }
+        else {
+            return BluebirdPromise.resolve(undefined);
         }
     }
 
