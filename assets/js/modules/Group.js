@@ -91,15 +91,14 @@
         },
         
         saveGroup: function(ev) {
-            this.model.save({
+            this.model.save(null, {
                 success: function(group) {
                     console.log("Group.Views.Edit.saveGroup - group correctly inserted/updated!");
-                    // router.navigate('groups', {trigger: true});
+                    router.navigate('groups', {trigger: true});
                 },
                 error: xtens.error,    
             });
 
-            router.navigate('groups', {trigger: true});
             return false;
         },
         

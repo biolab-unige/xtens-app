@@ -120,17 +120,12 @@
 
         privilegesOnSave: function(ev) {
             var groupId = this.group.id;
-            this.model.save({
-                // for some reason success() callback is not invoked here
+            this.model.save(null, {
                 success: function(dataTypePrivileges) {
                     router.navigate('datatypeprivileges/' + groupId, {trigger: true});
                 },
                 error: xtens.error
             });
-            // TODO fix this patch!!
-            setTimeout(function(){
-                router.navigate('datatypeprivileges/' + groupId, {trigger: true});
-            }, 100);
             return false;
         },
 
