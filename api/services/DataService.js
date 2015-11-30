@@ -46,9 +46,9 @@ var DataService = BluebirdPromise.promisifyAll({
             notes: Joi.string().allow(null),
             metadata: Joi.object().required(),
             files: Joi.array(),
-            parentSubject: Joi.number().integer(),
-            parentSample: Joi.number().integer(),
-            parentData: Joi.number().integer(),
+            parentSubject: Joi.number().integer().allow(null),
+            parentSample: Joi.number().integer().allow(null),
+            parentData: Joi.number().integer().allow(null),
             createdAt: Joi.date(),
             updatedAt: Joi.date()
         };
