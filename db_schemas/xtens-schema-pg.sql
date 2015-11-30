@@ -26,6 +26,20 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
+-- Name: datatype_privilege_level; Type: TYPE; Schema: public; Owner: xtenspg
+--
+
+CREATE TYPE datatype_privilege_level AS ENUM (
+    'view_overview',
+    'view_details',
+    'download',
+    'edit'
+);
+
+
+ALTER TYPE datatype_privilege_level OWNER TO xtenspg;
+
+--
 -- Name: dom_basicdatatype; Type: DOMAIN; Schema: public; Owner: massipg
 --
 
@@ -415,6 +429,43 @@ ALTER TABLE datatype_groups__group_datatypes_id_seq OWNER TO xtenspg;
 --
 
 ALTER SEQUENCE datatype_groups__group_datatypes_id_seq OWNED BY datatype_groups__group_datatypes.id;
+
+
+--
+-- Name: datatype_privileges; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+--
+
+CREATE TABLE datatype_privileges (
+    id integer NOT NULL,
+    data_type integer NOT NULL,
+    xtens_group integer NOT NULL,
+    privilege_level datatype_privilege_level DEFAULT 'view_overview'::datatype_privilege_level NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE datatype_privileges OWNER TO xtenspg;
+
+--
+-- Name: datatype_privileges_id_seq; Type: SEQUENCE; Schema: public; Owner: xtenspg
+--
+
+CREATE SEQUENCE datatype_privileges_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE datatype_privileges_id_seq OWNER TO xtenspg;
+
+--
+-- Name: datatype_privileges_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: xtenspg
+--
+
+ALTER SEQUENCE datatype_privileges_id_seq OWNED BY datatype_privileges.id;
 
 
 --
@@ -1721,6 +1772,13 @@ ALTER TABLE ONLY datatype_groups__group_datatypes ALTER COLUMN id SET DEFAULT ne
 -- Name: id; Type: DEFAULT; Schema: public; Owner: xtenspg
 --
 
+ALTER TABLE ONLY datatype_privileges ALTER COLUMN id SET DEFAULT nextval('datatype_privileges_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: xtenspg
+--
+
 ALTER TABLE ONLY eav_attribute ALTER COLUMN id SET DEFAULT nextval('eav_attribute_id_seq'::regclass);
 
 
@@ -2066,6 +2124,22 @@ ALTER TABLE ONLY datatype_groups__group_datatypes
 
 ALTER TABLE ONLY data_type
     ADD CONSTRAINT datatype_name_key UNIQUE (name);
+
+
+--
+-- Name: datatype_privileges_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+--
+
+ALTER TABLE ONLY datatype_privileges
+    ADD CONSTRAINT datatype_privileges_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: datatype_xtensgroup_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+--
+
+ALTER TABLE ONLY datatype_privileges
+    ADD CONSTRAINT datatype_xtensgroup_key UNIQUE (data_type, xtens_group);
 
 
 --
@@ -2451,6 +2525,14 @@ ALTER TABLE ONLY data_files__datafile_data
 
 
 --
+-- Name: data_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY datatype_privileges
+    ADD CONSTRAINT data_type_fkey FOREIGN KEY (data_type) REFERENCES data_type(id) MATCH FULL ON DELETE CASCADE;
+
+
+--
 -- Name: datafile_data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
 --
 
@@ -2616,6 +2698,14 @@ ALTER TABLE ONLY sample
 
 ALTER TABLE ONLY subject
     ADD CONSTRAINT type_fkey FOREIGN KEY (type) REFERENCES data_type(id) MATCH FULL ON DELETE CASCADE;
+
+
+--
+-- Name: xtens_group_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY datatype_privileges
+    ADD CONSTRAINT xtens_group_fkey FOREIGN KEY (xtens_group) REFERENCES xtens_group(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
