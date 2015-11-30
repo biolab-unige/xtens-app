@@ -184,3 +184,251 @@ existing ID
             "deleted": 1
         }
             
+            
+## Data Collection [/data]
+
+### List All Data [GET]
+
++ Response 200 (application/json)
+
+        []
+
+### Create a New Data [POST]
+
+You may create a new data instance using this method. It takes a JSON
+object containing a type (DataType ID), and metadata (can be an empty obect, must 
+contain only metadata fields allowed for the DataType specified in "type")
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.MQ.Lu-KcR4aCeuT9hi1K474zV3s4VaopLDCcf4nZvH6DQo
+            Cache-Control: no-cache
+    
+    + Body  
+            
+            {
+                "type":4,
+                "date": "2015-11-16",
+                "tags": ["optional tags", "can be null"],
+                "notes": "optional textual notes (can be null)",
+                "parentSubject": 1,
+                "parentData": 39,
+                "metadata": {
+                    "user_id": {
+                        "value": 2
+                    },
+                    "element_id": {
+                        "value": 5
+                    },
+                    "element_name": {
+                        "value": "Phalanx IV"
+                    },
+                    "deviation": {
+                        "value": 12.3
+                    },
+                    "__DATA": {
+                        "bulky data": "here you can put any bulky data you want to store within the database"
+                    }
+                },
+                "files": [
+                    {
+                        "uri": "/home/massi/file1.txt"
+                    },
+                    {
+                        "uri": "/home/massi/file2.dat"
+                    }
+                ]
+            }
+            
+
+
++ Response 201 (application/json)
+
+    + Headers
+            
+            Location: /data/59
+            Content-Length: 1030
+            Vary: X-HTTP-Method-Override
+            X-Powered-By: Sails <sailsjs.org>
+
+    + Body
+    
+            {
+                "files": [
+                    {
+                        "uri": "/home/massi/file1.txt",
+                        "details": null,
+                        "id": 24,
+                        "createdAt": "2015-11-30T22:46:55.487Z",
+                        "updatedAt": "2015-11-30T22:46:55.487Z"
+                    },
+                    {
+                        "uri": "/home/massi/file2.dat",
+                        "details": null,
+                        "id": 25,
+                        "createdAt": "2015-11-30T22:46:55.487Z",
+                        "updatedAt": "2015-11-30T22:46:55.487Z"
+                    }
+                ],
+                "type": 4,
+                "parentSubject": 1,
+                "parentSample": null,
+                "parentData": 39,
+                "tags": [
+                    "optional tags",
+                    "can be null"
+                ],
+                "notes": "optional textual notes (can be null)",
+                "metadata": {
+                    "__DATA": {
+                        "bulky data": "here you can put any bulky data you want to store within the database"
+                    },
+                    "user_id": {
+                        "value": 2
+                    },
+                    "deviation": {
+                        "value": 12.3
+                    },
+                    "element_id": {
+                        "value": 5
+                    },
+                    "element_name": {
+                        "value": "Phalanx IV"
+                    }
+                },
+                "id": 59,
+                "date": "2015-11-16T00:00:00.000Z",
+                "createdAt": "2015-11-30T22:46:55.483Z",
+                "updatedAt": "2015-11-30T22:46:55.483Z"
+            }
+
+
+# Data [/data/:id]
+
+### Retrieve an Existing Data instance [GET]
+You may retrieve a single existing data instance by its id
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.MQ.Lu-KcR4aCeuT9hi1K474zV3s4VaopLDCcf4nZvH6DQo
+            Cache-Control: no-cache
+    
++ Response 200 (application/json)
+        
+
+    + Headers
+            
+            Content-Length: 647
+            ETag: W/"287-1067778878"
+        
+    + Body
+    
+                   {
+                        "type": 4,
+                        "parentSubject": 1,
+                        "parentSample": null,
+                        "parentData": 39,
+                        "tags": [
+                            "optional tags",
+                            "can be null"
+                        ],
+                        "notes": "optional textual notes (can be null)",
+                        "metadata": {
+                            "__DATA": {
+                                "bulky data": "here you can put any bulky data you want to store within the database"
+                            },
+                            "user_id": {
+                                "value": 2
+                            },
+                            "deviation": {
+                                "value": 12.3
+                            },
+                            "element_id": {
+                                "value": 5
+                            },
+                            "element_name": {
+                                "value": "Phalanx IV"
+                            }
+                        },
+                        "id": 59,
+                        "date": "2015-11-16T00:00:00.000Z",
+                        "createdAt": "2015-11-30T22:46:55.483Z",
+                        "updatedAt": "2015-11-30T22:46:55.483Z"
+                    } 
+
+
+### Update an Existing Data instance [PUT]
+You may update an existing data using this method. It takes a JSON
+object containing an id (Data unique identifier, primary key), type (DataType ID),
+and metadata (can be an empty obect, must contain only metadata fields allowed
+for the DataType specified in "type")
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.MQ.Lu-KcR4aCeuT9hi1K474zV3s4VaopLDCcf4nZvH6DQo
+            Cache-Control: no-cache
+    
+    + Body
+
+            {   
+                "id": 7,
+                "type":1,
+                "sex": "F",
+                "code": "PAT-0001",
+                "personalInfo": {
+                    "id": 5,
+                    "givenName": "Maria",
+                    "surname": "Verdi",
+                    "birthDate": "1987-04-23"
+                },
+                "metadata": {}
+            }
+
++ Response 200 (application/json)
+
+        {
+        "projects": [],
+        "samples": [],
+        "childrenData": [],
+        "personalInfo": {
+            "surname": "Verdi",
+            "id": 5,
+            "givenName": "Maria",
+            "birthDate": "1987-04-23T00:00:00.000Z",
+            "createdAt": "2015-11-19T16:45:49.395Z",
+            "updatedAt": "2015-11-19T16:45:49.395Z"
+        },
+        "type": 1,
+        "code": "PAT-0001",
+        "sex": "M",
+        "tags": null,
+        "notes": null,
+        "metadata": {},
+        "id": 7,
+        "createdAt": "2015-11-19T16:45:49.482Z",
+        "updatedAt": "2015-11-19T17:20:34.362Z"
+        }
+
+### Delete an Existing Data instance [DELETE]
+You may delete an existing subject using this method. You must provide an
+existing ID
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.MQ.Lu-KcR4aCeuT9hi1K474zV3s4VaopLDCcf4nZvH6DQo
+            Cache-Control: no-cache
+
++ Response 200 (application/json)
+
+        {
+            "deleted": 1
+        }
+            
