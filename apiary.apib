@@ -362,6 +362,7 @@ You may retrieve a single existing data instance by its id
 
 
 ### Update an Existing Data instance [PUT]
+
 You may update an existing data using this method. It takes a JSON
 object containing an id (Data unique identifier, primary key), type (DataType ID),
 and metadata (can be an empty obect, must contain only metadata fields allowed
@@ -376,44 +377,117 @@ for the DataType specified in "type")
     
     + Body
 
-            {   
-                "id": 7,
-                "type":1,
-                "sex": "F",
-                "code": "PAT-0001",
-                "personalInfo": {
-                    "id": 5,
-                    "givenName": "Maria",
-                    "surname": "Verdi",
-                    "birthDate": "1987-04-23"
+            {
+                "type": 4,
+                "parentSubject": 1,
+                "parentData": 39,
+                "tags": [
+                    "optional tags",
+                    "can be null",
+                    "new tag",
+                    "yet another new tag"
+                ],
+                "notes": "optional textual notes (can be null)",
+                "metadata": {
+                    "__DATA": "bulky data updated to some random string",
+                    "user_id": {
+                        "value": 2
+                    },
+                    "deviation": {
+                        "value": 12.3
+                    },
+                    "element_id": {
+                        "value": 5
+                    },
+                    "element_name": {
+                        "value": "Phalanx IV"
+                    }
                 },
-                "metadata": {}
+                "files": [
+                    {
+                        "uri": "/home/massi/file1.txt",
+                        "details": null,
+                        "id": 24,
+                        "createdAt": "2015-11-30T22:46:55.487Z",
+                        "updatedAt": "2015-11-30T22:46:55.487Z"
+                    },
+                    {
+                        "uri": "/home/massi/file2.dat",
+                        "details": null,
+                        "id": 25,
+                        "createdAt": "2015-11-30T22:46:55.487Z",
+                        "updatedAt": "2015-11-30T22:46:55.487Z"
+                    },
+                    {
+                        "uri": "/home/massi/newFileToAdd.json"
+                    }
+                ],
+                "id": 59,
+                "date": "2015-11-16T00:00:00.000Z",
+                "createdAt": "2015-11-30T22:46:55.483Z",
+                "updatedAt": "2015-11-30T22:46:55.483Z"
             }
 
 + Response 200 (application/json)
+        
 
         {
-        "projects": [],
-        "samples": [],
-        "childrenData": [],
-        "personalInfo": {
-            "surname": "Verdi",
-            "id": 5,
-            "givenName": "Maria",
-            "birthDate": "1987-04-23T00:00:00.000Z",
-            "createdAt": "2015-11-19T16:45:49.395Z",
-            "updatedAt": "2015-11-19T16:45:49.395Z"
-        },
-        "type": 1,
-        "code": "PAT-0001",
-        "sex": "M",
-        "tags": null,
-        "notes": null,
-        "metadata": {},
-        "id": 7,
-        "createdAt": "2015-11-19T16:45:49.482Z",
-        "updatedAt": "2015-11-19T17:20:34.362Z"
+            "files": [
+                {
+                    "uri": "/home/massi/file1.txt",
+                    "details": null,
+                    "id": 24,
+                    "createdAt": "2015-11-30T22:46:55.487Z",
+                    "updatedAt": "2015-11-30T22:46:55.487Z"
+                },
+                {
+                    "uri": "/home/massi/file2.dat",
+                    "details": null,
+                    "id": 25,
+                    "createdAt": "2015-11-30T22:46:55.487Z",
+                    "updatedAt": "2015-11-30T22:46:55.487Z"
+                },
+                {
+                    "uri": "/home/massi/newFileToAdd.json",
+                    "details": null,
+                    "id": 26,
+                    "createdAt": "2015-11-30T23:07:22.906Z",
+                    "updatedAt": "2015-11-30T23:07:22.906Z"
+                }
+            ],
+            "type": 4,
+            "parentSubject": 1,
+            "parentSample": null,
+            "parentData": 39,
+            "tags": [
+                "optional tags",
+                "can be null",
+                "new tag",
+                "yet another new tag"
+            ],
+            "notes": "optional textual notes (can be null)",
+            "metadata": {
+                "__DATA": "bulky data updated to some random string",
+                "user_id": {
+                    "value": 2
+                },
+                "deviation": {
+                    "value": 12.3
+                },
+                "element_id": {
+                    "value": 5
+                },
+                "element_name": {
+                    "value": "Phalanx IV"
+                }
+            },
+            "id": 59,
+            "date": "2015-11-15T23:00:00.000Z",
+            "createdAt": "2015-11-30T22:46:55.483Z",
+            "updatedAt": "2015-11-30T23:07:22.768Z"
         }
+
+ 
 
 ### Delete an Existing Data instance [DELETE]
 You may delete an existing subject using this method. You must provide an
