@@ -21,8 +21,8 @@
     "tests"
   ],
   "dependencies": {
-    "backbone": null,
-    "backbone.stickit": "~0.8.0",
+    "backbone": "~1.1.2",
+    "backbone.stickit": "~0.9.2",
     "bootstrap": "~3.3.5",
     "d3": "~3.4.13",
     "datatables": "~1.10.7",
@@ -32,7 +32,7 @@
     "font-awesome": "~4.2.0",
     "jquery": "~1.11.3",
     "jszip": "Stuk/jszip#~2.5.0",
-    "lodash": "~3.10.1",
+    "lodash": "~3.10.0",
     "moment": "~2.8.3",
     "parsleyjs": "~2.0.5",
     "pikaday": "https://github.com/dbushell/Pikaday.git#~1.2.0",
@@ -51,7 +51,7 @@
       "js": "**/underscore.js"
     },
     "lodash": {
-      "js": "dist/lodash.js"
+      "js": "lodash.js"
     },
     "backbone": {
       "js": "**/backbone.js"
