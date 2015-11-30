@@ -45,6 +45,13 @@
         STANDARD: 'standard' 
     };
 
+    XtensConstants.DataTypePrivilegeLevels = {
+        VIEW_OVERVIEW: 'view_overview', // level 0
+        VIEW_DETAILS: 'view_details', // level 1
+        DOWNLOAD: 'download', // level 2
+        EDIT: 'edit', // level 3
+    };
+
     XtensConstants.useFormattedMetadataFieldNames = true; 
 
 } (xtens, xtens.module("xtensconstants")));

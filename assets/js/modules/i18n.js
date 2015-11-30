@@ -208,7 +208,10 @@
         "file-list" : "File List",
         "download": "Download",
         /* assets/js/modules/DataFile.js */
-        "could-not-download-file": "Could Not Download File"
+        "could-not-download-file": "Could Not Download File",
+        /* views/templates/datatypeprivileges-list.ejs */
+        "data-type-name": "Data Type Name",
+        "new-data-type-privilege": "New Data Type Privilege"
     };
 
     var it = {

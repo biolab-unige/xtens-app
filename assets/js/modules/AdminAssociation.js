@@ -4,7 +4,12 @@
     // dependencies
     var i18n = xtens.module("i18n").en;    
     var router = xtens.router;
-
+    
+    /**
+     * @class
+     * @name AdminAssociation.Views.Edit
+     * @description view to manage operator association to groups
+     */
     AdminAssociation.Views.Edit = Backbone.View.extend({
 
         tagName: 'div',
@@ -81,5 +86,5 @@
 
     });
 
-
+    
 } (xtens, xtens.module("adminassociation")));

@@ -16,6 +16,7 @@
     var Operator = xtens.module("operator");
     var Group = xtens.module("group");
     var AdminAssociation = xtens.module("adminassociation");
+    var DataTypePrivileges = xtens.module("datatypeprivileges");
     var FileManager= xtens.module("filemanager");
 
     /**
@@ -89,8 +90,10 @@
             "groups/edit/:id":"groupEdit",
             "login":"logIn",
             "logout":"logOut",
-            "groups/operator/:id":"associationOperator",
-            "groups/datatype/:id":"associationDataType",
+            "groups/operator/:id": "associationOperator",
+            "datatypeprivileges/:groupId": "dataTypePrivilegesList",
+            "datatypeprivileges/new/:groupId": "dataTypePrivilegesEdit",
+            "datatypeprivileges/edit/:groupId/:privilegesId": "dataTypePrivilegesEdit",
             "downIrods":"downIrods",
             "datatypes/graph":"dataTypeGraph",
             "subjects/graph":"subjectGraph",
@@ -123,7 +126,12 @@
             }
 
         },
-
+        
+        /**
+         * @method
+         * @name loadView
+         * @description method to remove all previously existing views before loading a new one
+         */
         loadView: function(view) {
             // remove previous bb view(s)
             this.view && this.view.remove();
@@ -131,26 +139,69 @@
             // load new view
             this.view = view; 
         },
-
-        associationDataType: function(id){
+        
+        /**
+         * @method
+         * @name dataTypePrivilegesList
+         * @description opens the list view for DataTypePrivileges
+         * @param{integer} groupId - the ID of the user group
+         */
+        dataTypePrivilegesList: function(groupId) {
             var that = this;
-            var group = new Group.Model({id:id});
-            var dataTypes = new DataType.List();
+            var group = new Group.Model({id: groupId});
+            var privileges = new DataTypePrivileges.List();
             var groupDeferred = group.fetch({
-                data: $.param({populate:['dataTypes']})
+                data: $.param({populate: ['dataTypes']})
             });
-
-            $.when(dataTypes.fetch(), groupDeferred)
-            .then(function(dataTypesRes, groupRes) {
-                that.loadView(new AdminAssociation.Views.Edit({
-                    dominant: new Group.Model(groupRes && groupRes[0]),
-                    nondominant: dataTypesRes && dataTypesRes[0],
-                    nondominantName:'dataTypes',
-                    field:'name'
+            var privilegesDeferred = privileges.fetch({
+                data: $.param({group: groupId})
+            });
+            
+            $.when(groupDeferred, privilegesDeferred)
+            .then(function(groupRes, privilegesRes) {
+                that.loadView(new DataTypePrivileges.Views.List({
+                    group: new Group.Model(groupRes && groupRes[0]),
+                    privileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0])
                 }));
             }, xtens.error);
         },
 
+        /**
+         * @method
+         * @name dataTypePrivilegesEdit
+         * @description opens the view to create/edit DataTypePrivileges for a user group
+         * @param{integer} groupId - the ID of the user group
+         * @param{integer} dataTypePrivilegesId - the ID of the dataTypePrivileges
+         */
+        dataTypePrivilegesEdit: function(groupId, dataTypePrivilegesId) {
+            var params = {
+                groupId: groupId,
+                id: dataTypePrivilegesId
+            };
+            var that = this;
+            $.ajax({ 
+                url: '/dataTypePrivileges/edit', 
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                },
+                data: params,
+                contentType: 'application/json', 
+                success: function(results) {
+                    that.loadView(new DataTypePrivileges.Views.Edit(results));
+                },
+                error: function(err) {
+                    xtens.error(err);
+                }
+            });
+        },
+        
+        /**
+         * @method
+         * @name associationOperator
+         * @description opens the view to edit operators for each user group
+         * @param{integer} id - the ID of the user group
+         */
         associationOperator: function(id){
             var that = this;
             var group = new Group.Model({id:id});
@@ -167,7 +218,12 @@
                 }));
             }, xtens.error);
         },
-
+        
+        /**
+         * @method
+         * @name dataTypeList
+         * @description opens the list view of all existing dataTypes
+         */
         dataTypeList: function() {
             this.loadView(new DataType.Views.List());
         },
