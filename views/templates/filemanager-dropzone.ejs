@@ -1,3 +1,11 @@
+<div name="stored-files-cnt" class="file-list">
+    <% _.each(fileNames, function(fileName) {%>
+        <div class="input-group margin-bottom-sm">
+            <span class="input-group-addon"><i class="fa fa-file"></i></span>
+            <span class="form-control"><%= fileName %></span>
+        </div>
+    <%}); %>
+</div>
 <div class="dropzone">
     <div class="dz-default dz-message text-center">
         <span><%= __('drop-files-here') %></span>

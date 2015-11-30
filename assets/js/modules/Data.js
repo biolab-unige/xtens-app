@@ -50,7 +50,7 @@
             // return the date string in ISO format
             case FieldTypes.DATE:
                 var dateArray = $el.val().split("/");
-                return dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0];
+            return dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0];
 
             default:
                 return $el.val();
@@ -521,7 +521,7 @@
                 getVal: getFieldValue,
                 onGet: function(value, options) {
                     if (options.view.component && options.view.component.fieldType === FieldTypes.DATE) {
-                       return renderDateValue(value);
+                        return renderDateValue(value);
                     }
                     else {
                         return value;
@@ -642,6 +642,12 @@
         url: '/data',
     });
 
+    /**
+     * @class
+     * @name Data.Views.Edit
+     * @extends Backbone.View
+     * @description backbone edit view for Data instances. This is the main container where all metadata fields will be fit into
+     */
     Data.Views.Edit = Backbone.View.extend({
 
         tagName: 'div',
@@ -726,9 +732,9 @@
 
                 // format date on model as ISO (YYYY-MM-DD)
                 onSet: function(val, options) {
-                        var dateArray = val.split("/");
-                        return new Date(dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0]);
-                    },
+                    var dateArray = val.split("/");
+                    return new Date(dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0]);
+                },
 
                 // store data in view (from model) as DD/MM/YYYY (European format)
                 onGet: function(value, options) {
@@ -869,13 +875,14 @@
                 contentType: 'application/json',
                 success: function(fileSystem) {
                     _this.fileUploadView = new FileManager.Views.Dropzone({
+                        files: _this.model.get("files"),
                         fileSystem: fileSystem,
 
                         // added the second condition for the scenarios where the dataType is not populated
                         dataTypeName: _this.model.get("type").name || _.findWhere(_this.dataTypes, {id: _.parseInt(_this.model.get("type"))}).name
                     });
                     _this.$fileCnt.append(_this.fileUploadView.render().el);
-                    _this.fileUploadView.initializeDropzone(_this.model.get("files"));
+                    _this.fileUploadView.initializeDropzone();
                 },
                 error: xtens.error
             });
@@ -883,11 +890,15 @@
 
         retrieveAndSetFiles: function() {
             if (this.fileUploadView) {
-                if (!this.model.id) {   // don't change the "files" attribute on update
+                /* if (!this.model.id) {   // don't change the "files" attribute on update
                     var files = this.fileUploadView.fileList.toJSON();
                     if (!_.isEmpty(files)) {
                         this.model.set("files", files);
                     }
+                } */
+                var files = this.fileUploadView.fileList.toJSON();
+                if (!_.isEmpty(files)) {
+                    this.model.set("files", files.concat(this.model.get("files")));
                 }
             }
         },
@@ -913,87 +924,94 @@
     /**
      * @class
      * @name Data.Views.Details
+     * @extends Backbone.View
      * @description view containing the details (metadata and files) of a Data (Data.Model) instance
      */
     Data.Views.Details = Backbone.View.extend({
-      tagName: 'div',
-      className: 'data',
+        tagName: 'div',
+        className: 'data',
 
-      /**
-       * @extends Backbone.View.initialize
-       */
-      initialize: function(options) {
-          $("#main").html(this.el);
-          this.template = JST["views/templates/data-details.ejs"];
-          this.data = options.model;
-          this.model.filename=this.getFileName(this.model);
-          this.render();
-      },
+        /**
+         * @extends Backbone.View.initialize
+         */
+        initialize: function(options) {
+            $("#main").html(this.el);
+            this.template = JST["views/templates/data-details.ejs"];
+            this.data = options.model;
+            this.model.filename = this.getFileName(this.model);
+            this.render();
+        },
 
-      render: function() {
-        var dtmodel= new DataTypeModel(this.model.get("type"));
-        var metarr=dtmodel.getFlattenedFields();
-        var metadata = this.model.get("metadata");
-        this.$el.html(this.template({__: i18n, data: this.model, fields: metarr, metadata: metadata}));
-        //this.$fileCnt = this.$("#data-header-row");
-        
-        if (MISSING_VALUE_ALERT) {
-          this.$('div[name="metadata-value"]').filter(function() {
-            return $(this).text().trim() === '';
-          }).addClass("text-warning").html(i18n("missing-value"));
+        render: function() {
+            var dtmodel = new DataTypeModel(this.model.get("type"));
+            var metarr = dtmodel.getFlattenedFields();
+            var metadata = this.model.get("metadata");
+            this.$el.html(this.template({__: i18n, data: this.model, fields: metarr, metadata: metadata}));
+            //this.$fileCnt = this.$("#data-header-row");
+
+            if (MISSING_VALUE_ALERT) {
+                this.$('div[name="metadata-value"]').filter(function() {
+                    return $(this).text().trim() === '';
+                }).addClass("text-warning").html(i18n("missing-value"));
+            }
+            this.stickit();
+            //this.listenTo(this.model, 'change:type', this.dataTypeOnChange);
+            //this.$('#tags').select2({tags: []});
+
+            /*if (this.model.get("type")) {
+              this.renderDataTypeSchema(this.model);  }
+              return this;*/
+        },
+
+        bindings: {
+
+            '#date': {
+                observe: 'date',
+
+                // store data in view (from model) as DD/MM/YYYY (European format)
+                onGet: function(value, options) {
+                    if (value) {
+                        var dateArray = value instanceof Date ? value.toISOString().split('-') : value.split('-');
+                        var dateArray2 = dateArray[2].split('T');
+                        dateArray[2] = dateArray2[0];
+                        return dateArray[2] + '/' + dateArray[1] + '/' + dateArray[0];
+                    }
+                },
+
+            },
+            '#tags': {
+                observe: 'tags',
+                getVal: function($el, ev, option) {
+                    return $el.val().split(", ");
+                }
+            },
+
+            '#notes': {
+                observe: 'notes'
+            }
+
+        },
+
+        getFileName:function(model) {
+            var files = model.get('files');
+            this.filename = new Array(files.length);
+            for(var i = 0; i<files.length;i++){
+                var filename1 = files[i].uri.split('/');
+                this.filename[i] = filename1[7];
+            }
+            return this.filename;
         }
-        this.stickit();
-        //this.listenTo(this.model, 'change:type', this.dataTypeOnChange);
-        //this.$('#tags').select2({tags: []});
-
-        /*if (this.model.get("type")) {
-          this.renderDataTypeSchema(this.model);  }
-        return this;*/
-      },
-
-      bindings: {
-
-          '#date': {
-              observe: 'date',
-
-              // store data in view (from model) as DD/MM/YYYY (European format)
-              onGet: function(value, options) {
-                  if (value) {
-                      var dateArray = value instanceof Date ? value.toISOString().split('-') : value.split('-');
-                      var dateArray2 = dateArray[2].split('T');
-                      dateArray[2]=dateArray2[0];
-                      return dateArray[2] + '/' + dateArray[1] + '/' + dateArray[0];
-                  }
-              },
-
-          },
-          '#tags': {
-              observe: 'tags',
-              getVal: function($el, ev, option) {
-                  return $el.val().split(", ");
-              }
-          },
-
-          '#notes': {
-              observe: 'notes'
-          }
-
-      },
-
-      getFileName:function(model) {
-        var files=model.attributes.files;
-        this.filename= new Array(files.length);
-        for(var i=0; i<files.length;i++){
-        var filename1 = files[i].uri.split('/');
-        this.filename[i]=filename1[7];
-      }
-      return this.filename;
-      }
 
 
 
     });
 
+    /**
+     * @class
+     * @name Data.Views.List
+     * @extends Backbone.View
+     * @description backbone list view for Data.List collection
+     */
     Data.Views.List = Backbone.View.extend({
 
         tagName: 'div',
