@@ -4,6 +4,11 @@
  * @description :: Server-side logic for managing samples
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
+/* jshint node: true */
+/* jshint esnext: true */
+/* globals _, sails, Subject, Sample, Data, DataType, SubjectService, BiobankService, SampleService, TokenService, QueryService, DataService */
+"use strict";
+
 var BluebirdPromise = require('bluebird');
 var ControllerOut = require("xtens-utils").ControllerOut;
 var crudManager = sails.config.xtens.crudManager;
@@ -19,7 +24,7 @@ module.exports = {
      */
     create: function(req, res) {
         var co = new ControllerOut(res);
-        var sample = req.body;
+        var sample = req.allParams();
         SampleService.simplify(sample); 
 
         DataType.findOne(sample.type)
@@ -106,7 +111,8 @@ module.exports = {
      *              Transaction-safe implementation
      */
     update: function(req, res) {
-        var sample = req.body;
+        let co = new ControllerOut(res);
+        var sample = req.allParams();
         SampleService.simplify(sample);
 
         DataType.findOne(sample.type).then(function(dataType) {
@@ -126,7 +132,7 @@ module.exports = {
         .then(function(result) {
             return res.json(result);
         })
-        .catch(function(err) {
+        .catch(function(error) {
             console.log(error.message);
             return co.error(error);
         });

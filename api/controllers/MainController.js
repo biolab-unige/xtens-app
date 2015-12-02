@@ -115,7 +115,7 @@ var MainController = {
         }
         
         var dirname = require('path').resolve(sails.config.xtens.fileSystemConnection.path, sails.config.xtens.fileSystemConnection.landingDirectory);
-        var fileName = req.param("fileName");
+        var fileName = req.param("fileName") || 'uploaded-file';
         console.log("MainController.uploadFileContent - dirname: " + dirname);
         console.log("MainController.uploadFileContent - filename: " + fileName);
         req.file('uploadFile').upload({

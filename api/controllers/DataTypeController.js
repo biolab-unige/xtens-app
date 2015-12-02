@@ -49,7 +49,7 @@ var DataTypeController = {
      */
     create: function(req, res) {
         var co = new ControllerOut(res);
-        var dataType = req.body; 
+        var dataType = req.allParams(); 
 
         if (!dataType.name) dataType.name = dataType.schema && dataType.schema.name;
         if (!dataType.model) dataType.model = dataType.schema && dataType.schema.model;
@@ -85,7 +85,7 @@ var DataTypeController = {
      */
     update: function(req, res) {
         var co = new ControllerOut(res);
-        var dataType = req.body;
+        var dataType = req.allParams();
 
         // Validate data type (schema included)
         var validationRes = DataTypeService.validate(dataType, true);

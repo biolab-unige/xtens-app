@@ -26,7 +26,7 @@ module.exports = {
      *                   
      */
     create: function(req, res) {
-        let data = req.body;
+        let data = req.allParams();
         let co = new ControllerOut(res);
 
         DataService.simplify(data);
@@ -170,6 +170,9 @@ module.exports = {
             console.log('idOperator: ' + idOperator);
             console.log(allowedDataTypes);
             console.log(result.data.type);
+            if (!result.data) {
+                // TODO add logic to throw a NotFoundError (implement it!!)
+            }
             if (allowedDataTypes.indexOf(result.data.type) > -1) {
                 return crudManager.deleteData(id);
             }
