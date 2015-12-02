@@ -74,7 +74,7 @@ for the DataType specified in "type")
             }
 
 
-## Subject [/subject/:id]
+## Subject [/subject/{id}]
 
 ### Retrieve an Existing Subject [GET]
 You may retrieve a single existing subject by its id
@@ -305,7 +305,7 @@ contain only metadata fields allowed for the DataType specified in "type")
             }
 
 
-## Data [/data/:id]
+## Data [/data/{id}]
 
 ### Retrieve an Existing Data instance [GET]
 You may retrieve a single existing data instance by its id
@@ -506,27 +506,26 @@ existing ID
             "deleted": 1
         }
 
-## File Content [/fileContent]
+## File Content Collection [/fileContent]
 
 ### Upload a file to the repository (local server storage) [POST]
 
-+ Request 
++ Request (multipart/form-data; boundary=----BOUNDARY)
 
     + Headers
             
             Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.MQ.Lu-KcR4aCeuT9hi1K474zV3s4VaopLDCcf4nZvH6DQo
             Accept: application/json
             Cache-Control: no-cache
-            Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
     + Body
             
-            ----WebKitFormBoundary7MA4YWxkTrZu0gW
+            ----BOUNDARY
             Content-Disposition: form-data; name="uploadFile"; filename="test-file.txt"
             Content-Type: text/plain
 
 
-            ----WebKitFormBoundary7MA4YWxkTrZu0gW
+            ----BOUNDARY
 
 + Response 200 (application/json)
     
