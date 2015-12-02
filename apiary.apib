@@ -494,7 +494,7 @@ You may delete an existing subject using this method. You must provide an
 existing ID
 
 + Request (application/json)
-
+    
     + Headers
     
             Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.MQ.Lu-KcR4aCeuT9hi1K474zV3s4VaopLDCcf4nZvH6DQo
@@ -505,4 +505,40 @@ existing ID
         {
             "deleted": 1
         }
+        
+# FileContent [/fileContent]
+
+### Upload a file to the repository (local server storage) [POST]
+
++ Request 
+
+    + Headers
             
+            Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.MQ.Lu-KcR4aCeuT9hi1K474zV3s4VaopLDCcf4nZvH6DQo
+            Accept: application/json
+            Cache-Control: no-cache
+            Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+    + Body
+            
+            ----WebKitFormBoundary7MA4YWxkTrZu0gW
+            Content-Disposition: form-data; name="uploadFile"; filename="test-file.txt"
+            Content-Type: text/plain
+
+
+            ----WebKitFormBoundary7MA4YWxkTrZu0gW
+
++ Response 200 (application/json)
+
+            {
+                "name": {
+                    "fd": "/var/xtens/dataFiles/landing/uploaded-file",
+                    "size": 2,
+                    "type": "text/plain",
+                    "filename": "test-file.txt",
+                    "status": "bufferingOrWriting",
+                    "field": "uploadFile"
+                }
+            }
+
+        
