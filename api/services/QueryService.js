@@ -39,7 +39,7 @@ let QueryService = {
 
         // If `where` parameter is a string, try to interpret it as JSON
         if (_.isString(where)) {
-            where = DataService.tryToParseJSON(where);
+            where = QueryService.tryToParseJSON(where);
         }
 
         // If `where` has not been specified, but other unbound parameter variables
