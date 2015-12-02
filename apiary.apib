@@ -74,7 +74,7 @@ for the DataType specified in "type")
             }
 
 
-# Subject [/subject/:id]
+## Subject [/subject/:id]
 
 ### Retrieve an Existing Subject [GET]
 You may retrieve a single existing subject by its id
@@ -305,7 +305,7 @@ contain only metadata fields allowed for the DataType specified in "type")
             }
 
 
-# Data [/data/:id]
+## Data [/data/:id]
 
 ### Retrieve an Existing Data instance [GET]
 You may retrieve a single existing data instance by its id
@@ -506,11 +506,9 @@ existing ID
             "deleted": 1
         }
 
-
-# FileContent [/fileContent]
+## FileContent [/fileContent]
 
 ### Upload a file to the repository (local server storage) [POST]
-
 + Request 
 
     + Headers
@@ -552,5 +550,9 @@ existing ID
                     "field": "uploadFile"
                 }
             }
+
+
+### Download a file from the repository (local server storage) [GET]
+
 
         
