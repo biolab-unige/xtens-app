@@ -505,7 +505,8 @@ existing ID
         {
             "deleted": 1
         }
-        
+
+
 # FileContent [/fileContent]
 
 ### Upload a file to the repository (local server storage) [POST]
@@ -529,7 +530,18 @@ existing ID
             ----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 + Response 200 (application/json)
-
+    
+    + Headers
+            
+            Connection: keep-alive
+            Content-Length: 211
+            Content-Type: application/json; charset=utf-8
+            Date: Wed, 02 Dec 2015 13:36:29 GMT
+            Vary: X-HTTP-Method-Override
+            X-Powered-By: Sails <sailsjs.org>
+    
+    + Body
+    
             {
                 "name": {
                     "fd": "/var/xtens/dataFiles/landing/uploaded-file",
