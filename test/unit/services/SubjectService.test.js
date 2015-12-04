@@ -1,5 +1,5 @@
-var SubjectService = require('../../../api/services/SubjectService.js'),
-    expect = require('chai').expect,
+// var SubjectService = require('../../../api/services/SubjectService.js'),
+var expect = require('chai').expect,
     sinon = require('sinon');
 
 describe('SubjectService', function() {

@@ -1,5 +1,5 @@
-var SampleService = require('../../../api/services/SampleService.js'),
-    expect = require('chai').expect;
+// var SampleService = require('../../../api/services/SampleService.js'),
+var expect = require('chai').expect;
 
 
 describe('SampleService', function() {
