@@ -341,7 +341,7 @@
                     arr.push(this.nestedViews[i].serialize(useFormattedNames));
                 }
             }
-            var serialized = _.flatten(arr);
+            var serialized = _.flatten(arr, true);
             var metadata = {};
             for (i=0, len=serialized.length; i<len; i++) {
                 var unit = serialized[i].unit || undefined;
@@ -890,15 +890,9 @@
 
         retrieveAndSetFiles: function() {
             if (this.fileUploadView) {
-                /* if (!this.model.id) {   // don't change the "files" attribute on update
-                    var files = this.fileUploadView.fileList.toJSON();
-                    if (!_.isEmpty(files)) {
-                        this.model.set("files", files);
-                    }
-                } */
                 var files = this.fileUploadView.fileList.toJSON();
                 if (!_.isEmpty(files)) {
-                    this.model.set("files", files.concat(this.model.get("files")));
+                    this.model.set("files", _.compact(files.concat(this.model.get("files"))));
                 }
             }
         },
