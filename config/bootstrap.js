@@ -27,7 +27,7 @@ module.exports.bootstrap = function(cb) {
             let Barrels = require('barrels');
             let barrels = new Barrels();
 
-            fixtures = barrels.data;
+            let fixtures = barrels.data;
 
             barrels.populate(function(err) {
                 console.log(err);
