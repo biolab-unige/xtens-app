@@ -12,6 +12,7 @@
 let ControllerOut = require("xtens-utils").ControllerOut;
 let crudManager = sails.config.xtens.crudManager;
 let BluebirdPromise = require('bluebird');
+let ValidationError = require('xtens-utils').Errors.ValidationError;
 let SUBJECT = sails.config.xtens.constants.DataTypeClasses.SUBJECT;
 
 module.exports = {
@@ -36,7 +37,7 @@ module.exports = {
                 return crudManager.createSubject(subject, subjectTypeName);
             }
             else {
-                throw new Error(validationRes.error);
+                throw new ValidationError(validationRes.error);
             }
         })
         .then(function(idSubject) {
@@ -132,7 +133,7 @@ module.exports = {
                 return crudManager.updateSubject(subject);
             }
             else {
-                throw new Error(validationRes.error);
+                throw new ValidationError(validationRes.error);
             }
         })
         .then(function(idSubject) {

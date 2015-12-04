@@ -1,10 +1,14 @@
 /**
  *  @author Massimiliano Izzo
  */
-var BluebirdPromise = require('bluebird');
-var Joi = require("joi");
-
-var SampleService = BluebirdPromise.promisifyAll({
+/* jshint esnext: true */
+/* jshint node: true */
+/* globals _, sails, Sample, DataType, DataTypeService, DataService, SubjectService, QueryService, TokenService */
+"use strict";
+let BluebirdPromise = require('bluebird');
+let Joi = require("joi");
+let SAMPLE = sails.config.xtens.constants.DataTypeClasses.SAMPLE;
+let SampleService = BluebirdPromise.promisifyAll({
 
     /**
      * @method
@@ -12,7 +16,7 @@ var SampleService = BluebirdPromise.promisifyAll({
      * @description removes all associated Objects if present keeping only their primary keys (i.e. IDs)
      */
     simplify: function(sample) {
-        ["type", "donor", "parentSample", "biobank"].forEach(function(elem) {
+        ["type", "donor", "parentSample", "biobank"].forEach(elem => {
             if (sample[elem]) {
                 sample[elem] = sample[elem].id || sample[elem];
             }
@@ -31,7 +35,14 @@ var SampleService = BluebirdPromise.promisifyAll({
      *                      - value: the validated data object if no error is returned
      */
     validate: function(sample, performMetadataValidation, dataType) {
-        var validationSchema = {
+        
+        if (dataType.model !== SAMPLE) {
+            return {
+                error: "This data type is for another model: " + dataType.model
+            };
+        }
+
+        let validationSchema = {
             id: Joi.number().integer().positive(),
             type: Joi.number().integer().positive().required(),
             biobank: Joi.number().integer().positive().required(),
@@ -41,15 +52,18 @@ var SampleService = BluebirdPromise.promisifyAll({
             tags: Joi.array().allow(null),
             notes: Joi.string().allow(null),
             metadata: Joi.object().required(),
-            files: Joi.array(),
+            files: Joi.array().items(Joi.object().keys({
+                uri: Joi.string(),
+                name: Joi.string()
+            })),
             createdAt: Joi.date(),
             updatedAt: Joi.date()
         };  
 
         if (performMetadataValidation) {
-            var metadataValidationSchema = {};
-            var flattenedFields = DataTypeService.getFlattenedFields(dataType);
-            _.each(flattenedFields, function(field) {
+            let metadataValidationSchema = {};
+            let flattenedFields = DataTypeService.getFlattenedFields(dataType);
+            _.each(flattenedFields, field => {
                 metadataValidationSchema[field.formattedName] = DataService.buildMetadataFieldValidationSchema(field);
             });
             validationSchema.metadata = Joi.object().required().keys(metadataValidationSchema);

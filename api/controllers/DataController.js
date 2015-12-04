@@ -11,6 +11,7 @@
 
 let BluebirdPromise = require('bluebird');
 let ControllerOut = require("xtens-utils").ControllerOut;
+let ValidationError = require('xtens-utils').Errors.ValidationError;
 let xtensConf = global.sails.config.xtens;
 let crudManager = xtensConf.crudManager;
 let DATA = xtensConf.constants.DataTypeClasses.DATA;
@@ -39,7 +40,7 @@ module.exports = {
                 return crudManager.createData(data, dataTypeName);
             }
             else {
-                throw new Error(validationRes.error);
+                throw new ValidationError(validationRes.error);
             } 
         })
         .then(function(idData) {
@@ -128,7 +129,7 @@ module.exports = {
                 return crudManager.updateData(data, dataTypeName);
             }
             else {
-                throw new Error(validationRes.error);
+                throw new ValidationError(validationRes.error);
             } 
         })
         .then(function(idData) {

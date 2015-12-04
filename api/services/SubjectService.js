@@ -3,11 +3,16 @@
  *  @name SubjectService
  *  @author Massimiliano Izzo
  */
-var BluebirdPromise = require('bluebird');
-var Joi = require("joi");
-// var constants = sails.config.xtens.constants;
+/* jshint esnext: true */
+/* jshint node: true */
+/* globals _, sails, Subject, DataType, DataService, DataTypeService, QueryService, TokenService */
+"use strict";
 
-var SubjectService = BluebirdPromise.promisifyAll({
+let BluebirdPromise = require('bluebird');
+let Joi = require("joi");
+let SUBJECT = sails.config.xtens.constants.DataTypeClasses.SUBJECT;
+
+let SubjectService = BluebirdPromise.promisifyAll({
 
     /**
      * @method
@@ -15,7 +20,7 @@ var SubjectService = BluebirdPromise.promisifyAll({
      * @description removes all associated Objects if present keeping only their primary keys (i.e. IDs)
      */
     simplify: function(subject) {
-        ["type"].forEach(function(elem) {
+        ["type"].forEach(elem => {
             if (subject[elem]) {
                 subject[elem] = subject[elem].id || subject[elem];
             }
@@ -24,7 +29,7 @@ var SubjectService = BluebirdPromise.promisifyAll({
         // replace each project with its ID
         if (_.isArray(subject.projects)) {
             
-            var simplifiedProjects = [];
+            let simplifiedProjects = [];
 
             subject.projects.forEach(function(project) {
                 simplifiedProjects.push(project.id || project);
@@ -49,8 +54,14 @@ var SubjectService = BluebirdPromise.promisifyAll({
      *                      - value: the validated data object if no error is returned
      */
     validate: function(subject, performMetadataValidation, dataType) {
+
+        if (dataType.model !== SUBJECT) {
+            return {
+                error: "This data type is for another model: " + dataType.model
+            };
+        }
         
-        var personalInfoValidationSchema = {
+        let personalInfoValidationSchema = {
             id: Joi.number().integer().positive(),
             givenName: Joi.string().regex(/^[A-Za-z ]+$/).trim(),            
             surname: Joi.string().regex(/^[A-Za-z ]+$/).trim(),
@@ -59,7 +70,7 @@ var SubjectService = BluebirdPromise.promisifyAll({
             updatedAt: Joi.date()
         };
 
-        var validationSchema = {
+        let validationSchema = {
             id: Joi.number().integer().positive(),
             type: Joi.number().integer().positive().required(),
             code: Joi.string(),
@@ -77,9 +88,9 @@ var SubjectService = BluebirdPromise.promisifyAll({
 
         
         if (performMetadataValidation) {
-            var metadataValidationSchema = {};
-            var flattenedFields = DataTypeService.getFlattenedFields(dataType);
-            _.each(flattenedFields, function(field) {
+            let metadataValidationSchema = {};
+            let flattenedFields = DataTypeService.getFlattenedFields(dataType);
+            _.each(flattenedFields, field => {
                 metadataValidationSchema[field.formattedName] = DataService.buildMetadataFieldValidationSchema(field);
             });
             validationSchema.metadata = Joi.object().required().keys(metadataValidationSchema);

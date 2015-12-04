@@ -1,17 +1,23 @@
 /**
  *  @author Massimiliano Izzo
  */
-var http = require('http');
-var BluebirdPromise = require('bluebird');
-var DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
-var FieldTypes = sails.config.xtens.constants.FieldTypes;
-var fileSystemManager = sails.config.xtens.fileSystemManager;
-var Joi = require('joi');
+/* jshint esnext: true */
+/* jshint node: true */
+/* globals _, sails, async, Data, DataFile, Sample, Subject, DataType, DataTypeService, SubjectService, SampleService, QueryService, TokenService */
+"use strict";
 
-var crudManager = sails.config.xtens.crudManager;
-var queryBuilder = sails.config.xtens.queryBuilder;
+let http = require('http');
+let BluebirdPromise = require('bluebird');
+let DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
+let FieldTypes = sails.config.xtens.constants.FieldTypes;
+let fileSystemManager = sails.config.xtens.fileSystemManager;
+let Joi = require('joi');
+let crudManager = sails.config.xtens.crudManager;
+let queryBuilder = sails.config.xtens.queryBuilder;
+let DATA = sails.config.xtens.constants.DataTypeClasses.DATA;
 
-var DataService = BluebirdPromise.promisifyAll({
+
+let DataService = BluebirdPromise.promisifyAll({
 
     /**
      * @method
@@ -19,7 +25,7 @@ var DataService = BluebirdPromise.promisifyAll({
      * @description removes all associated Objects if present keeping only their primary keys (i.e. IDs)
      */
     simplify: function(data) {
-        ["type", "parentSubject", "parentSample", "parentData"].forEach(function(elem) {
+        ["type", "parentSubject", "parentSample", "parentData"].forEach(elem => {
             if (data[elem]) {
                 data[elem] = data[elem].id || data[elem];
             }
@@ -27,7 +33,7 @@ var DataService = BluebirdPromise.promisifyAll({
     },
 
     /**
-     * @method 
+     * @method
      * @name validate
      * @param{Object} data - the data to be validated
      * @param{boolean} performMetadataValidation - if true perform the metadata validation
@@ -37,15 +43,24 @@ var DataService = BluebirdPromise.promisifyAll({
      *                      - value: the validated data object if no error is returned
      */
     validate: function(data, performMetadataValidation, dataType) {
+        
+        if (dataType.model !== DATA) {
+            return {
+                error: "This data type is for another model: " + dataType.model
+            };
+        }
 
-        var validationSchema = {
+        let validationSchema = {
             id: Joi.number().integer().positive(),
             type: Joi.number().integer().positive().required(),
             date: Joi.string().isoDate().allow(null),
             tags: Joi.array().allow(null),
             notes: Joi.string().allow(null),
             metadata: Joi.object().required(),
-            files: Joi.array(),
+            files: Joi.array().items(Joi.object().keys({
+                uri: Joi.string(),
+                name: Joi.string()
+            })),
             parentSubject: Joi.number().integer().allow(null),
             parentSample: Joi.number().integer().allow(null),
             parentData: Joi.number().integer().allow(null),
@@ -56,11 +71,11 @@ var DataService = BluebirdPromise.promisifyAll({
         // validate metadata against metadata schema if skipMetadataValidation is set to false
         if (performMetadataValidation) {
             console.log("Performing metadata validation: " + performMetadataValidation);
-            var metadataValidationSchema = {
+            let metadataValidationSchema = {
                 __DATA: Joi.any()   // key to store any possible data object or "blob"
             };
-            var flattenedFields = DataTypeService.getFlattenedFields(dataType);
-            _.each(flattenedFields, function(field) {
+            let flattenedFields = DataTypeService.getFlattenedFields(dataType);
+            _.each(flattenedFields, field => {
                 metadataValidationSchema[field.formattedName] = DataService.buildMetadataFieldValidationSchema(field);
             });
             validationSchema.metadata = Joi.object().required().keys(metadataValidationSchema);
@@ -80,9 +95,9 @@ var DataService = BluebirdPromise.promisifyAll({
      * @return{Object} fieldValidatorSchema - the JOI validation schema for the field
      */
     buildMetadataFieldValidationSchema: function(metadataField) {
-        var fieldValidatorSchema = Joi.object();
+        let fieldValidatorSchema = Joi.object();
 
-        var value, unit, group;
+        let value, unit, group;
 
         switch(metadataField.fieldType) {
             case FieldTypes.INTEGER:
@@ -127,7 +142,7 @@ var DataService = BluebirdPromise.promisifyAll({
         group = Joi.string();
 
         if (metadataField._loop) {
-            values = Joi.array();
+            let values = Joi.array();
             if (metadataField.required) values = values.required();
 
             fieldValidatorSchema = fieldValidatorSchema.keys({
@@ -136,7 +151,7 @@ var DataService = BluebirdPromise.promisifyAll({
                 loop: Joi.string()
             });
             if (metadataField.hasUnit) {
-                units = Joi.array().required();
+                let units = Joi.array().required();
                 fieldValidatorSchema = fieldValidatorSchema.keys({
                     units: units.items(Joi.string().required().valid(metadataField.possibleUnits))
                 });
@@ -182,7 +197,7 @@ var DataService = BluebirdPromise.promisifyAll({
      * @return{Promise} promise with argument a list of retrieved items matching the query
      */
     executeAdvancedQuery: function(queryArgs, next) {
-        var queryObj = queryBuilder.compose(queryArgs);
+        let queryObj = queryBuilder.compose(queryArgs);
         console.log("DataService.executeAdvancedQuery - query: " + queryObj.statement);
         console.log(queryObj.parameters);
         // Using Prepared Statements for efficiency and SQL-injection protection
@@ -209,7 +224,7 @@ var DataService = BluebirdPromise.promisifyAll({
      */
 
     queryAndPopulateItemsById: function(foundRows, model, next) {
-        var ids = _.pluck(foundRows, 'id');
+        let ids = _.pluck(foundRows, 'id');
         switch(model) {
             case DataTypeClasses.SUBJECT:
                 console.log("calling Subject.find");
@@ -251,7 +266,7 @@ var DataService = BluebirdPromise.promisifyAll({
 
         async.each(files, function(file, callback) {
             DataFile.create(file).exec(callback);     
-        }, function(next) {
+        }, function(err) {
             if (err) {
                 next(err);
             }
@@ -295,28 +310,28 @@ var DataService = BluebirdPromise.promisifyAll({
      * @
      */
     storeEAVAll: function(limit) {
-        var offset = 0; 
+        let offset = 0; 
         limit = limit || 100000;
 
-        var modelName = arguments.length < 2 ? 'data' : 
+        let modelName = arguments.length < 2 ? 'data' : 
             (arguments[1].toLowerCase() === 'subject' || arguments[1].toLowerCase() === 'sample') ? arguments[1].toLowerCase() : 'data';
         console.log("modelName: " + modelName);
 
-        var query = BluebirdPromise.promisify(Data.query, Data);
+        let query = BluebirdPromise.promisify(Data.query, Data);
 
         return query("SELECT count(*) FROM " + modelName +  ";")
 
         .then(function(res) {
-            var count = res.rows[0].count;
+            let count = res.rows[0].count;
             console.log("total count is: " + count);
-            var iterations = Math.ceil(count/limit);
+            let iterations = Math.ceil(count/limit);
             console.log("iterations: " + iterations);
             return BluebirdPromise.map(new Array(iterations), function() {
                 console.log("offset: " + offset);
                 console.log("limit: " + limit);
                 return query("SELECT id FROM " + modelName + " LIMIT $1 OFFSET $2", [limit,offset]).then(function(result) {
                     offset += limit;
-                    var ids = _.pluck(result.rows, 'id');
+                    let ids = _.pluck(result.rows, 'id');
                     // console.log(ids);
                     return DataService.storeMetadataIntoEAV(ids);
                     // return;
