@@ -4,7 +4,7 @@
  */
 
 (function(xtens) {
-
+    
     var DataType = xtens.module("datatype");
     var Data = xtens.module("data");
     var Subject = xtens.module("subject");
@@ -18,6 +18,7 @@
     var AdminAssociation = xtens.module("adminassociation");
     var DataTypePrivileges = xtens.module("datatypeprivileges");
     var FileManager= xtens.module("filemanager");
+    var Session = xtens.module("session");
 
     /**
      * @method
@@ -49,8 +50,7 @@
         }
         return params;
     }
-
-
+    
     /**
      * @class
      * @name XtensRouter
@@ -110,15 +110,21 @@
          */
         execute: function(callback, args, name) {
             /* Router BEFORE HOOK */
+
             // if the user is not authenticated redirect to login page
             var isAuth = xtens.session.isAuthenticated();
             // console.log(Backbone.history.getFragment());
             var path = Backbone.history.getFragment();
             var restricted = !_.contains(this.publicRoutes, path);
 
-            if (restricted && !isAuth) {
-                this.navigate('login', {trigger: true});
-                return false;
+            if (restricted) {
+                if (!isAuth) {
+                    this.navigate('login', {trigger: true});
+                    return false;
+                }
+                else if (!this.menuBarView) {
+                    this.menuBarView = new Session.Views.MenuBar();
+                }
             }
 
             if (callback) {
@@ -386,6 +392,9 @@
         },
 
         logIn: function() {
+            if (this.menuBarView) {
+                this.menuBarView.remove();
+            }
             this.loadView(new Operator.Views.Login());
         },
 

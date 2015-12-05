@@ -4,9 +4,15 @@
  */
 
 (function(xtens, Session) {
-
+    
+    var i18n = xtens.module("i18n").en;
     var GroupPrivilegeLevels = xtens.module("xtensconstants").GroupPrivilegeLevels;
-
+    
+    /**
+     * @class
+     * @name Session.Model
+     * @extends Backbone.Model
+     */
     Session.Model = Backbone.Model.extend({
         
         defaults: {
@@ -51,5 +57,34 @@
         }
 
     });
+
+    /**
+     * @class
+     * @name Session.Views.MenuBar
+     * @extends Backbone.Views
+     * @description session-related menu bar
+     */
+    Session.Views.MenuBar = Backbone.View.extend({
+        
+        el: '#menuBarNav',
+
+        initialize : function(){
+            _.bindAll(this);
+            this.template = JST['views/templates/menu-bar.ejs'];
+            this.render();
+        },
+        
+        render: function() {
+            this.$el.html(this.template({
+                __:i18n, 
+                session: xtens.session
+            }));
+            return this;
+        }
+
+
+    });
+
+
 
 } (xtens, xtens.module("session")));

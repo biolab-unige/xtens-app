@@ -82,6 +82,14 @@
         "username": "Username",
         "sign-in": "Sign in",
         "wrong-username-and-or-password!": "Wrong username and/or password!",
+        /* view/templates/menu-bar.ejs */
+        "admin-management": "Admin Management",
+        "groups": "Groups",
+        "operators": "Operators",
+        "data-management": "Data Management",
+        "search": "Search",
+        "advanced-search": "Advanced Search",
+        "logout": "Logout",
         /* views/templates/data-edit.ejs */
         "data-manager": "Data Manager",
         "select-a-data-type": "Select a Data Type",
@@ -98,7 +106,7 @@
         "associate-datatype":"Associate a Datatype",
         "dissociate-datatype":"Dissociate a Datatype",
         /* views/templates/group-list.ejs */
-	      "member":"Member",
+	"member":"Member",
         /* views/templates/group-edit.ejs */
         "privilege-level": "Privilege Level",
         "can-access-personal-data": "Can Access Personal Data",
@@ -174,7 +182,6 @@
         "add-field": "Add Field",
         "add-loop-condition": "Add Loop Condition",
         "add-nested-condition": "Add Nested Condition",
-        "search": "Search",
         /* views/templates/data-table.ejs */
 	"overall-status": "Overall Status",
         "diagnosis-age": "Diagnosis Age",
