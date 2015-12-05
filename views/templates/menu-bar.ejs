@@ -1,0 +1,53 @@
+<ul id="left" class ="nav navbar-nav navbar-left">
+    <% if (session && session.get("isManager"))  {%>
+    <li class="dropdown">
+    <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" >
+        <%= __("admin-management") %>
+        <span class="fa fa-angle-down"></span>
+    </a>
+    <ul id="box" class="dropdown-menu">
+        <h2 id="title"><%= __("admin-management") %> </h2>
+        <% if (session.get("isWheel"))  {%>
+        <li><a href="#/groups"><%= __("groups") %></a></li>
+        <li><a href="#/operators"><%= __("operators") %></a></li>
+        <%}; %>
+        <li><a href="#/biobanks"><%= __("biobanks") %></a></li>
+        <li><a href="#/datatypes"><%= __("data-types") %></a></li>
+    </ul>
+    <%}; %>
+
+    </li>
+
+    <li class="dropdown">
+    <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown">
+        <%= __("data-management") %>
+        <span class="fa fa-angle-down"></span>
+    </a>
+    <ul id="box" class="dropdown-menu">
+        <h2 id="title"><%= __("data-management") %></h2>
+        <li><a href="#/subjects"><%= __("subjects") %></a></li>
+        <li><a href="#/samples"><%= __("samples") %></a></li>
+        <li><a href="#/data"><%= __("data") %></a></li>
+    </ul>
+
+    </li>
+
+    <li class="dropdown">
+    <a  href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" data-toggle="collapse">
+        <%= __("search") %> 
+        <span class="fa fa-angle-down"></span>
+    </a>
+    <ul id="box" class="dropdown-menu">
+        <h2 id="title"><%= __("search").toUpperCase() %></h2>
+        <li><a href="#/query"><%= __("advanced-search") %></a></li>
+    </ul>
+
+    </li>
+
+</ul>
+<div style="float:right">
+    <label class="logoutLblPos">
+        <a class="btn btn-default" href="#/logout"><%= __("logout") %></a>
+    </label>
+</div>
+
