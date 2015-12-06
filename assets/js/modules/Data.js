@@ -929,11 +929,11 @@
          * @extends Backbone.View.initialize
          */
         initialize: function(options) {
-            $("#main").html(this.el);
-            this.template = JST["views/templates/data-details.ejs"];
-            this.data = options.model;
-            this.model.filename = this.getFileName(this.model);
-            this.render();
+          $("#main").html(this.el);
+          this.template = JST["views/templates/data-details.ejs"];
+          var filename= this.getFileName(this.model);
+          this.model.set("filename",filename);
+          this.render();
         },
 
         render: function() {
@@ -987,13 +987,14 @@
         },
 
         getFileName:function(model) {
-            var files = model.get('files');
-            this.filename = new Array(files.length);
-            for(var i = 0; i<files.length;i++){
-                var filename1 = files[i].uri.split('/');
-                this.filename[i] = filename1[7];
-            }
-            return this.filename;
+          var filename1;
+          var files = model.get('files');
+          this.filename = new Array(files.length);
+          for(var i = 0; i<files.length;i++){
+              filename1 = files[i].uri.split('/');
+              this.filename[i] = filename1[filename1.length-1];
+          }
+          return this.filename;
         }
 
 

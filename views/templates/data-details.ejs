@@ -58,7 +58,7 @@
         </div>
       </div>
       <div id="file-header" class="col-md-4">
-        <% var files = data.filename; %>
+        <% var files = data.get("filename"); %>
           <% if (files.length>0) { %>
             <h4>
               <%=__("file-list")%>
