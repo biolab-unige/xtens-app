@@ -5,6 +5,53 @@ HOST: http://xtens2.api.org/
 
 A digital repository for heterogeneous data in life science.
 
+## File Collection [/fileContent]
+
+### Upload a file to the repository (local server storage) [POST]
+
++ Request (multipart/form-data; boundary=----BOUNDARY)
+
+    + Headers
+            
+            Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.MQ.Lu-KcR4aCeuT9hi1K474zV3s4VaopLDCcf4nZvH6DQo
+            Accept: application/json
+            Cache-Control: no-cache
+
+    + Body
+            
+            ----BOUNDARY
+            Content-Disposition: form-data; name="uploadFile"; filename="test-file.txt"
+            Content-Type: text/plain
+
+            File Content is here.
+            ----BOUNDARY
+
++ Response 200 (application/json)
+    
+    + Headers
+            
+            Connection: keep-alive
+            Content-Length: 211
+            Date: Wed, 02 Dec 2015 13:36:29 GMT
+            Vary: X-HTTP-Method-Override
+            X-Powered-By: Sails <sailsjs.org>
+    
+    + Body
+    
+            {
+                "name": {
+                    "fd": "/var/xtens/dataFiles/landing/uploaded-file",
+                    "size": 2,
+                    "type": "text/plain",
+                    "filename": "test-file.txt",
+                    "status": "bufferingOrWriting",
+                    "field": "uploadFile"
+                }
+            }
+
+
+### Download a file from the repository (local server storage) [GET]
+
 ## Subjects Collection [/subject]
 
 ### List All Subjects [GET]
@@ -507,52 +554,7 @@ existing ID
         }
 
 
-## File Collection [/fileContent]
 
-### Upload a file to the repository (local server storage) [POST]
-
-+ Request (multipart/form-data; boundary=----BOUNDARY)
-
-    + Headers
-            
-            Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.MQ.Lu-KcR4aCeuT9hi1K474zV3s4VaopLDCcf4nZvH6DQo
-            Accept: application/json
-            Cache-Control: no-cache
-
-    + Body
-            
-            ----BOUNDARY
-            Content-Disposition: form-data; name="uploadFile"; filename="test-file.txt"
-            Content-Type: text/plain
-
-            File Content is here.
-            ----BOUNDARY
-
-+ Response 200 (application/json)
-    
-    + Headers
-            
-            Connection: keep-alive
-            Content-Length: 211
-            Date: Wed, 02 Dec 2015 13:36:29 GMT
-            Vary: X-HTTP-Method-Override
-            X-Powered-By: Sails <sailsjs.org>
-    
-    + Body
-    
-            {
-                "name": {
-                    "fd": "/var/xtens/dataFiles/landing/uploaded-file",
-                    "size": 2,
-                    "type": "text/plain",
-                    "filename": "test-file.txt",
-                    "status": "bufferingOrWriting",
-                    "field": "uploadFile"
-                }
-            }
-
-
-### Download a file from the repository (local server storage) [GET]
 
 
         
