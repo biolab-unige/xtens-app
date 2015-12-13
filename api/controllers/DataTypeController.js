@@ -69,10 +69,11 @@ var DataTypeController = {
                 return DataType.findOne(idDataType).populate('parents');
             })
             .then(function(dataType) {
-                res.set('Location', req.baseUrl + req.url + '/'  + result.id);
+                res.set('Location', req.baseUrl + req.url + '/'  + dataType.id);
                 return res.json(201, dataType);
             })
             .catch(function(error) {
+                console.log(error.message);
                 return co.error(error);
             });
         }
