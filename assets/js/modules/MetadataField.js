@@ -35,6 +35,7 @@
                         return {id:term, text:term};
                     }
                 },
+                tokenSeparators: [','],
                 width: 'resolve'
             });
         }

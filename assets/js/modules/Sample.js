@@ -201,6 +201,7 @@
 
         render: function() {
             this.$el.html(this.template({__: i18n, samples: this.samples.models}));
+            var table = this.$('.table').DataTable();
             return this;
         } 
     });

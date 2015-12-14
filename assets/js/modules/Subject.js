@@ -109,11 +109,14 @@
                 this.model = new Subject.Model({type: _.last(this.dataTypes).id});
             }
             this.render();
+            if (xtens.session.get('canAccessPersonalData')) {
+                this.addPersonalDetailsView();
+            }
         },
 
         events: {
-            "click #save": "saveData",
-            "click #add-personal-details": "addPersonalDetailsView"
+            "click #save": "saveData"
+            // "click #add-personal-details": "addPersonalDetailsView"
         },
 
         /**
@@ -143,12 +146,12 @@
             return false;
         },
 
-        addPersonalDetailsView: function(ev) {
+        addPersonalDetailsView: function() {
             var model = new PersonalDetails.Model(this.model.get("personalInfo"));
             this.personalDetailsView = new PersonalDetails.Views.Edit({model: model});
-            var $parent = $(ev.currentTarget).parent();
-            $parent.empty();
-            $parent.html(this.personalDetailsView.render().el);
+            // var $parent = $(ev.currentTarget).parent();
+            this.$('#personal-details').empty();
+            this.$('#personal-details').html(this.personalDetailsView.render().el);
         }
 
     });
