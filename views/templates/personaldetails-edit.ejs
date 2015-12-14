@@ -2,25 +2,18 @@
 <div class="form-group metadataform-group">
     <label for="givenName" class="data-label"><%= __('given-name') %></label>
     <div class="data-input-div">
-        <input text class="form-control" id="givenName" name="givenName"></input>
+        <input text class="form-control" id="givenName" name="givenName" required></input>
     </div>
 </div>
 <div class="form-group metadataform-group">
     <label for="surname" class="data-label"><%= __('surname') %></label>
     <div class="data-input-div">
-        <input text class="form-control" id="surname" name="surname"></input>
+        <input text class="form-control" id="surname" name="surname" required></input>
     </div>
 </div>
 <div class="form-group metadataform-group">
     <label for="notes" class="data-label"><%= __('birth-date') %></label>
     <div class="data-input-div">
-        <input type="date" class="form-control" id="birthDate" name="birthDate"></input>
+        <input text class="form-control" id="birthDate" name="birthDate" placeholder="<%= __('please-select') %>" required></input>
     </div>
 </div>
-<!--
-<div class="form-group metadataform-group">
-    <label for="notes" class="data-label"><%= __('sex') %></label>
-    <div class="data-input-div">
-        <select class="form-control" id="sex" name="sex"></select>
-    </div>
-</div> -->
