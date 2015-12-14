@@ -9,6 +9,13 @@
     var Data = xtens.module("data");
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
 
+    var biobankCodeMap = {
+        RNA: '01',
+        DNA: '02',
+        FLUID: '03'
+    };
+
+
     Sample.Model = Backbone.Model.extend({
         urlRoot: '/sample'
     });
@@ -161,6 +168,21 @@
         
         events: {
             'click #save': 'saveData'
+        },
+        
+        /**
+         * @method
+         * @name dataTypeOnChange
+         */        
+        // TODO check this one!!
+        dataTypeOnChange: function() {
+            Data.Views.Edit.prototype.dataTypeOnChange.call(this);
+            var typeName = this.$('#type :selected').text(), parentSample = this.model.get("parentSample");
+            
+            if (parentSample && parentSample.biobankCode) {
+                this.model.set('biobankCode', biobankCodeMap[typeName] + parentSample.biobankCode);
+            }
+
         }
 
     });
