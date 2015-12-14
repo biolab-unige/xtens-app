@@ -6,6 +6,8 @@
 /* globals _, sails, Data, DataService */
 "use strict";
 
+const DEFAULT_SORT = 'id DESC';
+
 let QueryService = {
 
     /**
@@ -88,7 +90,7 @@ let QueryService = {
      * mutuated by: https://github.com/balderdashy/sails/blob/master/lib/hooks/blueprints/actionUtil.js
      */
     parseSort: function (req) {
-        return req.param('sort') || undefined;
+        return req.param('sort') || DEFAULT_SORT;
     },
 
     dataSearch: function(queryParams) {

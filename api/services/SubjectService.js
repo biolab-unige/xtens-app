@@ -12,6 +12,8 @@ let BluebirdPromise = require('bluebird');
 let Joi = require("joi");
 let SUBJECT = sails.config.xtens.constants.DataTypeClasses.SUBJECT;
 
+const UNICODE_NAME_REGEX = /^[\\p{L} .'-]+$/;
+
 let SubjectService = BluebirdPromise.promisifyAll({
 
     /**
@@ -63,8 +65,8 @@ let SubjectService = BluebirdPromise.promisifyAll({
         
         let personalInfoValidationSchema = {
             id: Joi.number().integer().positive(),
-            givenName: Joi.string().regex(/^[A-Za-z ]+$/).trim(),            
-            surname: Joi.string().regex(/^[A-Za-z ]+$/).trim(),
+            givenName: Joi.string().uppercase().regex(UNICODE_NAME_REGEX).trim(),            
+            surname: Joi.string().uppercase().regex(UNICODE_NAME_REGEX).trim(),
             birthDate: Joi.date(),
             createdAt: Joi.date(),
             updatedAt: Joi.date()
@@ -73,7 +75,7 @@ let SubjectService = BluebirdPromise.promisifyAll({
         let validationSchema = {
             id: Joi.number().integer().positive(),
             type: Joi.number().integer().positive().required(),
-            code: Joi.string(),
+            code: Joi.string().uppercase(),
             sex: Joi.string().required().valid(_.values(sails.config.xtens.constants.SexOptions)),
             personalInfo: Joi.object().keys(personalInfoValidationSchema).allow(null),
             projects: Joi.array().allow(null),
