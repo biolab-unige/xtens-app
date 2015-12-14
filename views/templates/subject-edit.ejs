@@ -49,9 +49,9 @@
         <div id="buttonbardiv" class="row text-center">
             <div class="btn-group btn-group-margin">
                 <input type="submit" id="save" class="btn btn-primary" value="<%=__('save') %>" >
-                <% if (data) { %>
-                <input type="hidden" id="id" name="id" value="<%= data.id %>" />
-                <button data-data-id="<%= data.id %>" class="btn btn-danger delete"><%= __("delete") %></button>
+                <% if (data.id) { %>
+                    <input type="hidden" id="id" name="id" value="<%= data.id %>" />
+                    <button data-data-id="<%= data.id %>" data-target-route="subjects" class="btn btn-danger delete"><%= __("delete") %></button>
                 <%} %>
             </div>
         </div>
