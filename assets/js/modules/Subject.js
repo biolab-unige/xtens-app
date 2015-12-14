@@ -190,6 +190,7 @@
 
         render: function() {
             this.$el.html(this.template({__: i18n, subjects: this.subjects.models}));
+            var table = this.$('.table').DataTable();
             return this;
         } 
     });

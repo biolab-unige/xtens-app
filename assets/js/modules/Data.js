@@ -806,6 +806,16 @@
          */
         deleteData: function(ev) {
             ev.preventDefault();
+            var targetRoute = $(ev.currentTarget).data('targetRoute') || 'data';
+            this.model.destroy({
+                success: function(model, res) {
+                    console.log(res.statusCode);
+                    xtens.router.navigate(targetRoute, {trigger: true});
+                },
+                error: function(model, res) {
+                    xtens.error(res);
+                }
+            });
             return false;
         },
 
@@ -1039,6 +1049,7 @@
 
         render: function(options) {
             this.$el.html(this.template({__: i18n, data: this.data.models}));
+            var table = this.$('.table').DataTable();
             return this;
         }
 

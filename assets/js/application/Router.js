@@ -20,6 +20,8 @@
     var FileManager= xtens.module("filemanager");
     var Session = xtens.module("session");
 
+    var DEFAULT_LIMIT = 100; 
+
     /**
      * @method
      * @name parseQueryString
@@ -289,7 +291,10 @@
                 data: $.param({ populate: ['children'] })
             });
             var $dataDeferred = data.fetch({
-                data: $.param(_.assign(queryParams, {populate: ['type']}))
+                data: $.param(_.assign(queryParams, {
+                    populate: ['type'],
+                    limit: DEFAULT_LIMIT,
+                }))
             });
             $.when($dataTypesDeferred, $dataDeferred).then(function(dataTypesRes, dataRes) {
                 that.loadView(new Data.Views.List({
@@ -419,7 +424,10 @@
                 data: $.param({ populate: ['children'] })
             });
             var $subjectsDeferred = subjects.fetch({
-                data: $.param({ populate: ['type']})
+                data: $.param({ 
+                    populate: ['type'],
+                    limit: DEFAULT_LIMIT
+                })
             });
             $.when($dataTypesDeferred, $subjectsDeferred).then(function(dataTypesRes, subjectsRes) {
                 that.loadView(new Subject.Views.List({
@@ -478,7 +486,10 @@
                 data: $.param({populate:['children']})
             });
             var $samplesDeferred = samples.fetch({
-                data: $.param(_.assign(queryParams, {populate: ['type', 'biobank', 'donor']}))
+                data: $.param(_.assign(queryParams, {
+                    populate: ['type', 'biobank', 'donor'],
+                    limit: DEFAULT_LIMIT
+                }))
             });
             $.when($dataTypesDeferred, $samplesDeferred).then( function(dataTypesRes, samplesRes) {
                 that.loadView(new Sample.Views.List({ 
