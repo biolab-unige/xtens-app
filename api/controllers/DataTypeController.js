@@ -65,10 +65,13 @@ var DataTypeController = {
             return co.error(validationRes.error);
         }
         else {
-            crudManager.createDataType(dataType).then(function(idDataType) {
+            crudManager.createDataType(dataType)
+            /*
+            .then(function(idDataType) {
                 return DataType.findOne(idDataType).populate('parents');
-            })
+            }) */
             .then(function(dataType) {
+                console.log(dataType);
                 res.set('Location', req.baseUrl + req.url + '/'  + dataType.id);
                 return res.json(201, dataType);
             })
@@ -95,10 +98,13 @@ var DataTypeController = {
             return co.error(validationRes.error);
         }
         else {
-            crudManager.updateDataType(dataType).then(function(idDataType) {
+            crudManager.updateDataType(dataType)
+            /*
+            .then(function(idDataType) {
                 return DataType.findOne(idDataType).populate('parents');
-            })
+            }) */
             .then(function(dataType) {
+                console.log(dataType);
                 return res.json(dataType);
             })
             .catch(function(error) {

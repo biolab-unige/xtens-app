@@ -40,11 +40,13 @@ module.exports = {
                 throw new ValidationError(validationRes.error);
             }
         })
+        /*
         .then(function(idSubject) {
             console.log("SubjectController.create - created subject : " + idSubject);
             return Subject.findOne(idSubject).populate('personalInfo');
-        })
+        }) */
         .then(function(result) {
+            console.log(result);
             res.set('Location', req.baseUrl + req.url + '/'  + result.id);
             return res.json(201, result);
         })
@@ -130,17 +132,19 @@ module.exports = {
             let validationRes = SubjectService.validate(subject, true, dataType);
             if (validationRes.error === null) {
                 subject = validationRes.value;
-                return crudManager.updateSubject(subject);
+                return crudManager.updateSubject(subject, dataType.name);
             }
             else {
                 throw new ValidationError(validationRes.error);
             }
         })
+        /*
         .then(function(idSubject) {
             console.log(idSubject);
             return Subject.findOne(idSubject).populate('personalInfo');
-        })
+        }) */
         .then(function(result) {
+            console.log(result);
             res.set('Location', req.baseUrl + req.url + '/'  + result.id);
             return res.json(result);
         })

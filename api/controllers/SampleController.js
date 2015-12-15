@@ -40,11 +40,13 @@ module.exports = {
                 throw new ValidationError(validationRes.error);
             }
         })
+        /*
         .then(function(idSample) {
             console.log(idSample);
             return Sample.findOne(idSample).populate('files');
-        })
+        }) */
         .then(function(result) {
+            console.log(result);
             res.set('Location', req.baseUrl + req.url + '/'  + result.id);
             return res.json(201, result);
         })
@@ -120,17 +122,19 @@ module.exports = {
             var validationRes = SampleService.validate(sample, true, dataType);
             if (validationRes.error === null) {
                 sample = validationRes.value;
-                return crudManager.updateSample(sample);
+                return crudManager.updateSample(sample, dataType.name);
             }
             else {
                 throw new ValidationError(validationRes.error);
             }
-        })
+        }) 
+        /*
         .then(function(idSample) {
             console.log(idSample);
             return Sample.findOne(idSample).populate('files');
-        })
+        }) */
         .then(function(result) {
+            console.log(result);
             return res.json(result);
         })
         .catch(function(error) {

@@ -43,10 +43,11 @@ module.exports = {
                 throw new ValidationError(validationRes.error);
             } 
         })
+        /*
         .then(function(idData) {
             console.log(idData);
             return Data.findOne(idData).populate('files');
-        })
+        }) */
         .then(function(result) {
             res.set('Location', req.baseUrl + req.url + '/'  + result.id);
             return res.json(201, result);
@@ -131,11 +132,12 @@ module.exports = {
             else {
                 throw new ValidationError(validationRes.error);
             } 
-        })
+        }) /*
         .then(function(idData) {
             return Data.findOne(idData).populate('files');
-        })
+        }) */
         .then(function(result) {
+            console.log(result);
             return res.json(result);
         })
         .catch(function(error) {
