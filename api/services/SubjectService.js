@@ -8,11 +8,12 @@
 /* globals _, sails, Subject, DataType, DataService, DataTypeService, QueryService, TokenService */
 "use strict";
 
+let XRegExp = require('xregexp');
 let BluebirdPromise = require('bluebird');
 let Joi = require("joi");
 let SUBJECT = sails.config.xtens.constants.DataTypeClasses.SUBJECT;
 
-const UNICODE_NAME_REGEX = /^[\\p{L} .'-]+$/;
+const UNICODE_NAME_REGEX = new XRegExp("^[\\p{L} .'-]+$");
 
 let SubjectService = BluebirdPromise.promisifyAll({
 
