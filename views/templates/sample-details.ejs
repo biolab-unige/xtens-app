@@ -7,13 +7,23 @@
         <div id="data-header-row" class="row data-header-row">
             <div id="data-header" class="col-md-offset-2 col-md-6">
                 <div class="row margin-row">
-                    <% if (data.get("parentSubject")) {%>
-                    <label for="parentSubject" class="data-label">
-                        <%= __("subject") %>: </label>
+                    <label for="biobank" class="data-label">
+                        <%= __("biobank") %>: </label>
                     <span class="data-span">
-                        <%= data.get("parentSubject").code %>
+                        <%= data.get("biobank").acronym %>
+                    </span>
+                </div>
+
+                <div class="row margin-row">
+                    
+                    <% if (data.get("donor")) {%>
+                    <label for="donor" class="data-label">
+                        <%= __("donor") %>: </label>
+                    <span class="data-span">
+                        <%= data.get("donor").code %>
                     </span>
                     <%} %>
+
                     <% if (data.get("parentSample")) {%>
                     <label for="parentSample" class="data-label">
                         <%= __("sample") %>: </label>
@@ -21,6 +31,7 @@
                         <%= data.get("parentSample").biobankCode %>
                     </span>
                     <%} %>
+
                 </div>
                 <div class="row margin-row">
                     <label for="dataType" class="data-label">
