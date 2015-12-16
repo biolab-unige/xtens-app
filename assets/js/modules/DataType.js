@@ -45,22 +45,26 @@
          * @param {boolean} skipFieldsWithinLoops - if true skips all the metadatafields that are contained within metadata loops
          */
         getFlattenedFields: function(skipFieldsWithinLoops) {
-            var flattened = [];
+            var flattened = [], groupName, groupContent, loopContent;
             var body = this.get("schema") && this.get("schema").body;
             if (!body) return flattened;
-            for (var i=0, len=body.length; i<len; i++){
-                var groupContent = body[i] && body[i].content;
+            for (var i=0, len=body.length; i<len; i++) {
+                groupName = body[i].name;
+                groupContent = body[i] && body[i].content;
                 for (var j=0, l=groupContent.length; j<l; j++) {
                     if (groupContent[j].label === Constants.METADATA_FIELD) {
-                        flattened.push(groupContent[j]);
+                        flattened.push(_.extend(groupContent[j], {_group: groupName}));
                     }
                     else if (groupContent[j].label === Constants.METADATA_LOOP && !skipFieldsWithinLoops) {
-                        var loopContent = groupContent[j] && groupContent[j].content;
+                        loopContent = groupContent[j] && groupContent[j].content;
                         for (var k=0; k<loopContent.length; k++) {
                             if (loopContent[k].label === Constants.METADATA_FIELD) {
 
                                 // add to the field a private flag that specifies its belonging to a loop
-                                flattened.push(_.extend(loopContent[k], {_loop: true}));
+                                flattened.push(_.extend(loopContent[k], {
+                                    _group: groupName,
+                                    _loop: true,
+                                }));
                             }
                         }
                     }
