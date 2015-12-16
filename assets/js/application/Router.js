@@ -74,6 +74,7 @@
             "subjects/new": "subjectEdit",
             "subjects/new/:skipme?*queryString": "subjectEdit",
             "subjects/edit/:id": "subjectEdit",
+            "samples/details/:id": "sampleDetails",
             "samples": "sampleList",
             "samples/new": "sampleEdit",
             "samples/new/:skipme?*queryString": "sampleEdit",
@@ -340,13 +341,14 @@
         },
 
         /**
+         * @method
          * @name dataDetails
          * @description retrieve the data model and open the Details view
          */
         dataDetails: function(id) {
             var that = this, model = new Data.Model({id: id});
             model.fetch({
-                data: $.param({populate: ['type', 'files']}),
+                data: $.param({populate: ['type', 'files', 'parentSample', 'parentSubject']}),
                 success: function(data) {
                     that.loadView(new Data.Views.Details({model: data})); 
                 },
@@ -520,6 +522,24 @@
                 },
                 error: function(jqxhr) {
                     xtens.error(jqxhr);
+                }
+            });
+        },
+
+         /**
+         * @method
+         * @name sampleDetails
+         * @description retrieve the data model and open the Details view
+         */
+        sampleDetails: function(id) {
+            var that = this, model = new Sample.Model({id: id});
+            model.fetch({
+                data: $.param({populate: ['type', 'files', 'parentSample', 'biobank', 'donor']}),
+                success: function(sample) {
+                    that.loadView(new Sample.Views.Details({model: sample})); 
+                },
+                error: function(model, res) {
+                    xtens.error(res);
                 }
             });
         },
