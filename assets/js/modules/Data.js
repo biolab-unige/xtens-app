@@ -941,17 +941,21 @@
         initialize: function(options) {
           $("#main").html(this.el);
           this.template = JST["views/templates/data-details.ejs"];
-          var filename= this.getFileName(this.model);
-          this.model.set("filename",filename);
+          // var filename= this.getFileName(this.model);
+          //  this.model.set("filename", filename);
           this.render();
         },
 
         render: function() {
-            var dtmodel = new DataTypeModel(this.model.get("type"));
-            var metarr = dtmodel.getFlattenedFields();
-            var metadata = this.model.get("metadata");
-            this.$el.html(this.template({__: i18n, data: this.model, fields: metarr, metadata: metadata}));
-            //this.$fileCnt = this.$("#data-header-row");
+            var dataType = new DataTypeModel(this.model.get("type"));
+            var fields = dataType.getFlattenedFields();
+            // var metadata = this.model.get("metadata");
+            this.$el.html(this.template({ 
+                __: i18n,
+                data: this.model, 
+                fields: fields,
+                PATH_SEPARATOR: Constants.PATH_SEPARATOR || '/'
+            }));
 
             if (MISSING_VALUE_ALERT) {
                 this.$('div[name="metadata-value"]').filter(function() {
@@ -959,12 +963,7 @@
                 }).addClass("text-warning").html(i18n("missing-value"));
             }
             this.stickit();
-            //this.listenTo(this.model, 'change:type', this.dataTypeOnChange);
-            //this.$('#tags').select2({tags: []});
-
-            /*if (this.model.get("type")) {
-              this.renderDataTypeSchema(this.model);  }
-              return this;*/
+            return this;
         },
 
         bindings: {
@@ -994,9 +993,10 @@
                 observe: 'notes'
             }
 
-        },
-
-        getFileName:function(model) {
+        }
+        
+        /*
+        ,getFileName:function(model) {
           var filename1;
           var files = model.get('files');
           this.filename = new Array(files.length);
@@ -1005,7 +1005,7 @@
               this.filename[i] = filename1[filename1.length-1];
           }
           return this.filename;
-        }
+        } */
 
 
 

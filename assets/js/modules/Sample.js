@@ -186,6 +186,25 @@
         }
 
     });
+    
+    /**
+     * @class
+     * @name Data.Views.Details
+     * @extends Data.Views.Details
+     * @description view containing the details (metadata and files) of a Sample (Sample.Model) instance
+     */
+    Sample.Views.Details = Data.Views.Details.fullExtend({
+        
+        /**
+         * @extends Backbone.View.initialize
+         */
+        initialize: function(options) {
+          $("#main").html(this.el);
+          this.template = JST["views/templates/sample-details.ejs"];
+          this.render();
+        }
+
+    });
 
     Sample.Views.List = Backbone.View.extend({
 

@@ -11,7 +11,8 @@
         STRING: 'string',
         PERSONAL_DETAILS: 'Personal Details',
         SUBJECT_PROPERTIES: ['code', 'sex'],
-        SAMPLE_PROPERTIES: ['biobank', 'biobankCode']
+        SAMPLE_PROPERTIES: ['biobank', 'biobankCode'],
+        PATH_SEPARATOR: '/'  // path separator for Unix-like systems
     };
 
     XtensConstants.DataTypeClasses = {
