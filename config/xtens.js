@@ -171,6 +171,8 @@ module.exports.xtens = {
         SUBJECT_PROPERTIES: ['code', 'sex'],
         SAMPLE_PROPERTIES: ['biobankCode'],
 
+        PATH_SEPARATOR: '/',        // UNIX/Unix-like path separator
+
         // min and max values for PopulateService tests
         TEST_MIN: 0.0,
         TEST_MAX: 100.0
