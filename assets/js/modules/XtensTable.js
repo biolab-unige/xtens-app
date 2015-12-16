@@ -51,9 +51,11 @@ function renderDatatablesDate(data, type) {
         },
 
         events: {
+            "click .xtenstable-details": "showDetailsView",
+            "click .xtenstable-edit": "showEditView",
             "click .xtenstable-files": "showFileList",
             "click .xtenstable-derivedsamples": "showDerivedSampleList",
-            "click .xtenstable-deriveddata": "showDerivedDataList"
+            "click .xtenstable-deriveddata": "showDerivedDataList",
         },
         
         /**
@@ -279,6 +281,43 @@ function renderDatatablesDate(data, type) {
 
         /**
          * @method
+         * @name showDetailsView
+         * @param{Object} ev - the current event
+         * @description returns the details view associated to the current item
+         */
+        showDetailsView: function(ev) {
+            var currRow = this.table.row($(ev.currentTarget).parents('tr'));
+            var data = currRow.data();
+
+            // model here is the ENTITY model (a.k.a. the server-side resource)
+            var model = this.dataType.get("model");
+            var path = model === Classes.DATA ? model.toLowerCase() : model.toLowerCase() + 's';
+            path += "/details/" + data.id;
+            xtens.router.navigate(path, {trigger: true});
+            return false;
+        },
+
+        /**
+         * @method
+         * @name showEditView
+         * @param{Object} ev - the current event
+         * @description returns the details view associated to the current item
+         */
+        showEditView: function(ev) {
+            var currRow = this.table.row($(ev.currentTarget).parents('tr'));
+            var data = currRow.data();
+
+            // model here is the ENTITY model (a.k.a. the server-side resource)
+            var model = this.dataType.get("model");
+            var path = model === Classes.DATA ? model.toLowerCase() : model.toLowerCase() + 's';
+            path += "/edit/" + data.id;
+            xtens.router.navigate(path, {trigger: true});
+            return false;
+        },
+        
+
+        /**
+         * @method
          * @name showDerivedDataList
          * @param{Object} ev - the current event
          * @description returns a list of the data stored as children of the given data instance
@@ -306,6 +345,11 @@ function renderDatatablesDate(data, type) {
             var data = currRow.data();
             var childrenSample = new Sample.List();
             var model = this.dataType.get("model");
+            
+            // DATA cannot have sample child
+            if (model === Classes.DATA)
+                return false;
+
             var parentProperty = model === Classes.SUBJECT ? 'donor' : 'parentSample';
             var path = "samples?" + parentProperty + "=" + data.id;
             xtens.router.navigate(path, {trigger: true});
@@ -322,7 +366,14 @@ function renderDatatablesDate(data, type) {
             var that = this;
             var currRow = this.table.row($(ev.currentTarget).parents('tr'));
             var id = currRow.data().id;
-            var data = new Data.Model();
+            var model = this.dataType.get("model");
+            
+            // subject has no associated files (at the moment)
+            if (model === Classes.SUBJECT)
+                return false;
+
+            var data = model === Classes.SAMPLE ? new Sample.Model() : new Data.Model();
+            
             data.set("id", currRow.data().id);
             data.fetch({
                 data: $.param({populate: ['files']}),
