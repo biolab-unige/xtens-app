@@ -1031,6 +1031,11 @@
             this.data = options.data;
             this.template = JST["views/templates/data-list.ejs"];
             this.addLinksToModels();
+            this.parentDataType = options.params && options.params.parentDataType;
+            this.parentSubject = options.params && options.params.parentSubject;
+            this.parentSubjectCode = options.params && options.params.parentSubjectCode;
+            this.parentSample = options.params && options.params.parentSample;
+            this.parentData = options.params && options.params.parentData;
             this.render();
         },
 
@@ -1051,6 +1056,25 @@
             this.$el.html(this.template({__: i18n, data: this.data.models}));
             var table = this.$('.table').DataTable();
             return this;
+        },
+
+         events: {
+            'click #newData': 'openNewDataView'
+        },
+
+        openNewDataView: function(ev) {
+            ev.preventDefault();
+            var parentSubjectQuery = this.parentSubject ? 'parentSubject=' + this.parentSubject : '';
+            var parentSubjectCodeQuery = this.parentSubjectCode ? 'parentSubjectCode=' + this.parentSubjectCode : '';
+            var parentSampleQuery = this.parentSample ? 'parentSample=' + this.parentSample : '';
+            var parentDataQuery = this.parentData ? 'parentData=' + this.parentData : '';
+            var parentDataTypeQuery = this.parentDataType ? 'parentDataType=' + this.parentDataType : '';
+            // var queryString = _.trim([parentSubjectQuery, parentSubjectCodeQuery, parentSampleQuery, parentDataQuery].join('&'), '&');
+            var queryString = _.compact([parentSubjectQuery, parentSubjectCodeQuery, 
+                                        parentSampleQuery, parentDataQuery, parentDataTypeQuery]).join('&');
+            var route = _.trim(['/data/new', queryString].join('/0?'), '/0?');
+            xtens.router.navigate(route, {trigger: true});
+            return false;
         }
 
     });

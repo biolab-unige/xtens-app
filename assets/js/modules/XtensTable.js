@@ -329,6 +329,11 @@ function renderDatatablesDate(data, type) {
             var model = this.dataType.get("model");
             var parentProperty = model === Classes.SUBJECT ? 'parentSubject' : model === Classes.SAMPLE ? 'parentSample' : 'parentData';
             var path = "data?" + parentProperty + "=" + data.id;
+            
+            // TODO change "code" to "subjectCode" for sake of clarity
+            path += data.code ? "&parentSubjectCode=" + data.code : '';
+            path += "&parentDataType=" + this.dataType.id;
+
             xtens.router.navigate(path, {trigger: true});
             return false;
         },
@@ -352,6 +357,11 @@ function renderDatatablesDate(data, type) {
 
             var parentProperty = model === Classes.SUBJECT ? 'donor' : 'parentSample';
             var path = "samples?" + parentProperty + "=" + data.id;
+
+            // TODO change "code" to "subjectCode" for sake of clarity
+            path += data.code ? "&donorCode=" + data.code : '';
+            path += "&parentDataType=" + this.dataType.id;
+
             xtens.router.navigate(path, {trigger: true});
             return false;
         },

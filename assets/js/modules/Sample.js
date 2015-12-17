@@ -189,14 +189,15 @@
     
     /**
      * @class
-     * @name Data.Views.Details
+     * @name Sample.Views.Details
      * @extends Data.Views.Details
      * @description view containing the details (metadata and files) of a Sample (Sample.Model) instance
      */
     Sample.Views.Details = Data.Views.Details.fullExtend({
         
         /**
-         * @extends Backbone.View.initialize
+         * @method
+         * @name initialize
          */
         initialize: function(options) {
           $("#main").html(this.el);
@@ -217,6 +218,10 @@
             this.samples = options.samples;
             this.template = JST["views/templates/sample-list.ejs"];
             this.addLinksToModels();
+            this.donor = options.params && options.params.donor;
+            this.donorCode = options.params && options.params.donorCode;
+            this.parentSample = options.params && options.params.parentSample;
+            this.parentDataType = options.params && options.params.parentDataType;
             this.render();
         },
 
@@ -244,7 +249,24 @@
             this.$el.html(this.template({__: i18n, samples: this.samples.models}));
             var table = this.$('.table').DataTable();
             return this;
-        } 
+        },
+
+        events: {
+            'click #newSample': 'openNewSampleView'
+        },
+
+        openNewSampleView: function(ev) {
+            ev.preventDefault();
+            var donorQuery = this.donor ? 'donor=' + this.donor : '';
+            var donorCodeQuery = this.donorCode ? 'donorCode=' + this.donorCode : '';
+            var parentSampleQuery = this.parentSample ? 'parentSample=' + this.parentSample : '';
+            var parentDataTypeQuery = this.parentDataType ? 'parentDataType=' + this.parentDataType : '';
+            // var queryString = _.trim([donorQuery, donorCodeQuery, parentSampleQuery].join('&'), '&');
+            var queryString = _.compact([donorQuery, donorCodeQuery, parentSampleQuery, parentDataTypeQuery]).join('&');
+            var route = _.trim(['/samples/new', queryString].join('/0?'), '/0?');
+            xtens.router.navigate(route, {trigger: true});
+            return false;
+        }
     });
 
 

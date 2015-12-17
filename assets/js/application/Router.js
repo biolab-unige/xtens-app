@@ -74,11 +74,12 @@
             "subjects/new": "subjectEdit",
             "subjects/new/:skipme?*queryString": "subjectEdit",
             "subjects/edit/:id": "subjectEdit",
-            "samples/details/:id": "sampleDetails",
+            "subjects/details/:id": "subjectDetails",
             "samples": "sampleList",
             "samples/new": "sampleEdit",
             "samples/new/:skipme?*queryString": "sampleEdit",
             "samples/edit/:id": "sampleEdit",
+            "samples/details/:id": "sampleDetails",
             "biobanks": "biobankList",
             "biobanks/new": "biobankEdit",
             "biobanks/edit/:id": "biobankEdit",
@@ -292,7 +293,7 @@
                 data: $.param({ populate: ['children'] })
             });
             var $dataDeferred = data.fetch({
-                data: $.param(_.assign(queryParams, {
+                data: $.param(_.assign(_.omit(queryParams, ['parentDataType', 'parentSubjectCode']), { // omit "parentSubjectCode" as param in server-side GET request
                     populate: ['type'],
                     limit: DEFAULT_LIMIT,
                 }))
@@ -300,7 +301,8 @@
             $.when($dataTypesDeferred, $dataDeferred).then(function(dataTypesRes, dataRes) {
                 that.loadView(new Data.Views.List({
                     data: new Data.List(dataRes && dataRes[0]),
-                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])    
+                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
+                    params: queryParams    
                 }));
             }, function(jqxhr) {
                 xtens.error(jqxhr);
@@ -427,7 +429,7 @@
             });
             var $subjectsDeferred = subjects.fetch({
                 data: $.param({ 
-                    populate: ['type'],
+                    populate: ['type', 'projects'],
                     limit: DEFAULT_LIMIT
                 })
             });
@@ -463,7 +465,30 @@
                 }
             });
         },
-
+                     
+        /**
+         * @method
+         * @name subjectDetails
+         * @description retrieve the subject model and open the Details view
+         * @param{integer} id - sample Id
+         */
+        subjectDetails: function(id) {
+            var that = this, model = new Subject.Model({id: id});
+            model.fetch({
+                data: $.param({populate: ['type', 'projects']}),
+                success: function(subject) {
+                    that.loadView(new Subject.Views.Details({model: subject})); 
+                },
+                error: function(model, res) {
+                    xtens.error(res);
+                }
+            });
+        },
+        
+        /**
+         * @method
+         * @name subjectGraph
+         */
         subjectGraph: function() {
             this.loadView(new Subject.Views.Graph());
         },
@@ -488,7 +513,7 @@
                 data: $.param({populate:['children']})
             });
             var $samplesDeferred = samples.fetch({
-                data: $.param(_.assign(queryParams, {
+                data: $.param(_.assign(_.omit(queryParams, ['parentDataType','donorCode']), {      // omit "donorCode" as param in server-side GET request
                     populate: ['type', 'biobank', 'donor'],
                     limit: DEFAULT_LIMIT
                 }))
@@ -496,13 +521,20 @@
             $.when($dataTypesDeferred, $samplesDeferred).then( function(dataTypesRes, samplesRes) {
                 that.loadView(new Sample.Views.List({ 
                     samples: new Sample.List(samplesRes && samplesRes[0]),
-                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])                                    
+                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
+                    params: queryParams                    
                 }));
             }, function(jqxhr) {
                 xtens.error(jqxhr);
             });
         },
-
+        
+        /**
+         * @method
+         * @name sampleEdit
+         * @param{integer} id - Sample Id
+         * @param{string} queryString
+         */
         sampleEdit: function(id, queryString) {
             var params = parseQueryString(queryString);
             if (id && _.parseInt(id) > 0) {
@@ -529,7 +561,8 @@
          /**
          * @method
          * @name sampleDetails
-         * @description retrieve the data model and open the Details view
+         * @description retrieve the sample model and open the Details view
+         * @param{integer} id - sample Id
          */
         sampleDetails: function(id) {
             var that = this, model = new Sample.Model({id: id});

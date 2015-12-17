@@ -19,7 +19,13 @@
         eurostring2IsoDate: function(val) {
             var dateArray = val.split("/");
             return new Date(dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0]);
+        },
+
+        zuluDatetime2eurostring: function(val) {
+            return val.slice(0, val.indexOf("T")).split("-").reverse().join("/");
         }
+
+
 
     };
 

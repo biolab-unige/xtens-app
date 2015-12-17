@@ -155,6 +155,27 @@
         }
 
     });
+    
+    /**
+     * @class
+     * @name Subject.Views.Details
+     * @extends Data.Views.Details
+     * @description view containing the details (metadata and files) of a Subject (Subject.Model) instance
+     */
+    Subject.Views.Details = Data.Views.Details.fullExtend({
+        
+        /**
+         * @method
+         * @name initialize
+         */
+        initialize: function(options) {
+          $("#main").html(this.el);
+          this.template = JST["views/templates/subject-details.ejs"];
+          this.render();
+        }
+
+    });
+
 
     Subject.Views.List = Backbone.View.extend({
 
