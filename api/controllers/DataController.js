@@ -206,15 +206,16 @@ module.exports = {
         let co = new ControllerOut(res);
         let params = req.allParams();
         let idOperator = TokenService.getToken(req).id;
-
+        console.log(params); 
         return BluebirdPromise.props({
             data: DataService.getOneAsync(params.id),
             dataTypes: crudManager.getDataTypesByRolePrivileges({
                 idOperator: idOperator,
                 model: DATA,
-                idDataTypes: params.idDataTypes
+                idDataTypes: params.idDataTypes,
+                parentDataType: params.parentDataType
             }),
-            parentSubject: SubjectService.getOneAsync(params.parentSubject),
+            parentSubject: SubjectService.getOneAsync(params.parentSubject, params.parentSubjectCode),
             parentSample: SampleService.getOneAsync(params.parentSample),
             parentData: DataService.getOneAsync(params.parentData)
         })

@@ -197,16 +197,18 @@ module.exports = {
         var co = new ControllerOut(res);
         var params = req.allParams();
         var idOperator = TokenService.getToken(req).id;
-        
+        console.log(params); 
+
         return BluebirdPromise.props({
             sample: SampleService.getOneAsync(params.id),
             dataTypes: crudManager.getDataTypesByRolePrivileges({
                 idOperator: idOperator,
                 model: SAMPLE,
-                idDataTypes: params.idDataTypes 
+                idDataTypes: params.idDataTypes,
+                parentDataType: params.parentDataType 
             }),
             biobanks: BiobankService.getAsync(params),
-            donor: SubjectService.getOneAsync(params.donor),
+            donor: SubjectService.getOneAsync(params.donor, params.donorCode),
             parentSample: SampleService.getOneAsync(params.parentSample)
         }) 
         

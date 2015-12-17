@@ -116,12 +116,18 @@ let SubjectService = BluebirdPromise.promisifyAll({
      * @description find a Subject if ID is provided
      * @return {Object} - the found Subject
      */
-    getOne: function(id, next) {
-        if (!id) {
+    getOne: function(id, code, next) {
+        if (!id && !code) {
             next(null, null);
         }
         else {
-            Subject.findOne(_.parseInt(id)).populateAll().exec(next);
+            let criteria = {};
+
+            if (id) criteria.id = id;
+            if (code) criteria.code = code;
+            
+            console.log(criteria);
+            Subject.findOne(criteria).populateAll().exec(next);
         }
     }
 
