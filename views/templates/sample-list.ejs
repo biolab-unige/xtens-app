@@ -26,8 +26,8 @@
                         <td><%= sample.get("biobankCode") %></td>
                         <td><%= sample.get("type").name %></td>
                         <td><%= sample.get("donor") && sample.get("donor").code %></td>
-                        <td><%= metadata.diagnosis &&  metadata.diagnosis.value %></td>
-                        <td><%= metadata.anatomical_position && metadata.location.value %></td>
+                        <td><%= metadata.pathology &&  metadata.pathology.value %></td>
+                        <td><%= metadata.sample_codification && metadata.sample_codification.value %></td>
                         <td>
                             <a class="btn" href="<%= sample.get("editLink") %>"><%=__("edit") %></a>
                             <% if (sample.get("newDerivativeLink") && sample.get("newDerivativeLink").length > 0) {%>
@@ -43,7 +43,7 @@
                 </table>
             </div>
             <div id="buttonbardiv" class="row text-center">
-                <a href="#/samples/new" class="btn btn-primary"><%= __("new-sample")%></a>
+                <a href="" id="newSample" class="btn btn-primary"><%= __("new-sample")%></a>
             </div>
         </div>
     </div>

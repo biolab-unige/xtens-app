@@ -18,11 +18,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                    <% var metadata; 
+                    <% var metadata, date; 
                     _.each(data, function(data) { %>
                     <tr>
                         <td><%= data.get("type").name %></td>
-                        <td><%= data.get("date") %></td>
+                        <td>
+                            <% date = data.get("date") %>
+                            <%= date ? date.slice(0, date.indexOf("T")).split("-").reverse().join("/") : '' %>
+                        </td>
                         <td><%= JSON.stringify(data.get("tags")) %></td>
                         <!--
                         <td>
@@ -49,7 +52,7 @@
                 </table>
             </div>
             <div id="buttonbardiv" class="row text-center">
-                <a href="#/data/new" class="btn btn-primary"><%= __("new-data")%></a>
+                <a href="" id="newData" class="btn btn-primary"><%= __("new-data")%></a>
             </div>
         </div>
     </div>
