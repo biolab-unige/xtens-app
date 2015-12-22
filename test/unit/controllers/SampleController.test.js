@@ -1,7 +1,7 @@
 var expect = require("chai").expect;
 var request = require('supertest');
-var cloneDeep = require('clone-deep');
-var token = require("/home/nico/Copy/Workspace/xtens-app/config/local.js").token;
+//var cloneDeep = require('clone-deep');
+var token = require("../../../config/local.js").token;
 
 
 describe('DataController', function() {
