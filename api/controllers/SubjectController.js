@@ -205,14 +205,14 @@ module.exports = {
      */
     edit: function(req, res) {
         let co = new ControllerOut(res);
-        let id = req.param("id");
+        let id = req.param("id"), code = req.param("code");
         let idOperator = TokenService.getToken(req).id;
         
         console.log("SubjectController.edit - Decoded ID is: " + idOperator);  
 
         return BluebirdPromise.props({
             projects: Project.find(),
-            subject: SubjectService.getOneAsync(id),
+            subject: SubjectService.getOneAsync(id, code),
             dataTypes: crudManager.getDataTypesByRolePrivileges({
                 idOperator: idOperator,
                 model: SUBJECT

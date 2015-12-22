@@ -26,7 +26,9 @@ module.exports = {
         },
 
         birthDate: {
-            type: 'date',
+            // type: 'date',
+            type: 'string',
+            date: true,
             columnName: 'birth_date'
         },
         /*

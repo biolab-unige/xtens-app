@@ -68,7 +68,7 @@ let SubjectService = BluebirdPromise.promisifyAll({
             id: Joi.number().integer().positive(),
             givenName: Joi.string().uppercase().regex(UNICODE_NAME_REGEX).trim(),            
             surname: Joi.string().uppercase().regex(UNICODE_NAME_REGEX).trim(),
-            birthDate: Joi.date(),
+            birthDate: Joi.string().isoDate(),
             createdAt: Joi.date(),
             updatedAt: Joi.date()
         };

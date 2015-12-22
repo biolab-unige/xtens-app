@@ -14,7 +14,8 @@ var Data = {
             model: 'dataType'
         },
         date: {
-            type: 'date',
+            type: 'string',
+            date: true,
             columnName: 'acquisition_date'
         },
         tags: {
