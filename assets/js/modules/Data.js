@@ -168,7 +168,7 @@
                     this.set("value", false);
                 }
                 if (field.isList) {
-                    this.set("value", field.possibleValues && field.possibleValues[0]);
+                    this.set("value", field.possibleValues.indexOf(field.customValue) > -1 ? field.customValue : null);
                 }
                 if (field.hasUnit) {
                     this.set("unit", field.possibleUnits && field.possibleUnits[0]);
@@ -601,7 +601,14 @@
                 selectOptions: {
                     collection: 'this.component.possibleValues',
                     labelPath: '',
-                    valuePath: ''
+                    valuePath: '',
+                    defaultOption: {
+                        label: "",
+                        value: null
+                    }
+                },
+                initialize: function($el) {
+                    $el.select2({ placeholder: i18n("please-select")});
                 }
             }
         },
