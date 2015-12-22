@@ -12,7 +12,7 @@
     var biobankCodeMap = {
         RNA: '01',
         DNA: '02',
-        FLUID: '03'
+        Fluid: '03'
     };
 
 
@@ -69,11 +69,11 @@
                 selectOptions: {
                     collection: 'this.biobanks',
                     labelPath: 'acronym',
-                    valuePath: 'id',
+                    valuePath: 'id' /*,
                     defaultOption: {
                         label: "",
                         value: null
-                    }
+                    } */
                 },
                 initialize: function($el) {
                     $el.select2({placeholder: i18n('please-select')});
