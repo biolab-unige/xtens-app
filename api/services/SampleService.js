@@ -46,7 +46,7 @@ let SampleService = BluebirdPromise.promisifyAll({
             id: Joi.number().integer().positive(),
             type: Joi.number().integer().positive().required(),
             biobank: Joi.number().integer().positive().required(),
-            biobankCode: Joi.string(),
+            biobankCode: Joi.string().allow("").allow(null), // TODO change this one
             donor: Joi.number().integer().positive(),
             parentSample: Joi.number().integer().positive(),
             tags: Joi.array().allow(null),
