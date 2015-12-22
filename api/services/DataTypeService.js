@@ -40,7 +40,8 @@ let DataTypeService = {
             step: Joi.number().allow(null),
             customValue: Joi.any().allow(null),
             ontologyUri: Joi.string().allow(null),
-            _loop: Joi.boolean()     // optional boolean field that specifies whether the current field belongs to a metadata loop
+            _loop: Joi.boolean(),       // optional private boolean field that specifies whether the current field belongs to a metadata loop
+            _group: Joi.string()        // optional private string field that specifies the group name
         });
         return Joi.validate(field, metadataFieldValidationSchema);
     },
@@ -92,7 +93,8 @@ let DataTypeService = {
                 step: Joi.number().allow(null),
                 customValue: Joi.any().allow(null),
                 ontologyUri: Joi.string().allow(null),
-                _loop: Joi.boolean()     // optional boolean field that specifies whether the current field belongs to a metadata loop
+                _loop: Joi.boolean(),       // optional private boolean field that specifies whether the current field belongs to a metadata loop
+                _group: Joi.string()        // optional private string field that specifies the group name
             });
 
             let metadataLoopValidationSchema = Joi.object().keys({
@@ -374,9 +376,12 @@ next(null, result.rows);
 
             .then(function(privileges) {
                 console.log(privileges);
-                return DataType.find({ where: {
+                
+                let whereObj = _.isEmpty(privileges) ? {} : {
                     id: {'!': _.pluck(privileges, 'dataType')}
-                }});
+                };
+
+                return DataType.find({ where: whereObj });
             });
         }
         else {
