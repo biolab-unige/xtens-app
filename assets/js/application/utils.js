@@ -2,25 +2,48 @@
  * @author Massimiliano Izzo
  */
 
-/**
- * @method
- * @name handleError
- *
- */
-function handleError(res){
-    if (res.status === 403) {
-        window.location.replace('/#login');
-    }
-    else if (res.status === 401) {
-        window.location.replace('/#login');
-    }
-    else {
-        console.log(res.message);
-        alert(res.message);
-    }
-}
 
 (function(xtens) {
+    
+    var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog; 
+
+    /**
+     * @method
+     * @name handleError
+     *
+     */
+    function handleError(res){
+        var modal;
+        if (res.status === 403) {
+            window.location.replace('/#login');
+        }
+        else if (res.status === 401) {
+            window.location.replace('/#login');
+        }
+        else {
+            console.log(res.message);
+            
+            var message = res.responseJSON.error.message;
+            var details = res.responseJSON.error.message.details; 
+
+            var title = message.name || res.statusMessage;
+            var body = _.isArray(details) ? details[0].message : '';
+
+            modal = new ModalDialog({
+                title: title,
+                body: body
+            });
+            
+            $("#main").append(modal.render().el);
+            modal.show();
+            
+            $('#main .xtens-modal').on('hidden.bs.modal', function (e) {
+                modal.remove();
+            });
+
+        }
+    }
+
     xtens.error = handleError;
 } (xtens));
 
@@ -107,10 +130,10 @@ function handleError(res){
         options.url = 'http://localhost:1337' + options.url;
         });  */   
 
- /**
-  *  @method
-  *  @description jQuery serializeObject plugin
-  */
+    /**
+     *  @method
+     *  @description jQuery serializeObject plugin
+     */
 
     $.fn.serializeObject = function() {
         var o = {};
