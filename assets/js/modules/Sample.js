@@ -69,11 +69,11 @@
                 selectOptions: {
                     collection: 'this.biobanks',
                     labelPath: 'acronym',
-                    valuePath: 'id' /*,
+                    valuePath: 'id',
                     defaultOption: {
                         label: "",
                         value: null
-                    } */
+                    }
                 },
                 initialize: function($el) {
                     $el.select2({placeholder: i18n('please-select')});
@@ -156,7 +156,9 @@
                 this.model = new Sample.Model(options.sample);
             }
             else {
-                this.model = new Sample.Model();
+                this.model = new Sample.Model({
+                    biobank: this.biobanks[0]
+                });
             }
             _.each(["donor","parentSample"], function(parent) {
                 if(options[parent]) {
