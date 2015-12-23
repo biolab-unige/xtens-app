@@ -58,14 +58,15 @@ var jsFilesToInject = [
     'dependencies/**/d3.js',
     
     // Customised client-side js files
+    
     'js/application/xtens.js',
+    'js/modules/i18n.js',
+    'js/modules/XtensBootstrap.js',
     'js/application/utils.js',
     'js/application/Router.js',
-    'js/modules/i18n.js',
     'js/modules/XtensConstants.js',
     'js/modules/Utils.js',
     'js/modules/Session.js',
-    'js/modules/XtensBootstrap.js',
     'js/modules/DataTypePrivileges.js',
     'js/modules/MetadataComponent.js',
     'js/modules/MetadataField.js',
