@@ -4,57 +4,22 @@
  * @description :: Server-side logic for managing mains
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
-var BluebirdPromise = require("bluebird");
-var fileSystemManager = BluebirdPromise.promisifyAll(sails.config.xtens.fileSystemManager);
-var ControllerOut = require("xtens-utils").ControllerOut;
-var MainController = {
+/* jshint esnext: true */
+/* jshint node: true */
+/* globals _, sails, Data, DataFile, DataService, SubjectService, SampleService, QueryService, TokenService, MigrateService, GeneratedDataService */
+"use strict";
+let BluebirdPromise = require("bluebird");
+let fileSystemManager = BluebirdPromise.promisifyAll(sails.config.xtens.fileSystemManager);
+let ControllerOut = require("xtens-utils").ControllerOut;
+let execFileAsync = BluebirdPromise.promisify(require("child_process").execFile);
+let execAsync = BluebirdPromise.promisify(require("child_process").exec);
+let DEFAULT_LOCAL_STORAGE = sails.config.xtens.constants.DEFAULT_LOCAL_STORAGE;
 
-    /**
-     * @method
-     * @name login
-     * @deprecated
-     * @description authenticate a user against a password stored on the database
-     *
-    login:function(req, res){
-        var login = req.param("login");
-        var password = req.param("password");
+// ES6 Map for customised data management
+let customisedDataMap = new Map();
+customisedDataMap.set('CGH', '../migrate-utils/createCGH.js');
 
-        Operator.findOneByLogin(login).exec(function(err, op) {
-            if (err) {
-                res.status(500).send({ error: "DB Error" });
-            } 
-            else {
-                if (op) {
-
-                    var bcrypt = require("bcrypt");
-                    bcrypt.compare(password,op.password, function(err,risp) {
-
-                        if (risp === false) {
-                            res.status(400).json({error:"Wrong Password"});
-                        }
-                        else {
-                            req.session.operator = op;
-                            req.session.authenticated = true;
-                            res.send(op);
-                        }
-                    });
-                }
-                else {
-                    res.status(400).send({error:"Operator not found"});
-                }
-            } 
-        });
-    }, */
-    
-    /**
-     * @method
-     * @name logout
-     * @deprecated
-     *   
-    logout: function (req,res){
-        req.session.destroy();
-        res.redirect('#/login');
-    }, */
+let MainController = {
 
     /**
      * @method
@@ -62,7 +27,7 @@ var MainController = {
      * @description retrieve the FileSystem coordinates for the client
      */
     getFileSystemStrategy: function(req, res) {
-        var conn = sails.config.xtens.fileSystemConnection;
+        let conn = sails.config.xtens.fileSystemConnection;
         return res.json(conn);
     },
 
@@ -75,22 +40,22 @@ var MainController = {
      */
     downloadFileContent: function(req, res) {
 
-        var co = new ControllerOut(res);
-        var fileId = _.parseInt(req.param('id'));
+        let co = new ControllerOut(res);
+        let fileId = _.parseInt(req.param('id'));
 
         DataFile.findOne(fileId).then(function(dataFile) {
 
             console.log("downloadFileContent - dataFile");
             console.log(dataFile);
-            
-            var pathFrags = dataFile.uri.split("/");
-            var fileName = pathFrags[pathFrags.length-1];
+
+            let pathFrags = dataFile.uri.split("/");
+            let fileName = pathFrags[pathFrags.length-1];
 
             // set response headers for file download 
             res.setHeader('Content-Disposition', 'attachment;filename='+fileName);
-            
+
             return fileSystemManager.downloadFileContentAsync(dataFile.uri, res);
-        
+
         })
         .then(function() {
             return res.ok(); // res.json() ??
@@ -98,9 +63,9 @@ var MainController = {
         .catch(function(err) {
             return co.error(err);
         });
-        
+
     },
-    
+
     /**
      * @method
      * @name uploadFileContent
@@ -109,17 +74,24 @@ var MainController = {
      */
     uploadFileContent: function(req, res) {
 
+        let dirName, fileName, path = sails.config.xtens.fileSystemConnection.path,
+        landingDir = sails.config.xtens.fileSystemConnection.landingDirectory;
+
+
         // if the local-fs strategy is not in use, don't allow local file upload
         if (fileSystemManager.type && fileSystemManager.type !== 'local-fs') {
             return res.badRequest('Files cannot be uploaded on server local file system.');
         }
-        
-        var dirname = require('path').resolve(sails.config.xtens.fileSystemConnection.path, sails.config.xtens.fileSystemConnection.landingDirectory);
-        var fileName = req.param("fileName") || 'uploaded-file';
-        console.log("MainController.uploadFileContent - dirname: " + dirname);
+
+        // if path exists use local fs connection, otherwise use default local storage connection
+        dirName = path ? require('path').resolve(path, landingDir) : require('path').resolve(DEFAULT_LOCAL_STORAGE, 'tmp');
+
+
+        fileName = req.param("fileName") || 'uploaded-file';
+        console.log("MainController.uploadFileContent - dirname: " + dirName);
         console.log("MainController.uploadFileContent - filename: " + fileName);
         req.file('uploadFile').upload({
-            dirname: dirname,
+            dirname: dirName,
             saveAs: fileName
         },function whenDone(err, files) {
             if (err) {
@@ -144,14 +116,14 @@ var MainController = {
      * TODO remove this one! Only for testing data population
      */
     populateDB: function(req,res) {
-        var num = _.isNaN(_.parseInt(req.param("num"))) ? 1 : num;
+        let num = _.isNaN(_.parseInt(req.param("num"))) ? 1 : num;
         GeneratedDataService.generateAll(1)
-        
+
         .then(function(result) {
             console.log("MainController.populateDB: created Patients: " + result);
             return res.json(result);
         })
-        
+
         .catch(function(err) {
             console.log("MainController.populateDB - error caught: " + err.message);
             return res.serverError(err.message);
@@ -165,7 +137,7 @@ var MainController = {
      */
     migrate: function(req, res) {
         console.log(req.allParams());
-        var subject = _.parseInt(req.param("idSubj"));
+        let subject = _.parseInt(req.param("idSubj"));
         MigrateService.execute(subject)
         .then(function() {
             return res.ok("Done!");
@@ -188,6 +160,57 @@ var MainController = {
         .catch(function(err) {
             return res.serverError(err.message);
         });
+    },
+
+    /**
+     * @method
+     * @name excuteCustomDataMangement
+     */
+    executeCustomDataManagement: function(req, res) {
+
+        let co = new ControllerOut(res);
+        let key = req.param('dataType');
+        /*
+           return execFileAsync(customisedDataMap.get(key))
+
+           .then(function(result) {
+           if (result) {
+           let cmd = 'rm ' + DEFAULT_LOCAL_STORAGE + '/tmp/*';
+           console.log(cmd);
+           return execAsync(cmd);
+           }
+           else
+           throw new Error("Some error occurred while storing one or more files, please check log files...");
+
+           })
+           .then(function() {
+           return res.ok();
+           }) 
+           .catch(function(err) {
+           return co.error(err);
+           }); */
+        console.log("MainController.executeCustomDataManagement - executing customised function");
+        require("child_process").execFile(customisedDataMap.get(key), function(err, stdout, stderr) {
+            console.log('stdout: ' + stdout);
+            console.log('stderr: ' + stderr);
+            if (err) {
+                return co.error(err);
+            }
+            else {
+                let cmd = 'rm ' + DEFAULT_LOCAL_STORAGE + '/tmp/*';
+                console.log("MainController.executeCustomDataManagement - cmd: " + cmd);
+                require("child_process").exec(cmd, function(err, stdout, stderr) {
+                    console.log('stdout: ' + stdout);
+                    console.log('stderr: ' + stderr);
+                    if (err) {
+                        return co.error(err);
+                    }
+                    console.log("MainController.executeCustomDataManagement - all went fine!");
+                    return res.ok();
+                });
+            }
+        });
+
     }
 
 };
