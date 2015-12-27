@@ -175,7 +175,10 @@ module.exports.xtens = {
 
         // min and max values for PopulateService tests
         TEST_MIN: 0.0,
-        TEST_MAX: 100.0
+        TEST_MAX: 100.0,
+
+        // DEFAULT_LOCAL_STORAGE: 'assets/dataFiles'
+        DEFAULT_LOCAL_STORAGE: '/var/xtens/dataFiles'
 
     }
 

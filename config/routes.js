@@ -66,6 +66,8 @@ module.exports.routes = {
     'GET /fileContent': {controller: 'main', action: 'downloadFileContent'},
 
     'POST /fileContent': {controller: 'main', action: 'uploadFileContent'},
+
+    'POST /customisedData': {controller: 'main', action: 'executeCustomDataManagement'},
        
     // REST API for subject (with personal info)
     // 'GET /subjectWithPersonalDetails': {controller: 'subject', action: 'findWithPersonalDetails'},
