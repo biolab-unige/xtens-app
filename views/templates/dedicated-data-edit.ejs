@@ -1,0 +1,29 @@
+<h1><%= __("customised-data-management") %></h1>
+<div id="content">
+    <form class="form-horizontal edit-data-form" role="form">
+        <div id="data-header-row" class="row data-header-row">
+            <div class="form-group">
+                <label for="dataType" class="data-label"><%= __("select-a-data-type") %></label>
+                <div class="data-input-div">
+                    <select class="form-control" id="dataType" name="dataType" required>
+                        <option value="CGH" selected="true">CGH</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="dropzone">
+            <div class="dz-default dz-message text-center">
+                <span><%= __('drop-files-here') %></span>
+            </div>
+            <div class="fallback">
+                <input name="file" type="file">
+            </div>
+        </div>
+        <div id="buttonbardiv" class="row text-center">
+            <div class="btn-group btn-group-margin">
+                <input type="submit" id="save" class="btn btn-primary" value="<%=__('save') %>" >
+            </div>
+        </div>
+    </form>
+</div>
+<div class="customised-data-modal"></div>

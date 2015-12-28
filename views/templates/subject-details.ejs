@@ -1,0 +1,138 @@
+<h1>
+    <%= __("subject") %>
+</h1>
+
+<div id="content">
+    <div class="container data-header-cnt">
+        <div id="data-header-row" class="row data-header-row">
+            <div id="data-header" class="col-md-offset-2 col-md-6">
+               
+                <% if (data.get("personalInfo")) {%>
+                <div class="row margin-row">
+                    <label for="givenName" class="data-label">
+                        <%= __("given-name") %>: </label>
+                    <span id="givenName">
+                        <%= data.get("personalInfo").givenName %>
+                    </span>
+                </div>
+                <div class="row margin-row">
+                    <label for="surname" class="data-label">
+                        <%= __("surname") %>: </label>
+                    <span id="surname">
+                        <%= data.get("personalInfo").surname %>
+                    </span>
+                </div>
+                <div class="row margin-row">
+                    <label for="birthDate">
+                        <%= __("birth-date") %>: </label>
+                    <span id="birthDate">
+                        <% var date = data.get("personalInfo").birthDate; %>
+                        <%= date.slice(0, date.indexOf("T")).split("-").reverse().join("/") %>
+                    </span>
+                </div>
+                <%} %>
+
+               <div class="row margin-row">
+                    <label for="sex" class="data-label">
+                        <%= __("sex") %>: </label>
+                    <span id="sex">
+                        <%= data.get("sex") %>
+                    </span>
+                </div>
+                <div class="row margin-row">
+                    <label for="code" class="data-label">
+                        <%= __("code") %>: </label>
+                    <span id="code">
+                        <%= data.get("code") %>
+                    </span>
+                </div>
+
+                
+                <div class="row margin-row">
+                    <label for="dataType" class="data-label">
+                        <%= __("data-type") %>
+                    </label>
+                    <div class="data-input-div">
+                        <div class="" id="dataType" name="dataType">
+                            <%= data.get("type").name %>
+                        </div>
+                    </div>
+                </div>
+                
+                                <!--
+                <div class="row margin-row">
+                    <label for="date" class="data-label">
+                        <%= __('date') %>
+                    </label>
+                    <div class="data-input-div">
+                        <div text class="" id="date" name="date"></div>
+                    </div>
+                </div>
+                -->
+
+                <div class="row margin-row">
+                    <label for="tags" class="data-label">
+                        <%= __('tags') %>
+                    </label>
+                    <div class="data-input-div">
+                        <div type="hidden" class="" id="tags" name="tags">
+                            <%= _.isEmpty(data.get('tags')) ? '' : data.get('tags').join(', ') %>
+                        </div>
+                    </div>
+                </div>
+                <div class="row margin-row">
+                    <label for="notes" class="data-label">
+                        <%= __('notes') %>
+                    </label>
+                    <div class="data-input-div">
+                        <div class="" id="notes" name="notes" rows="4">
+                            <%= data.get('notes') || "" %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="metadata-schema" class="metadata-schema">
+        <div id="metadata-body" class="metadata-body">
+            <% var metadata = data.get("metadata"), value, values, unit;
+            _.each(fields, function(field,index) {%>
+            <!--  
+      <% var groupname = field._group %>
+        -->
+            <%if (index === 0 || fields[index-1]._group !== field._group ){%>
+            <div class="metadatagroup span7 center">
+                <h4 class="metadatagroup-header text-uppercase">
+                    <%= field._group %>
+                </h4>
+                <div class="metadatacomponent-body">
+                    <%}%>
+
+                    <div class="row margin-row">
+                        <span name="metadata-name" class="col-md-4 text-right" style="padding-left:29px">
+                            <%=field.name%>
+                        </span>
+                        <div class="col-md-5 text-left">
+
+                            <% value = metadata[field.formattedName].value;
+                            values = metadata[field.formattedName].values; 
+                            unit = metadata[field.formattedName].unit; %>
+                            <div name="metadata-value">
+                                <% if (_.isArray(values)) { %>
+                                    <%=  !_.isEmpty(values) ? values.join(", ") : "" %>
+                                <% }
+                                else{ %>
+                                <%= value && unit ? value + " [" + unit + "]" :
+                                value ? value : "" %>
+                                <%};%>
+                            </div>
+                        </div>
+                    </div>
+                    <% if (index === fields.length-1 || field._group !== fields[index+1]._group ) {%>
+                </div>
+            </div>
+            <%}%>
+            <%});%>
+        </div>
+    </div>
+</div>
