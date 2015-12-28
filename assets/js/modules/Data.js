@@ -19,6 +19,7 @@
     var FileManager = xtens.module("filemanager");
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
     var dateUtil = xtens.module("utils").date;
+    var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
 
     var MISSING_VALUE_ALERT = true;
 
@@ -1082,6 +1083,104 @@
             var route = _.trim(['/data/new', queryString].join('/0?'), '/0?');
             xtens.router.navigate(route, {trigger: true});
             return false;
+        }
+
+    });
+
+    /**
+     * @class
+     * @name Data.Views.DedicatedManagement
+     * @extends Backbone.View
+     * @description view to automatically upload bulk data (i.e. files) with metadata on the server
+     */
+    Data.Views.DedicatedManagement = Backbone.View.extend({
+
+        tagName: 'div',
+        className: 'data',
+
+        dropzoneOpts: {
+            url: '/fileContent',
+            paramName: "uploadFile",
+            maxFilesize: 2048, // max 2 GiB
+            uploadMultiple: false,
+            method: "POST",
+        },
+        
+        initialize: function() {
+            _.bindAll(this, 'saveOnSuccess');
+            $("#main").html(this.el);
+            this.template = JST["views/templates/dedicated-data-edit.ejs"];
+            this.render();
+            this.$modal = this.$(".customised-data-modal");
+        },
+
+        render: function() {
+            this.$el.html(this.template({__: i18n}));
+            this.dropzone = new Dropzone(this.$(".dropzone")[0], this.dropzoneOpts);
+            
+            this.dropzone.on("sending", function(file, xhr, formData) {
+                xhr.setRequestHeader("Authorization", "Bearer " + xtens.session.get("accessToken"));
+                console.log(file.name);
+                formData.append("fileName", file.name);
+            });
+
+            this.dropzone.on("success", function(file, xhr, formData) {
+                console.log("Data.Views.DedicatedUpload -  file uploaded successfully");     
+            });
+
+            return this;
+        },
+
+        events: {
+            'click #save': 'saveCustomisedData'
+        },
+
+        saveCustomisedData: function(ev) {
+            ev.preventDefault();
+            var that = this, dataType = this.$("select option:selected").val();
+            $.ajax({
+                url: '/customisedData', 
+                type: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                },
+                data: JSON.stringify({
+                    dataType: dataType
+                }),
+                contentType: 'application/json', 
+                
+                success: this.saveOnSuccess,
+
+                error: function(err) {
+                    if (that.modal) 
+                        that.modal.hide();
+                    xtens.error(err);
+                }
+            });
+            this.modal = new ModalDialog({
+                title: i18n('please-wait-for-data-registration-to-complete'),
+                body: JST["views/templates/progressbar.ejs"]({valuemin: 0, valuemax: 100, valuenow: 100})
+            });
+            this.$modal.append(this.modal.render().el);
+            this.modal.show();
+            return false;
+        },
+
+        saveOnSuccess: function() {
+            if (this.modal) { 
+                this.modal.hide();
+            }
+            var modal = new ModalDialog({
+                title: i18n('ok'),
+                body: i18n('data-correctly-stored-on-server'),
+            });
+            this.$modal.append(modal.render().el);
+            modal.show();
+
+            this.$('.xtens-modal').on('hidden.bs.modal', function (e) {
+                modal.remove();
+                xtens.router.navigate('data', {trigger: true});
+            });
         }
 
     });

@@ -5,6 +5,7 @@
         // menu
         "data-types": "Data Types",
         "data": "Data",
+        "customised-data": "Customised Data",
         "subjects": "Subjects",
         "samples": "Samples",
         // views/templates/datatype-list.ejs
@@ -220,7 +221,13 @@
         "data-type-name": "Data Type Name",
         "new-data-type-privilege": "New Data Type Privilege",
         /* views/templates/data-list.ejs */
-        "details": "Details"
+        "details": "Details",
+        /* views/templates/dedicated-data-management */
+        "customised-data-management": "Customised Data Management",
+        /* assets/js/modules/Data.js */
+        "ok": "OK",
+        "data-correctly-stored-on-server": "Data correctly stored on server",
+        "please-wait-for-data-registration-to-complete": "Please wait for data registration to complete"
     };
 
     var it = {

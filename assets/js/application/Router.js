@@ -102,7 +102,8 @@
             "datatypes/graph":"dataTypeGraph",
             "subjects/graph":"subjectGraph",
             "homepage":"homepage",
-            "file-download/:id": "downloadFile"
+            "file-download/:id": "downloadFile",
+            "data/dedicated": "dedicatedDataManagement"
         },
 
         publicRoutes: ["login"],
@@ -620,6 +621,15 @@
             }, function(jqxhr) {
                 xtens.error(jqxhr);
             });
+        },
+
+        /**
+         * @method
+         * @name dedicatedDataUpload
+         * @description loads the view to upload data that is automatically extracted on the server-side
+         */
+        dedicatedDataManagement: function() {
+            this.loadView(new Data.Views.DedicatedManagement());
         }
 
     });
