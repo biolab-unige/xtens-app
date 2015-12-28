@@ -223,12 +223,12 @@ function renderDatatablesDate(data, type) {
 
         insertModelSpecificColumns: function(model, canViewPersonalInfo) {
             var cols = [];
+            if (canViewPersonalInfo) { // if you are allowed to see the Personal Details
+                cols = cols.concat(this.insertPersonalDetailsColumns());
+            }
             switch(model) {
                 case Classes.SUBJECT:
-                    if (canViewPersonalInfo) { // if you are allowed to see the Personal Details
-                        cols = cols.concat(this.insertPersonalDetailsColumns());
-                    }
-                    cols = cols.concat(this.insertSubjectColumns());
+                    cols = cols.concat(this.insertSubjectColumns());        
                     break;
                 case Classes.SAMPLE:
                     cols = cols.concat(this.insertSampleColumns());
