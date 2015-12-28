@@ -26,8 +26,8 @@
             var message = res.responseJSON.error.message;
             var details = res.responseJSON.error.message.details; 
 
-            var title = message.name || res.statusMessage;
-            var body = _.isArray(details) ? details[0].message : '';
+            var title = message.name || res.statusMessage || 'Error';
+            var body = _.isArray(details) ? details[0].message : 'Error - Generic';
 
             modal = new ModalDialog({
                 title: title,
