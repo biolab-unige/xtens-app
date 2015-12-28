@@ -9,6 +9,7 @@
 /* globals _, sails, Data, DataFile, DataService, SubjectService, SampleService, QueryService, TokenService, MigrateService, GeneratedDataService */
 "use strict";
 let BluebirdPromise = require("bluebird");
+let path = require("path");
 let fileSystemManager = BluebirdPromise.promisifyAll(sails.config.xtens.fileSystemManager);
 let ControllerOut = require("xtens-utils").ControllerOut;
 let execFileAsync = BluebirdPromise.promisify(require("child_process").execFile);
@@ -74,7 +75,7 @@ let MainController = {
      */
     uploadFileContent: function(req, res) {
 
-        let dirName, fileName, path = sails.config.xtens.fileSystemConnection.path,
+        let dirName, fileName, fsPath = sails.config.xtens.fileSystemConnection.path,
         landingDir = sails.config.xtens.fileSystemConnection.landingDirectory;
 
 
@@ -84,15 +85,18 @@ let MainController = {
         }
 
         // if path exists use local fs connection, otherwise use default local storage connection
-        dirName = path ? require('path').resolve(path, landingDir) : require('path').resolve(DEFAULT_LOCAL_STORAGE, 'tmp');
+        dirName = fsPath ? path.resolve(fsPath, landingDir) : path.resolve(DEFAULT_LOCAL_STORAGE, 'tmp');
 
-
-        fileName = req.param("fileName") || 'uploaded-file';
+        // fileName = req.param("fileName") || req.param('filename') || 'uploaded-file';
         console.log("MainController.uploadFileContent - dirname: " + dirName);
-        console.log("MainController.uploadFileContent - filename: " + fileName);
+        // console.log("MainController.uploadFileContent - filename: " + fileName);
         req.file('uploadFile').upload({
             dirname: dirName,
-            saveAs: fileName
+            saveAs: function (__newFileStream, cb) {
+                console.log(__newFileStream);
+                console.log(__newFileStream.filename);
+                cb(null, path.basename(__newFileStream.filename));
+            },
         },function whenDone(err, files) {
             if (err) {
                 console.log(err);
@@ -170,25 +174,6 @@ let MainController = {
 
         let co = new ControllerOut(res);
         let key = req.param('dataType');
-        /*
-           return execFileAsync(customisedDataMap.get(key))
-
-           .then(function(result) {
-           if (result) {
-           let cmd = 'rm ' + DEFAULT_LOCAL_STORAGE + '/tmp/*';
-           console.log(cmd);
-           return execAsync(cmd);
-           }
-           else
-           throw new Error("Some error occurred while storing one or more files, please check log files...");
-
-           })
-           .then(function() {
-           return res.ok();
-           }) 
-           .catch(function(err) {
-           return co.error(err);
-           }); */
         console.log("MainController.executeCustomDataManagement - executing customised function");
         require("child_process").execFile(customisedDataMap.get(key), function(err, stdout, stderr) {
             console.log('stdout: ' + stdout);
