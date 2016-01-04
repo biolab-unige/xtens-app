@@ -35,7 +35,7 @@ let SampleService = BluebirdPromise.promisifyAll({
      *                      - value: the validated data object if no error is returned
      */
     validate: function(sample, performMetadataValidation, dataType) {
-        
+
         if (dataType.model !== SAMPLE) {
             return {
                 error: "This data type is for another model: " + dataType.model
@@ -54,11 +54,15 @@ let SampleService = BluebirdPromise.promisifyAll({
             metadata: Joi.object().required(),
             files: Joi.array().items(Joi.object().keys({
                 uri: Joi.string(),
-                name: Joi.string()
+                name: Joi.string(),
+                details: Joi.object().allow(null),
+                id: Joi.number().integer().positive(),
+                createdAt: Joi.date(),
+                updatedAt: Joi.date()
             })),
             createdAt: Joi.date(),
             updatedAt: Joi.date()
-        };  
+        };
 
         if (performMetadataValidation) {
             let metadataValidationSchema = {};

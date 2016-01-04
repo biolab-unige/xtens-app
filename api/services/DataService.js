@@ -43,7 +43,7 @@ let DataService = BluebirdPromise.promisifyAll({
      *                      - value: the validated data object if no error is returned
      */
     validate: function(data, performMetadataValidation, dataType) {
-        
+
         if (dataType.model !== DATA) {
             return {
                 error: "This data type is for another model: " + dataType.model
@@ -59,7 +59,11 @@ let DataService = BluebirdPromise.promisifyAll({
             metadata: Joi.object().required(),
             files: Joi.array().items(Joi.object().keys({
                 uri: Joi.string(),
-                name: Joi.string()
+                name: Joi.string(),
+                details: Joi.object().allow(null),
+                id: Joi.number().integer().positive(),
+                createdAt: Joi.date(),
+                updatedAt: Joi.date()
             })),
             parentSubject: Joi.number().integer().allow(null),
             parentSample: Joi.number().integer().allow(null),
@@ -118,7 +122,7 @@ let DataService = BluebirdPromise.promisifyAll({
                 if (metadataField.caseInsensitive && !metadataField.isList) {
                     value = value.uppercase();
                 }
-                
+
         }
 
         if (metadataField.required) {
@@ -129,7 +133,7 @@ let DataService = BluebirdPromise.promisifyAll({
             value = value.allow(null);
         }
 
-        
+
 
         if (metadataField.customValue) {
             value = value.default(metadataField.customValue);
@@ -202,19 +206,19 @@ let DataService = BluebirdPromise.promisifyAll({
         console.log(queryObj.parameters);
         // Using Prepared Statements for efficiency and SQL-injection protection
         // https://github.com/brianc/node-postgres/wiki/Client#method-query-prepared
-        // TODO move to xtens-transact 
+        // TODO move to xtens-transact
         return crudManager.query(queryObj, next);
         /*
         Data.query({
-            text: query.statement, 
+            text: query.statement,
             values: query.parameters
         }, next); */
-    },  
+    },
 
     /**
      * @method
      * @name queryAndPopulateItemsById
-     * @description given a list of items it retrieves them from the databases and 
+     * @description given a list of items it retrieves them from the databases and
      *              (optionally) populates the existing associations
      * @param {Array} foundRows - an array of items. Each item must contain at least an identifier (id)
      *                for retrieval
@@ -245,7 +249,7 @@ let DataService = BluebirdPromise.promisifyAll({
      * @name moveFiles
      */
     moveFiles:function(files, id, dataTypeName, next) {
-        async.each(files,function(file, callback){ 
+        async.each(files,function(file, callback){
             fileSystemManager.storeFile(file, id, dataTypeName, callback);
         }, function(err) {
             if (err) {
@@ -265,7 +269,7 @@ let DataService = BluebirdPromise.promisifyAll({
     saveFileEntities: function(files, next) {
 
         async.each(files, function(file, callback) {
-            DataFile.create(file).exec(callback);     
+            DataFile.create(file).exec(callback);
         }, function(err) {
             if (err) {
                 next(err);
@@ -306,14 +310,14 @@ let DataService = BluebirdPromise.promisifyAll({
      * TODO
      * @method
      * @name storeEAVAll
-     * @description populates the whole metadata catalogue 
+     * @description populates the whole metadata catalogue
      * @
      */
     storeEAVAll: function(limit) {
-        let offset = 0; 
+        let offset = 0;
         limit = limit || 100000;
 
-        let modelName = arguments.length < 2 ? 'data' : 
+        let modelName = arguments.length < 2 ? 'data' :
             (arguments[1].toLowerCase() === 'subject' || arguments[1].toLowerCase() === 'sample') ? arguments[1].toLowerCase() : 'data';
         console.log("modelName: " + modelName);
 
