@@ -44,7 +44,7 @@ var jsFilesToInject = [
     'dependencies/**/backbone.stickit.js',
     'dependencies/**/select2.js',
     'dependencies/**/parsley.js',
-    'dependencies/**/moment.js',
+    'dependencies/**/moment-with-locales.js',
     'dependencies/**/pikaday.js',
     'dependencies/**/dropzone.js',
     'dependencies/**/jquery.dataTables.js',
@@ -56,9 +56,9 @@ var jsFilesToInject = [
     'dependencies/**/buttons.colvis.js',
     'dependencies/**/async.js',
     'dependencies/**/d3.js',
-    
+
     // Customised client-side js files
-    
+
     'js/application/xtens.js',
     'js/modules/i18n.js',
     'js/modules/XtensBootstrap.js',
@@ -90,7 +90,7 @@ var jsFilesToInject = [
     'js/modules/AdminAssociation.js',
     // 'js/modules/QueryStrategy.js',
     'js/modules/Query.js'
-    
+
     // All of the rest of your client-side js files
     // will be injected here in no particular order.
 ];
