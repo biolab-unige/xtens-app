@@ -96,6 +96,9 @@
       "styles": "dist/*.css",
       "images": "downloads/images/*"
     },
+    "moment": {
+      "js": "**/moment-with-locales.js"
+    },
     "pikaday": {
       "js": "pikaday.js",
       "styles": "css/pikaday.css"
