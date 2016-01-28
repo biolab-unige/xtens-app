@@ -740,23 +740,32 @@
 
                 // format date on model as ISO (YYYY-MM-DD)
                 onSet: function(val, options) {
-                    var dateArray = val.split("/");
-                    return new Date(dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0]);
+                    // var dateArray = val.split("/");
+                    var momentDate = moment(val, 'L', 'it');
+                    // return new Date(dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0]);
+                    return momentDate.format('YYYY-MM-DD');
                 },
 
                 // store data in view (from model) as DD/MM/YYYY (European format)
                 onGet: function(value, options) {
                     if (value) {
-                        var dateArray = value instanceof Date ? value.toISOString().split('-') : value.split('-');
-                        return dateArray[2] + '/' + dateArray[1] + '/' + dateArray[0];
+                        /*
+                        var dateArray = value instanceof Date ? value.toISOString().split('-') : moment(value).format('L');
+                        var dateArray2 = dateArray[2].split('T');
+                        dateArray[2] = dateArray2[0];
+                        return dateArray[2] + '/' + dateArray[1] + '/' + dateArray[0]; */
+                        return moment(value).lang("it").format('L');
                     }
                 },
+
                 // initialize Pikaday + Moment.js
                 initialize: function($el, model, options) {
                     var picker = new Pikaday({
                         field: $el[0],
-                        format: 'DD/MM/YYYY',
-                        minDate: moment('2006-01-01').toDate(),
+                        // lang: 'it',
+                        // format: 'DD/MM/YYYY',
+                        format: moment.localeData('it')._longDateFormat.L,
+                        minDate: moment('1900-01-01').toDate(),
                         maxDate: new Date()
                     });
                 }
@@ -958,9 +967,9 @@
             var dataType = new DataTypeModel(this.model.get("type"));
             var fields = dataType.getFlattenedFields();
             // var metadata = this.model.get("metadata");
-            this.$el.html(this.template({ 
+            this.$el.html(this.template({
                 __: i18n,
-                data: this.model, 
+                data: this.model,
                 fields: fields,
                 PATH_SEPARATOR: Constants.PATH_SEPARATOR || '/'
             }));
@@ -1002,7 +1011,7 @@
             }
 
         }
-        
+
         /*
         ,getFileName:function(model) {
           var filename1;
@@ -1078,7 +1087,7 @@
             var parentDataQuery = this.parentData ? 'parentData=' + this.parentData : '';
             var parentDataTypeQuery = this.parentDataType ? 'parentDataType=' + this.parentDataType : '';
             // var queryString = _.trim([parentSubjectQuery, parentSubjectCodeQuery, parentSampleQuery, parentDataQuery].join('&'), '&');
-            var queryString = _.compact([parentSubjectQuery, parentSubjectCodeQuery, 
+            var queryString = _.compact([parentSubjectQuery, parentSubjectCodeQuery,
                                         parentSampleQuery, parentDataQuery, parentDataTypeQuery]).join('&');
             var route = _.trim(['/data/new', queryString].join('/0?'), '/0?');
             xtens.router.navigate(route, {trigger: true});
@@ -1105,7 +1114,7 @@
             uploadMultiple: false,
             method: "POST",
         },
-        
+
         initialize: function() {
             _.bindAll(this, 'saveOnSuccess');
             $("#main").html(this.el);
@@ -1117,7 +1126,7 @@
         render: function() {
             this.$el.html(this.template({__: i18n}));
             this.dropzone = new Dropzone(this.$(".dropzone")[0], this.dropzoneOpts);
-            
+
             this.dropzone.on("sending", function(file, xhr, formData) {
                 xhr.setRequestHeader("Authorization", "Bearer " + xtens.session.get("accessToken"));
                 console.log(file.name);
@@ -1125,7 +1134,7 @@
             });
 
             this.dropzone.on("success", function(file, xhr, formData) {
-                console.log("Data.Views.DedicatedUpload -  file uploaded successfully");     
+                console.log("Data.Views.DedicatedUpload -  file uploaded successfully");
             });
 
             return this;
@@ -1139,7 +1148,7 @@
             ev.preventDefault();
             var that = this, dataType = this.$("select option:selected").val();
             $.ajax({
-                url: '/customisedData', 
+                url: '/customisedData',
                 type: 'POST',
                 headers: {
                     'Authorization': 'Bearer ' + xtens.session.get("accessToken")
@@ -1147,12 +1156,12 @@
                 data: JSON.stringify({
                     dataType: dataType
                 }),
-                contentType: 'application/json', 
-                
+                contentType: 'application/json',
+
                 success: this.saveOnSuccess,
 
                 error: function(err) {
-                    if (that.modal) 
+                    if (that.modal)
                         that.modal.hide();
                     xtens.error(err);
                 }
@@ -1167,7 +1176,7 @@
         },
 
         saveOnSuccess: function() {
-            if (this.modal) { 
+            if (this.modal) {
                 this.modal.hide();
             }
             var modal = new ModalDialog({
