@@ -144,6 +144,7 @@
         "biobank-code": "Biobank Code",
         "material-type": "Material Type",
         "donor": "Donor",
+        "edit-donor": "Edit Donor",
         "parent-sample": "Parent Sample",
         /* views/templates/sample-list */
         "new-sample": "New Sample",
