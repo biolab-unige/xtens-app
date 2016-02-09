@@ -29,6 +29,7 @@
                     <div class="form-group metadataform-group">
                         <label for="donor" class="data-label"><%= __('donor') %></label>
                         <span class="data-span"><%= data.get("donor").code %></span>
+                        <button id="editDonor" class="btn btn-danger"><%= __("edit-donor") %></button>
                     </div>
                     <%} %>
                     <% if (data.get("parentSample")) {%>
