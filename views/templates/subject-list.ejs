@@ -1,4 +1,4 @@
-<h2><%= __("subject-list") %></h2> 
+<h2><%= __("subject-list") %></h2>
 
 <div id="content">
     <div class="row">
@@ -18,14 +18,14 @@
                     </thead>
                     <tbody>
                     <% var date; %>
-                    <% _.each(subjects, function(subject) { %> 
+                    <% _.each(subjects, function(subject) { %>
                     <tr>
                         <td><%= subject.get("code") %></td>
                         <td><%= subject.get("personalInfo") && subject.get("personalInfo").givenName %></td>
                         <td><%= subject.get("personalInfo") && subject.get("personalInfo").surname %></td>
                         <td>
                             <% date = subject.get("personalInfo") && subject.get("personalInfo").birthDate; %>
-                            <%= date ? date.slice(0, date.indexOf("T")).split("-").reverse().join("/") : '' %>
+                            <%= date ? moment(date).lang("it").format('L') : ' ' %>
                         </td>
                         <td><%= subject.get("sex") %></td>
                         <td><%= subject.get("projects").map(function(project) {return (" " + project.name); }).toString().trim() %></td>
@@ -36,10 +36,10 @@
                             <%} %>
                             <% if (subject.get("newDataLink") && subject.get("newDataLink").length) {%>
                                 <a class="btn" href="<%= subject.get("newDataLink") %>"><%=__("new-data") %></a>
-                            <%} %>   
+                            <%} %>
                         </td>
                     </tr>
-                    <% }) %> 
+                    <% }) %>
                     </tbody>
                 </table>
             </div>
@@ -49,4 +49,3 @@
         </div>
     </div>
 </div>
-
