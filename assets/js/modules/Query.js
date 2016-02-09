@@ -4,7 +4,7 @@
 
     // TODO: retrieve this info FROM DATABASE ideally or from the server-side anyway
     var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames;
-    var Constants = xtens.module("xtensconstants").Constants; 
+    var Constants = xtens.module("xtensconstants").Constants;
     var FieldTypes = xtens.module("xtensconstants").FieldTypes;
     var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
     var QueryStrategy = xtens.module("querystrategy");
@@ -94,7 +94,7 @@
 
     Query.PersonalInfoModel = Backbone.Model.extend({
         defaults: {
-            "personalDetails":  true   
+            "personalDetails":  true
         }
     });
 
@@ -109,7 +109,7 @@
             "specializedQuery": DataTypeClasses.SAMPLE
         }
     });
-    
+
     /**
      * @class
      * @name Query.RowModel
@@ -125,7 +125,7 @@
     Query.RowModel = Backbone.Model.extend({});
 
     Query.LoopModel = Backbone.Model.extend({});
-    
+
     /**
      * @class
      * @name Query.Views.Row
@@ -144,7 +144,7 @@
                 initialize: function($el) {
                     $el.select2({placeholder: i18n("please-select")});
                 },
-                selectOptions: { 
+                selectOptions: {
                     collection: function() {
                         return this.fieldList.map(function(field) {
                             // pick up formatted or unformatted name
@@ -229,7 +229,9 @@
                     { id: '>', text: '>' }, { id: '<>', text: '≠' }];
             }
             else if (fieldType === FieldTypes.TEXT) {
-                data = [{ id: '=', text: '=' }, { id: '<>', text: '≠' }];
+                data = [{ id: '=', text: '=' }, { id: '<>', text: '≠' },
+                        { id: 'LIKE', text: '~~'}, {id: 'NOT LIKE', text: '!~~'},
+                        { id: 'ILIKE', text: '~~*'}, {id: 'NOT ILIKE', text: '!~~*'}];
             }
             else {
                 data = [{ id: '=', text: '=' }, { id: '<>', text: '≠' }];
@@ -238,7 +240,7 @@
                 observe: 'comparator',
                 initialize: function($el) {
                     $el.select2({
-                        data: data 
+                        data: data
                     });
                 }
             });
@@ -264,7 +266,7 @@
             selector.className = 'form-control';
             selector.name = FIELD_VALUE;
             $container.append(selector);
-            this.addBinding(null, "input[name='"+FIELD_VALUE+"']", { 
+            this.addBinding(null, "input[name='"+FIELD_VALUE+"']", {
                 observe: 'fieldValue',
                 initialize: function($el) {
                     $el.select2({
@@ -282,12 +284,12 @@
             selector.className = 'form-control';
             var data = list.map(function(elem) { return {"id":elem, "text":elem}; });
             $container.append(selector);
-            this.addBinding(null, "input[name='"+FIELD_VALUE+"']", { 
+            this.addBinding(null, "input[name='"+FIELD_VALUE+"']", {
                 observe: 'fieldValue',
                 initialize: function($el) {
                     $el.select2({
                         multiple: true,
-                        data: data, 
+                        data: data,
                         placeholder: i18n("please-select")});
                 },
                 getVal: function($el) {
@@ -313,13 +315,13 @@
             var data = possibleUnits.map(function(unit) {
                 return { id: unit, text: unit };
             });
-            this.addBinding(null, "input[name='unit']", { 
+            this.addBinding(null, "input[name='unit']", {
                 observe: 'fieldUnit',
                 initialize: function($el) {
                     $el.select2({
-                        data: data, 
+                        data: data,
                         placeholder: i18n("please-select")});
-                }  
+                }
             });
         },
 
@@ -337,10 +339,10 @@
     /**
      * @name Query.Views.PersonalInfo
      * @extends Backbone.View
-     * @extends Query.Views.Component 
-     * @description a leaf element for the query builder, containing all the specialized parameters pertaining to PersonalInfo 
+     * @extends Query.Views.Component
+     * @description a leaf element for the query builder, containing all the specialized parameters pertaining to PersonalInfo
      *              (i.e. givenName, surname, birthDate)
-     */   
+     */
     Query.Views.PersonalInfo = Query.Views.Component.fullExtend({
 
         className: 'query-personalinfo',
@@ -351,7 +353,7 @@
                 observe: 'surnameComparator',
                 initialize: function($el) {
                     $el.select2({
-                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }] 
+                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }]
                     });
                 }
             },
@@ -362,7 +364,7 @@
                 observe: 'givenNameComparator',
                 initialize: function($el) {
                     $el.select2({
-                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }] 
+                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }]
                     });
                 }
             },
@@ -373,7 +375,7 @@
                 observe: 'birthDateComparator',
                 initialize: function($el) {
                     $el.select2({
-                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' }] 
+                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' }]
                     });
                 }
             },
@@ -395,12 +397,12 @@
         }
 
     });
-   
+
 
     /**
      * @name Query.Views.Subject
      * @extends Backbone.View
-     * @extends Query.Views.Component 
+     * @extends Query.Views.Component
      * @description a leaf element for the query builder, containing all the specialized parameters pertaining to Subject (i.e. code, sex)
      */
     Query.Views.Subject = Query.Views.Component.fullExtend({
@@ -412,7 +414,7 @@
                 observe: 'codeComparator',
                 initialize: function($el) {
                     $el.select2({
-                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }] 
+                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }]
                     });
                 }
             },
@@ -430,7 +432,7 @@
             '[name="sex"]': {
                 observe: 'sex',
                 initialize: function($el) {
-                    var data = []; 
+                    var data = [];
                     _.each(sexOptions, function(sexOption) {
                         data.push({id: sexOption, text: sexOption});
                     });
@@ -465,12 +467,12 @@
             return serialized;
         }
     });
-    
+
 
     /**
      * @name Query.Views.Sample
      * @extends Backbone.View
-     * @extends Query.Views.Component 
+     * @extends Query.Views.Component
      * @description a leaf element for the query builder, containing all the specialized parameters pertaining to Sample (i.e. biobank code)
      */
     Query.Views.Sample = Query.Views.Component.fullExtend({
@@ -482,7 +484,7 @@
                 observe: 'biobankComparator',
                 initialize: function($el) {
                     $el.select2({
-                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' }] 
+                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' }]
                     });
                 }
             },
@@ -518,7 +520,7 @@
                 observe: 'biobankCodeComparator',
                 initialize: function($el) {
                     $el.select2({
-                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }] 
+                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }]
                     });
                 }
             },
@@ -533,7 +535,7 @@
         },
 
         render: function() {
-            this.$el.html(this.template({ __: i18n }));             
+            this.$el.html(this.template({ __: i18n }));
             this.stickit();
             return this;
         },
@@ -547,7 +549,7 @@
         }
 
     });
-    
+
 
     /**
      * @deprecated
@@ -599,14 +601,14 @@
             var selectedLoop = _.findWhere(this.loopList, {name: this.model.get('loopName')});
             var childView;
             for (var i=0, len=selectedLoop.content.length; i<len; i++) {
-                childView = new Query.Views.Row({fieldList: [selectedLoop.content[i]], 
+                childView = new Query.Views.Row({fieldList: [selectedLoop.content[i]],
                                                 model: new Query.RowModel({fieldName: selectedLoop.content[i].name})});
                                                 this.$loopBody.append(childView.render().el);
                                                 this.add(childView);
             }
         }
     }); */
-    
+
     /**
      * @class
      * @name Query.Views.Composite
@@ -682,7 +684,7 @@
                                                 this.$el.append(childView.render().el);
                                                 this.add(childView);
         },
-        
+
         /**
          * @deprecated
         addLoopQuery: function(ev) {
@@ -697,7 +699,7 @@
             ev.stopPropagation();
             this.addNestedQuery();
         },
-        
+
         /**
          * @method
          * @name addNestedQuery
@@ -710,24 +712,24 @@
                 return childrenIds.indexOf(dataType.id) > -1;
             }));
             if (!childrenDataTypes.length) return;
-            
-            // create composite subview 
+
+            // create composite subview
             var childView = new Query.Views.Composite({
                 biobanks: this.biobanks,
                 dataTypes: childrenDataTypes,
-                dataTypesComplete: this.dataTypesComplete, 
+                dataTypesComplete: this.dataTypesComplete,
                 model: new Query.Model(queryObj)
             });
 
             this.$el.append(childView.render({}).el);
             this.add(childView);
         },
-        
+
         /**
          * @method
          * @name dataTypeOnChange
-         * @param{DataType.Model} model - the Backbone current model, not used in the function         
-         * @param{integer} idDataType - the ID of the selected Data Type 
+         * @param{DataType.Model} model - the Backbone current model, not used in the function
+         * @param{integer} idDataType - the ID of the selected Data Type
          */
         dataTypeOnChange: function(model, idDataType) {
             this.clear();
@@ -739,7 +741,7 @@
                 this.model.set("model", null);
                 return;
             }
-            this.createDataTypeRow(idDataType); 
+            this.createDataTypeRow(idDataType);
         },
 
         /**
@@ -751,9 +753,9 @@
             var personalInfoQueryView, modelQueryView, childView, queryContent = this.model.get("content");
             this.selectedDataType = this.dataTypes.get(idDataType);
             this.model.set("model", this.selectedDataType.get("model"));
-            if (this.model.get("model") === DataTypeClasses.SUBJECT) {      //TODO add policy to filter those not allowed to see personal info 
-                personalInfoQueryView = new Query.Views.PersonalInfo({ 
-                    model: new Query.PersonalInfoModel(_.findWhere(queryContent, {personalDetails: true})) 
+            if (this.model.get("model") === DataTypeClasses.SUBJECT) {      //TODO add policy to filter those not allowed to see personal info
+                personalInfoQueryView = new Query.Views.PersonalInfo({
+                    model: new Query.PersonalInfoModel(_.findWhere(queryContent, {personalDetails: true}))
                 });
                 this.addSubqueryView(personalInfoQueryView);
             }
@@ -772,7 +774,7 @@
             // queryContent = this.model.get("content");
             if (_.isArray(queryContent) && queryContent.length > 0) {
                 _.each(queryContent, function(queryElem) {
-                    // it is a nested a nested composite element 
+                    // it is a nested a nested composite element
                     if (queryElem.specializedQuery || queryElem.personalDetails) {
                         return true;  // continue to next iteration
                     }
@@ -782,11 +784,11 @@
                     // it is a leaf query element
                     else {
                         childView = new Query.Views.Row({
-                            fieldList: this.selectedDataType.getFlattenedFields(), 
+                            fieldList: this.selectedDataType.getFlattenedFields(),
                             model: new Query.RowModel(queryElem)
                         });
                         this.addSubqueryView(childView);
-                    } 
+                    }
                 }, this);
             }
             else {
@@ -796,31 +798,31 @@
             }
         },
 
-        
+
         /**
          * @method
          * @name addSubqueryView
          * @description add a subquery view to the composite view
-         * @param{Query.View.Component} subqueryView 
+         * @param{Query.View.Component} subqueryView
          */
         addSubqueryView: function(subqueryView) {
             this.$el.append(subqueryView.render().el);
             this.add(subqueryView);
         },
-        
+
         /**
          * @method
          * @name clear
          * @description removes all the nested subviews, if present
          */
         clear: function() {
-            var len = this.nestedViews.length; 
+            var len = this.nestedViews.length;
             for(var i=len-1; i>=0; i--) {
                 this.removeChild(this.nestedViews[i]);
             }
             // this.model.clear(); // clear your model
         },
-        
+
         /**
          * @method
          * @name render
@@ -872,8 +874,8 @@
             this.render(options);
             this.queryView = new Query.Views.Composite({
                 biobanks: this.biobanks,
-                dataTypes: this.dataTypes, 
-                dataTypesComplete: this.dataTypes, 
+                dataTypes: this.dataTypes,
+                dataTypesComplete: this.dataTypes,
                 model: new Query.Model(options.queryObj)
             });
             this.$tableCnt = this.$("#result-table-cnt");
@@ -882,7 +884,7 @@
             this.$queryErrorCnt = this.$("#queryErrorCnt")
             this.tableView = null;
             this.$("#query-form").append(this.queryView.render({}).el);
-            this.listenToOnce(this, 'search', this.sendQuery); 
+            this.listenToOnce(this, 'search', this.sendQuery);
             // if a query object exists trigger a server-side search
             if (options.queryObj) {
                 this.trigger('search');
@@ -897,7 +899,7 @@
         events : {
             'click #search': 'sendQuery',
         },
-        
+
         /**
          * @method
          * @name sendQuery
@@ -914,7 +916,7 @@
             var queryParameters = JSON.stringify({queryArgs: queryArgs});
             console.log(this.queryView.serialize());
             var path = '/query/' + encodeURIComponent(queryParameters);
-            xtens.router.navigate(path, {trigger: false}); 
+            xtens.router.navigate(path, {trigger: false});
             $.ajax({
                 method: 'POST',
                 headers: {
