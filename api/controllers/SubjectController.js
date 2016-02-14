@@ -17,7 +17,7 @@ let SUBJECT = sails.config.xtens.constants.DataTypeClasses.SUBJECT;
 
 module.exports = {
 
-    /** 
+    /**
      *  POST /subject
      *  @method
      *  @name create
@@ -67,9 +67,9 @@ module.exports = {
         let id = req.param('id');
         let query = Subject.findOne(id);
         let operator = TokenService.getToken(req);
-        
+
         query = QueryService.populateRequest(query, req, { blacklist: ['personalInfo'] });
-        
+
         // TODO replace true in IF condition with check on getting personal details
         if (operator.canAccessPersonalData) {
             query.populate('personalInfo');
@@ -96,7 +96,7 @@ module.exports = {
         let co = new ControllerOut(res);
         let operator = TokenService.getToken(req);
 
-        let query = Subject.find()
+        let query = Subject.find(QueryService.parseSelect(req))
         .where(QueryService.parseCriteria(req))
         .limit(QueryService.parseLimit(req))
         .skip(QueryService.parseSkip(req))
@@ -158,7 +158,7 @@ module.exports = {
      * DELETE /subject/:id
      * @method
      * @name destroy
-     * @description      
+     * @description
      */
     destroy: function(req, res) {
         let co = new ControllerOut(res);
@@ -207,8 +207,8 @@ module.exports = {
         let co = new ControllerOut(res);
         let id = req.param("id"), code = req.param("code");
         let idOperator = TokenService.getToken(req).id;
-        
-        console.log("SubjectController.edit - Decoded ID is: " + idOperator);  
+
+        console.log("SubjectController.edit - Decoded ID is: " + idOperator);
 
         return BluebirdPromise.props({
             projects: Project.find(),
@@ -222,15 +222,15 @@ module.exports = {
             return res.json(results);
         })
         .catch(function(err) {
-            return co.error(err); 
+            return co.error(err);
         });
-        
+
     },
 
     /**
      * @method
      * @name createGraph
-     * @description generate and visualize the (nested/multi level) data graph for a given subject. 
+     * @description generate and visualize the (nested/multi level) data graph for a given subject.
      *              Note: The current limit for the number of instances is 100.
      */
     createGraph:function(req,res){
@@ -239,11 +239,11 @@ module.exports = {
         let fetchSubjectDataTree = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTree;
 
         function subjectTreeCb(err, resp) {
-            
+
             if (err){
                 console.log(err);
             }
-            
+
             else {
                 console.log(resp.rows);
                 let links = [];
@@ -282,7 +282,7 @@ module.exports = {
     /**
      * @method
      * @name createGraphSimple
-     * @description generate and visualize the patient's data graph. All the descendant data are shown as children. 
+     * @description generate and visualize the patient's data graph. All the descendant data are shown as children.
      *              Only one data instance per datatype is shown.
      * @deprecated
      *
@@ -292,16 +292,16 @@ module.exports = {
         let fetchSubjectDataTreeSimple = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTreeSimple;
         let idSubject = req.param("idPatient");
         console.log(idSubject);
-        
+
         function subjectTreeSimpleCb(err,resp) {
 
             let children = [], child, links = [];
-            
+
             console.log(resp);
 
             if (resp.rows.length === 0) {
                 links = [{
-                    'source': 'Patient', 
+                    'source': 'Patient',
                     'target': null
                 }];
                 // let json = {'links':links};
@@ -312,7 +312,7 @@ module.exports = {
                 children.push(resp.rows[i].id);
             }
 
-            console.log(children); 
+            console.log(children);
 
             BluebirdPromise.map(children,function(child){
 
@@ -324,7 +324,7 @@ module.exports = {
                 });
 
             })
-            
+
             .then(function(link){
                 console.log(link);
                 links = link;
@@ -333,7 +333,7 @@ module.exports = {
                 return res.json(json);
 
             })
-            
+
             .catch(function(err){
                 return co.error(err);
             });
@@ -343,4 +343,3 @@ module.exports = {
         fetchSubjectDataTreeSimple(idSubject, subjectTreeSimpleCb);
     }
 };
-

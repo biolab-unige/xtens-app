@@ -22,8 +22,8 @@ let QueryService = {
         try {
             return JSON.parse(json);
         }
-        catch (e) { 
-            return e; 
+        catch (e) {
+            return e;
         }
     },
 
@@ -93,6 +93,30 @@ let QueryService = {
         return req.param('sort') || DEFAULT_SORT;
     },
 
+    /**
+     * @method
+     * @name
+     * @param {Request} req
+     */
+     parseSelect: function(req) {
+         let select = req.param('select');
+         try {
+             select = JSON.parse(select);
+             if (_.isEmpty(select)) {
+                 return null;
+             }
+             select = _.isArray(select) ? select : null;
+             console.log(select);
+             return {
+                 'select': select
+             };
+         }
+         catch(err) {
+             console.log(err.message);
+             return null;
+         }
+     },
+
     dataSearch: function(queryParams) {
         let queryBuilder = sails.config.xtens.queryBuilder;
         let query = queryBuilder.compose(queryParams);
@@ -100,7 +124,7 @@ let QueryService = {
         console.log(query.parameters);
         // Using prepared statements as an additional protection against SQL injection
         Data.query({
-            text: query.statement, 
+            text: query.statement,
             values: query.parameters
         }, function(err, result) {
             if (err) {
@@ -174,7 +198,7 @@ let QueryService = {
         // omit blacklisted populated items (added by Massi)
         if (options && _.isArray(options.blacklist)) {
             associations = _.remove(associations, association => {
-                return options.blacklist.indexOf(association.alias) < 0; 
+                return options.blacklist.indexOf(association.alias) < 0;
             });
         }
 
