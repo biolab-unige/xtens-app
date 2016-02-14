@@ -7,6 +7,7 @@
     var i18n = xtens.module("i18n").en;
     var DataType = xtens.module("datatype");
     var Data = xtens.module("data");
+    var Subject = xtens.module("subject");
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
 
     var biobankCodeMap = {
@@ -147,7 +148,7 @@
         },
 
         initialize: function(options) {
-            _.bindAll(this, 'editDonor');
+            _.bindAll(this, 'fetchDonorsOnSuccess');
             $('#main').html(this.el);
             this.template = JST["views/templates/sample-edit.ejs"];
             this.schemaView = null;
@@ -196,13 +197,31 @@
          *
          */
          editDonor: function(ev) {
+             var donors = new Subject.List(), that = this;
+             donors.fetch({
+                 data: $.param({
+                     select: JSON.stringify(["id", "code", "personalInfo"]),
+                     limit: 2000
+                 }),
+                 success: function(donors) {
+                     that.fetchDonorsOnSuccess(donors, ev.target);
+                 },
+                 error: xtens.error
+             });
+             return false;
+         },
+
+         fetchDonorsOnSuccess: function(donors, targetElem) {
+             console.log(donors.length);
+             this.subjects = donors.toJSON();
+
              var $div = $('<div>').addClass('data-input-div');
              var $select = $('<select>').addClass('form-control').attr({
                  'id': 'donor',
                  'name': 'donor'
              });
 
-             var parent = ev.target.parentNode;
+             var parent = targetElem.parentNode;
 
              // remove all subelements but the label
              while (parent.children.length > 1) {
@@ -218,8 +237,10 @@
                  selectOptions: {
                      collection: function() {
                          return this.subjects.map(function(subj) {
+                             var label = subj.personalInfo ? subj.code + ": " + subj.personalInfo.surname +
+                                " " + subj.personalInfo.givenName : subj.code;
                              return {
-                                 label: subj.personalInfo.surname + " " +  subj.personalInfo.givenName,
+                                 label: label,
                                  value: subj.id
                              };
                          });
