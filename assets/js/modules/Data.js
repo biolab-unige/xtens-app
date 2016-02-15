@@ -1030,6 +1030,71 @@
 
     /**
      * @class
+     * @name Data.Views.ParametersGraph
+     * @extends Backbone.View
+     * @description view containing the ParametersGraph (metadata and files) of a Video (Data.Model) instance
+     */
+    Data.Views.ParametersGraph = Backbone.View.extend({
+        tagName: 'canvas',
+        className: 'data',
+        id:'data',
+
+        /**
+         * @extends Backbone.View.initialize
+         */
+        initialize: function(options) {
+          $("#main").html(this.el);
+          this.template = JST["views/templates/parameter-graph.ejs"];
+          var params= options.modelParam.attributes;
+          var video= options.modelVideo.attributes;
+          var title= video.notes;
+          var radarChartData=[];
+          var labels=[];
+          var data=[];
+          var val;
+          if(params){console.log("sono dentro");delete params.type;}
+          _.each(params, function(param,index) {
+              val=Math.round(param.metadata.mean.value*100)/100;
+              labels.push('Real Value: ' + val + ' - ' + param.metadata.name.value );
+              if(val>1000){val=val/100;}
+              if(val>100){val=val/10;}
+              if(val>1 && val<10){val=val*10;}
+              if(val<1){val=val*100;}
+              data.push(val);
+         });
+
+         radarChartData={
+           labels:labels,
+           datasets: [
+             {
+               label: "Video Parameters : " + title,
+               fillColor: "rgba(220,220,220,0.2)",
+               strokeColor: "rgba(220,220,220,1)",
+               pointColor: "rgba(220,220,220,1)",
+               pointStrokeColor: "#fff",
+               pointHighlightFill: "#fff",
+               pointHighlightStroke: "rgba(220,220,220,1)",
+               data:data}]
+             };
+
+            this.render(radarChartData);
+        },
+
+        render: function(data) {
+
+          var income = document.getElementById("data").getContext("2d");
+          new Chart(income).Radar(data, {responsive: true});
+          this.$(".canvas").css('margin-top:10%');
+          return this;
+        }
+
+
+
+    });
+
+
+    /**
+     * @class
      * @name Data.Views.List
      * @extends Backbone.View
      * @description backbone list view for Data.List collection

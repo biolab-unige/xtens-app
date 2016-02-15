@@ -37,7 +37,9 @@
     "parsleyjs": "~2.0.5",
     "pikaday": "https://github.com/dbushell/Pikaday.git#~1.2.0",
     "select2": "https://github.com/ivaynberg/select2.git#~3.5.3",
-    "select2-bootstrap-css": "https://github.com/t0m/select2-bootstrap-css.git#~1.4.1"
+    "select2-bootstrap-css": "https://github.com/t0m/select2-bootstrap-css.git#~1.4.1",
+    "Chart.js": "^1.0.2",
+    "mathjs": "^2.7.0"
   },
   "exportsOverride": {
     "jquery": {
@@ -72,6 +74,12 @@
     "d3": {
       "": "d3.js"
     },
+    "mathjs": {
+      "": "math.min.js"
+    },
+    "Chart.js": {
+      "": "Chart.js"
+    },
     "sinon": {
       "js": "index.js"
     },
@@ -89,7 +97,7 @@
       "sass": "css/*.scss"
     },
     "jszip": {
-        "js": "dist/jszip.js"
+      "js": "dist/jszip.js"
     },
     "dropzone": {
       "js": "dist/*.js",

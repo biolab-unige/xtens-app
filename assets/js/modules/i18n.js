@@ -206,6 +206,7 @@
         "files": "Files",
         "derived-samples": "Derived Samples",
         "derived-data": "Derived Data",
+        "view-parameters":"View Parameters",
         /* assets/js/modules/XtensTable.js */
         "actions": "Actions",
         /* assets/js/modules/FileManager.js */

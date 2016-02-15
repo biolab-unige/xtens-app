@@ -4,7 +4,7 @@
  */
 
 (function(xtens) {
-    
+
     var DataType = xtens.module("datatype");
     var Data = xtens.module("data");
     var Subject = xtens.module("subject");
@@ -20,7 +20,7 @@
     var FileManager= xtens.module("filemanager");
     var Session = xtens.module("session");
 
-    var DEFAULT_LIMIT = 100; 
+    var DEFAULT_LIMIT = 100;
 
     /**
      * @method
@@ -52,7 +52,7 @@
         }
         return params;
     }
-    
+
     /**
      * @class
      * @name XtensRouter
@@ -103,7 +103,8 @@
             "subjects/graph":"subjectGraph",
             "homepage":"homepage",
             "file-download/:id": "downloadFile",
-            "data/dedicated": "dedicatedDataManagement"
+            "data/dedicated": "dedicatedDataManagement",
+            "data/parameters/:id": "parametersGraph"
         },
 
         publicRoutes: ["login"],
@@ -137,7 +138,7 @@
             }
 
         },
-        
+
         /**
          * @method
          * @name loadView
@@ -148,9 +149,9 @@
             this.view && this.view.remove();
 
             // load new view
-            this.view = view; 
+            this.view = view;
         },
-        
+
         /**
          * @method
          * @name dataTypePrivilegesList
@@ -167,7 +168,7 @@
             var privilegesDeferred = privileges.fetch({
                 data: $.param({group: groupId})
             });
-            
+
             $.when(groupDeferred, privilegesDeferred)
             .then(function(groupRes, privilegesRes) {
                 that.loadView(new DataTypePrivileges.Views.List({
@@ -190,14 +191,14 @@
                 id: dataTypePrivilegesId
             };
             var that = this;
-            $.ajax({ 
-                url: '/dataTypePrivileges/edit', 
+            $.ajax({
+                url: '/dataTypePrivileges/edit',
                 type: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                 },
                 data: params,
-                contentType: 'application/json', 
+                contentType: 'application/json',
                 success: function(results) {
                     that.loadView(new DataTypePrivileges.Views.Edit(results));
                 },
@@ -206,7 +207,7 @@
                 }
             });
         },
-        
+
         /**
          * @method
          * @name associationOperator
@@ -229,7 +230,7 @@
                 }));
             }, xtens.error);
         },
-        
+
         /**
          * @method
          * @name dataTypeList
@@ -303,7 +304,7 @@
                 that.loadView(new Data.Views.List({
                     data: new Data.List(dataRes && dataRes[0]),
                     dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
-                    params: queryParams    
+                    params: queryParams
                 }));
             }, function(jqxhr) {
                 xtens.error(jqxhr);
@@ -319,21 +320,21 @@
          * @description retrieve the data model and open Edit view
          */
         dataEdit: function(id, queryString) {
-            // var dataTypes = new DataType.List(); 
+            // var dataTypes = new DataType.List();
             var params = parseQueryString(queryString);
             if (id && _.parseInt(id) > 0) {
                 params.id = id;
             }
             // var dataTypeParams = { classTemplate: xtens.module("xtensconstants").DataTypeClasses.GENERIC };
             var that = this;
-            $.ajax({ 
-                url: '/data/edit', 
+            $.ajax({
+                url: '/data/edit',
                 type: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                 },
                 data: params,
-                contentType: 'application/json', 
+                contentType: 'application/json',
                 success: function(results) {
                     that.loadView(new Data.Views.Edit(results));
                 },
@@ -353,14 +354,13 @@
             model.fetch({
                 data: $.param({populate: ['type', 'files', 'parentSample', 'parentSubject']}),
                 success: function(data) {
-                    that.loadView(new Data.Views.Details({model: data})); 
+                    that.loadView(new Data.Views.Details({model: data}));
                 },
                 error: function(model, res) {
                     xtens.error(res);
                 }
             });
         },
-
 
         downloadView:function() {
             this.loadView(new FileManager.Views.Download());
@@ -421,6 +421,38 @@
             this.loadView(new Operator.Views.Edit({id:id}));
         },
 
+        /**
+         * @method
+         * @name parametersGraph
+         * @description retrieve the Video model and its Parameters and open the ParametersGraph view
+         */
+        parametersGraph: function(id) {
+            var that = this;
+            var modelVideo = new Data.Model({id: id});
+
+            modelVideo.fetch({
+                dataVideo: $.param({populate: ['type', 'files', 'parentSample', 'parentSubject','notes']}),
+                success: function(dataVideo) {
+                  var note=dataVideo.attributes.notes;
+                  var modelParam= new Data.Model({});
+                  modelParam.url='/data?type=10&parentData='+id+'&notes='+note;
+                  modelParam.fetch({
+                    success: function(dataParam) {
+                      that.loadView(new Data.Views.ParametersGraph({modelParam: dataParam,modelVideo:dataVideo}));
+                    },
+                    error: function(model, res) {
+                        xtens.error(res);
+                    }
+                  });
+                    //that.loadView(new Data.Views.ParametersGraph({model: data}));
+                },
+                error: function(modelVideo, res) {
+                    xtens.error(res);
+                }
+            });
+        },
+
+
         subjectList: function() {
             var dataTypes = new DataType.List();
             var subjects = new Subject.List();
@@ -429,7 +461,7 @@
                 data: $.param({ populate: ['children'] })
             });
             var $subjectsDeferred = subjects.fetch({
-                data: $.param({ 
+                data: $.param({
                     populate: ['type', 'projects'],
                     limit: DEFAULT_LIMIT
                 })
@@ -437,7 +469,7 @@
             $.when($dataTypesDeferred, $subjectsDeferred).then(function(dataTypesRes, subjectsRes) {
                 that.loadView(new Subject.Views.List({
                     subjects: new Subject.List(subjectsRes && subjectsRes[0]),
-                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])    
+                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])
                 }));
             }, function(jqxhr) {
                 xtens.error(jqxhr);
@@ -450,14 +482,14 @@
                 params.id = id;
             }
             var that = this;
-            $.ajax({ 
-                url: '/subject/edit', 
+            $.ajax({
+                url: '/subject/edit',
                 type: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                 },
                 data: params,
-                contentType: 'application/json; charset=utf-8', 
+                contentType: 'application/json; charset=utf-8',
                 success: function(results) {
                     that.loadView(new Subject.Views.Edit(results));
                 },
@@ -466,7 +498,7 @@
                 }
             });
         },
-                     
+
         /**
          * @method
          * @name subjectDetails
@@ -478,14 +510,14 @@
             model.fetch({
                 data: $.param({populate: ['type', 'projects']}),
                 success: function(subject) {
-                    that.loadView(new Subject.Views.Details({model: subject})); 
+                    that.loadView(new Subject.Views.Details({model: subject}));
                 },
                 error: function(model, res) {
                     xtens.error(res);
                 }
             });
         },
-        
+
         /**
          * @method
          * @name subjectGraph
@@ -520,16 +552,16 @@
                 }))
             });
             $.when($dataTypesDeferred, $samplesDeferred).then( function(dataTypesRes, samplesRes) {
-                that.loadView(new Sample.Views.List({ 
+                that.loadView(new Sample.Views.List({
                     samples: new Sample.List(samplesRes && samplesRes[0]),
                     dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
-                    params: queryParams                    
+                    params: queryParams
                 }));
             }, function(jqxhr) {
                 xtens.error(jqxhr);
             });
         },
-        
+
         /**
          * @method
          * @name sampleEdit
@@ -542,14 +574,14 @@
                 params.id = id;
             }
             var that = this;
-            $.ajax({ 
-                url: '/sample/edit', 
+            $.ajax({
+                url: '/sample/edit',
                 type: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                 },
                 data: params,
-                contentType: 'application/json; charset=utf-8', 
+                contentType: 'application/json; charset=utf-8',
                 success: function(results) {
                     that.loadView(new Sample.Views.Edit(results));
                 },
@@ -570,7 +602,7 @@
             model.fetch({
                 data: $.param({populate: ['type', 'files', 'parentSample', 'biobank', 'donor']}),
                 success: function(sample) {
-                    that.loadView(new Sample.Views.Details({model: sample})); 
+                    that.loadView(new Sample.Views.Details({model: sample}));
                 },
                 error: function(model, res) {
                     xtens.error(res);
@@ -616,7 +648,7 @@
                 that.loadView(new Query.Views.Builder({
                     queryObj: params && params.queryArgs,
                     biobanks: new Biobank.List(biobanksRes && biobanksRes[0]),
-                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])                                    
+                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])
                 }));
             }, function(jqxhr) {
                 xtens.error(jqxhr);
