@@ -1083,7 +1083,7 @@
      * @description view containing the ParametersGraph (metadata and files) of a Video (Data.Model) instance
      */
     Data.Views.ParametersGraph = Backbone.View.extend({
-        tagName: 'canvas',
+        tagName: 'div',
         className: 'data',
         id:'data',
 
@@ -1096,10 +1096,8 @@
           var params= options.modelParam.attributes;
           var video= options.modelVideo.attributes;
           var title= video.notes;
-          var radarChartData=[];
-          var labels=[];
-          var data=[];
-          var val;
+          var radarChartData=[], labels=[], data=[], val;
+
           if(params){console.log("sono dentro");delete params.type;}
           _.each(params, function(param,index) {
               val=Math.round(param.metadata.mean.value*100)/100;
@@ -1129,15 +1127,13 @@
         },
 
         render: function(data) {
-
-          var income = document.getElementById("data").getContext("2d");
-          new Chart(income).Radar(data, {responsive: true});
-          this.$(".canvas").css('margin-top:10%');
+            this.$el.html(this.template({
+              __: i18n
+            }));
+            var income = document.getElementById("canvas").getContext("2d");
+          	new Chart(income).Radar(data, {responsive: true});
           return this;
         }
-
-
-
     });
 
 
