@@ -104,7 +104,8 @@
             "subjects/graph":"subjectGraph",
             "homepage":"homepage",
             "file-download/:id": "downloadFile",
-            "data/dedicated": "dedicatedDataManagement"
+            "data/dedicated": "dedicatedDataManagement",
+            "data/parameters/:id": "parametersGraph"
         },
 
         publicRoutes: ["login"],
@@ -298,6 +299,7 @@
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
+
             $.when($operatorDeferred).then(function(operatorRes) {
                 var groupId = operatorRes && operatorRes[0].groups[0].id;
                 var $dataTypesDeferred = dataTypes.fetch({
@@ -404,7 +406,6 @@
             });
         },
 
-
         downloadView:function() {
             this.loadView(new FileManager.Views.Download());
         },
@@ -484,6 +485,38 @@
             this.loadView(new Operator.Views.updatePassword());
         },
 
+        /**
+         * @method
+         * @name parametersGraph
+         * @description retrieve the Video model and its Parameters and open the ParametersGraph view
+         */
+        parametersGraph: function(id) {
+            var that = this;
+            var modelVideo = new Data.Model({id: id});
+
+            modelVideo.fetch({
+                dataVideo: $.param({populate: ['type', 'files', 'parentSample', 'parentSubject','notes']}),
+                success: function(dataVideo) {
+                  var note=dataVideo.attributes.notes;
+                  var modelParam= new Data.Model({});
+                  modelParam.url='/data?type=10&parentData='+id+'&notes='+note;
+                  modelParam.fetch({
+                    success: function(dataParam) {
+                      that.loadView(new Data.Views.ParametersGraph({modelParam: dataParam,modelVideo:dataVideo}));
+                    },
+                    error: function(model, res) {
+                        xtens.error(res);
+                    }
+                  });
+                    //that.loadView(new Data.Views.ParametersGraph({model: data}));
+                },
+                error: function(modelVideo, res) {
+                    xtens.error(res);
+                }
+            });
+        },
+
+
         subjectList: function() {
             var privileges = new DataTypePrivileges.List();
             var operator = new Operator.List();
@@ -493,6 +526,7 @@
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
+
             $.when($operatorDeferred).then(function(operatorRes) {
                 var groupId = operatorRes && operatorRes[0].groups[0].id;
                 var $privilegesDeferred = privileges.fetch({
@@ -617,6 +651,7 @@
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
+
             $.when($operatorDeferred).then( function(operatorRes) {
                 var groupId = operatorRes && operatorRes[0].groups[0].id;
                 var $privilegesDeferred = privileges.fetch({
@@ -756,6 +791,7 @@
             var dataTypes = new DataType.List();
             var biobanks = new Biobank.List();
             var that = this;
+            
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });

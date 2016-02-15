@@ -36,6 +36,7 @@
       var Sample = xtens.module("sample");
       var DataFile = xtens.module("datafile");
       var VIEW_OVERVIEW = Privileges.VIEW_OVERVIEW;
+
     /**
      * @class
      * @name Views.Datatable
@@ -47,7 +48,8 @@
               "click .xtenstable-edit": "showEditView",
               "click .xtenstable-files": "showFileList",
               "click .xtenstable-derivedsamples": "showDerivedSampleList",
-              "click .xtenstable-deriveddata": "showDerivedDataList"
+              "click .xtenstable-deriveddata": "showDerivedDataList",
+              "click .xtenstable-parameters": "showVideoParameters"
           },
 
           tagName: 'table',
@@ -64,7 +66,9 @@
               this.childrenViews = [];
               this.prepareDataForRenderingJSON(this.dataTypePrivilege);
             // this.render();
+
           },
+
 
 
 
@@ -80,6 +84,7 @@
          * @method
          * @name destroy
          */
+
           destroy: function() {
               if (this.table) {
                   this.table.destroy(true);
@@ -109,6 +114,7 @@
          * @name displayDataTable
          * @description show the datatable given the option object
          */
+
           displayDataTable: function() {
 
               if (this.tableOpts && !_.isEmpty(this.tableOpts.data)) {
@@ -135,6 +141,7 @@
               }
 
             // the returned dataset is empty
+
               else {
                   this.remove();
               }
@@ -150,6 +157,7 @@
             if (!this.dataType) {
                 return; //TODO add alert box
             } */
+
               var fileUpload = this.dataType.get("schema").header.fileUpload;
               var hasDataSensitive = false;
               this.fieldsToShow = [];
@@ -348,6 +356,7 @@
          * @name addLinks
          * @description add the proper links to each row in the table given the dataType Model
          */
+
           addLinks: function(options) {
 
               var btnGroupTemplate = JST["views/templates/xtenstable-buttongroup.ejs"];
@@ -363,12 +372,17 @@
                   });
               });
 
-              this.columns.push({
-                  "data": "_links",
-                  "title": i18n("actions")
-              });
+            _.each(this.data, function(datum) {
+                datum._links = btnGroupTemplate({__:i18n,id:id});
+            });
 
-          },
+            this.columns.push({
+                "data": "_links",
+                "title": i18n("actions")
+            });
+
+        },
+
 
         /**
          * @method
@@ -399,6 +413,7 @@
               var data = currRow.data();
 
             // model here is the ENTITY model (a.k.a. the server-side resource)
+
               var model = this.dataType.get("model");
               var path = model === Classes.DATA ? model.toLowerCase() : model.toLowerCase() + 's';
               path += "/edit/" + data.id;
@@ -413,6 +428,7 @@
          * @param{Object} ev - the current event
          * @description returns a list of the data stored as children of the given data instance
          */
+
           showDerivedDataList: function(ev) {
               var currRow = this.table.row($(ev.currentTarget).parents('tr'));
               var data = currRow.data();
@@ -436,6 +452,7 @@
          * @description returns a list of the samples stored as children of the given data instance
          *
          */
+
           showDerivedSampleList: function(ev) {
               var currRow = this.table.row($(ev.currentTarget).parents('tr'));
               var data = currRow.data();
@@ -463,6 +480,7 @@
          * @param{Object} ev- the current event
          * @description returns the list of files associated to the current data instance
          */
+
           showFileList: function(ev) {
               var that = this;
               var currRow = this.table.row($(ev.currentTarget).parents('tr'));

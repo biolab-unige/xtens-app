@@ -60,6 +60,8 @@ var jsFilesToInject = [
     'dependencies/**/buttons.colvis.js',
     'dependencies/**/async.js',
     'dependencies/**/d3.js',
+    'dependencies/Chart.js/Chart.js',
+    'dependencies/mathjs/math.min.js',
 
     // Customised client-side js files
 

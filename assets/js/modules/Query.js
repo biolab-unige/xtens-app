@@ -734,6 +734,7 @@
                 dataTypes: childrenDataTypes,
                 dataTypesComplete: this.dataTypesComplete,
                 dataTypePrivileges:this.dataTypePrivileges,
+
                 model: new Query.Model(queryObj)
             });
 
