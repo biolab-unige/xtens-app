@@ -230,8 +230,8 @@
             }
             else if (fieldType === FieldTypes.TEXT) {
                 data = [{ id: '=', text: '=' }, { id: '<>', text: '≠' },
-                        { id: 'LIKE', text: '~~'}, {id: 'NOT LIKE', text: '!~~'},
-                        { id: 'ILIKE', text: '~~*'}, {id: 'NOT ILIKE', text: '!~~*'}];
+                        { id: 'LIKE', text: 'LIKE'}, {id: 'NOT LIKE', text: 'NOT LIKE'},
+                        { id: 'ILIKE', text: 'ILIKE'}, {id: 'NOT ILIKE', text: 'NOT ILIKE'}];
             }
             else {
                 data = [{ id: '=', text: '=' }, { id: '<>', text: '≠' }];
@@ -353,7 +353,8 @@
                 observe: 'surnameComparator',
                 initialize: function($el) {
                     $el.select2({
-                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }]
+                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' },
+                                { id: 'LIKE', text: 'LIKE'}, { id: 'NOT LIKE', text: 'LIKE'}]
                     });
                 }
             },
@@ -364,7 +365,8 @@
                 observe: 'givenNameComparator',
                 initialize: function($el) {
                     $el.select2({
-                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }]
+                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' },
+                                { id: 'LIKE', text: 'LIKE'}, { id: 'NOT LIKE', text: 'LIKE'}]
                     });
                 }
             },
@@ -375,7 +377,9 @@
                 observe: 'birthDateComparator',
                 initialize: function($el) {
                     $el.select2({
-                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' }]
+                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' },
+                                { id: '<=', text: '≤' }, { id: '>=', text: '≥' },
+                                { id: '<', text: '<'}, {id: '>', text: '>'}]
                     });
                 }
             },
