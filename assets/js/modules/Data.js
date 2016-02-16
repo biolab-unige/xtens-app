@@ -1098,7 +1098,7 @@
           var title= video.notes;
           var radarChartData=[], labels=[], data=[], val;
 
-          if(params){console.log("sono dentro");delete params.type;}
+          if(params){delete params.type;}
           _.each(params, function(param,index) {
               val=Math.round(param.metadata.mean.value*100)/100;
               labels.push('Real Value: ' + val + ' - ' + param.metadata.name.value );
