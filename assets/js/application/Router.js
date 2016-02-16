@@ -434,7 +434,7 @@
                 dataVideo: $.param({populate: ['type', 'files', 'parentSample', 'parentSubject','notes']}),
                 success: function(dataVideo) {
                   var note=dataVideo.attributes.notes;
-                  var Param= new Data.Model({});
+                  var modelParam= new Data.Model({});
 
                   modelParam.url='/data?type=9&parentData='+id+'&notes='+note;
                   modelParam.fetch({
