@@ -17,7 +17,7 @@ module.exports = {
 
         type: {
             model: 'dataType',
-            columnName: 'type'  
+            columnName: 'type'
         },
 
         biobank: {
@@ -43,6 +43,10 @@ module.exports = {
             type: 'json'
         },
 
+        notes: {
+            type: 'text'
+        },
+
         // many-to-many association to files
         files: {
             collection: 'dataFile',
@@ -62,4 +66,3 @@ module.exports = {
 
     }
 };
-

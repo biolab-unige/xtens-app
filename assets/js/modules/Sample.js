@@ -143,6 +143,17 @@
                 onGet: function(val, options) {
                     return (val && val.id);
                 }
+            },
+
+            '#tags': {
+                observe: 'tags',
+                getVal: function($el, ev, option) {
+                    return $el.val().split(",");
+                }
+            },
+
+            '#notes': {
+                observe: 'notes'
             }
 
         },
