@@ -354,7 +354,7 @@
                 initialize: function($el) {
                     $el.select2({
                         data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' },
-                                { id: 'LIKE', text: 'LIKE'}, { id: 'NOT LIKE', text: 'LIKE'}]
+                                { id: 'LIKE', text: 'LIKE'}, { id: 'NOT LIKE', text: 'NOT LIKE'}]
                     });
                 }
             },
@@ -366,7 +366,7 @@
                 initialize: function($el) {
                     $el.select2({
                         data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' },
-                                { id: 'LIKE', text: 'LIKE'}, { id: 'NOT LIKE', text: 'LIKE'}]
+                                { id: 'LIKE', text: 'LIKE'}, { id: 'NOT LIKE', text: 'NOT LIKE'}]
                     });
                 }
             },
@@ -389,6 +389,11 @@
 
         },
 
+        events: {
+            'input [name="surname"]': 'upper',
+            'input [name="given-name"]': 'upper'
+        },
+
         initialize: function(options) {
             this.template = JST['views/templates/query-personalinfo-fields.ejs'];
         },
@@ -398,6 +403,10 @@
             // this.$el.addClass("query-row");
             this.stickit();
             return this;
+        },
+
+        upper: function(ev) {
+            ev.target.value = ev.target.value.toUpperCase();
         }
 
     });
