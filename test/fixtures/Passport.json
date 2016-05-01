@@ -1,0 +1,24 @@
+[{
+    "id": 1,
+    "protocol": "local",
+    "password": "testAdmin",
+    "provider": null,
+    "identifier": null,
+    "tokens": null,
+    "accessToken": null,
+    "createdAt": "2015-06-18T10:13:13.000Z",
+    "updatedAt": "2015-06-18T10:13:13.000Z",
+    "user": 1
+},
+{
+    "id": 2,
+    "protocol": "local",
+    "password": "testUser",
+    "provider": null,
+    "identifier": null,
+    "tokens": null,
+    "accessToken": null,
+    "createdAt": "2015-06-18T10:13:13.000Z",
+    "updatedAt": "2015-06-18T10:13:13.000Z",
+    "user": 2
+}]
