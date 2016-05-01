@@ -22,12 +22,13 @@ before(function(done) {
     console.log("sails was lifted");
     // Load fixtures
     var barrels = new Barrels();
-
+    var loadingOrder = ['group', 'operator', 'passport', 'datatype', 'subject', 'sample', 'data'];
     // Save original objects in fixtures variable
     fixtures = barrels.data;
-    
+
     sails = res;
-    barrels.populate(function(err){
+
+    barrels.populate(['operator', 'passport'], function(err){
         console.log(err);
         done(err, res);
     }, false);

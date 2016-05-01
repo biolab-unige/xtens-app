@@ -1,7 +1,6 @@
 /**
  * @author Massimiliano Izzo
  */
-/* jshint esnext: true */
 /* jshint node: true */
 "use strict";
 
@@ -125,7 +124,7 @@ module.exports.xtens = {
             MANAGER: 'manager', // can edit DataTypes/Biobanks and so on
             STANDARD: 'standard'
         },
-        
+
         /**
          * @description available Datatype-Group privilege statuses
          */

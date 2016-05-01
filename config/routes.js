@@ -30,7 +30,7 @@ module.exports.routes = {
     
     // 'POST /logout' : {controller:'main',action:'logout'},
 
-    'GET /': {controller: 'home'},
+    'GET /': {view: 'home'},
     /*
     'POST /login':{controller:'main',
         action:'login'
@@ -40,21 +40,21 @@ module.exports.routes = {
     'POST /graph':{controller:'dataType',action:'buildGraph'},
 
     'POST /subjectGraph':{controller:'subject',action:'createGraph'},
-    
+
     // 'GET /populateEAV': {controller: 'main', action: 'populateEAV'},
     //
     'POST /populateDB': {controller: 'main', action: 'populateDB'},
 
     // '/upload-file':{controller:'dataFile',action:'upload'},
-    
+
     // 'POST /download-file':{controller:'dataFile',action:'download'},
-    
+
     '/groupOperator/associate':{controller:'group', action:'addOperator'},
-    
+
     '/groupOperator/dissociate':{controller:'group', action:'removeOperator'},
-    
+
     '/groupDatatype/associate':{controller:'group', action:'addDatatype'},
-    
+
     '/groupDatatype/dissociate':{controller:'group',action:'removeDatatype'},
 
     'GET /fileManager': {controller: 'main', action: 'getFileSystemStrategy'},
@@ -68,7 +68,7 @@ module.exports.routes = {
     'POST /fileContent': {controller: 'main', action: 'uploadFileContent'},
 
     'POST /customisedData': {controller: 'main', action: 'executeCustomDataManagement'},
-       
+
     // REST API for subject (with personal info)
     // 'GET /subjectWithPersonalDetails': {controller: 'subject', action: 'findWithPersonalDetails'},
     // 'GET /subjectWithPersonalDetails/:id': {controller: 'subject', action: 'findOneWithPersonalDetails'},
@@ -79,13 +79,13 @@ module.exports.routes = {
     // Advanced Search API
     'POST /query/dataSearch': {controller: 'query', action: 'dataSearch'}
 
-   
-    
+
+
     /*,
-    'GET /dataType': {controller: 'DataType', action: 'find'} 
-    
-    
-    
+    'GET /dataType': {controller: 'DataType', action: 'find'}
+
+
+
    '/dataTypes/new': {
         controller: 'dataType',
         action: 'insertnew'

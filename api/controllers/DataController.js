@@ -4,7 +4,6 @@
  * @description :: Server-side logic for managing data
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
-/* jshint esnext: true */
 /* jshint node: true */
 /* globals _, sails, Data, DataType, DataService, SubjectService, SampleService, QueryService, TokenService */
 "use strict";
@@ -18,15 +17,16 @@ let DATA = xtensConf.constants.DataTypeClasses.DATA;
 
 module.exports = {
 
-    
-    /** 
+
+    /**
      *  POST /data
      *  @method
      *  @name create
-     *  @description -> create a new Data Instance; transaction-safe implementation 
-     *                   
+     *  @description -> create a new Data Instance; transaction-safe implementation
+     *
      */
     create: function(req, res) {
+        console.log("DataController.create - here we are!!");
         let data = req.allParams();
         let co = new ControllerOut(res);
 
@@ -41,7 +41,7 @@ module.exports = {
             }
             else {
                 throw new ValidationError(validationRes.error);
-            } 
+            }
         })
         /*
         .then(function(idData) {
@@ -53,13 +53,13 @@ module.exports = {
             return res.json(201, result);
         })
         .catch(function(error) {
-            console.log("Error: " + error.message);
+            sails.log.error(error.message);
             return co.error(error);
         });
     },
 
     /**
-     * GET /data/:id 
+     * GET /data/:id
      * @method
      * @name findOne
      * @description - retrieve an existing data
@@ -67,11 +67,11 @@ module.exports = {
     findOne: function(req, res) {
         let co = new ControllerOut(res);
         let id = req.param('id');
-        
+
         let query = Data.findOne(id);
 
         query = QueryService.populateRequest(query, req);
-        
+
         query.then(function(result) {
             return res.json(result);
         })
@@ -105,11 +105,12 @@ module.exports = {
             res.json(data);
         })
         .catch(function(err) {
+            sails.log.error(err.message);
             return co.error(err);
         });
     },
 
-    /** 
+    /**
      *  PUT /data/:id
      *  @method
      *  @name update
@@ -131,17 +132,17 @@ module.exports = {
             }
             else {
                 throw new ValidationError(validationRes.error);
-            } 
+            }
         }) /*
         .then(function(idData) {
             return Data.findOne(idData).populate('files');
         }) */
         .then(function(result) {
-            console.log(result);
+            sails.log(result);
             return res.json(result);
         })
         .catch(function(error) {
-            console.log("Error: " + error.message);
+            sails.log.error(error.message);
             return co.error(error);
         });
     },
@@ -150,7 +151,7 @@ module.exports = {
      * DELETE /data/:id
      * @method
      * @name destroy
-     * @description      
+     * @description
      */
     destroy: function(req, res) {
         let co = new ControllerOut(res);
@@ -170,9 +171,9 @@ module.exports = {
         })
         .then(function(result) {
             let allowedDataTypes = _.pluck(result.dataTypes, 'id');
-            console.log('idOperator: ' + idOperator);
-            console.log(allowedDataTypes);
-            console.log(result.data.type);
+            sails.log('idOperator: ' + idOperator);
+            sails.log(allowedDataTypes);
+            sails.log(result.data.type);
             if (!result.data) {
                 // TODO add logic to throw a NotFoundError (implement it!!)
             }
@@ -206,7 +207,7 @@ module.exports = {
         let co = new ControllerOut(res);
         let params = req.allParams();
         let idOperator = TokenService.getToken(req).id;
-        console.log(params); 
+        console.log(params);
         return BluebirdPromise.props({
             data: DataService.getOneAsync(params.id),
             dataTypes: crudManager.getDataTypesByRolePrivileges({
@@ -225,10 +226,10 @@ module.exports = {
         })
 
         .catch(function(err) {
+            sails.log(err);
             return co.error(err);
         });
 
     }
 
 };
-

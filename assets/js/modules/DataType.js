@@ -1,7 +1,7 @@
 /**
  * @author  Massimiliano Izzo
  * @description This file contains the Backbone classes for handling DataType
- *              models, collections and views  
+ *              models, collections and views
  */
 (function(xtens, DataType) {
 
@@ -10,10 +10,10 @@
     var Constants = xtens.module("xtensconstants").Constants;
     var DataTypeClasses = xtens.module("xtensconstants").DataTypeClasses;
     var MetadataComponent = xtens.module("metadatacomponent");
-    var MetadataGroup = xtens.module("metadatagroup"); 
+    var MetadataGroup = xtens.module("metadatagroup");
 
     // XTENS router alias
-    var router = xtens.router;  
+    var router = xtens.router;
 
     // options object for Parsley Validation
     var parsleyOpts = {
@@ -27,7 +27,7 @@
         errorTemplate: "<span></span>"
     };
 
-    /** 
+    /**
      * @class
      * @name DataType.Model
      *  define a DataType model
@@ -179,7 +179,7 @@
                             coll.push({label: value.toUpperCase(), value: value});
                         });
                         return coll;
-                    }   
+                    }
                 }
             },
             '#parents': {
@@ -228,21 +228,21 @@
         },
 
         /**
-         * @description show a list of the validation errors. So far it just alert the first error 
+         * @description show a list of the validation errors. So far it just alert the first error
          */
         handleValidationErrors: function() {
-            alert(this.model.validationError[0].message);  
+            alert(this.model.validationError[0].message);
         },
 
         events: {
             'submit .edit-datatype-form': 'saveDataType',
-            'click .add-metadata-group': 'addMetadataGroupOnClick'    // not used yet 
+            'click .add-metadata-group': 'addMetadataGroupOnClick'    // not used yet
         },
 
         serialize: function() {
             var metadataBody = [];
             for (var i=0, len=this.nestedViews.length; i<len; i++) {
-                metadataBody.push(this.nestedViews[i].serialize()); 
+                metadataBody.push(this.nestedViews[i].serialize());
             }
             return metadataBody;
         },
@@ -253,13 +253,13 @@
             var header = this.$("#schemaHeader").find("select, input, textarea").serializeObject();
             header.fileUpload = header.fileUpload ? true : false;
             var body = this.serialize();
-            var dataTypeDetails = { 
-                id: id, 
+            var dataTypeDetails = {
+                id: id,
                 name: header.name,
                 schema: {
-                    header: _.omit(header, ['parents']), // parent-child many-to-many associations are not currently saved in the JSON schema 
+                    header: _.omit(header, ['parents']), // parent-child many-to-many associations are not currently saved in the JSON schema
                     body: body
-                } 
+                }
             };
 
             this.model.set("parents", _.pluck(this.model.get("parents"),'id'));
@@ -357,7 +357,7 @@
             // retrieve all the descendant samples and data for the given datatype
 
             $.ajax({
-                type: 'POST', 
+                type: 'POST',
                 url: '/graph',
                 headers: {
                     'Authorization': 'Bearer ' + xtens.session.get("accessToken")
@@ -365,30 +365,31 @@
                 data: {idDataType: nameDatatype},
 
                 success: function (res, textStatus, jqXHR) {
-
+                    //Get parentWidth
+                    var parentWidth=d3.select('#main');
                     // clean the previous graph if present
                     d3.select("#data-type-graph")
-                    .remove();    
+                    .remove();
 
-                    // set margins, width and height of the svg container
+                    // set margins, dynamic width and height of the svg container
                     var margin = {top: 40, right: 120, bottom: 40, left: 120},
-                    width = 960 - margin.left - margin.right,
+                    width = parentWidth[0][0].offsetWidth - margin.left - margin.right,
                     height = 800 - margin.top - margin.bottom;
 
-                    // generate a data hierarchy tree 
+                    // generate a data hierarchy tree
                     var tree = d3.layout.tree()
                     .size([height, width]);
 
                     //function to draw the slanted arcs
                     var diagonal = d3.svg.diagonal()
-                    .projection(function(d) { 
+                    .projection(function(d) {
                         return [d.x, d.y-39];
                     }
                                );
 
                                // create the svg container
                                var svg = d3.select("#main").append("svg")
-                               .attr("id","data-type-graph")   
+                               .attr("id","data-type-graph")
                                .attr("width", width + margin.left + margin.right)
                                .attr("height", height + margin.top + margin.bottom)
                                .append("g")
@@ -420,39 +421,60 @@
 
                                }
                                             );
+                                            //Define countDepth to count nodes for every depth
+                                            var index,i1;
+                                            var countDepth = new Array(links.length);
 
-                                            var index;
 
                                             // find the root node
                                             for(var i=0;i<links.length;i++){
                                                 if(links[i].source.name === nameDatatype ){
                                                     index = i;
                                                 }
+                                                i1=links[i].depth;
+                                                countDepth[i]=0;
                                             }
 
                                             //generate the tree
                                             var nodes = tree.nodes(links[0].source);
                                             nodes =_.uniq(nodes,'name');
-
                                             console.log(nodes);
 
-                                            // for each node define its position
-                                            nodes.forEach(function(d){ d.y= d.depth*150;
-                                                          if(d.x>1000 && d.x<100000){
-                                                              d.x=d.x/80 -100;
-                                                          }
-                                                          else if(d.x>=100000 && d.x<1000000000){
-                                                              d.x=d.x/200000 - 120;
-                                                          }
-                                                          else if(d.x >=1000000000){
-                                                              d.x=d.x/200000000000 -40;
-                                                          }
-                                                          else if(d.x>500 && d.x <1000){
-                                                              d.x=(d.x/1.5)*3 -750;
-                                                          }
+
+                                            //Count nodes/depth
+                                            nodes.forEach(function(d){
+                                              countDepth[d.depth] = countDepth[d.depth] + 1;
                                             });
 
-                                            // define the links format/appereance  
+                                            var c= new Array(links.length);
+                                            // for each node define its position dynamically
+                                            nodes.forEach(function(d){
+
+                                                          d.y= d.depth*150;
+                                                          if (d.depth === 0){d.x = width / 2;}
+                                                          if ( !isNaN(countDepth[d.depth]) && countDepth[d.depth] !== 1 ) {
+                                                            if( isNaN(c[d.depth]) ){ c[d.depth]=0; }
+                                                            c[d.depth] = c[d.depth] + 1 ;
+                                                             d.x= (( c[d.depth] / countDepth[d.depth] ) * width - ( 1 / countDepth[d.depth ]) * width / 2 );
+                                                           }
+
+
+
+                                                          // if(d.x>1000 && d.x<100000){
+                                                          //     d.x=d.x/80 -100;
+                                                          // }
+                                                          // else if(d.x>=100000 && d.x<1000000000){
+                                                          //     d.x=d.x/200000 - 120;
+                                                          // }
+                                                          // else if(d.x >=1000000000){
+                                                          //     d.x=d.x/200000000000 -40;
+                                                          // }
+                                                          // else if(d.x>500 && d.x <1000){
+                                                          //     d.x=(d.x/1.5)*3 -750;
+                                                          // }
+                                            });
+
+                                            // define the links format/appereance
                                             svg.append("svg:defs").selectAll("marker")
                                             .data(links)
                                             .enter().append("svg:marker")
@@ -514,7 +536,7 @@
                                                                     if( i=== arr.length-1){
                                                                         return arr[i];
                                                                     }
-                                                                })   
+                                                                })
                                                                 .style("font-size","12px")
                                                                 .style("font-weight",function(){
 
@@ -541,7 +563,7 @@
                     alert(err);
                 }
             });
-            /*     
+            /*
                    .fail(function(res){
                    alert("Error: " + res.responseJSON.error);
                    }); */
@@ -550,4 +572,3 @@
     });
 
 } (xtens, xtens.module("datatype")));
-
