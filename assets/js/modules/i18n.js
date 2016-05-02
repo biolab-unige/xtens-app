@@ -122,6 +122,7 @@
         "missing-value": "Missing Value",
         "metadata": "Metadata",
         "new-data": "New Data",
+        "datatype-graph": "DataType Graph",
         /* views/templates/personal-details-edit.ejs */
         "given-name": "Name",
         "surname": "Surname",
