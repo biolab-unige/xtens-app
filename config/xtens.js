@@ -4,7 +4,10 @@
 /* jshint node: true */
 "use strict";
 
-let dbConnectionMap = new Map([['sails-postgresql', 'xtens-pg']]);
+let dbConnectionMap = new Map([
+    ['sails-postgresql', 'xtens-pg'],
+    ['sails-memory', 'xtens-waterline']
+]);
 let IrodsRestStrategy = require('xtens-fs').IrodsRestStrategy;
 let FileSystemManager = require('xtens-fs').FileSystemManager;
 

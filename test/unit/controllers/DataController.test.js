@@ -45,11 +45,13 @@ describe('DataController', function() {
     describe('POST /data', function() {
         it('Should return OK 201, with location of new Data', function (done) {
 
+            sails.log.debug(metadata);
+
             request(sails.hooks.http.app)
             .post('/data')
-            .set('Authorization', token)
+            .set('Authorization', `Bearer ${token}`)
             .send({
-                "type": 5,
+                "type": 3,
                 "metadata": metadata,
                 "date": "2015-12-06",
                 "notes": "New data"
@@ -68,14 +70,19 @@ describe('DataController', function() {
     });
 
     it('Should return 400, metadata required', function (done) {
-
        request(sails.hooks.http.app)
          .post('/data')
-         .set('Authorization', token)
-         .send({type:3, metadata:{}, date:"2015-12-06",tags:[],notes:"New data"})
+         .set('Authorization', `Bearer ${token}`)
+         .send({
+             type:3,
+             metadata:{},
+             date:"2015-12-06",
+             tags:[],
+             notes:"New data"
+         })
          .expect(400, done);
-
     });
+
   });
 
   describe('PUT /data', function() {
@@ -84,10 +91,10 @@ describe('DataController', function() {
 
       request(sails.hooks.http.app)
         .put('/data/2')
-        .set('Authorization', token)
+        .set('Authorization', `Bearer ${token}`)
         .send({
             id: 2,
-            type: 5,
+            type: 3,
             metadata: metadata,
             notes: "New Data Updated"
         })
@@ -107,7 +114,7 @@ describe('DataController', function() {
 
               request(sails.hooks.http.app)
                 .put('/data/2')
-                .set('Authorization',token)
+                .set('Authorization', `Bearer ${token}`)
                 .send({id:2, type:3, metadata:{}, date:"2015-12-06",tags:[],notes:"New data"})
                 .expect(400, done);
            });
@@ -118,13 +125,13 @@ describe('DataController', function() {
 
           request(sails.hooks.http.app)
             .get('/data')
-            .set('Authorization', token)
+            .set('Authorization', `Bearer ${token}`)
             //.send({id:1})
             .expect(200)
             .end(function(err, res) {
-              console.log(res.body);
-              expect(res.body).to.have.length(fixtures.data.length+1);
+              expect(res.body).to.have.length(fixtures.data.length + 1);
               if (err) {
+                  sails.log.console.error(err);
                   done(err);
               }
               done();
@@ -149,7 +156,7 @@ describe('DataController', function() {
 
           request(sails.hooks.http.app)
             .delete('/data/1')
-            .set('Authorization', token)
+            .set('Authorization', `Bearer ${token}`)
             .send()
             .expect(200)
             .end(function(err, res) {
@@ -166,7 +173,7 @@ describe('DataController', function() {
 
            request(sails.hooks.http.app)
              .delete('/data/1')
-             .set('Authorization', token)
+             .set('Authorization', `Bearer ${token}`)
              .expect(200)
              .end(function(err, res) {
                console.log('N° Subject deleted: ' + res.body.deleted);

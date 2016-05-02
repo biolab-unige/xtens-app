@@ -7,9 +7,10 @@ var sails;
 before(function(done) {
   console.log("bootstrap.test.js - before function started!");
   Sails.lift({
+    /*
     log: {
-        level: 'error'
-    },
+        level: 'debug'
+    }, */
     models: {
         connection: 'test',
         migrate: 'drop'
@@ -27,6 +28,14 @@ before(function(done) {
     fixtures = barrels.data;
 
     sails = res;
+
+    // set up the CRUD Manager for in-memory tests
+    const xtens = sails && sails.config && sails.config.xtens;
+    const testAdapter = sails.config.connections.test.adapter;
+    xtens.databaseManager = require('xtens-waterline');
+    xtens.crudManager = new xtens.databaseManager.CrudManager(null, testAdapter);
+    console.log(sails.config.xtens.crudManager);
+    console.log(global.sails.config.xtens.crudManager);
 
     barrels.populate(['operator', 'passport'], function(err){
         console.log(err);

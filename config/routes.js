@@ -27,14 +27,15 @@ module.exports.routes = {
     // default view engine) your home page.
     //
     // (Alternatively, remove this and add an `index.html` file in your `assets` directory)
-    
+
     // 'POST /logout' : {controller:'main',action:'logout'},
 
     'GET /': {view: 'home'},
     /*
-    'POST /login':{controller:'main',
-        action:'login'
-    }, */
+    'GET /data': {controller: 'data', action: 'find'},
+    'POST /data': {controller: 'data', action: 'create'},
+    'PUT /data': {controller: 'data', action: 'upadate'},
+    */
     'POST /login': {controller: 'auth', action: 'login'},
 
     'POST /graph':{controller:'dataType',action:'buildGraph'},

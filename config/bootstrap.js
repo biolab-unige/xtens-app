@@ -8,7 +8,6 @@
  * For more information on bootstrapping your app, check out:
  * http://links.sailsjs.org/docs/config/bootstrap
  */
-/* jshint esnext: true */
 /* jshint node: true */
 /* globals sails, PassportService, Operator */
 "use strict";
@@ -46,7 +45,7 @@ module.exports.bootstrap = function(cb) {
                     return BluebirdPromise.map(sails.config.defaultOperators, function(operator) {
                         return createUser(operator);
                     });
-                } 
+                }
             })
 
             .then(function(createdOperators) {
@@ -66,7 +65,7 @@ module.exports.bootstrap = function(cb) {
 /*module.exports.bootstrap = function (cb) {
 
 // After we create our users, we will store them here to associate with our pets
-var storeGroups = []; 
+var storeGroups = [];
 
 var groups = [{name:'fi'}];
 var operators = [{sex: 'M',
@@ -95,7 +94,7 @@ return callback(thisOper.login);
 
 
 // This callback is run after all of the Pets are created.
-// It sends each new pet to 'associate' with our Users  
+// It sends each new pet to 'associate' with our Users
 var afterOper= function(err,newOperators){
 
 while (newOperators.length){
@@ -127,7 +126,7 @@ Group.create(groups).exec(afterGroup)
 /*module.exports.bootstrap = function (cb) {
 
 // After we create our users, we will store them here to associate with our pets
-var storeUsers = []; 
+var storeUsers = [];
 
 var users = [{name:'Mike',age:'16'},{name:'Cody',age:'25'},{name:'Gabe',age:'107'}];
 var ponys = [{ name: 'Pinkie Pie', color: 'pink'},{ name: 'Rainbow Dash',color: 'blue'},{ name: 'Applejack', color: 'orange'}]
@@ -150,7 +149,7 @@ return callback(thisPony.name);
 
 
 // This callback is run after all of the Pets are created.
-// It sends each new pet to 'associate' with our Users  
+// It sends each new pet to 'associate' with our Users
 var afterPony = function(err,newPonys){
 while (newPonys.length){
 var thisPony = newPonys.pop();

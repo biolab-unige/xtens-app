@@ -8,12 +8,12 @@
 /* globals _, sails, Data, DataType, DataService, SubjectService, SampleService, QueryService, TokenService */
 "use strict";
 
-let BluebirdPromise = require('bluebird');
-let ControllerOut = require("xtens-utils").ControllerOut;
-let ValidationError = require('xtens-utils').Errors.ValidationError;
-let xtensConf = global.sails.config.xtens;
-let crudManager = xtensConf.crudManager;
-let DATA = xtensConf.constants.DataTypeClasses.DATA;
+const BluebirdPromise = require('bluebird');
+const ControllerOut = require("xtens-utils").ControllerOut;
+const ValidationError = require('xtens-utils').Errors.ValidationError;
+const xtensConf = global.sails.config.xtens;
+const crudManager = sails.hooks.persistence.crudManager;
+const DATA = xtensConf.constants.DataTypeClasses.DATA;
 
 module.exports = {
 
@@ -26,13 +26,15 @@ module.exports = {
      *
      */
     create: function(req, res) {
-        console.log("DataController.create - here we are!!");
+        sails.log("DataController.create - here we are!!");
         let data = req.allParams();
         let co = new ControllerOut(res);
 
         DataService.simplify(data);
 
         DataType.findOne(data.type).then(function(dataType) {
+            sails.log.debug(dataType);
+            sails.log.debug(crudManager);
             let validationRes = DataService.validate(data, true, dataType);
             if (validationRes.error === null) {
                 data = validationRes.value;
