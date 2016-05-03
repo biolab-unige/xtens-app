@@ -1,9 +1,15 @@
-var expect = require("chai").expect;
-var request = require('supertest');
+/* jshint node: true */
+/* jshint mocha: true */
+/* globals _, sails, fixtures */
+"use strict";
+
+const expect = require("chai").expect;
+const request = require('supertest');
+const loginHelper = require('./loginHelper');
 
 describe('DataController', function() {
 
-    var token;
+    let token;
 
     const metadata = {
         "name":{"value":"Antares", "group": "Generic Info" },
@@ -17,27 +23,9 @@ describe('DataController', function() {
     };
 
     before(function(done) {
-        var admin = fixtures.operator[0];
-        var passport = _.find(fixtures.passport, {
-            'user': admin.id,
-            'protocol': 'local'
-        });
-
-        console.log("DataController.test - admin and local passport is: ");
-        console.log(admin);
-        console.log(passport);
-
-        request(sails.hooks.http.app)
-        .post('/login')
-        .send({identifier: admin.login, password: passport.password})
-        .end(function(err, res) {
-            if (err) {
-                console.log("DataController.test - login failed");
-                console.log(err);
-            }
-            console.log(res.body);
-            token = res.body && res.body.token;
-            console.log("Got token: " + token);
+        loginHelper.login(request, function (bearerToken) {
+            token = bearerToken;
+            sails.log.debug(`Got token: ${token}`);
             done();
         });
     });
@@ -66,125 +54,103 @@ describe('DataController', function() {
                 var loc = l.split('/');
                 var location = '/' + loc[3]+ '/' + loc[4];
                 expect(location).to.equals('/data/2');
-        });
-    });
-
-    it('Should return 400, metadata required', function (done) {
-       request(sails.hooks.http.app)
-         .post('/data')
-         .set('Authorization', `Bearer ${token}`)
-         .send({
-             type:3,
-             metadata:{},
-             date:"2015-12-06",
-             tags:[],
-             notes:"New data"
-         })
-         .expect(400, done);
-    });
-
-  });
-
-  describe('PUT /data', function() {
-    it('Should return OK 200, notes Updated', function (done) {
-      const note = "New Data Updated";
-
-      request(sails.hooks.http.app)
-        .put('/data/2')
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-            id: 2,
-            type: 3,
-            metadata: metadata,
-            notes: "New Data Updated"
-        })
-        .expect(200)
-        .end(function(err, res) {
-          console.log(res.body[0].notes);
-          expect(res.body[0].notes).to.equals(note);
-          if (err) {
-              done(err);
-          }
-          done();
+                done();
+            });
         });
 
-           });
+        it('Should return 400, metadata required', function (done) {
+            request(sails.hooks.http.app)
+            .post('/data')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                type:3,
+                metadata:{},
+                date:"2015-12-06",
+                tags:[],
+                notes:"New data"
+            })
+            .expect(400, done);
+        });
 
-           it('Should return 400, metadata Required', function (done) {
+    });
 
-              request(sails.hooks.http.app)
-                .put('/data/2')
-                .set('Authorization', `Bearer ${token}`)
-                .send({id:2, type:3, metadata:{}, date:"2015-12-06",tags:[],notes:"New data"})
-                .expect(400, done);
-           });
-  });
+    describe('PUT /data', function() {
+        it('Should return OK 200, notes Updated', function (done) {
+            const note = "New Data Updated";
+
+            request(sails.hooks.http.app)
+            .put('/data/2')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                id: 2,
+                type: 3,
+                metadata: metadata,
+                notes: "New Data Updated"
+            })
+            .expect(200)
+            .end(function(err, res) {
+                console.log(res.body[0].notes);
+                expect(res.body[0].notes).to.equals(note);
+                if (err) {
+                    done(err);
+                }
+                done();
+            });
+
+        });
+
+        it('Should return 400, metadata Required', function (done) {
+
+            request(sails.hooks.http.app)
+            .put('/data/2')
+            .set('Authorization', `Bearer ${token}`)
+            .send({id:2, type:3, metadata:{}, date:"2015-12-06",tags:[],notes:"New data"})
+            .expect(400, done);
+        });
+    });
 
     describe('GET /data', function() {
-      it('Should return OK 200', function (done) {
 
-          request(sails.hooks.http.app)
+        it('Should return OK 200', function (done) {
+            request(sails.hooks.http.app)
             .get('/data')
             .set('Authorization', `Bearer ${token}`)
             //.send({id:1})
             .expect(200)
             .end(function(err, res) {
-              expect(res.body).to.have.length(fixtures.data.length + 1);
-              if (err) {
-                  sails.log.console.error(err);
-                  done(err);
-              }
-              done();
+                expect(res.body).to.have.length(fixtures.data.length + 1);
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                }
+                done();
             });
-
         });
- //
- //        it('Should return 400, metadata required', function (done) {
- //
- //           request(sails.hooks.http.app)
- //             .get('/data/2')
- //             .set('Authorization',token)
- //             .expect(400, done)
- //             .expect(function(res) {
- //               //console.log("Header: " + res.header);
- //               //expect(res.body).to.have.length(fixtures.data.length+1);
- //               });
- //      });
- });
-      describe('DELETE /data', function() {
-        it('Should return OK 200, with array length to 1', function (done) {
 
-          request(sails.hooks.http.app)
+    });
+
+
+    describe('DELETE /data', function() {
+
+        it('Should return 200 OK with 1 deleted item if resource exists', function (done) {
+            request(sails.hooks.http.app)
             .delete('/data/1')
             .set('Authorization', `Bearer ${token}`)
             .send()
-            .expect(200)
-            .end(function(err, res) {
-              console.log('N° Data deleted: ' + res.body.deleted);
-              expect(res.body.deleted).to.equals(1);
-              if (err) {
-                  done(err);
-              }
-              done();
-             });
+            .expect(200, {
+                deleted: 1
+            }, done);
         });
 
-        it('Should return OK 200, with array lenght to 0', function (done) {
-
-           request(sails.hooks.http.app)
-             .delete('/data/1')
-             .set('Authorization', `Bearer ${token}`)
-             .expect(200)
-             .end(function(err, res) {
-               console.log('N° Subject deleted: ' + res.body.deleted);
-               expect(res.body.deleted).to.equals(0);
-               if (err) {
-                   done(err);
-               }
-               done();
+        it('Should return 200 OK with 0 deleted items if resource does not exist', function (done) {
+            request(sails.hooks.http.app)
+            .delete('/data/1')
+            .set('Authorization', `Bearer ${token}`)
+            .send()
+            .expect(200, {
+                deleted: 0
+            }, done);
         });
-      });
-
 
     });
 });

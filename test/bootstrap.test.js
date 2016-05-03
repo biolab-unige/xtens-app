@@ -30,13 +30,14 @@ before(function(done) {
     sails = res;
 
     // set up the CRUD Manager for in-memory tests
+    /*
     const xtens = sails && sails.config && sails.config.xtens;
     const testAdapter = sails.config.connections.test.adapter;
     xtens.databaseManager = require('xtens-waterline');
     xtens.crudManager = new xtens.databaseManager.CrudManager(null, testAdapter);
     console.log(sails.config.xtens.crudManager);
     console.log(global.sails.config.xtens.crudManager);
-
+    */
     barrels.populate(['operator', 'passport'], function(err){
         console.log(err);
         done(err, res);

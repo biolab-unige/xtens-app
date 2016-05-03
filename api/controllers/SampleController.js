@@ -5,35 +5,34 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 /* jshint node: true */
-/* jshint esnext: true */
 /* globals _, sails, Subject, Sample, Data, DataType, SubjectService, BiobankService, SampleService, TokenService, QueryService, DataService */
 "use strict";
 
-var BluebirdPromise = require('bluebird');
-var ControllerOut = require("xtens-utils").ControllerOut;
-var crudManager = sails.config.xtens.crudManager;
-var SAMPLE = sails.config.xtens.constants.DataTypeClasses.SAMPLE;
-let ValidationError = require('xtens-utils').Errors.ValidationError;
+const BluebirdPromise = require('bluebird');
+const ControllerOut = require("xtens-utils").ControllerOut;
+const crudManager = sails.hooks.persistence.crudManager;
+const SAMPLE = sails.config.xtens.constants.DataTypeClasses.SAMPLE;
+const ValidationError = require('xtens-utils').Errors.ValidationError;
 
 module.exports = {
-    
-    /** 
+
+    /**
      *  POST /sample
      *  @method
      *  @name create
      *  @description: create a new sample; transaction-safe implementation
      */
     create: function(req, res) {
-        var co = new ControllerOut(res);
-        var sample = req.allParams();
-        SampleService.simplify(sample); 
+        const co = new ControllerOut(res);
+        let sample = req.allParams();
+        SampleService.simplify(sample);
 
         DataType.findOne(sample.type)
         .then(function(sampleType) {
-            var validationRes = SampleService.validate(sample, true, sampleType);
+            const validationRes = SampleService.validate(sample, true, sampleType);
             if (validationRes.error === null) {
                 sample = validationRes.value;
-                var sampleTypeName = sampleType && sampleType.name;
+                const sampleTypeName = sampleType && sampleType.name;
                 return crudManager.createSample(sample, sampleTypeName);
             }
             else {
@@ -63,12 +62,12 @@ module.exports = {
      * @description - retrieve an existing subject
      */
     findOne: function(req, res) {
-        var co = new ControllerOut(res);
-        var id = req.param('id');
-        var query = Sample.findOne(id);
-        
+        const co = new ControllerOut(res);
+        const id = req.param('id');
+        let query = Sample.findOne(id);
+
         query = QueryService.populateRequest(query, req);
-        
+
         query.then(function(result) {
             return res.json(result);
         })
@@ -88,9 +87,9 @@ module.exports = {
      * @description Find samples based on criteria provided in the request
      */
     find: function(req, res) {
-        var co = new ControllerOut(res);
+        const co = new ControllerOut(res);
 
-        var query = Sample.find()
+        let query = Sample.find()
         .where(QueryService.parseCriteria(req))
         .limit(QueryService.parseLimit(req))
         .skip(QueryService.parseSkip(req))
@@ -105,8 +104,8 @@ module.exports = {
             return co.error(err);
         });
     },
-    
-    /** 
+
+    /**
      * PUT /sample/:ID
      * @method
      * @name update
@@ -114,12 +113,12 @@ module.exports = {
      *              Transaction-safe implementation
      */
     update: function(req, res) {
-        let co = new ControllerOut(res);
-        var sample = req.allParams();
+        const co = new ControllerOut(res);
+        let sample = req.allParams();
         SampleService.simplify(sample);
 
         DataType.findOne(sample.type).then(function(dataType) {
-            var validationRes = SampleService.validate(sample, true, dataType);
+            const validationRes = SampleService.validate(sample, true, dataType);
             if (validationRes.error === null) {
                 sample = validationRes.value;
                 return crudManager.updateSample(sample, dataType.name);
@@ -127,7 +126,7 @@ module.exports = {
             else {
                 throw new ValidationError(validationRes.error);
             }
-        }) 
+        })
         /*
         .then(function(idSample) {
             console.log(idSample);
@@ -148,12 +147,12 @@ module.exports = {
      * DELETE /sample/:id
      * @method
      * @name destroy
-     * @description 
+     * @description
      */
     destroy: function(req, res) {
-        var co = new ControllerOut(res);
-        var id = req.param('id');
-        var idOperator = TokenService.getToken(req).id;
+        const co = new ControllerOut(res);
+        const id = req.param('id');
+        const idOperator = TokenService.getToken(req).id;
 
         if (!id) {
             return co.badRequest({message: 'Missing sample ID on DELETE request'});
@@ -167,7 +166,11 @@ module.exports = {
             })
         })
         .then(function(result) {
-            var allowedDataTypes = _.pluck(result.dataTypes, 'id');
+            const allowedDataTypes = _.pluck(result.dataTypes, 'id');
+            // if sample does not exist return 0 rows deleted
+            if (!result.sample) {
+                return BluebirdPromise.resolve(0);
+            }
             if (allowedDataTypes.indexOf(result.sample.type) > -1) {
                 return crudManager.deleteSample(id);
             }
@@ -194,10 +197,10 @@ module.exports = {
      * @description retrieve all required models for editing/creating a Sample via client web-form
      */
     edit: function(req, res) {
-        var co = new ControllerOut(res);
-        var params = req.allParams();
-        var idOperator = TokenService.getToken(req).id;
-        console.log(params); 
+        const co = new ControllerOut(res);
+        const params = req.allParams();
+        const idOperator = TokenService.getToken(req).id;
+        sails.log(params);
 
         return BluebirdPromise.props({
             sample: SampleService.getOneAsync(params.id),
@@ -205,13 +208,13 @@ module.exports = {
                 idOperator: idOperator,
                 model: SAMPLE,
                 idDataTypes: params.idDataTypes,
-                parentDataType: params.parentDataType 
+                parentDataType: params.parentDataType
             }),
             biobanks: BiobankService.getAsync(params),
             donor: SubjectService.getOneAsync(params.donor, params.donorCode),
             parentSample: SampleService.getOneAsync(params.parentSample)
-        }) 
-        
+        })
+
         .then(function(results) {
             return res.json(results);
         })
@@ -223,4 +226,3 @@ module.exports = {
     }
 
 };
-
