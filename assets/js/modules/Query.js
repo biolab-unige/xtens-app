@@ -894,7 +894,7 @@
             this.$tableCnt = this.$("#result-table-cnt");
             this.$queryModal = this.$(".query-modal");
             this.$queryNoResultCnt = this.$("#queryNoResultCnt");
-            this.$queryErrorCnt = this.$("#queryErrorCnt")
+            this.$queryErrorCnt = this.$("#queryErrorCnt");
             this.tableView = null;
             this.$("#query-form").append(this.queryView.render({}).el);
             this.listenToOnce(this, 'search', this.sendQuery);
