@@ -97,9 +97,8 @@
                         </span>
                         <div class="col-md-5 text-left">
 
-                            <% value = metadata[field.formattedName].value; console.log(value);
+                            <% value = metadata[field.formattedName].value;
                             values = metadata[field.formattedName].values;
-                            console.log(field.fieldType);
                             if (field.fieldType==="Date"){value=moment(value).lang("it").format('L');}
                             unit = metadata[field.formattedName].unit; %>
                             <div name="metadata-value">
