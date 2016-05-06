@@ -990,12 +990,14 @@
 
                 // store data in view (from model) as DD/MM/YYYY (European format)
                 onGet: function(value, options) {
-                    if (value) {
-                        var dateArray = value instanceof Date ? value.toISOString().split('-') : value.split('-');
-                        var dateArray2 = dateArray[2].split('T');
-                        dateArray[2] = dateArray2[0];
-                        return dateArray[2] + '/' + dateArray[1] + '/' + dateArray[0];
-                    }
+                  if (value) {
+                      /*
+                      var dateArray = value instanceof Date ? value.toISOString().split('-') : moment(value).format('L');
+                      var dateArray2 = dateArray[2].split('T');
+                      dateArray[2] = dateArray2[0];
+                      return dateArray[2] + '/' + dateArray[1] + '/' + dateArray[0]; */
+                      return moment(value).lang("it").format('L');
+                  }
                 },
 
             },

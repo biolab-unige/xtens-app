@@ -6,59 +6,40 @@
     <div class="container data-header-cnt">
         <div id="data-header-row" class="row data-header-row">
             <div id="data-header" class="col-md-offset-2 col-md-6">
-               
-                <% if (data.get("personalInfo")) {%>
-                <div class="row margin-row">
-                    <label for="givenName" class="data-label">
-                        <%= __("given-name") %>: </label>
-                    <span id="givenName">
-                        <%= data.get("personalInfo").givenName %>
-                    </span>
-                </div>
-                <div class="row margin-row">
-                    <label for="surname" class="data-label">
-                        <%= __("surname") %>: </label>
-                    <span id="surname">
-                        <%= data.get("personalInfo").surname %>
-                    </span>
-                </div>
-                <div class="row margin-row">
-                    <label for="birthDate">
-                        <%= __("birth-date") %>: </label>
-                    <span id="birthDate">
-                        <% var date = data.get("personalInfo").birthDate; %>
-                        <%= date.slice(0, date.indexOf("T")).split("-").reverse().join("/") %>
-                    </span>
-                </div>
-                <%} %>
+
+              <div id="personal-details">
+                  <!--
+                  <button id="add-personal-details" class="btn btn-info"><%= __('add-personal-details') %></button>
+                  -->
+              </div>
 
                <div class="row margin-row">
                     <label for="sex" class="data-label">
                         <%= __("sex") %>: </label>
-                    <span id="sex">
+                    <span id="sex" class="data-span">
                         <%= data.get("sex") %>
                     </span>
                 </div>
                 <div class="row margin-row">
                     <label for="code" class="data-label">
                         <%= __("code") %>: </label>
-                    <span id="code">
+                    <span id="code" class="data-span">
                         <%= data.get("code") %>
-                    </span>
+                      </span>
                 </div>
 
-                
+
                 <div class="row margin-row">
                     <label for="dataType" class="data-label">
                         <%= __("data-type") %>
                     </label>
                     <div class="data-input-div">
-                        <div class="" id="dataType" name="dataType">
+                        <span id="dataType" name="dataType" class="data-span">
                             <%= data.get("type").name %>
-                        </div>
+                        </span>
                     </div>
                 </div>
-                
+
                                 <!--
                 <div class="row margin-row">
                     <label for="date" class="data-label">
@@ -97,7 +78,7 @@
         <div id="metadata-body" class="metadata-body">
             <% var metadata = data.get("metadata"), value, values, unit;
             _.each(fields, function(field,index) {%>
-            <!--  
+            <!--
       <% var groupname = field._group %>
         -->
             <%if (index === 0 || fields[index-1]._group !== field._group ){%>
@@ -115,7 +96,8 @@
                         <div class="col-md-5 text-left">
 
                             <% value = metadata[field.formattedName].value;
-                            values = metadata[field.formattedName].values; 
+                            values = metadata[field.formattedName].values;
+                            if (field.fieldType==="Date"){value=moment(value).lang("it").format('L');}
                             unit = metadata[field.formattedName].unit; %>
                             <div name="metadata-value">
                                 <% if (_.isArray(values)) { %>
