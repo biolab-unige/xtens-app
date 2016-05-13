@@ -3,10 +3,10 @@ var sinon = require("sinon");
 var BluebirdPromise = require("bluebird");
 
 describe('DataTypeService', function() {
-    
+
     describe("#validateMetadataField", function() {
 
-        it("should correctly validate a valid metadata field", function() {     
+        it("should correctly validate a valid metadata field", function() {
             var field = _.cloneDeep(fixtures.datatype[2].schema.body[0].content[3].content[0]);
             var result = DataTypeService.validateMetadataField(field);
             expect(result.error).to.be.null;
@@ -57,14 +57,14 @@ describe('DataTypeService', function() {
         it("should not validate a wrongly structured data type schema with a case-insensitive metadata field from list", function() {
             var dataType = _.cloneDeep(fixtures.datatype[2]);
             dataType.schema.body[0].content[1].caseInsensitive = true;  // this is not allowed cause Constellation is from list
-            var result = DataTypeService.validate(dataType, true);  
+            var result = DataTypeService.validate(dataType, true);
             expect(result.error).not.to.be.null;
             expect(result.error).to.be.an.instanceof(Error);
         });
 
     });
 
- 
+
     describe('#getFlattenedFields', function() {
 
         it('returns a 1-d array with all the metadata fields', function() {
@@ -88,34 +88,33 @@ describe('DataTypeService', function() {
     });
 
     describe('#putMetadataFieldsIntoEAV', function() {
-    
+
         beforeEach(function() {
-            /* 
+            /*
             this.eavAttributeCreate = sinon.stub(EavAttribute,'create');
             this.eavLoopCreate = sinon.stub(EavLoop,'create'); */
             this.dataType = fixtures.datatype[2];
             this.fields = DataTypeService.getFlattenedFields(this.dataType, false);
-            this.transactionHandler = sails.config.xtens.transactionHandler;
-            this.transactionalPutMetadataFieldsIntoEAV = sinon.stub(this.transactionHandler, 'putMetadataFieldsIntoEAV', function() {
+            this.crudManager = sails.config.xtens.crudManager;
+            this.transactionalPutMetadataFieldsIntoEAV = sinon.stub(this.crudManager, 'putMetadataFieldsIntoEAV', function() {
                 return BluebirdPromise.try(function() { return [1]; });
             });
         });
 
         afterEach(function() {
-            this.transactionHandler.putMetadataFieldsIntoEAV.restore();
+            this.crudManager.putMetadataFieldsIntoEAV.restore();
         });
 
         it('should populate the table eav_attribute', function() {
 
             var _this = this;
-            
+
             return DataTypeService.putMetadataFieldsIntoEAV(this.dataType).then(function(res) {
                 console.log('testing after promise fulfilled');
                 expect(_this.transactionalPutMetadataFieldsIntoEAV.calledOnce).to.be.true;
             });
-                        
+
         });
     });
 
 });
-

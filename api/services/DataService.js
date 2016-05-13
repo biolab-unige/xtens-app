@@ -1,7 +1,6 @@
 /**
  *  @author Massimiliano Izzo
  */
-/* jshint esnext: true */
 /* jshint node: true */
 /* globals _, sails, async, Data, DataFile, Sample, Subject, DataType, DataTypeService, SubjectService, SampleService, QueryService, TokenService */
 "use strict";
@@ -287,21 +286,24 @@ let DataService = BluebirdPromise.promisifyAll({
      * @return {Promise} -  a Bluebird Promise
      */
     storeMetadataIntoEAV: function(ids, modelName) {
-        modelName = modelName || 'Data';
-        return global[modelName].find(ids).then(function(foundData) {
-            console.log("DataService.storeMetadataIntoEAV - EAV value table map is: " + sails.config.xtens.constants.EavValueTableMap);
+        sails.log.info(`ids are: ${ids}`);
+        sails.log.info(`Is ids an array? ${_.isArray(ids) ? 'YES' : 'NO'}`);
+        modelName = modelName || DATA;
+        return global[modelName].find({id: ids}).then(function(foundData) {
+            sails.log.info(foundData);
+            sails.log("DataService.storeMetadataIntoEAV - EAV value table map is: " + sails.config.xtens.constants.EavValueTableMap);
             return BluebirdPromise.map(foundData, function(datum) {
                 return crudManager.putMetadataValuesIntoEAV(datum, sails.config.xtens.constants.EavValueTableMap);
             }, {concurrency: 100});
         })
 
         .then(function(inserted) {
-            console.log("DataService.storeMetadataIntoEAV - new rows inserted: " + inserted.length);
+            sails.log("DataService.storeMetadataIntoEAV - new rows inserted: " + inserted.length);
         })
 
         .catch(function(error) {
-            console.log(error);
-            console.log("DataService.storeMetadataIntoEAV - error caught");
+            sails.log.error(error);
+            sails.log.error("DataService.storeMetadataIntoEAV - error caught");
         });
 
     },
