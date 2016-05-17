@@ -73,7 +73,6 @@
         "password" : "Password",
         "operator-list" : "Operator List",
         "create-a-new-operator" : "Create a New Operator",
-        "save-operator" : "Save Operator",
         "m" : "M",
         "f" : "F",
         "group-list": "Group List",
@@ -98,6 +97,11 @@
         "update-data": "Update Data",
         "subject": "Subject",
         "sample": "Sample",
+        /* views/templates/operator-edit.ejs */
+        "operator-manager": "Operator Manager",
+        "create-operator": "Create Operator",
+        "save-operator" : "Save Operator",
+        "update-operator" : "Update Operator",
         /* views/templates/data-edit-partial.ejs */
         "date": "Date",
         "tags": "Tags/Keywords",

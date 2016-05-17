@@ -69,9 +69,9 @@ exports.createUser = function (_user, next) {
         var token = TokenService.issue(_.isObject(payload) ? JSON.stringify(payload) : payload); // modified by Massi
 
         Passport.create({
-            protocol    : 'local', 
-            password    : password, 
-            user        : operator.id, 
+            protocol    : 'local',
+            password    : password,
+            user        : operator.id,
             accessToken : token
         }, function (err, passport) {
             if (err) {
@@ -89,7 +89,7 @@ exports.createUser = function (_user, next) {
 
     });
 
-}; 
+};
 
 /**
  * Assign local Passport to user
@@ -103,11 +103,11 @@ exports.createUser = function (_user, next) {
  * @param {Function} next
  */
 exports.connect = function (req, res, next) {
-    var user     = req.user, 
+    var user     = req.user,
     password = req.param('password');
 
     Passport.findOne({
-        protocol : 'local', 
+        protocol : 'local',
         user     : user.id
     }, function (err, passport) {
         if (err) {
@@ -116,8 +116,8 @@ exports.connect = function (req, res, next) {
 
         if (!passport) {
             Passport.create({
-                protocol : 'local', 
-                password : password, 
+                protocol : 'local',
+                password : password,
                 user     : user.id
             }, function (err, passport) {
                 next(err, user);
@@ -142,7 +142,7 @@ exports.connect = function (req, res, next) {
  * @param {Function} next
  */
 exports.login = function (req, identifier, password, next) {
-    var isEmail = validator.isEmail(identifier), 
+    var isEmail = validator.isEmail(identifier),
     query   = {};
 
     if (isEmail) {
@@ -159,16 +159,16 @@ exports.login = function (req, identifier, password, next) {
 
         if (!user) {
             if (isEmail) {
-                req.flash('error', 'Error.Passport.Email.NotFound');
+                err = new Error('Error.Passport.Email.NotFound');
             } else {
-                req.flash('error', 'Error.Passport.Username.NotFound');
+                  err = new Error('Error.Passport.Username.NotFound');
             }
 
             return next(null, false);
         }
 
         Passport.findOne({
-            protocol : 'local', 
+            protocol : 'local',
             user     : user.id
         }, function (err, passport) {
             if (passport) {
@@ -178,7 +178,7 @@ exports.login = function (req, identifier, password, next) {
                     }
 
                     if (!res) {
-                        req.flash('error', 'Error.Passport.Password.Wrong');
+                      err = new Error('Error.Passport.Password.Wrong');
                         return next(null, false);
                     } else {
                         return next(null, user);
@@ -193,3 +193,64 @@ exports.login = function (req, identifier, password, next) {
         });
     });
 };
+
+exports.updatePassUser = function (_user, next) {
+    console.log(_user);
+    var password = _user.oldPass;
+    var login = _user.login;
+    var newPass = _user.newPass;
+    delete _user.password;
+
+      //Fetch the operator
+       Operator.findOne({login:login}, function (err, user) {
+           if (err) {
+               return next(err);
+             }
+
+           if (!user) {
+               if (isEmail) {
+                   req.flash('error', 'Error.Passport.Email.NotFound');
+               }
+               else {
+                   req.flash('error', 'Error.Passport.Username.NotFound');
+               }
+
+               return next(null, false);
+             }
+        //If operator is found, fetch the corrispondent Passport
+        Passport.findOne({
+            protocol : 'local',
+            user     : user.id
+        }, function (err, passport) {
+            if (passport) {
+                //Validate the old password inserted by user
+                passport.validatePassword(password, function (err, res) {
+                    if (err) {
+                        return next(err);
+                    }
+                    if (!res) {
+                        req.flash('error', 'Error.Passport.Password.Wrong');
+                        return next(null, false);
+                      }
+                    else {
+                      sails.log.verbose("Validate old Password res: "+ JSON.stringify(res));
+                        //update passport with the new password
+                        passport.password=newPass;
+                        Passport.update({id:passport.id},passport,function(err,passport){
+                              if (err) {
+                                  return next(err,false);
+                                }
+                              else {
+                                console.log("Updated passport: "+passport);
+                                return next(null,passport);
+                              }
+                            });
+                    }
+                });
+            }
+            else {
+                return next(null, false);
+            }
+        });
+      });
+    };

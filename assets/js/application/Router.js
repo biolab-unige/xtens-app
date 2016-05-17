@@ -418,7 +418,23 @@
         },
 
         operatorEdit:function(id) {
-            this.loadView(new Operator.Views.Edit({id:id}));
+
+          var that = this;
+          var operator = new Operator.Model();
+          if (id) {
+              operator.set('id', id);
+              operator.fetch({
+              success: function(operator) {
+                that.loadView(new Operator.Views.Edit({model: operator}));
+              },
+              error: function(err) {
+                  xtens.error(err);
+              }
+          });
+        }
+        else {
+            this.loadView(new Operator.Views.Edit({model: operator}));
+        }
         },
 
         subjectList: function() {
