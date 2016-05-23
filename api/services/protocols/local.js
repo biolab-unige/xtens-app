@@ -1,6 +1,9 @@
+/* jshint node: true */
+/* globals _, __filename__, sails, Project, Subject, Data, isEmail, Operator,Passport, DataType, SubjectService, TokenService, QueryService, DataService */
+"use strict";
 var validator = require('validator');
 var crypto    = require('crypto');
-
+var ValidationError = require('xtens-utils').Errors.ValidationError;
 /**
  * Local Authentication Protocol
  *
@@ -12,6 +15,7 @@ var crypto    = require('crypto');
  * For more information on local authentication in Passport.js, check out:
  * http://passportjs.org/guide/username-password/
  */
+
 
 exports.register = function (user, next) {
     exports.createUser(user, next);
@@ -27,7 +31,7 @@ exports.register = function (user, next) {
  * @param {Function} next
  */
 exports.createUser = function (_user, next) {
-    console.log(_user);
+
     var password = _user.password;
     delete _user.password;
     console.log(password);
@@ -194,54 +198,53 @@ exports.login = function (req, identifier, password, next) {
     });
 };
 
-exports.updatePassUser = function (_user, next) {
-    console.log(_user);
-    var password = _user.oldPass;
-    var login = _user.login;
-    var newPass = _user.newPass;
-    delete _user.password;
+/**
+ * Modify a user Password
+ *
+ * Attempts to find a local Passport associated with the user. If a Passport is
+ * found, its password is checked against the password supplied in the form,
+ * then is checked the new password with the confirm new password. If .
+ *
+ * @param {Object}   req
+ * @param {string}   identifier
+ * @param {string}   password
+ * @param {Function} next
+ */
+exports.updatePassword = function (param, idOperator, next) {
 
-      //Fetch the operator
-       Operator.findOne({login:login}, function (err, user) {
-           if (err) {
-               return next(err);
-             }
+    var password = param.oldPass;
+    var newPass = param.newPass;
+    var cnewPass=param.cnewPass;
 
-           if (!user) {
-               if (isEmail) {
-                   req.flash('error', 'Error.Passport.Email.NotFound');
-               }
-               else {
-                   req.flash('error', 'Error.Passport.Username.NotFound');
-               }
-
-               return next(null, false);
-             }
-        //If operator is found, fetch the corrispondent Passport
-        Passport.findOne({
-            protocol : 'local',
-            user     : user.id
-        }, function (err, passport) {
+      // Retrive the corrispondent Passport
+          Passport.findOne({
+              protocol : 'local',
+              user     : idOperator
+          }, function (err, passport) {
             if (passport) {
+
                 //Validate the old password inserted by user
                 passport.validatePassword(password, function (err, res) {
                     if (err) {
-                        return next(err);
+                        return next(null,false);
                     }
                     if (!res) {
-                        req.flash('error', 'Error.Passport.Password.Wrong');
-                        return next(null, false);
-                      }
+                        err = new ValidationError("Old Password do Not Match");
+                        return next(err,false);
+                    }
                     else {
-                      sails.log.verbose("Validate old Password res: "+ JSON.stringify(res));
-                        //update passport with the new password
+                      // control if newPass and confirmNewPass match
+                        if (newPass!==cnewPass) {
+                            err = new ValidationError("New Passwords do Not Match");
+                            return next(err,false);
+                          }
+                        //If New Passwords match, update passport with the new password
                         passport.password=newPass;
                         Passport.update({id:passport.id},passport,function(err,passport){
                               if (err) {
                                   return next(err,false);
                                 }
                               else {
-                                console.log("Updated passport: "+passport);
                                 return next(null,passport);
                               }
                             });
@@ -249,8 +252,8 @@ exports.updatePassUser = function (_user, next) {
                 });
             }
             else {
-                return next(null, false);
+                err = next(new Error("Passport not found"));
+                return next(null,false);
             }
         });
-      });
     };

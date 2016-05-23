@@ -5,9 +5,16 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 
-var BluebirdPromise = require("bluebird");
-var createUser = BluebirdPromise.promisify(PassportService.protocols.local.createUser);
-var updatePassUser = BluebirdPromise.promisify(PassportService.protocols.local.updatePassUser);
+ /* jshint node: true */
+ /* globals _, sails, Subject, Sample, Data, DataType, SubjectService, BiobankService, SampleService, TokenService, QueryService, DataService, PassportService */
+ "use strict";
+
+const ControllerOut = require("xtens-utils").ControllerOut;
+const crudManager = sails.hooks.persistence.crudManager;
+const BluebirdPromise = require('bluebird');
+const createUser = BluebirdPromise.promisify(PassportService.protocols.local.createUser);
+const updatePassword = BluebirdPromise.promisify(PassportService.protocols.local.updatePassword);
+const ValidationError = require('xtens-utils').Errors.ValidationError;
 
 var OperatorController = {
 
@@ -28,15 +35,24 @@ var OperatorController = {
     },
 
     updatePassword: function(req, res) {
+        const co = new ControllerOut(res);
+        const idOperator = TokenService.getToken(req).id;
+        if (idOperator){
 
-        return updatePassUser(req.allParams())
+        return updatePassword(req.allParams(),idOperator)
 
         .then(function(operator) {
 
-            console.log("Operator: "+ operator);
-            return res.json(200, operator);
+            return res.json(200);
 
+        }).catch(function(error) {
+            console.log(error.message);
+            return co.error(error);
         });
+      }
+      else {
+              return res.json(400, "Operator not Found");
+      }
 
     },
 
