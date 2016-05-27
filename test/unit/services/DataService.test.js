@@ -1,9 +1,14 @@
+/* jshint node:true */
+/* jshint mocha: true */
+/* globals _, sails, fixtures, Data, Sample, Subject, DataService */
+"use strict";
 var chai = require("chai");
 var chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 var expect = chai.expect, assert = chai.assert, sinon = require('sinon');
 var Joi = require("joi");
 var BluebirdPromise = require('bluebird');
+const writeFileSync = require("fs").writeFileSync;
 
 
 
@@ -44,7 +49,7 @@ describe('DataService', function() {
     });
 
     describe("#buildMetadataFieldValidationSchema", function() {
-        
+
         it("should create the correct schema for an textual metadata field", function() {
             var textField = _.cloneDeep(fixtures.datatype[2].schema.body[0].content[0]);  // name of star
             var schema = DataService.buildMetadataFieldValidationSchema(textField);
@@ -53,9 +58,11 @@ describe('DataService', function() {
                 // unit: Joi.string().required().valid(textField.unit),
                 group: Joi.string()
             });
-            expect(schema).to.eql(expectedSchema);
+            writeFileSync('actual-schema.json', schema);
+            writeFileSync('expected-schema.json', expectedSchema);
+            expect(JSON.stringify(schema)).to.eql(JSON.stringify(expectedSchema));
         });
-        
+
         it("should create the correct schema for an integer metadata field", function() {
             var integerField = _.cloneDeep(fixtures.datatype[2].schema.body[1].content[3]); // temperature of star
             var schema = DataService.buildMetadataFieldValidationSchema(integerField);
@@ -64,20 +71,20 @@ describe('DataService', function() {
                 group: Joi.string(),
                 unit: Joi.string().required().valid(integerField.possibleUnits)
             });
-            expect(schema).to.eql(expectedSchema);
+            expect(JSON.stringify(schema)).to.eql(JSON.stringify(expectedSchema));
         });
 
         it("should create the correct schema for a float metadata field", function() {
-            var floatField = _.cloneDeep(fixtures.datatype[2].schema.body[1].content[0]); // mass of star 
+            var floatField = _.cloneDeep(fixtures.datatype[2].schema.body[1].content[0]); // mass of star
             var schema = DataService.buildMetadataFieldValidationSchema(floatField);
             var expectedSchema = Joi.object().required().keys({
                 value: Joi.number().required(),
                 group: Joi.string(),
                 unit: Joi.string().required().valid(floatField.possibleUnits)
             });
-            expect(schema).to.eql(expectedSchema);
+            expect(JSON.stringify(schema)).to.eql(JSON.stringify(expectedSchema));
         });
-        
+
         it("should create the correct schema for an textual metadata field from controlled vocabulary", function() {
             var controlledVocField = _.cloneDeep(fixtures.datatype[2].schema.body[0].content[1]); // constellation of star
             var schema = DataService.buildMetadataFieldValidationSchema(controlledVocField);
@@ -85,7 +92,7 @@ describe('DataService', function() {
                 value: Joi.string().required().valid(controlledVocField.possibleValues),
                 group: Joi.string()
             });
-            expect(schema).to.eql(expectedSchema);
+            expect(JSON.stringify(schema)).to.eql(JSON.stringify(expectedSchema));
         });
 
         it("should create the correct schema for an textual metadata field in loop (case sensitive)", function() {
@@ -96,7 +103,7 @@ describe('DataService', function() {
                 group: Joi.string(),
                 loop: Joi.string()
             });
-            expect(schema).to.eql(expectedSchema);
+            expect(JSON.stringify(schema)).to.eql(JSON.stringify(expectedSchema));
         });
 
         it("should create the correct schema for an textual metadata field in loop (case insensitive/uppercase)", function() {
@@ -107,7 +114,7 @@ describe('DataService', function() {
                 group: Joi.string(),
                 loop: Joi.string()
             });
-            expect(schema).to.eql(expectedSchema);
+            expect(JSON.stringify(schema)).to.eql(JSON.stringify(expectedSchema));
         });
 
     });
@@ -219,21 +226,24 @@ describe('DataService', function() {
 
     describe("#storeMetadataIntoEAV", function() {
 
-        it("#should call the transactionHandler to execute the storage of metadata value", function() {
+        it("#should call the CRUD manager to execute the storage of metadata value", function() {
 
-            var stub = sinon.stub(sails.config.xtens.transactionHandler, 'putMetadataValuesIntoEAV', function() {
+            sails.log.debug(sails.config.xtens.crudManager);
+
+            var stub = sinon.stub(sails.config.xtens.crudManager, 'putMetadataValuesIntoEAV', function() {
                 return BluebirdPromise.try(function() { return [1]; } );
             });
 
-            return DataService.storeMetadataIntoEAV(1)
+            return DataService.storeMetadataIntoEAV([1])
 
             .then(function() {
                 console.log('DataService.test.storeMetadataIntoEAV - testing after promise fulfilled');
                 expect(stub.calledOnce).to.be.true;
-                sails.config.xtens.transactionHandler.putMetadataValuesIntoEAV.restore();
+                sails.config.xtens.crudManager.putMetadataValuesIntoEAV.restore();
             })
-            .catch(function(error) {
-                assert.fail("DataService.test.storeMetadataIntoEAV - error caught"); 
+            .catch(function(err) {
+                sails.log.error(err);
+                assert.fail("DataService.test.storeMetadataIntoEAV - error caught");
             });
 
         });
