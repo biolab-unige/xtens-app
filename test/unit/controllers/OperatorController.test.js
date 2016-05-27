@@ -42,6 +42,23 @@ describe('OperatorController', function() {
             .expect(204,done);
 
         });
+        it('Should return 400 bad Request, Old Password  Wrong', function(done) {
+
+            const demouser = fixtures.operator[1];
+            const passport = _.find(fixtures.passport, {
+                'user': demouser.id,
+                'protocol': 'local'});
+
+            request(sails.hooks.http.app)
+          .patch('/operator')
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+              oldPass: passport.password,
+              newPass: passport.password,
+              cnewPass: passport.password
+          })
+          .expect(400, done);
+        });
 
         it('Should return 400 bad Request, Old Password  Wrong', function(done) {
 

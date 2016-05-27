@@ -121,8 +121,7 @@
     },
 
     saveOperator: function(ev) {
-      if(!this.model.id){
-        this.model.set('password',$('input[id=password]').val());}
+      ev.preventDefault();
       this.model.save(null, {
         success: function(operator) {
           console.log('Operator.Views.Edit.saveOperator - operator correctly inserted/updated!');
@@ -135,6 +134,7 @@
     },
 
     deleteOperator: function (ev) {
+      ev.preventDefault();
       this.operator.destroy({
         success: function () {
           console.log('Operator.Views.Edit - operator destroyed');
@@ -323,7 +323,7 @@
 
       this.$('.xtens-modal').on('hidden.bs.modal', function (e) {
         modal.remove();
-        xtens.router.navigate('homepage', {trigger: true});
+        xtens.router.navigate('#/homepage', {trigger: true});
       });
     }
 

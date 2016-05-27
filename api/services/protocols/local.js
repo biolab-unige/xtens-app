@@ -215,6 +215,12 @@ exports.updatePassword = function(param, idOperator, next) {
     var newPass = param.newPass;
     var cnewPass = param.cnewPass;
 
+    if (password === newPass) {
+
+        var err = new ValidationError('New Password and Old Password cannot be the same');
+        return next(err, false);
+    }
+    
     Passport.findOne({
         protocol: 'local',
         user: idOperator
@@ -254,7 +260,7 @@ exports.updatePassword = function(param, idOperator, next) {
         });
 
     }).catch(function(err) {
-      
+
         err = next(new Error('Passport not found'));
         return next(null, false);
     });
