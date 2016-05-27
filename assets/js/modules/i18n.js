@@ -3,14 +3,11 @@
     var en = {
         "welcome": "Welcome",
         // menu
-        "data-management":"Data Management",
-        "standard-management":"Standard Management",
         "data-types": "Data Types",
         "data": "Data",
         "customised-data": "Customised Data",
         "subjects": "Subjects",
         "samples": "Samples",
-        "management": "Management",
         // views/templates/datatype-list.ejs
         "id":"ID",
         // views/templates/datatype-edit.ejs
@@ -86,7 +83,10 @@
         "sign-in": "Sign in",
         "wrong-username-and-or-password!": "Wrong username and/or password!",
         /* view/templates/menu-bar.ejs */
-        "admin-management": "Admin Management",
+        "management": "Management",
+        "admin": "Admin",
+        "manager":"Manager",
+        "standard":"Standard",
         "groups": "Groups",
         "operators": "Operators",
         "data-management": "Data Management",
@@ -114,7 +114,7 @@
         "associate-datatype":"Associate a Datatype",
         "dissociate-datatype":"Dissociate a Datatype",
         /* views/templates/group-list.ejs */
-	"member":"Member",
+	                                                                                                                                                                                                                                                      "member":"Member",
         /* views/templates/group-edit.ejs */
         "privilege-level": "Privilege Level",
         "can-access-personal-data": "Can Access Personal Data",
@@ -193,7 +193,7 @@
         "add-loop-condition": "Add Loop Condition",
         "add-nested-condition": "Add Nested Condition",
         /* views/templates/data-table.ejs */
-	"overall-status": "Overall Status",
+	                                                                                                                                                                                                                                                      "overall-status": "Overall Status",
         "diagnosis-age": "Diagnosis Age",
         "diagnosis-age-unit": "D.A. Unit",
         /* views/templates/query-subject-fields.ejs */

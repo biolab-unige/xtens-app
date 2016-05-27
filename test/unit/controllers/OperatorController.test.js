@@ -20,7 +20,7 @@ describe('OperatorController', function() {
     });
 
 
-    describe('PATCH /updatePassword', function() {
+    describe('PATCH /operator', function() {
         it('Should return OK 200, Password Updated', function(done) {
 
             const admin = fixtures.operator[0];

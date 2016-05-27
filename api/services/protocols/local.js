@@ -220,39 +220,41 @@ exports.updatePassword = function(param, idOperator, next) {
         user: idOperator
     })
     .then(function(passport) {
-        var passValidatePassword = BluebirdPromise.promisify(passport.validatePassword, passport);
+
+        var passValidatePassword = BluebirdPromise.promisify(passport.validatePassword);
 
       //Validate the old password inserted by user
-        return passValidatePassword(password).then(function(res) {
-            console.log("IDPASSPORT: " + passport.id + " PASSPORT: " + JSON.stringify(passport));
+        return passValidatePassword.call(passport,password).then(function(res) {
 
             if (!res) {
+
                 var err = new ValidationError('Old Password do Not Match');
-                console.log(next(err,false));
                 return next(err, false);
             }
         // control if newPass and confirmNewPass match
             if (newPass !== cnewPass) {
+
                 var errn = new ValidationError('New Passwords do Not Match');
                 return next(errn, false);
             }
         //If New Passwords match, update passport with the new password
             passport.password = newPass;
-            return Passport.update({
-                id: passport.id
-            }, passport)
+
+            return Passport.update({id: passport.id}, passport)
 
             .then(function(passport) {
-                console.log(next(null,passport));
                 return next(null, passport);
+
             }).catch(function(err) {
                 return next(err, false);
             });
+
         }).catch(function(err) {
             return next(err, false);
         });
 
     }).catch(function(err) {
+      
         err = next(new Error('Passport not found'));
         return next(null, false);
     });
