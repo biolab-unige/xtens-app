@@ -12,7 +12,7 @@ describe('OperatorController', function() {
     let token;
 
     before(function(done) {
-        loginHelper.login(request, function (bearerToken) {
+        loginHelper.loginDemouser(request, function (bearerToken) {
             token = bearerToken;
             sails.log.debug(`Got token: ${token}`);
             done();
@@ -21,12 +21,15 @@ describe('OperatorController', function() {
 
 
     describe('PATCH /operator', function() {
-        it('Should return OK 200, Password Updated', function(done) {
 
-            const admin = fixtures.operator[0];
+        it('Should return 204 No Content, Password Updated', function(done) {
+
+            const demouser = fixtures.operator[1];
             const passport = _.find(fixtures.passport, {
-                'user': admin.id,
+                'user': demouser.id,
                 'protocol': 'local'});
+
+            console.log(demouser);
 
             request(sails.hooks.http.app)
             .patch('/operator')
@@ -36,12 +39,13 @@ describe('OperatorController', function() {
                 newPass: "NewPassword",
                 cnewPass: "NewPassword"
             })
-            .expect(200, done);
+            .expect(204,done);
+
         });
 
         it('Should return 400 bad Request, Old Password  Wrong', function(done) {
 
-            const admin = fixtures.operator[0];
+            const demouser = fixtures.operator[1];
 
             request(sails.hooks.http.app)
           .patch('/operator')
@@ -55,9 +59,9 @@ describe('OperatorController', function() {
         });
         it('Should return 400 bad Request, New Password and Confirm Confirm New Password do not match', function(done) {
 
-            const admin = fixtures.operator[0];
+            const demouser = fixtures.operator[1];
             const passport = _.find(fixtures.passport, {
-                'user': admin.id,
+                'user': demouser.id,
                 'protocol': 'local'});
 
             request(sails.hooks.http.app)

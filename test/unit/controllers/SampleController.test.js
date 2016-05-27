@@ -15,7 +15,7 @@ describe('SampleController', function() {
     let token;
 
     before(function(done) {
-        loginHelper.login(request, function (bearerToken) {
+        loginHelper.loginAdmin(request, function (bearerToken) {
             token = bearerToken;
             sails.log.debug(`Got token: ${token}`);
             done();
@@ -34,7 +34,7 @@ describe('SampleController', function() {
                 biobank:2,
                 biobankCode: "081852",
                 donor: 11,
-                metadata: {},
+                metadata: {}
             })
             .expect(function(res) {
                 const l = res.header.location;
@@ -57,7 +57,7 @@ describe('SampleController', function() {
                 biobank:2,
                 biobankCode: "081852",
                 donor: 11,
-                metadata: {},
+                metadata: {}
             })
             .expect(400, done);
 
@@ -77,7 +77,7 @@ describe('SampleController', function() {
                 biobank: biobank,
                 biobankCode: "081852",
                 donor: 11,
-                metadata: {},
+                metadata: {}
             })
             .expect(function(res) {
                 //console.log(res.body[0].notes);
@@ -97,7 +97,7 @@ describe('SampleController', function() {
                 biobank:14,
                 biobankCode: "081852",
                 donor: 11,
-                metadata: {},
+                metadata: {}
             })
             .expect(400, done);
         });

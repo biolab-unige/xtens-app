@@ -14,17 +14,17 @@ describe("PassportService protocol Local", function() {
     let token;
     let passport;
     before(function(done) {
-        loginHelper.login(request, function (bearerToken) {
+        loginHelper.loginDemouser(request, function (bearerToken) {
             token = bearerToken;
             sails.log.debug(`Got token: ${token}`);
             done();
         });
 
-        const admin =fixtures.operator[0];
+        const demouser =fixtures.operator[0];
 
         Passport.findOne({
             protocol: 'local',
-            user: admin.id
+            user: demouser.id
         }).then(function(res){
             passport=res;
             // console.log("Passport found: "+ JSON.stringify(passport));
@@ -65,9 +65,9 @@ describe("PassportService protocol Local", function() {
         });
         it("Should fire Passport.findOne with the correct input parameters", function() {
 
-            const admin =fixtures.operator[0];
+            const demouser =fixtures.operator[0];
             const passportlocal = _.find(fixtures.passport, {
-                'user': admin.id,
+                'user': demouser.id,
                 'protocol': 'local'});
             const param ={
                 oldPass: passportlocal.password,
@@ -76,11 +76,11 @@ describe("PassportService protocol Local", function() {
             };
             const expectedParam={
                 protocol: 'local',
-                user: admin.id};
+                user: demouser.id};
 
             passport.password = param.newPass;
 
-            PassportService.protocols.local.updatePassword(param,admin.id,callback);
+            PassportService.protocols.local.updatePassword(param,demouser.id,callback);
 
             //sinon.assert.calledOnce(spyFindPassp);
             sinon.assert.calledWith(spyFindPassp, expectedParam);

@@ -41,9 +41,9 @@ var OperatorController = {
 
             return updatePassword(req.allParams(), idOperator)
 
-      .then(function(operator) {
+      .then(function() {
 
-          return res.json(200);
+          return res.json(204,null);
 
       }).catch(function(error) {
           console.log(error.message);
