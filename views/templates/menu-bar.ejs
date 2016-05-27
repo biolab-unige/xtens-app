@@ -1,22 +1,21 @@
 <ul id="left" class ="nav navbar-nav navbar-left">
-    <% if (session && session.get("isManager"))  {%>
     <li class="dropdown">
     <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" >
-        <%= __("admin-management") %>
+        <%= __("management")%>
         <span class="fa fa-angle-down"></span>
     </a>
     <ul id="box" class="dropdown-menu">
-        <h2 id="title"><%= __("admin-management") %> </h2>
-        <% if (session.get("isWheel"))  {%>
-        <li><a href="#/groups"><%= __("groups") %></a></li>
-        <li><a href="#/operators"><%= __("operators") %></a></li>
-        <%}; %>
-        <li><a href="#/biobanks"><%= __("biobanks") %></a></li>
-        <li><a href="#/datatypes"><%= __("data-types") %></a></li>
+      <% if (session.get("isWheel")) {%><h2 id="title"><%= __("admin-management")%></h2>
+      <li><a href="#/groups"><%= __("groups") %></a></li>
+      <li><a href="#/operators"><%= __("operators") %></a></li>
+      <li><a href="#/biobanks"><%= __("biobanks") %></a></li>
+      <li><a href="#/datatypes"><%= __("data-types") %></a></li><%}
+       else if (session.get("isManager")) {%><h2 id="title"><%= __("data-management")%></h2>
+       <li><a href="#/biobanks"><%= __("biobanks") %></a></li>
+       <li><a href="#/datatypes"><%= __("data-types") %></a></li><%}
+       else {%><h2 id="title"><%= __("standard-management")%></h2><%};%>
+        <li><a href="#/operators/updatePassword"><%= __("change-password") %></a></li>
     </ul>
-    <%}; %>
-
-    </li>
 
     <li class="dropdown">
     <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown">
@@ -35,7 +34,7 @@
 
     <li class="dropdown">
     <a  href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" data-toggle="collapse">
-        <%= __("search") %> 
+        <%= __("search") %>
         <span class="fa fa-angle-down"></span>
     </a>
     <ul id="box" class="dropdown-menu">
@@ -51,4 +50,3 @@
         <a class="btn btn-default" href="#/logout"><%= __("logout") %></a>
     </label>
 </div>
-

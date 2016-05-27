@@ -89,6 +89,7 @@
             "operators": "operatorList",
             "operators/new": "operatorEdit",
             "operators/edit/:id": "operatorEdit",
+            "operators/updatePassword": "updatePassword",
             "groups":"groupList",
             "groups/new":"groupEdit",
             "groups/edit/:id":"groupEdit",
@@ -435,6 +436,10 @@
         else {
             this.loadView(new Operator.Views.Edit({model: operator}));
         }
+        },
+
+        updatePassword:function() {
+            this.loadView(new Operator.Views.updatePassword());
         },
 
         subjectList: function() {

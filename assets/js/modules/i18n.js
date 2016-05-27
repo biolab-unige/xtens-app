@@ -3,11 +3,14 @@
     var en = {
         "welcome": "Welcome",
         // menu
+        "data-management":"Data Management",
+        "standard-management":"Standard Management",
         "data-types": "Data Types",
         "data": "Data",
         "customised-data": "Customised Data",
         "subjects": "Subjects",
         "samples": "Samples",
+        "management": "Management",
         // views/templates/datatype-list.ejs
         "id":"ID",
         // views/templates/datatype-edit.ejs
@@ -233,7 +236,16 @@
         /* assets/js/modules/Data.js */
         "ok": "OK",
         "data-correctly-stored-on-server": "Data correctly stored on server",
-        "please-wait-for-data-registration-to-complete": "Please wait for data registration to complete"
+        "please-wait-for-data-registration-to-complete": "Please wait for data registration to complete",
+        /* views/templates/update-password.ejs */
+        "update-password" : "Update Password",
+        "old-password": "Old Password",
+        "new-password": "New Password",
+        "cnew-password": "Confirm New Password",
+        "change-password": "Change Password",
+        "password-correctly-changed-on-server": "Password correctly changed on server"
+
+
     };
 
     var it = {
