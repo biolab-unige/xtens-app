@@ -372,16 +372,16 @@
                   });
               });
 
-            _.each(this.data, function(datum) {
-                datum._links = btnGroupTemplate({__:i18n,id:id});
-            });
+              _.each(this.data, function(datum) {
+                  datum._links = btnGroupTemplate({__:i18n,id:id});
+              });
 
-            this.columns.push({
-                "data": "_links",
-                "title": i18n("actions")
-            });
+              this.columns.push({
+                  "data": "_links",
+                  "title": i18n("actions")
+              });
 
-        },
+          },
 
 
         /**
