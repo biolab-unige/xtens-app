@@ -170,7 +170,6 @@ function renderDatatablesDate(data, type) {
                     columnOpts.render = renderDatatablesDate;
                     break;
                 }
->>>>>>> origin/master
 
                 this.columns.push(columnOpts);
 
