@@ -89,7 +89,7 @@
       "sass": "css/*.scss"
     },
     "jszip": {
-        "js": "dist/jszip.js"
+      "js": "dist/jszip.js"
     },
     "dropzone": {
       "js": "dist/*.js",
@@ -109,6 +109,8 @@
     "sinon-chai": "~2.5.0",
     "chai-jquery": "~1.2.2",
     "lodash": "~2.4.1",
-    "sinon": "http://sinonjs.org/releases/sinon-1.12.1.js"
+    "sinon": "http://sinonjs.org/releases/sinon-1.12.1.js",
+    "datatables.net-fixedcolumns": "^3.2.2",
+    "datatables.net-fixedcolumns-bs": "^3.2.2"
   }
 }

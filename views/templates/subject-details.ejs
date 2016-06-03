@@ -1,6 +1,4 @@
-<h1>
-    <%= __("subject") %>
-</h1>
+<h1S><%= __("subject-details") %></h1>
 
 <div id="content">
     <div class="container data-header-cnt">
@@ -12,63 +10,36 @@
                   <button id="add-personal-details" class="btn btn-info"><%= __('add-personal-details') %></button>
                   -->
               </div>
-
+              <div class="row margin-row">
+                    <label for="code" class="data-label"><%= __("code") %></label>
+                        <div class="data-input-div">
+                    <span id="code" class="data-span"><%= data.get("code") %></span>
+                </div>
+              </div>
                <div class="row margin-row">
-                    <label for="sex" class="data-label">
-                        <%= __("sex") %>: </label>
-                    <span id="sex" class="data-span">
-                        <%= data.get("sex") %>
-                    </span>
-                </div>
-                <div class="row margin-row">
-                    <label for="code" class="data-label">
-                        <%= __("code") %>: </label>
-                    <span id="code" class="data-span">
-                        <%= data.get("code") %>
-                      </span>
-                </div>
-
-
-                <div class="row margin-row">
-                    <label for="dataType" class="data-label">
-                        <%= __("data-type") %>
-                    </label>
+                    <label for="sex" class="data-label"><%= __("sex") %></label>
                     <div class="data-input-div">
-                        <span id="dataType" name="dataType" class="data-span">
-                            <%= data.get("type").name %>
-                        </span>
+                    <div id="sex" name="sex" class="data-span" ><%= data.get("sex") %></div>
+                </div>
+              </div>
+                <div class="row margin-row">
+                    <label for="dataType" class="data-label"><%= __("data-type") %></label>
+                    <div class="data-input-div">
+                        <div id="dataType" name="dataType" class="data-span"><%= data.get("type").name %></div>
                     </div>
                 </div>
-
-                                <!--
-                <div class="row margin-row">
-                    <label for="date" class="data-label">
-                        <%= __('date') %>
-                    </label>
+              <div class="row margin-row">
+                    <label for="tags" class="data-label"><%= __('tags') %></label>
                     <div class="data-input-div">
-                        <div text class="" id="date" name="date"></div>
-                    </div>
-                </div>
-                -->
-
-                <div class="row margin-row">
-                    <label for="tags" class="data-label">
-                        <%= __('tags') %>
-                    </label>
-                    <div class="data-input-div">
-                        <div type="hidden" class="" id="tags" name="tags">
+                        <div type="hidden" class="data-span" id="tags" name="tags">
                             <%= _.isEmpty(data.get('tags')) ? '' : data.get('tags').join(', ') %>
                         </div>
                     </div>
                 </div>
                 <div class="row margin-row">
-                    <label for="notes" class="data-label">
-                        <%= __('notes') %>
-                    </label>
+                    <label for="notes" class="data-label"><%= __('notes') %></label>
                     <div class="data-input-div">
-                        <div class="" id="notes" name="notes" rows="4">
-                            <%= data.get('notes') || "" %>
-                        </div>
+                        <div class="data-span" id="notes" name="notes" rows="4"><%= data.get('notes') || "" %></div>
                     </div>
                 </div>
             </div>
@@ -99,7 +70,7 @@
                             values = metadata[field.formattedName].values;
                             if (field.fieldType==="Date"){value=moment(value).lang("it").format('L');}
                             unit = metadata[field.formattedName].unit; %>
-                            <div name="metadata-value">
+                            <div name="metadata-value" class="data-value">
                                 <% if (_.isArray(values)) { %>
                                     <%=  !_.isEmpty(values) ? values.join(", ") : "" %>
                                 <% }

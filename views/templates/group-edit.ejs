@@ -9,7 +9,7 @@
     <form name = "Myform" class="form-horizontal edit-group-form" role="form">
 
         <legend class="legend"align="center"><%= group ? 'Edit' : 'New' %> Group</legend>
-        
+
         <div class="form-group row">
             <label for="name" class="col-md-3 control-label"><%= __("name") %></label>
             <div class="col-md-6">
@@ -30,23 +30,24 @@
                 <%= __("can-access-personal-data") %>
             </label>
         </div>
-        
+
         <div class="form-group row">
             <label for="can-access-sensitive-data" class="checkbox-inline">
                 <input type="checkbox" name="can-access-sensitive-data" id="can-access-sensitive-data">
                 <%= __("can-access-sensitive-data") %>
             </label>
         </div>
-                 
-        <hr />
-        
-        <div id="buttonbardiv" class="row text-center">
-            <input type="submit" id="save" class="btn btn-primary" value="<%= __('save-group') %>" >
 
+        <hr />
+
+        <div id="buttonbardiv" class="row text-center">
+            <div class="btn-group btn-group-margin">
+            <input type="submit" id="save" class="btn btn-primary" value="<%= __('save-group') %>" >
             <% if(group) { %>
                 <input type="hidden" name="id" value="<%= group.id %>" />
                 <button id="delete" data-group-id="<%= group.id %>" class="btn btn-danger delete"><%= __('delete') %></button>
             <% }; %>
+        </div>
         </div>
 
     </form>
