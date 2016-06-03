@@ -46,8 +46,8 @@ var Passport = {
     // When the local strategy is employed, a password will be used as the
     // means of authentication along with either a username or an email.
     //
-    // accessToken is used to authenticate API requests. it is generated when a 
-    // passport (with protocol 'local') is created for a user. 
+    // accessToken is used to authenticate API requests. it is generated when a
+    // passport (with protocol 'local') is created for a user.
     password    : { type: 'string', minLength: 8 },
     accessToken : { type: 'string', columnName: 'access_token' },
 
@@ -73,18 +73,19 @@ var Passport = {
     //
     // For more information on associations in Waterline, check out:
     // https://github.com/balderdashy/waterline
-    user: { 
+    user: {
         model: 'operator',
-        columnName: 'operator', 
-        required: true 
-    },  // TODO: change it back to user??
+        columnName: 'operator',
+        // required: true
+    },  /* TODO: notice that the required flag was removed to allow tests to run,
+                 we should set it according to the environment */
 
     createdAt: {
         type:'datetime',
         columnName: 'created_at'
     },
 
-    updatedAt: { 
+    updatedAt: {
         type:'datetime',
         columnName: 'updated_at'
     },

@@ -80,7 +80,7 @@
         <div id="metadata-body" class="metadata-body">
             <% var metadata = data.get("metadata"), value, values, unit;
             _.each(fields, function(field,index) {%>
-            <!--  
+            <!--
       <% var groupname = field._group %>
         -->
             <%if (index === 0 || fields[index-1]._group !== field._group ){%>
@@ -98,9 +98,10 @@
                         <div class="col-md-5 text-left">
 
                             <% value = metadata[field.formattedName].value;
-                            values = metadata[field.formattedName].values; 
+                            values = metadata[field.formattedName].values;
+                            if (field.fieldType==="Date"){value=moment(value).lang("it").format('L');}
                             unit = metadata[field.formattedName].unit; %>
-                            <div name="metadata-value">
+                            <div name="metadata-value" class="data-value">
                                 <% if (_.isArray(values)) { %>
                                     <%=  !_.isEmpty(values) ? values.join(", ") : "" %>
                                 <% }

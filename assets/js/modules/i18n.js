@@ -107,7 +107,7 @@
         "associate-datatype":"Associate a Datatype",
         "dissociate-datatype":"Dissociate a Datatype",
         /* views/templates/group-list.ejs */
-	"member":"Member",
+        "member":"Member",
         /* views/templates/group-edit.ejs */
         "privilege-level": "Privilege Level",
         "can-access-personal-data": "Can Access Personal Data",
@@ -122,9 +122,12 @@
         "missing-value": "Missing Value",
         "metadata": "Metadata",
         "new-data": "New Data",
+        "datatype-graph": "DataType Graph",
         /* views/templates/personal-details-edit.ejs */
         "given-name": "Name",
         "surname": "Surname",
+        /* views/templates/subject-details */
+        "subject-details":"Subject Details",
         /* views/templates/subject-list */
         "subject-list": "Subject List",
         "new-subject": "New Subject",
@@ -144,6 +147,7 @@
         "biobank-code": "Biobank Code",
         "material-type": "Material Type",
         "donor": "Donor",
+        "edit-donor": "Edit Donor",
         "parent-sample": "Parent Sample",
         /* views/templates/sample-list */
         "new-sample": "New Sample",
@@ -184,7 +188,7 @@
         "add-loop-condition": "Add Loop Condition",
         "add-nested-condition": "Add Nested Condition",
         /* views/templates/data-table.ejs */
-	"overall-status": "Overall Status",
+        "overall-status": "Overall Status",
         "diagnosis-age": "Diagnosis Age",
         "diagnosis-age-unit": "D.A. Unit",
         /* views/templates/query-subject-fields.ejs */

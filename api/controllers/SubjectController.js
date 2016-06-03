@@ -5,26 +5,25 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 /* jshint node: true */
-/* jshint esnext: true */
 /* globals _, __filename__, sails, Project, Subject, Data, DataType, SubjectService, TokenService, QueryService, DataService */
 "use strict";
 
-let ControllerOut = require("xtens-utils").ControllerOut;
-let crudManager = sails.config.xtens.crudManager;
-let BluebirdPromise = require('bluebird');
-let ValidationError = require('xtens-utils').Errors.ValidationError;
-let SUBJECT = sails.config.xtens.constants.DataTypeClasses.SUBJECT;
+const ControllerOut = require("xtens-utils").ControllerOut;
+const crudManager = sails.hooks.persistence.crudManager;
+const BluebirdPromise = require('bluebird');
+const ValidationError = require('xtens-utils').Errors.ValidationError;
+const SUBJECT = sails.config.xtens.constants.DataTypeClasses.SUBJECT;
 
 module.exports = {
 
-    /** 
+    /**
      *  POST /subject
      *  @method
      *  @name create
      *  @description:  create a new subject; transaction-safe implementation
      */
     create: function(req, res) {
-        let co = new ControllerOut(res);
+        const co = new ControllerOut(res);
         // let subject = req.body;
         let subject = req.allParams();
         console.log(subject);
@@ -33,7 +32,7 @@ module.exports = {
             let validationRes = SubjectService.validate(subject, true, subjectType);
             if (validationRes.error === null) {
                 subject = validationRes.value;
-                let subjectTypeName = subjectType && subjectType.name;
+                const subjectTypeName = subjectType && subjectType.name;
                 return crudManager.createSubject(subject, subjectTypeName);
             }
             else {
@@ -63,13 +62,13 @@ module.exports = {
      * @description - retrieve an existing subject
      */
     findOne: function(req, res) {
-        let co = new ControllerOut(res);
-        let id = req.param('id');
+        const co = new ControllerOut(res);
+        const id = req.param('id');
         let query = Subject.findOne(id);
-        let operator = TokenService.getToken(req);
-        
+        const operator = TokenService.getToken(req);
+
         query = QueryService.populateRequest(query, req, { blacklist: ['personalInfo'] });
-        
+
         // TODO replace true in IF condition with check on getting personal details
         if (operator.canAccessPersonalData) {
             query.populate('personalInfo');
@@ -93,10 +92,10 @@ module.exports = {
      * @description Find samples based on criteria provided in the request
      */
     find: function(req, res) {
-        let co = new ControllerOut(res);
-        let operator = TokenService.getToken(req);
+        const co = new ControllerOut(res);
+        const operator = TokenService.getToken(req);
 
-        let query = Subject.find()
+        let query = Subject.find(QueryService.parseSelect(req))
         .where(QueryService.parseCriteria(req))
         .limit(QueryService.parseLimit(req))
         .skip(QueryService.parseSkip(req))
@@ -124,12 +123,12 @@ module.exports = {
      *              Transaction-safe implementation
      */
     update: function(req, res) {
-        let co = new ControllerOut(res);
+        const co = new ControllerOut(res);
         let subject = req.allParams();
         SubjectService.simplify(subject);
 
         DataType.findOne(subject.type).then(function(dataType) {
-            let validationRes = SubjectService.validate(subject, true, dataType);
+            const validationRes = SubjectService.validate(subject, true, dataType);
             if (validationRes.error === null) {
                 subject = validationRes.value;
                 return crudManager.updateSubject(subject, dataType.name);
@@ -158,12 +157,12 @@ module.exports = {
      * DELETE /subject/:id
      * @method
      * @name destroy
-     * @description      
+     * @description
      */
     destroy: function(req, res) {
-        let co = new ControllerOut(res);
-        let id = req.param('id');
-        let idOperator = TokenService.getToken(req).id;
+        const co = new ControllerOut(res);
+        const id = req.param('id');
+        const idOperator = TokenService.getToken(req).id;
 
         if (!id) {
             return co.badRequest({message: 'Missing subject ID on DELETE request'});
@@ -177,7 +176,11 @@ module.exports = {
             })
         })
         .then(function(result) {
-            let allowedDataTypes = _.pluck(result.dataTypes, 'id');
+            const allowedDataTypes = _.pluck(result.dataTypes, 'id');
+            // if subject does not exist return 0 rows deleted
+            if (!result.subject) {
+                return BluebirdPromise.resolve(0);
+            }
             if (allowedDataTypes.indexOf(result.subject.type) > -1) {
                 return crudManager.deleteSubject(id);
             }
@@ -204,11 +207,11 @@ module.exports = {
      * @description retrieve all required models for editing/creating a Subject via client web-form
      */
     edit: function(req, res) {
-        let co = new ControllerOut(res);
-        let id = req.param("id"), code = req.param("code");
-        let idOperator = TokenService.getToken(req).id;
-        
-        console.log("SubjectController.edit - Decoded ID is: " + idOperator);  
+        const co = new ControllerOut(res);
+        const id = req.param("id"), code = req.param("code");
+        const idOperator = TokenService.getToken(req).id;
+
+        console.log("SubjectController.edit - Decoded ID is: " + idOperator);
 
         return BluebirdPromise.props({
             projects: Project.find(),
@@ -222,28 +225,28 @@ module.exports = {
             return res.json(results);
         })
         .catch(function(err) {
-            return co.error(err); 
+            return co.error(err);
         });
-        
+
     },
 
     /**
      * @method
      * @name createGraph
-     * @description generate and visualize the (nested/multi level) data graph for a given subject. 
+     * @description generate and visualize the (nested/multi level) data graph for a given subject.
      *              Note: The current limit for the number of instances is 100.
      */
     createGraph:function(req,res){
-        let co = new ControllerOut(res);
-        let idSubject = req.param("idPatient");
-        let fetchSubjectDataTree = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTree;
+        const co = new ControllerOut(res);
+        const idSubject = req.param("idPatient");
+        const fetchSubjectDataTree = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTree;
 
         function subjectTreeCb(err, resp) {
-            
+
             if (err){
                 console.log(err);
             }
-            
+
             else {
                 console.log(resp.rows);
                 let links = [];
@@ -282,7 +285,7 @@ module.exports = {
     /**
      * @method
      * @name createGraphSimple
-     * @description generate and visualize the patient's data graph. All the descendant data are shown as children. 
+     * @description generate and visualize the patient's data graph. All the descendant data are shown as children.
      *              Only one data instance per datatype is shown.
      * @deprecated
      *
@@ -292,16 +295,16 @@ module.exports = {
         let fetchSubjectDataTreeSimple = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTreeSimple;
         let idSubject = req.param("idPatient");
         console.log(idSubject);
-        
+
         function subjectTreeSimpleCb(err,resp) {
 
             let children = [], child, links = [];
-            
+
             console.log(resp);
 
             if (resp.rows.length === 0) {
                 links = [{
-                    'source': 'Patient', 
+                    'source': 'Patient',
                     'target': null
                 }];
                 // let json = {'links':links};
@@ -312,7 +315,7 @@ module.exports = {
                 children.push(resp.rows[i].id);
             }
 
-            console.log(children); 
+            console.log(children);
 
             BluebirdPromise.map(children,function(child){
 
@@ -324,7 +327,7 @@ module.exports = {
                 });
 
             })
-            
+
             .then(function(link){
                 console.log(link);
                 links = link;
@@ -333,7 +336,7 @@ module.exports = {
                 return res.json(json);
 
             })
-            
+
             .catch(function(err){
                 return co.error(err);
             });
@@ -343,4 +346,3 @@ module.exports = {
         fetchSubjectDataTreeSimple(idSubject, subjectTreeSimpleCb);
     }
 };
-

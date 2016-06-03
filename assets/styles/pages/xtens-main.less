@@ -16,13 +16,15 @@
 .btn-primary{
     margin-bottom:10px;
 }
-#main {
-    background-color: @main-color;
-    border-radius:15px;
-    height: auto !important;
-    min-height: 100%;
-    margin-bottom:-50px;
-    position:relative;
+
+#outer
+{
+    width:100%;
+    text-align: center;
+}
+.inner
+{
+    display: inline-block;
 }
 .dataType {
     width: 100%;
@@ -123,6 +125,11 @@
 .data .data-span {
     /* .make-sm-column(2); */
     .make-xs-column(3);
+}
+.data .data-value{
+    overflow-x: auto;
+    overflow-wrap: break-word;
+    max-height: 250px;
 }
 .data .data-input-div {
     /* .make-sm-column(6); */

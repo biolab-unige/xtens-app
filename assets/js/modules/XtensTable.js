@@ -57,6 +57,7 @@ function renderDatatablesDate(data, type) {
             "click .xtenstable-derivedsamples": "showDerivedSampleList",
             "click .xtenstable-deriveddata": "showDerivedDataList",
             "click .xtenstable-parameters": "showVideoParameters"
+
         },
 
         /**
@@ -72,11 +73,13 @@ function renderDatatablesDate(data, type) {
          * @name destroy
          */
         destroy: function() {
-             if (this.table) {
-                 this.table.destroy(true);
-                 this.$el.empty();
-             }
-             this.remove();
+
+            if (this.table) {
+                this.table.destroy(true);
+                this.$el.empty();
+            }
+            this.remove();
+
         },
 
         /**
@@ -85,8 +88,19 @@ function renderDatatablesDate(data, type) {
          * @description show the datatable given the option object
          */
         displayDataTable: function() {
+
             if (this.tableOpts && !_.isEmpty(this.tableOpts.data)) {
                 this.table = this.$el.DataTable(this.tableOpts);
+
+                if (this.tableOpts.columns.length>9){
+                    new $.fn.dataTable.FixedColumns(this.table, {
+                        leftColumns:this.numLeft,
+                        rightColumns:1
+                    });
+                }
+                else{
+                    this.tableOpts.fixedColumns=false;
+                }
 
                 // display the buttons option
                 new $.fn.dataTable.Buttons(this.table, {
@@ -95,6 +109,18 @@ function renderDatatablesDate(data, type) {
                     ]
                 });
                 this.table.buttons().container().appendTo($('.col-sm-6:eq(0)', this.table.table().container()));
+
+                $(document).ready(function() {
+                    var table = $('#example').DataTable();
+
+                    $('#example tbody')
+        .on( 'mouseenter', 'td', function () {
+            var colIdx = table.cell(this).index().column;
+
+            $( table.cells().nodes() ).removeClass( 'highlight' );
+            $( table.column( colIdx ).nodes() ).addClass( 'highlight' );
+        } );
+                } );
             }
 
             // the returned dataset is empty
@@ -116,49 +142,57 @@ function renderDatatablesDate(data, type) {
             // var dataType = new DataTypeModel(this.dataType);
             var fieldsToShow = this.dataType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
             this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), true);  // TODO manage permission for personalDetails
-                _.each(fieldsToShow, function(field) {
-                        var colTitle = field.name;
+            this.numLeft=this.columns.length;
+            _.each(fieldsToShow, function(field) {
+                var colTitle = field.name;
 
-                        var fieldName = useFormattedNames ? field.formattedName : field.name;
+                var fieldName = useFormattedNames ? field.formattedName : field.name;
 
-                        var columnOpts = {
-                            "title": colTitle,
-                            "data": "metadata." + fieldName + ".value",
-                            "visible": field.visible,
-                            "defaultContent": ""
-                        };
+                var columnOpts = {
+                    "title": colTitle,
+                    "data": "metadata." + fieldName + ".value",
+                    "visible": field.visible,
+                    "defaultContent": ""
+                };
 
                         // if field is loop retrieve multiple values
-                        if (field._loop) {
-                            columnOpts.data = "metadata." + fieldName + ".values";
-                        }
+                if (field._loop) {
+                    columnOpts.data = "metadata." + fieldName + ".values";
+                    var data = columnOpts.data;
+                    columnOpts.render = function ( data ) {
+                        return  data && data.length > 2 ? '<span>List on Details button</span>' : data;
+                    };
 
-                        switch(field.fieldType) {
-                            case "Date":    // if the column has dates render them in the desired format
-                                columnOpts.render = renderDatatablesDate;
-                                break;
-                        }
+                }
 
-                        this.columns.push(columnOpts);
+                switch(field.fieldType) {
+                case "Date":    // if the column has dates render them in the desired format
+                    columnOpts.render = renderDatatablesDate;
+                    break;
+                }
+>>>>>>> origin/master
 
-                        if (field.hasUnit) {
+                this.columns.push(columnOpts);
 
-                            columnOpts = {
-                                "title": colTitle + " Unit",
-                                "data": "metadata." + fieldName + ".unit",
-                                "visible": field.visible,
-                                "defaultContent": ""
-                            };
+                if (field.hasUnit) {
+
+                    columnOpts = {
+                        "title": colTitle + " Unit",
+                        "data": "metadata." + fieldName + ".unit",
+                        "visible": field.visible,
+                        "defaultContent": ""
+                    };
 
                             // if field is loop retrieve multiple units
-                            if (field._loop) {
-                                columnOpts.data = "metadata." + fieldName + ".units";
-                            }
 
-                            this.columns.push(columnOpts);
-                        }
+                    if (field._loop) {
+                        columnOpts.data = "metadata." + fieldName + ".units";
+                    }
 
-                }, this);
+                    this.columns.push(columnOpts);
+                }
+
+            }, this);
 
             // add links
             this.addLinks(this.dataType.id);
@@ -166,10 +200,18 @@ function renderDatatablesDate(data, type) {
             this.tableOpts = {
                 data: this.data,
                 columns: this.columns,
-                paging: true,
-                info: true,
-                pagingType: "full_numbers" // DOES NOT WORK!!
+                info: false,
+                scrollX:        true,
+                scrollY:        "500px",
+                scrollCollapse: true,
+                paging:         true,
+                autoWidth:      false,
+                columnDefs: [
+                  {"className": "dt-center", "targets": "_all"}
+                ],
+                paginationType: "full_numbers" // DOES NOT WORK!!
             };
+
 
         },
 
@@ -228,12 +270,13 @@ function renderDatatablesDate(data, type) {
                 cols = cols.concat(this.insertPersonalDetailsColumns());
             }
             switch(model) {
-                case Classes.SUBJECT:
-                    cols = cols.concat(this.insertSubjectColumns());
-                    break;
-                case Classes.SAMPLE:
-                    cols = cols.concat(this.insertSampleColumns());
-                    break;
+
+            case Classes.SUBJECT:
+                cols = cols.concat(this.insertSubjectColumns());
+                break;
+            case Classes.SAMPLE:
+                cols = cols.concat(this.insertSampleColumns());
+                break;
             }
             return cols;
         },
@@ -256,7 +299,7 @@ function renderDatatablesDate(data, type) {
         insertSampleColumns: function() {
             return [
                 {"title": i18n("biobank"), "data": "biobank_acronym"},
-                {"title": i18n("biobank-code"), "data": "biobank_code"},
+                {"title": i18n("biobank-code"), "data": "biobank_code"}
             ];
         },
 
@@ -421,6 +464,7 @@ function renderDatatablesDate(data, type) {
             xtens.router.navigate(path, {trigger: true});
             return false;
         },
+
 
 
         /**

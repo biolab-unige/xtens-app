@@ -1,15 +1,16 @@
 /**
  * @author  Massimiliano Izzo
- * @description This file conatins all the Backbone classes for handling Subjects 
+ * @description This file conatins all the Backbone classes for handling Subjects
  */
 
 (function(xtens, Subject) {
-    
+
     // TODO: retrieve this info FROM DATABASE ideally or from the server-side anyway
-    var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames; 
+    var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames;
 
     var i18n = xtens.module("i18n").en;
     var Data = xtens.module("data");
+    var DataTypeModel = xtens.module("datatype").Model;
     var PersonalDetails = xtens.module("personaldetails");
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
     var sexOptions = xtens.module("xtensconstants").SexOptions;
@@ -30,7 +31,7 @@
 
     Subject.List = Backbone.Collection.extend({
         model: Subject.Model,
-        url: '/subject' 
+        url: '/subject'
     });
 
     Subject.Views.Edit = Data.Views.Edit.fullExtend({
@@ -49,8 +50,8 @@
                     defaultOption: {
                         label: "",
                         value: null
-                    } 
-                }, 
+                    }
+                },
                 getVal: function($el, ev, options) {
                     return $el.val().map(function(value) {
                         // return _.findWhere(options.view.projects, {id: parseInt(value)});
@@ -69,7 +70,7 @@
             '#sex': {
                 observe: 'sex',
                 initialize: function($el) {
-                    var data = []; 
+                    var data = [];
                     _.each(sexOptions, function(sexOption) {
                         data.push({id: sexOption, text: sexOption});
                     });
@@ -126,7 +127,7 @@
          *              and save the Subject model on the server
          * @param {event} - the form submission event
          * @return {false} - to suppress the HTML form submission
-         * @override 
+         * @override
          */
         saveData: function() {
             var metadata = this.schemaView && this.schemaView.serialize(useFormattedNames);
@@ -155,7 +156,7 @@
         }
 
     });
-    
+
     /**
      * @class
      * @name Subject.Views.Details
@@ -163,7 +164,7 @@
      * @description view containing the details (metadata and files) of a Subject (Subject.Model) instance
      */
     Subject.Views.Details = Data.Views.Details.fullExtend({
-        
+
         /**
          * @method
          * @name initialize
@@ -172,6 +173,26 @@
           $("#main").html(this.el);
           this.template = JST["views/templates/subject-details.ejs"];
           this.render();
+          if (xtens.session.get('canAccessPersonalData')) {
+              this.addPersonalDetailsParam();
+          }
+        },
+        render: function() {
+          var dataType = new DataTypeModel(this.model.get("type"));
+          var fields = dataType.getFlattenedFields();
+
+            this.$el.html(this.template({
+                __: i18n,
+                data: this.model,
+                fields: fields
+            }));
+        },
+        addPersonalDetailsParam: function() {
+            var model = new PersonalDetails.Model(this.model.get("personalInfo"));
+            this.personalDetailsView = new PersonalDetails.Views.Details({model: model});
+            this.$('#personal-details').empty();
+            this.$('#personal-details').html(this.personalDetailsView.render().el);
+
         }
 
     });
@@ -213,7 +234,7 @@
             this.$el.html(this.template({__: i18n, subjects: this.subjects.models}));
             var table = this.$('.table').DataTable();
             return this;
-        } 
+        }
     });
 
     Subject.Views.Graph = Backbone.View.extend({
@@ -241,13 +262,13 @@
         createGraph : function () {
             var patient = document.getElementById('select').value;
 
-            // retrieve all the descendant samples and data for the given patient 
+            // retrieve all the descendant samples and data for the given patient
             $.post('/subjectGraph',{
                 idPatient:patient
             },function(err,res,body){
 
                 // clean the previous graph if present
-                d3.select("#subject-graph").remove(); 
+                d3.select("#subject-graph").remove();
 
                 // set margins, width and height of the svg container
                 var margin = {top: 40, right: 120, bottom: 40, left: 120},
@@ -270,18 +291,18 @@
                         return 'Patient'+" " +patient;
                 });
 
-                // generate a data hierarchy tree 
+                // generate a data hierarchy tree
                 var tree = d3.layout.tree()
-                .size([width, height]) 
-                // decrease the separation among nodes dividing the distance by a factor 2 for each level 
+                .size([width, height])
+                // decrease the separation among nodes dividing the distance by a factor 2 for each level
                 .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
 
                 //function to draw the slanted arcs
                 var diagonal = d3.svg.diagonal()
-                .projection(function(d) { 
+                .projection(function(d) {
                     return [d.x*1.3-120, d.y/2];
                 });
-                
+
                 // x and y required by d3.tip() function
                 var x = d3.scale.ordinal()
                 .rangeRoundBands([0, width], 0.1);
@@ -296,7 +317,7 @@
                 .attr("id", "subject-graph")
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                
+
                 // execute the tip method
                 svg.call(tip);
 
@@ -307,14 +328,14 @@
 
                 // Create nodes for each unique source and target.
                 links.forEach(function(link) {
-                    var parent = link.source = nodeByName(link.source),      
+                    var parent = link.source = nodeByName(link.source),
                     child = link.target = nodeByName(link.target);
                     if (parent.children) parent.children.push(child);
                     else parent.children = [child];
                 });
 
                 var index;
-                
+
                 // find the root node (Patient)
                 for(var i=0;i<links.length;i++){
                     if(links[i].source.name === 'Patient'){
@@ -332,11 +353,11 @@
                             node.type = links[i].type;
                             node.metadata = links[i].metadata;
                         }
-                    } 
+                    }
                 });
 
 
-                // define the links format/appereance     
+                // define the links format/appereance
                 svg.append("svg:defs").selectAll("marker")
                 .data(links)
                 .enter().append("svg:marker")
@@ -374,14 +395,14 @@
                     }
                 })
                 // set the x coordinate of the node centre
-                .attr("cx", function(d) { 
-                    return d.x*1.3-120;      
+                .attr("cx", function(d) {
+                    return d.x*1.3-120;
                 })
                 // set the y
                 .attr("cy", function(d) {
-                    return d.y/2; 
+                    return d.y/2;
                 })
-                // set the color 
+                // set the color
                 .style("fill", function(d) {
                     if(d.type){
                         return color(d.type);
@@ -389,7 +410,7 @@
                     else{
                         return "blue"; // if subject colour it with blue
                     }
-                }) 
+                })
                 .on('mouseover', tip.show)
                 .on('mouseout', tip.hide);
 

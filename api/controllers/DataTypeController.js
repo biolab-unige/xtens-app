@@ -4,10 +4,13 @@
  * @description :: Server-side logic for managing datatypes
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
-var ControllerOut = require("xtens-utils").ControllerOut;
-var crudManager = sails.config.xtens.crudManager;
+ /* jshint node: true */
+ /* globals _, sails, DataType, DataTypeService, QueryService, TokenService */
+ "use strict";
+const ControllerOut = require("xtens-utils").ControllerOut;
+const crudManager = sails.hooks.persistence.crudManager;
 
-var DataTypeController = {
+const DataTypeController = {
 
     /**
      * GET /dataType
@@ -18,9 +21,9 @@ var DataTypeController = {
      * @description Find dataTypes based on criteria
      */
     find: function(req, res) {
-        var co = new ControllerOut(res);
+        const co = new ControllerOut(res);
 
-        var query = DataType.find()
+        let query = DataType.find()
         .where(QueryService.parseCriteria(req))
         .limit(QueryService.parseLimit(req))
         .skip(QueryService.parseSkip(req))
@@ -48,8 +51,8 @@ var DataTypeController = {
      * @name create
      */
     create: function(req, res) {
-        var co = new ControllerOut(res);
-        var dataType = req.allParams(); 
+        const co = new ControllerOut(res);
+        let dataType = req.allParams();
 
         if (!dataType.name) dataType.name = dataType.schema && dataType.schema.name;
         if (!dataType.model) dataType.model = dataType.schema && dataType.schema.model;
@@ -59,7 +62,7 @@ var DataTypeController = {
         // var parents = req.param('parents');
 
         // Validate data type (schema included)
-        var validationRes = DataTypeService.validate(dataType, true);
+        const validationRes = DataTypeService.validate(dataType, true);
 
         if (validationRes.error) {
             return co.error(validationRes.error);
@@ -88,11 +91,11 @@ var DataTypeController = {
      * @name update
      */
     update: function(req, res) {
-        var co = new ControllerOut(res);
-        var dataType = req.allParams();
+        const co = new ControllerOut(res);
+        let dataType = req.allParams();
 
         // Validate data type (schema included)
-        var validationRes = DataTypeService.validate(dataType, true);
+        const validationRes = DataTypeService.validate(dataType, true);
 
         if (validationRes.error) {
             return co.error(validationRes.error);
@@ -119,9 +122,9 @@ var DataTypeController = {
      * @description DELETE /dataType/:id
      */
     destroy: function(req, res) {
-        var co = new ControllerOut(res);
-        var id = req.param('id');
-        
+        const co = new ControllerOut(res);
+        const id = req.param('id');
+
         if (!id) {
             return co.badRequest({message: 'Missing dataType ID on DELETE request'});
         }
@@ -138,15 +141,15 @@ var DataTypeController = {
             return co.error(err);
         });
 
-    }, 
+    },
 
     /**
      * @deprecated
      */
     buildHierarchy: function(req, res) {
-        var co = new ControllerOut(res);
+        const co = new ControllerOut(res);
         DataType.find({ parent: null}).populate('children').then(function(roots) {
-            DataTypeService.getChildrenRecursive(roots);  
+            DataTypeService.getChildrenRecursive(roots);
         })
         .then(function(results) {
             console.log(results);
@@ -165,17 +168,17 @@ var DataTypeController = {
 
     buildGraph : function(req,res) {
 
-        var name = req.param("idDataType");
-        var fetchDataTypeTree = sails.config.xtens.databaseManager.recursiveQueries.fetchDataTypeTree;
-        console.log(req.param("idDataType"));
-        
+        const name = req.param("idDataType");
+        const fetchDataTypeTree = sails.config.xtens.databaseManager.recursiveQueries.fetchDataTypeTree;
+        sails.log(req.param("idDataType"));
+
         return DataType.findOne({name:name})
-        
+
         .then(function(result) {
-            var id = result.id;
-            var template = result.model;
+            const id = result.id;
+            const template = result.model;
             // This query returns the parent-child associations among the datatypes
-            
+
             function dataTypeTreeCb (err, resp) {
 
                 var links = [];
@@ -191,21 +194,23 @@ var DataTypeController = {
                     });
                 }
                 // populate the links array
-                for(var i =0;i<resp.rows.length;i++) {            
+                for(let i =0; i<resp.rows.length; i++) {
                     links.push({
                         'source':resp.rows[i].parentname,
                         'target':resp.rows[i].childname,
                         'depth':resp.rows[i].depth,
                         'source_template':resp.rows[i].parenttemplate,
-                        'target_template':resp.rows[i].childtemplate 
-                    });  
+                        'target_template':resp.rows[i].childtemplate
+                    });
                 }
 
-                var json = {'links':links};
-                console.log(json);
+                const json = {
+                    'links': links
+                };
+                sails.log(json);
                 return res.json(json);
             }
-            
+
             fetchDataTypeTree(id, dataTypeTreeCb);
         });
 

@@ -4,44 +4,46 @@
  * @description :: Server-side logic for managing data
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
-/* jshint esnext: true */
 /* jshint node: true */
 /* globals _, sails, Data, DataType, DataService, SubjectService, SampleService, QueryService, TokenService */
 "use strict";
 
-let BluebirdPromise = require('bluebird');
-let ControllerOut = require("xtens-utils").ControllerOut;
-let ValidationError = require('xtens-utils').Errors.ValidationError;
-let xtensConf = global.sails.config.xtens;
-let crudManager = xtensConf.crudManager;
-let DATA = xtensConf.constants.DataTypeClasses.DATA;
+const BluebirdPromise = require('bluebird');
+const ControllerOut = require("xtens-utils").ControllerOut;
+const ValidationError = require('xtens-utils').Errors.ValidationError;
+const xtensConf = global.sails.config.xtens;
+const crudManager = sails.hooks.persistence.crudManager;
+const DATA = xtensConf.constants.DataTypeClasses.DATA;
 
 module.exports = {
 
-    
-    /** 
+
+    /**
      *  POST /data
      *  @method
      *  @name create
-     *  @description -> create a new Data Instance; transaction-safe implementation 
-     *                   
+     *  @description -> create a new Data Instance; transaction-safe implementation
+     *
      */
     create: function(req, res) {
+        sails.log("DataController.create - here we are!!");
         let data = req.allParams();
-        let co = new ControllerOut(res);
+        const co = new ControllerOut(res);
 
         DataService.simplify(data);
 
         DataType.findOne(data.type).then(function(dataType) {
-            let validationRes = DataService.validate(data, true, dataType);
+            sails.log.debug(dataType);
+            sails.log.debug(crudManager);
+            const validationRes = DataService.validate(data, true, dataType);
             if (validationRes.error === null) {
                 data = validationRes.value;
-                let dataTypeName = dataType && dataType.name;
+                const dataTypeName = dataType && dataType.name;
                 return crudManager.createData(data, dataTypeName);
             }
             else {
                 throw new ValidationError(validationRes.error);
-            } 
+            }
         })
         /*
         .then(function(idData) {
@@ -53,25 +55,25 @@ module.exports = {
             return res.json(201, result);
         })
         .catch(function(error) {
-            console.log("Error: " + error.message);
+            sails.log.error(error.message);
             return co.error(error);
         });
     },
 
     /**
-     * GET /data/:id 
+     * GET /data/:id
      * @method
      * @name findOne
      * @description - retrieve an existing data
      */
     findOne: function(req, res) {
-        let co = new ControllerOut(res);
-        let id = req.param('id');
-        
+        const co = new ControllerOut(res);
+        const id = req.param('id');
+
         let query = Data.findOne(id);
 
         query = QueryService.populateRequest(query, req);
-        
+
         query.then(function(result) {
             return res.json(result);
         })
@@ -91,7 +93,7 @@ module.exports = {
      * @description Find data based on criteria
      */
     find: function(req, res) {
-        let co = new ControllerOut(res);
+        const co = new ControllerOut(res);
 
         let query = Data.find()
         .where(QueryService.parseCriteria(req))
@@ -105,11 +107,12 @@ module.exports = {
             res.json(data);
         })
         .catch(function(err) {
+            sails.log.error(err.message);
             return co.error(err);
         });
     },
 
-    /** 
+    /**
      *  PUT /data/:id
      *  @method
      *  @name update
@@ -118,30 +121,30 @@ module.exports = {
      */
     update: function(req, res) {
         let data = req.body;
-        let co = new ControllerOut(res);
+        const co = new ControllerOut(res);
 
         DataService.simplify(data);
 
         DataType.findOne(data.type).then(function(dataType) {
-            let validationRes = DataService.validate(data, true, dataType);
+            const validationRes = DataService.validate(data, true, dataType);
             if (validationRes.error === null) {
-                let dataTypeName = dataType && dataType.name;
+                const dataTypeName = dataType && dataType.name;
                 data = validationRes.value;
                 return crudManager.updateData(data, dataTypeName);
             }
             else {
                 throw new ValidationError(validationRes.error);
-            } 
+            }
         }) /*
         .then(function(idData) {
             return Data.findOne(idData).populate('files');
         }) */
         .then(function(result) {
-            console.log(result);
+            sails.log(result);
             return res.json(result);
         })
         .catch(function(error) {
-            console.log("Error: " + error.message);
+            sails.log.error(error.message);
             return co.error(error);
         });
     },
@@ -150,12 +153,12 @@ module.exports = {
      * DELETE /data/:id
      * @method
      * @name destroy
-     * @description      
+     * @description
      */
     destroy: function(req, res) {
-        let co = new ControllerOut(res);
-        let id = req.param('id');
-        let idOperator = TokenService.getToken(req).id;
+        const co = new ControllerOut(res);
+        const id = req.param('id');
+        const idOperator = TokenService.getToken(req).id;
 
         if (!id) {
             return co.badRequest({message: 'Missing data ID on DELETE request'});
@@ -169,23 +172,27 @@ module.exports = {
             })
         })
         .then(function(result) {
-            let allowedDataTypes = _.pluck(result.dataTypes, 'id');
-            console.log('idOperator: ' + idOperator);
-            console.log(allowedDataTypes);
-            console.log(result.data.type);
+            const allowedDataTypes = _.pluck(result.dataTypes, 'id');
+            sails.log.info('idOperator: ' + idOperator);
+            sails.log.info(allowedDataTypes);
+            sails.log.info(`Data to be deleted:  ${result.data}`);
+
+            // if data does not exist return 0 rows deleted
             if (!result.data) {
-                // TODO add logic to throw a NotFoundError (implement it!!)
+                return BluebirdPromise.resolve(0);
             }
+
             if (allowedDataTypes.indexOf(result.data.type) > -1) {
                 return crudManager.deleteData(id);
             }
+
         })
 
         .then(function(deleted) {
             if (deleted === undefined) {
                 return co.forbidden({message: 'User nor authorized to delete Data with ID: ' + id});
             }
-            return res.json({
+            return res.json(200, {
                 deleted: deleted
             });
         })
@@ -203,10 +210,10 @@ module.exports = {
      */
 
     edit: function(req, res) {
-        let co = new ControllerOut(res);
-        let params = req.allParams();
-        let idOperator = TokenService.getToken(req).id;
-        console.log(params); 
+        const co = new ControllerOut(res);
+        const params = req.allParams();
+        const idOperator = TokenService.getToken(req).id;
+        console.log(params);
         return BluebirdPromise.props({
             data: DataService.getOneAsync(params.id),
             dataTypes: crudManager.getDataTypesByRolePrivileges({
@@ -225,10 +232,10 @@ module.exports = {
         })
 
         .catch(function(err) {
+            sails.log.error(err);
             return co.error(err);
         });
 
     }
 
 };
-

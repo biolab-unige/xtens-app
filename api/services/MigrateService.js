@@ -1,6 +1,6 @@
 /**
  *  @author Massimiliano Izzo
- */
+ *
 var BluebirdPromise = require("bluebird");
 var Migrator = require('migrate-utils').Migrator;
 
@@ -11,12 +11,12 @@ var MigrateService = BluebirdPromise.promisifyAll({
         // migrator.migrateProjects()
         return migrator.migrateAllSubjects()
         // return migrator.migrateCompleteSubject(idSubj)
-        .then(function() { 
+        .then(function() {
             console.log('Done!');
-            return true; 
+            return true;
         })
-        .catch(function(err) { 
-            console.log(err.message); 
+        .catch(function(err) {
+            console.log(err.message);
             throw new Error(err.details || err.message);
         });
     },
@@ -29,3 +29,4 @@ var MigrateService = BluebirdPromise.promisifyAll({
 });
 
 module.exports = MigrateService;
+*/

@@ -7,6 +7,7 @@
     var i18n = xtens.module("i18n").en;
     var DataType = xtens.module("datatype");
     var Data = xtens.module("data");
+    var Subject = xtens.module("subject");
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
 
     var biobankCodeMap = {
@@ -87,21 +88,22 @@
                 }
             },
 
+            /*
             '#donor': {
                 observe: 'donor',
                 selectOptions: {
                     collection: function() {
-                        return this.subjects.map(function(subj) { 
-                            return { 
+                        return this.subjects.map(function(subj) {
+                            return {
                                 label: subj.personalInfo.surname + " " +  subj.personalInfo.givenName,
                                 value: subj.id
-                            }; 
-                        }); 
+                            };
+                        });
                     },
                     defaultOption: {
                         label: "",
                         value: null
-                    } 
+                    }
                 },
                 initialize: function($el) {
                     $el.select2({placeholder: i18n('please-select')});
@@ -113,23 +115,23 @@
                 onGet: function(val, options) {
                     return (val && val.id);
                 }
-            },
+            }, */
 
             '#parent-sample': {
                 observe: 'parentSample',
                 selectOptions: {
                     collection: function() {
-                        return this.parentSamples.map(function(sample) { 
-                            return { 
+                        return this.parentSamples.map(function(sample) {
+                            return {
                                 label: sample.biobankCode,
                                 value: sample.id
-                            }; 
+                            };
                         });
                     },
                     defaultOption: {
                         label: "",
                         value: null
-                    } 
+                    }
                 },
                 initialize: function($el) {
                     $el.select2({placeholder: i18n('please-select')});
@@ -141,17 +143,29 @@
                 onGet: function(val, options) {
                     return (val && val.id);
                 }
+            },
+
+            '#tags': {
+                observe: 'tags',
+                getVal: function($el, ev, option) {
+                    return $el.val().split(",");
+                }
+            },
+
+            '#notes': {
+                observe: 'notes'
             }
 
         },
 
         initialize: function(options) {
-            // _.bindAll(this, 'fetchSuccess');
+            _.bindAll(this, 'fetchDonorsOnSuccess');
             $('#main').html(this.el);
             this.template = JST["views/templates/sample-edit.ejs"];
             this.schemaView = null;
             this.dataTypes = options.dataTypes || [];
             this.biobanks = options.biobanks || [];
+            this.subjects = options.subjects || [];
             if (options.sample) {
                 this.model = new Sample.Model(options.sample);
             }
@@ -167,28 +181,102 @@
             }, this);
             this.render();
         },
-        
+
         events: {
+            'click #editDonor': 'editDonor',
             'click #save': 'saveData'
         },
-        
+
         /**
          * @method
          * @name dataTypeOnChange
-         */        
+         */
         // TODO check this one!!
         dataTypeOnChange: function() {
             Data.Views.Edit.prototype.dataTypeOnChange.call(this);
             var typeName = this.$('#type :selected').text(), parentSample = this.model.get("parentSample");
-            
+
             if (parentSample && parentSample.biobankCode) {
                 this.model.set('biobankCode', biobankCodeMap[typeName] + parentSample.biobankCode);
             }
 
-        }
+        },
+
+        /**
+         * @method
+         * @name editDonor
+         *
+         */
+         editDonor: function(ev) {
+             var donors = new Subject.List(), that = this;
+             donors.fetch({
+                 data: $.param({
+                     select: JSON.stringify(["id", "code", "personalInfo"]),
+                     limit: 2000
+                 }),
+                 success: function(donors) {
+                     that.fetchDonorsOnSuccess(donors, ev.target);
+                 },
+                 error: xtens.error
+             });
+             return false;
+         },
+
+         fetchDonorsOnSuccess: function(donors, targetElem) {
+             console.log(donors.length);
+             this.subjects = donors.toJSON();
+
+             var $div = $('<div>').addClass('data-input-div');
+             var $select = $('<select>').addClass('form-control').attr({
+                 'id': 'donor',
+                 'name': 'donor'
+             });
+
+             var parent = targetElem.parentNode;
+
+             // remove all subelements but the label
+             while (parent.children.length > 1) {
+                 parent.removeChild(parent.lastChild);
+             }
+
+             $div.append($select);
+
+             $(parent).append($div);
+
+             this.addBinding(null, '#donor', {
+                 observe: 'donor',
+                 selectOptions: {
+                     collection: function() {
+                         return this.subjects.map(function(subj) {
+                             var label = subj.personalInfo ? subj.code + ": " + subj.personalInfo.surname +
+                                " " + subj.personalInfo.givenName : subj.code;
+                             return {
+                                 label: label,
+                                 value: subj.id
+                             };
+                         });
+                     },
+                     defaultOption: {
+                         label: "",
+                         value: null
+                     }
+                 },
+                 initialize: function($el) {
+                     $el.select2({placeholder: i18n('please-select')});
+                 },
+                 getVal: function($el, ev, options) {
+                     var value = parseInt($el.val());
+                     return _.findWhere(options.view.subjects, {id: value });
+                 },
+                 onGet: function(val, options) {
+                     return (val && val.id);
+                 }
+             });
+             return false;
+         }
 
     });
-    
+
     /**
      * @class
      * @name Sample.Views.Details
@@ -196,7 +284,7 @@
      * @description view containing the details (metadata and files) of a Sample (Sample.Model) instance
      */
     Sample.Views.Details = Data.Views.Details.fullExtend({
-        
+
         /**
          * @method
          * @name initialize
