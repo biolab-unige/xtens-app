@@ -112,7 +112,7 @@
                             values = metadata[field.formattedName].values;
                             if (field.fieldType==="Date"){value=moment(value).lang("it").format('L');}
                             unit = metadata[field.formattedName].unit; %>
-                            <div name="metadata-value">
+                            <div name="metadata-value" class="data-value">
                                 <% if (_.isArray(values)) { %>
                                     <%=  !_.isEmpty(values) ? values.join(", ") : "" %>
                                 <% }
