@@ -106,17 +106,6 @@ function renderDatatablesDate(data, type) {
                 });
                 this.table.buttons().container().appendTo($('.col-sm-6:eq(0)', this.table.table().container()));
 
-                $(document).ready(function() {
-                    var table = $('#example').DataTable();
-
-                    $('#example tbody')
-        .on( 'mouseenter', 'td', function () {
-            var colIdx = table.cell(this).index().column;
-
-            $( table.cells().nodes() ).removeClass( 'highlight' );
-            $( table.column( colIdx ).nodes() ).addClass( 'highlight' );
-        } );
-                } );
             }
 
             // the returned dataset is empty
@@ -139,6 +128,7 @@ function renderDatatablesDate(data, type) {
             var fieldsToShow = this.dataType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
             this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), true);  // TODO manage permission for personalDetails
             this.numLeft=this.columns.length;
+            
             _.each(fieldsToShow, function(field) {
                 var colTitle = field.name;
 
