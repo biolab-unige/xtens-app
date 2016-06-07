@@ -216,11 +216,10 @@ exports.updatePassword = function(param, idOperator, next) {
     var cnewPass = param.cnewPass;
 
     if (password === newPass) {
-
         var err = new ValidationError('New Password and Old Password cannot be the same');
         return next(err, false);
     }
-    
+
     Passport.findOne({
         protocol: 'local',
         user: idOperator
@@ -230,20 +229,19 @@ exports.updatePassword = function(param, idOperator, next) {
         var passValidatePassword = BluebirdPromise.promisify(passport.validatePassword);
 
       //Validate the old password inserted by user
-        return passValidatePassword.call(passport,password).then(function(res) {
+        return passValidatePassword.call(passport, password).then(function(res) {
 
             if (!res) {
 
-                var err = new ValidationError('Old Password do Not Match');
+                var err = new ValidationError('Old password does not match');
                 return next(err, false);
             }
-        // control if newPass and confirmNewPass match
+            // control if newPass and confirmNewPass match
             if (newPass !== cnewPass) {
-
-                var errn = new ValidationError('New Passwords do Not Match');
+                var errn = new ValidationError('New Passwords do not match');
                 return next(errn, false);
             }
-        //If New Passwords match, update passport with the new password
+            //If New Passwords match, update passport with the new password
             passport.password = newPass;
 
             return Passport.update({id: passport.id}, passport)
@@ -260,7 +258,6 @@ exports.updatePassword = function(param, idOperator, next) {
         });
 
     }).catch(function(err) {
-
         err = next(new Error('Passport not found'));
         return next(null, false);
     });
