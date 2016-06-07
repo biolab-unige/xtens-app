@@ -63,7 +63,7 @@
                                 // add to the field a private flag that specifies its belonging to a loop
                                 flattened.push(_.extend(loopContent[k], {
                                     _group: groupName,
-                                    _loop: true,
+                                    _loop: true
                                 }));
                             }
                         }
@@ -370,11 +370,25 @@
                     // clean the previous graph if present
                     d3.select("#data-type-graph")
                     .remove();
+                    var graph = jqXHR.responseJSON;
 
+                    var links = graph.links;
+
+                    var maxDepth;
+                    function findMaxDepth(arr){
+                        var temp = 0;
+                        for(var i = 0, len = arr.length; i < len; i++) {
+                            if(arr[i].depth > temp){
+                                temp = arr[i].depth;
+                            }
+                        }
+                        return temp+0.5;
+                    }
+                    maxDepth=findMaxDepth(links);
                     // set margins, dynamic width and height of the svg container
                     var margin = {top: 40, right: 120, bottom: 40, left: 120},
-                    width = parentWidth[0][0].offsetWidth - margin.left - margin.right,
-                    height = 800 - margin.top - margin.bottom;
+                        width = parentWidth[0][0].offsetWidth - margin.left - margin.right,
+                        height = (180*maxDepth) - margin.top - margin.bottom;
 
                     // generate a data hierarchy tree
                     var tree = d3.layout.tree()
@@ -388,75 +402,74 @@
                                );
 
                                // create the svg container
-                               var svg = d3.select("#main").append("svg")
+                    var svg = d3.select("#main").append("svg")
                                .attr("id","data-type-graph")
                                .attr("width", width + margin.left + margin.right)
                                .attr("height", height + margin.top + margin.bottom)
+                               .attr("overflow-y","auto")
                                .append("g")
                                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-                               var graph = jqXHR.responseJSON;
 
-                               var links = graph.links;
-                               var nodesByName = {};
+                    var nodesByName = {};
 
-                               console.log(links);
+                    console.log(links);
 
                                // Create nodes for each unique source and target.
-                               links.forEach(function(link) {
-                                   var parent,child;
-                                   if (link.target !== null){
-                                       parent = link.source = nodeByName(link.source.toUpperCase() +' '+ link.source_template.toLowerCase() );
-                                       child = link.target = nodeByName(link.target.toUpperCase()+' '+link.target_template.toLowerCase());
-                                   }
-                                   else{
-                                       parent = link.source = nodeByName(link.source.toUpperCase() +' '+ link.source_template.toLowerCase() );
-                                       child = link.target = nodeByName(link.target);
-                                   }
-                                   if (parent.children) parent.children.push(child);
-                                   else parent.children = [child];
+                    links.forEach(function(link) {
+                        var parent,child;
+                        if (link.target !== null){
+                            parent = link.source = nodeByName(link.source.toUpperCase() +' '+ link.source_template.toLowerCase() );
+                            child = link.target = nodeByName(link.target.toUpperCase()+' '+link.target_template.toLowerCase());
+                        }
+                        else{
+                            parent = link.source = nodeByName(link.source.toUpperCase() +' '+ link.source_template.toLowerCase() );
+                            child = link.target = nodeByName(link.target);
+                        }
+                        if (parent.children) parent.children.push(child);
+                        else parent.children = [child];
 
 
 
-                               }
+                    }
                                             );
                                             //Define countDepth to count nodes for every depth
-                                            var index,i1;
-                                            var countDepth = new Array(links.length);
+                    var index,i1;
+                    var countDepth = new Array(links.length);
 
 
                                             // find the root node
-                                            for(var i=0;i<links.length;i++){
-                                                if(links[i].source.name === nameDatatype ){
-                                                    index = i;
-                                                }
-                                                i1=links[i].depth;
-                                                countDepth[i]=0;
-                                            }
+                    for(var i=0;i<links.length;i++){
+                        if(links[i].source.name === nameDatatype ){
+                            index = i;
+                        }
+                        i1=links[i].depth;
+                        countDepth[i]=0;
+                    }
 
                                             //generate the tree
-                                            var nodes = tree.nodes(links[0].source);
-                                            nodes =_.uniq(nodes,'name');
-                                            console.log(nodes);
+                    var nodes = tree.nodes(links[0].source);
+                    nodes =_.uniq(nodes,'name');
+                    console.log(nodes);
 
 
                                             //Count nodes/depth
-                                            nodes.forEach(function(d){
-                                              countDepth[d.depth] = countDepth[d.depth] + 1;
-                                            });
+                    nodes.forEach(function(d){
+                        countDepth[d.depth] = countDepth[d.depth] + 1;
+                    });
 
-                                            var c= new Array(links.length);
+                    var c= new Array(links.length);
                                             // for each node define its position dynamically
-                                            nodes.forEach(function(d){
+                    nodes.forEach(function(d){
 
-                                                          d.y= d.depth*150;
-                                                          if (d.depth === 0){d.x = width / 2;}
-                                                          if ( !isNaN(countDepth[d.depth]) && countDepth[d.depth] !== 1 ) {
-                                                            if( isNaN(c[d.depth]) ){ c[d.depth]=0; }
-                                                            c[d.depth] = c[d.depth] + 1 ;
-                                                             d.x= (( c[d.depth] / countDepth[d.depth] ) * width - ( 1 / countDepth[d.depth ]) * width / 2 );
-                                                           }
+                        d.y= d.depth*150;
+                        if (d.depth === 0){d.x = width / 2;}
+                        if ( !isNaN(countDepth[d.depth]) && countDepth[d.depth] !== 1 ) {
+                            if( isNaN(c[d.depth]) ){ c[d.depth]=0; }
+                            c[d.depth] = c[d.depth] + 1 ;
+                            d.x= (( c[d.depth] / countDepth[d.depth] ) * width - ( 1 / countDepth[d.depth ]) * width / 2 );
+                        }
 
 
 
@@ -472,10 +485,10 @@
                                                           // else if(d.x>500 && d.x <1000){
                                                           //     d.x=(d.x/1.5)*3 -750;
                                                           // }
-                                            });
+                    });
 
                                             // define the links format/appereance
-                                            svg.append("svg:defs").selectAll("marker")
+                    svg.append("svg:defs").selectAll("marker")
                                             .data(links)
                                             .enter().append("svg:marker")
                                             .attr("id","arrowhead")
@@ -491,7 +504,7 @@
                                             .attr("d","M0,0L100,100,200,200");
 
                                             //draw the links
-                                            svg.selectAll(".link")
+                    svg.selectAll(".link")
                                             .data(links.filter(function(d){return d.target.name;}))
                                             .enter().append("path")
                                             .attr("class", "link")
@@ -499,7 +512,7 @@
                                             .attr("d",diagonal);
 
                                             // draw the nodes
-                                            svg.selectAll(".node")
+                    svg.selectAll(".node")
                                             .data(nodes.filter(function(d){return d.name;}))
                                             .enter().append("ellipse")
                                             .attr("id",function(d){
@@ -513,7 +526,7 @@
                                             .attr("cy", function(d) { return d.y; });
 
                                             //append the title on the nodes
-                                            svg.append("g").selectAll("text")
+                    svg.append("g").selectAll("text")
                                             .data(nodes)
                                             .enter().append("text")
                                             .each(function (d) {
@@ -552,9 +565,9 @@
                                             });
 
 
-                                            function nodeByName(name) {
-                                                return nodesByName[name] || (nodesByName[name] = {name: name});
-                                            }
+                    function nodeByName(name) {
+                        return nodesByName[name] || (nodesByName[name] = {name: name});
+                    }
 
 
                 }, /* success */

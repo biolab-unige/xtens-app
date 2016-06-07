@@ -7,10 +7,10 @@
  /* jshint node: true */
  /* globals _, sails, DataType, DataTypeService, QueryService, TokenService */
  "use strict";
-const ControllerOut = require("xtens-utils").ControllerOut;
-const crudManager = sails.hooks.persistence.crudManager;
+ const ControllerOut = require("xtens-utils").ControllerOut;
+ const crudManager = sails.hooks.persistence.crudManager;
 
-const DataTypeController = {
+ const DataTypeController = {
 
     /**
      * GET /dataType
@@ -20,55 +20,55 @@ const DataTypeController = {
      * @name find
      * @description Find dataTypes based on criteria
      */
-    find: function(req, res) {
-        const co = new ControllerOut(res);
+     find: function(req, res) {
+         const co = new ControllerOut(res);
 
-        let query = DataType.find()
+         let query = DataType.find()
         .where(QueryService.parseCriteria(req))
         .limit(QueryService.parseLimit(req))
         .skip(QueryService.parseSkip(req))
         .sort(QueryService.parseSort(req));
         // .populate('parents');  // commented out by Massi 2015-05-20
 
-        if (!req.param('populate')) {
-            query.populate('parents');  // by default populate only with 'parents' dataTypes
-        }
-        else {
-            query = QueryService.populateRequest(query, req);
-        }
+         if (!req.param('populate')) {
+             query.populate('parents');  // by default populate only with 'parents' dataTypes
+         }
+         else {
+             query = QueryService.populateRequest(query, req);
+         }
 
-        query.then(function(dataTypes) {
-            res.json(dataTypes);
-        })
+         query.then(function(dataTypes) {
+             res.json(dataTypes);
+         })
         .catch(function(err) {
             return co.error(err);
         });
-    },
+     },
 
     /**
      * POST /dataType
      * @method
      * @name create
      */
-    create: function(req, res) {
-        const co = new ControllerOut(res);
-        let dataType = req.allParams();
+     create: function(req, res) {
+         const co = new ControllerOut(res);
+         let dataType = req.allParams();
 
-        if (!dataType.name) dataType.name = dataType.schema && dataType.schema.name;
-        if (!dataType.model) dataType.model = dataType.schema && dataType.schema.model;
+         if (!dataType.name) dataType.name = dataType.schema && dataType.schema.name;
+         if (!dataType.model) dataType.model = dataType.schema && dataType.schema.model;
 
         // omit all the properties relative to associations
         // var newDataType = _.omit(req.body, ['parents', 'children', 'datas', 'groups']);
         // var parents = req.param('parents');
 
         // Validate data type (schema included)
-        const validationRes = DataTypeService.validate(dataType, true);
+         const validationRes = DataTypeService.validate(dataType, true);
 
-        if (validationRes.error) {
-            return co.error(validationRes.error);
-        }
-        else {
-            crudManager.createDataType(dataType)
+         if (validationRes.error) {
+             return co.error(validationRes.error);
+         }
+         else {
+             crudManager.createDataType(dataType)
             /*
             .then(function(idDataType) {
                 return DataType.findOne(idDataType).populate('parents');
@@ -82,26 +82,26 @@ const DataTypeController = {
                 console.log(error.message);
                 return co.error(error);
             });
-        }
-    },
+         }
+     },
 
     /**
      * PUT /dataType/:id
      * @method
      * @name update
      */
-    update: function(req, res) {
-        const co = new ControllerOut(res);
-        let dataType = req.allParams();
+     update: function(req, res) {
+         const co = new ControllerOut(res);
+         let dataType = req.allParams();
 
         // Validate data type (schema included)
-        const validationRes = DataTypeService.validate(dataType, true);
+         const validationRes = DataTypeService.validate(dataType, true);
 
-        if (validationRes.error) {
-            return co.error(validationRes.error);
-        }
-        else {
-            crudManager.updateDataType(dataType)
+         if (validationRes.error) {
+             return co.error(validationRes.error);
+         }
+         else {
+             crudManager.updateDataType(dataType)
             /*
             .then(function(idDataType) {
                 return DataType.findOne(idDataType).populate('parents');
@@ -113,23 +113,23 @@ const DataTypeController = {
             .catch(function(error) {
                 return co.error(error);
             });
-        }
-    },
+         }
+     },
 
     /**
      * @method
      * @name destroy
      * @description DELETE /dataType/:id
      */
-    destroy: function(req, res) {
-        const co = new ControllerOut(res);
-        const id = req.param('id');
+     destroy: function(req, res) {
+         const co = new ControllerOut(res);
+         const id = req.param('id');
 
-        if (!id) {
-            return co.badRequest({message: 'Missing dataType ID on DELETE request'});
-        }
+         if (!id) {
+             return co.badRequest({message: 'Missing dataType ID on DELETE request'});
+         }
 
-        return crudManager.deleteDataType(id)
+         return crudManager.deleteDataType(id)
 
         .then(function(deleted) {
             return res.json({
@@ -141,16 +141,16 @@ const DataTypeController = {
             return co.error(err);
         });
 
-    },
+     },
 
     /**
      * @deprecated
      */
-    buildHierarchy: function(req, res) {
-        const co = new ControllerOut(res);
-        DataType.find({ parent: null}).populate('children').then(function(roots) {
-            DataTypeService.getChildrenRecursive(roots);
-        })
+     buildHierarchy: function(req, res) {
+         const co = new ControllerOut(res);
+         DataType.find({ parent: null}).populate('children').then(function(roots) {
+             DataTypeService.getChildrenRecursive(roots);
+         })
         .then(function(results) {
             console.log(results);
             res.json(results);
@@ -158,7 +158,7 @@ const DataTypeController = {
         .catch(function(error) {
             if (error) return co.error(error);
         });
-    },
+     },
 
     /**
      * @method
@@ -166,13 +166,13 @@ const DataTypeController = {
      * @description generate and visualize the datatype graph given a root datatype.
      */
 
-    buildGraph : function(req,res) {
+     buildGraph : function(req,res) {
 
-        const name = req.param("idDataType");
-        const fetchDataTypeTree = sails.config.xtens.databaseManager.recursiveQueries.fetchDataTypeTree;
-        sails.log(req.param("idDataType"));
+         const name = req.param("idDataType");
+         const fetchDataTypeTree = sails.config.xtens.databaseManager.recursiveQueries.fetchDataTypeTree;
+         sails.log(req.param("idDataType"));
 
-        return DataType.findOne({name:name})
+         return DataType.findOne({name:name})
 
         .then(function(result) {
             const id = result.id;
@@ -181,7 +181,7 @@ const DataTypeController = {
 
             function dataTypeTreeCb (err, resp) {
 
-                var links = [];
+                var links= [],loops = [];
 
                 // if there aren't children do not print any link
                 if(resp.rows.length === 0) {
@@ -195,17 +195,32 @@ const DataTypeController = {
                 }
                 // populate the links array
                 for(let i =0; i<resp.rows.length; i++) {
-                    links.push({
-                        'source':resp.rows[i].parentname,
-                        'target':resp.rows[i].childname,
-                        'depth':resp.rows[i].depth,
-                        'source_template':resp.rows[i].parenttemplate,
-                        'target_template':resp.rows[i].childtemplate
-                    });
+
+                    if(resp.rows[i].cycle === false){
+                        links.push({
+                            'source':resp.rows[i].parentname,
+                            'target':resp.rows[i].childname,
+                            'depth':resp.rows[i].depth,
+                            'source_template':resp.rows[i].parenttemplate,
+                            'target_template':resp.rows[i].childtemplate,
+                            'cycle':resp.rows[i].cycle
+                        });
+                    }
+                    else {
+                        loops.push({
+                            'source':resp.rows[i].parentname,
+                            'target':resp.rows[i].childname,
+                            'depth':resp.rows[i].depth,
+                            'source_template':resp.rows[i].parenttemplate,
+                            'target_template':resp.rows[i].childtemplate,
+                            'cycle':resp.rows[i].cycle
+                        });
+                    }
                 }
 
                 const json = {
-                    'links': links
+                    'links': links,
+                    'loops': loops
                 };
                 sails.log(json);
                 return res.json(json);
@@ -214,9 +229,9 @@ const DataTypeController = {
             fetchDataTypeTree(id, dataTypeTreeCb);
         });
 
-    }
+     }
 
 
-};
+ };
 
-module.exports = DataTypeController;
+ module.exports = DataTypeController;
