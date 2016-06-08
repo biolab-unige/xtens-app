@@ -1,85 +1,62 @@
-<div id="operator">
-<script 
-<script type = "text/javascript">
-$('#form').parsley();
-</script>
-<script>
-var picker = new Pikaday({ field: $('#datepicker')[0]});
-</script>
-<form name = "Myform" id="form" class="form-horizontal edit-operator-form" role="form" data-parsley-trim-value ="true">
-    <legend class="legend"align="center"><%= operator ? 'Edit' : 'New' %> Operator</legend>
-    <div class="form-group row">
-        <label  class="col-md-3 control-label"><%= __("first-name") %></label>
-        <input  class = "col-md-6" name="name" id="first" type="text" value="<%= operator ? operator.get('firstName') : '' %>">
-    </div>
-    <div class="form-group row">
-        <label class="col-md-3 control-label"><%= __("last-name") %></label>
-        <input class = "col-md-6" name="surname" type="text" value="<%= operator ? operator.get('lastName') : '' %>">
-    </div>
-    <div class="form-group row">
-        <label class="col-md-3 control-label"><%= __("birth-date") %></label>
-         <input class = "col-md-6 date" name="date" type="text" id="datepicker" required="required" value="<%= operator ? operator.get('birthDate') :'' %>">
+<h1><%= __("operator-manager") %></h1>
+<h2><%= data.id ? __("update-operator") : __("create-operator") %></h2>
+<div id="content">
+    <form class="form-horizontal edit-data-form" role="form">
 
-           </div>
-    <div class="form-group row">
-        <label class="col-md-3 control-label"><%= __("sex") %></label>
-         <% if(!operator) { %>
-        
-            <select class = "col-md-6" id="sex" name="sex" >
-                <option class="col-md-6" value="M" ><%=__("m") %></option>
-                <option class="col-md-6" value="F"><%=__("f") %></option>
-               
-             </select>
-       
-         <% } %>
-          <% if(operator) { %>
-        
-            <select class="col-md-6" id="sex" name="sex" >
-                <% if(operator.get('sex') == 'M') { %>
-                <option class="col-md-6" value="M" selected ><%=__("m") %></option>
-                <option class="col-md-6"value="F"><%=__("f") %></option>
-                <% } else { %>
-                 <option class="col-md-6" value="M" ><%=__("m") %></option>
-                <option  class="col-md-6"value="F" selected><%=__("f") %></option>
-                <% } %>     
-         </select>
-        
-         <% } %>
+      <div class="form-group metadataform-group">
+          <label for="firstName" class="data-label"><%= __('given-name') %></label>
+          <div class="data-input-div">
+              <input class="form-control" id="firstName" name="firstName" required></input>
+          </div>
+      </div>
+      <div class="form-group metadataform-group">
+          <label for="lastName" class="data-label"><%= __('surname') %></label>
+          <div class="data-input-div">
+              <input class="form-control" id="lastName" name="lastName" required></input>
+          </div>
+      </div>
+      <div class="form-group metadataform-group">
+          <label for="birthDate" class="data-label"><%= __('birth-date') %></label>
+          <div class="data-input-div">
+              <input class="form-control" id="birthDate" name="birthDate" placeholder="<%= __('please-select') %>" required></input>
+          </div>
+      </div>
+      <div class="form-group metadataform-group">
+          <label for="sex" class="data-label"><%= __('sex') %></label>
+          <div class="data-input-div">
+            <input class="form-control" id="sex" name="sex"></select>
+          </div>
+      </div>
+      <div class="form-group metadataform-group">
+          <label for="email" class="data-label"><%= __('email') %></label>
+          <div class="data-input-div">
+              <input class="form-control" id="email" name="email"></select>
+          </div>
+      </div>
+      <div class="form-group metadataform-group">
+          <label for="login" class="data-label"><%= __('login') %></label>
+          <div class="data-input-div">
+              <input class="form-control" id="login" name="login"></select>
+          </div>
+      </div>
 
-
-    </div>
-    <div class="form-group row">
-        <label class="col-md-3 control-label"><%= __("email") %></label>
-        <input class ="col-md-6" name="email" type="email" value="<%= operator ? operator.get('email') : '' %>">
-    </div>
-    <div class="form-group row">
-        <label class="col-md-3 control-label"><%= __("login") %></label>
-        <input class="col-md-6" name="login" id="login" type="text" pattern = ".{3,}" value="<%= operator ? operator.get('login') : '' %>">
-    </div>
-
-      <% if(!operator) { %>
-         <div class="form-group row">
-        <label class="col-md-3 control-label"><%= __("password") %></label>
-        <input class="col-md-6" name="password" type="text" />
-    </div>
+      <% if(!data.id) { %>
+        <div class="form-group metadataform-group">
+            <label for="password" class="data-label"><%= __('password') %></label>
+            <div class="data-input-div">
+                <input type="data-input-div" class="form-control" id="password" name="password"></input>
+            </div>
+        </div>
      <% } %>
 
-
-
-    <hr />
     <div id="buttonbardiv" class="row text-center">
-         <% if(!operator) { %>
-        <button type="submit" class="btn" >Create Operator</button>
-        <% } %>
+      <div class="btn-group btn-group-margin">
+        <input type="submit" id="save" class="btn btn-primary" value="<%= data.id ? __('update-operator') : __('create-operator') %>" >
 
-        <% if(operator) { %>
-         <button type="hidden" class="btn update" name="update">Update Operator</button>
-        <input type="hidden" name="id" value="<%= operator.id %>" />
-        <button data-operator-id="<%= operator.id %>" class="btn btn-danger delete">Delete</button>
+        <% if(data.id) { %>
+          <input type="submit" id="delete" class="btn btn-danger" value="<%= __('delete')%>" >
         <% }; %>
+      </div>
     </div>
 </form>
 </div>
-
-
-

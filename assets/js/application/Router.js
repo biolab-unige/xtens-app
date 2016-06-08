@@ -89,6 +89,7 @@
             "operators": "operatorList",
             "operators/new": "operatorEdit",
             "operators/edit/:id": "operatorEdit",
+            "operators/updatePassword": "updatePassword",
             "groups":"groupList",
             "groups/new":"groupEdit",
             "groups/edit/:id":"groupEdit",
@@ -418,7 +419,27 @@
         },
 
         operatorEdit:function(id) {
-            this.loadView(new Operator.Views.Edit({id:id}));
+
+          var that = this;
+          var operator = new Operator.Model();
+          if (id) {
+              operator.set('id', id);
+              operator.fetch({
+              success: function(operator) {
+                that.loadView(new Operator.Views.Edit({model: operator}));
+              },
+              error: function(err) {
+                  xtens.error(err);
+              }
+          });
+        }
+        else {
+            this.loadView(new Operator.Views.Edit({model: operator}));
+        }
+        },
+
+        updatePassword:function() {
+            this.loadView(new Operator.Views.updatePassword());
         },
 
         subjectList: function() {

@@ -1,6 +1,10 @@
+/* jshint node: true */
+/* globals _, __filename__, sails, Project, Subject, Data, isEmail, Operator,Passport, DataType, SubjectService, TokenService, QueryService, DataService */
+'use strict';
 var validator = require('validator');
-var crypto    = require('crypto');
-
+var crypto = require('crypto');
+var ValidationError = require('xtens-utils').Errors.ValidationError;
+let BluebirdPromise = require('bluebird');
 /**
  * Local Authentication Protocol
  *
@@ -13,8 +17,9 @@ var crypto    = require('crypto');
  * http://passportjs.org/guide/username-password/
  */
 
-exports.register = function (user, next) {
-    exports.createUser(user, next);
+
+exports.register = function(user, next) {
+  exports.createUser(user, next);
 };
 
 /**
@@ -26,70 +31,70 @@ exports.register = function (user, next) {
  * @param {Object}   _user
  * @param {Function} next
  */
-exports.createUser = function (_user, next) {
-    console.log(_user);
-    var password = _user.password;
-    delete _user.password;
-    console.log(password);
-    /*
-       if (!email) {
-       req.flash('error', 'Error.Passport.Email.Missing');
-       return next(new Error('No email was entered.'));
-       }
+exports.createUser = function(_user, next) {
 
-       if (!username) {
-       req.flash('error', 'Error.Passport.Username.Missing');
-       return next(new Error('No username was entered.'));
-       }
+  var password = _user.password;
+  delete _user.password;
+  console.log(password);
+  /*
+     if (!email) {
+     req.flash('error', 'Error.Passport.Email.Missing');
+     return next(new Error('No email was entered.'));
+     }
 
-       if (!password) {
-       req.flash('error', 'Error.Passport.Password.Missing');
-       return next(new Error('No password was entered.'));
-       } */
+     if (!username) {
+     req.flash('error', 'Error.Passport.Username.Missing');
+     return next(new Error('No username was entered.'));
+     }
 
-    Operator.create(_user, function (err, operator) {
-        if (err) {
-            if (err.code === 'E_VALIDATION') {
+     if (!password) {
+     req.flash('error', 'Error.Passport.Password.Missing');
+     return next(new Error('No password was entered.'));
+     } */
 
-                sails.log(err);
+  Operator.create(_user, function(err, operator) {
+    if (err) {
+      if (err.code === 'E_VALIDATION') {
 
-                if (err.invalidAttributes.email) {
-                    return next(new Error('Error.Passport.Email.Exists'));
-                } else {
-                    return next(new Error('Error.Passport.User.Exists'));
-                }
-            }
+        sails.log(err);
 
-            return next(err);
+        if (err.invalidAttributes.email) {
+          return next(new Error('Error.Passport.Email.Exists'));
+        } else {
+          return next(new Error('Error.Passport.User.Exists'));
+        }
+      }
+
+      return next(err);
+    }
+
+    // Generating accessToken for API authentication
+    // var token = crypto.randomBytes(48).toString('base64');
+    var payload = operator.formatForTokenPayload(operator);
+    var token = TokenService.issue(_.isObject(payload) ? JSON.stringify(payload) : payload); // modified by Massi
+
+    Passport.create({
+      protocol: 'local',
+      password: password,
+      user: operator.id,
+      accessToken: token
+    }, function(err, passport) {
+      if (err) {
+        if (err.code === 'E_VALIDATION') {
+          err = new Error('Error.Passport.Password.Invalid');
         }
 
-        // Generating accessToken for API authentication
-        // var token = crypto.randomBytes(48).toString('base64');
-        var payload = operator.formatForTokenPayload(operator);
-        var token = TokenService.issue(_.isObject(payload) ? JSON.stringify(payload) : payload); // modified by Massi
-
-        Passport.create({
-            protocol    : 'local', 
-            password    : password, 
-            user        : operator.id, 
-            accessToken : token
-        }, function (err, passport) {
-            if (err) {
-                if (err.code === 'E_VALIDATION') {
-                    err = new Error('Error.Passport.Password.Invalid');
-                }
-
-                return operator.destroy(function (destroyErr) {
-                    next(destroyErr || err);
-                });
-            }
-
-            next(null, operator);
+        return operator.destroy(function(destroyErr) {
+          next(destroyErr || err);
         });
+      }
 
+      next(null, operator);
     });
 
-}; 
+  });
+
+};
 
 /**
  * Assign local Passport to user
@@ -102,31 +107,30 @@ exports.createUser = function (_user, next) {
  * @param {Object}   res
  * @param {Function} next
  */
-exports.connect = function (req, res, next) {
-    var user     = req.user, 
+exports.connect = function(req, res, next) {
+  var user = req.user,
     password = req.param('password');
 
-    Passport.findOne({
-        protocol : 'local', 
-        user     : user.id
-    }, function (err, passport) {
-        if (err) {
-            return next(err);
-        }
+  Passport.findOne({
+    protocol: 'local',
+    user: user.id
+  }, function(err, passport) {
+    if (err) {
+      return next(err);
+    }
 
-        if (!passport) {
-            Passport.create({
-                protocol : 'local', 
-                password : password, 
-                user     : user.id
-            }, function (err, passport) {
-                next(err, user);
-            });
-        }
-        else {
-            next(null, user);
-        }
-    });
+    if (!passport) {
+      Passport.create({
+        protocol: 'local',
+        password: password,
+        user: user.id
+      }, function(err, passport) {
+        next(err, user);
+      });
+    } else {
+      next(null, user);
+    }
+  });
 };
 
 /**
@@ -141,55 +145,109 @@ exports.connect = function (req, res, next) {
  * @param {string}   password
  * @param {Function} next
  */
-exports.login = function (req, identifier, password, next) {
-    var isEmail = validator.isEmail(identifier), 
-    query   = {};
+exports.login = function(req, identifier, password, next) {
+  var isEmail = validator.isEmail(identifier),
+    query = {};
 
-    if (isEmail) {
-        query.email = identifier;
-    }
-    else {
-        query.login = identifier;
+  if (isEmail) {
+    query.email = identifier;
+  } else {
+    query.login = identifier;
+  }
+
+  Operator.findOne(query).populate('groups').exec(function(err, user) {
+    if (err) {
+      return next(err);
     }
 
-    Operator.findOne(query).populate('groups').exec(function (err, user) {
-        if (err) {
+    if (!user) {
+      if (isEmail) {
+        err = new Error('Error.Passport.Email.NotFound');
+      } else {
+        err = new Error('Error.Passport.Username.NotFound');
+      }
+
+      return next(null, false);
+    }
+
+    Passport.findOne({
+      protocol: 'local',
+      user: user.id
+    }, function(err, passport) {
+      if (passport) {
+        passport.validatePassword(password, function(err, res) {
+          if (err) {
             return next(err);
-        }
+          }
 
-        if (!user) {
-            if (isEmail) {
-                req.flash('error', 'Error.Passport.Email.NotFound');
-            } else {
-                req.flash('error', 'Error.Passport.Username.NotFound');
-            }
-
+          if (!res) {
+            err = new Error('Error.Passport.Password.Wrong');
             return next(null, false);
-        }
-
-        Passport.findOne({
-            protocol : 'local', 
-            user     : user.id
-        }, function (err, passport) {
-            if (passport) {
-                passport.validatePassword(password, function (err, res) {
-                    if (err) {
-                        return next(err);
-                    }
-
-                    if (!res) {
-                        req.flash('error', 'Error.Passport.Password.Wrong');
-                        return next(null, false);
-                    } else {
-                        return next(null, user);
-                    }
-                });
-            }
-            else {
-                // next line commented out by Massi
-                // req.flash('error', 'Error.Passport.Password.NotSet');
-                return next(null, false);
-            }
+          } else {
+            return next(null, user);
+          }
         });
+      } else {
+        // next line commented out by Massi
+        // req.flash('error', 'Error.Passport.Password.NotSet');
+        return next(null, false);
+      }
+    });
+  });
+};
+
+/**
+ * Modify user Password
+ *
+ * Attempts to find a local Passport associated with the user. If a Passport is
+ * found, its password is checked against the password supplied in the form,
+ * then is checked the new password with the confirm new password. If
+ * matching then update passport with the new password.
+ *
+ * @param {Object}   param
+ * @param {integer}  idOperator
+ * @param {Function} next
+ */
+/*eslint no-unreachable: 0*/
+exports.updatePassword = function(param, idOperator, next) {
+
+  var password = param.oldPass;
+  var newPass = param.newPass;
+  var cnewPass = param.cnewPass;
+
+  if (password === newPass) {
+    var err = new ValidationError('New Password and Old Password cannot be the same');
+    return next(err, false);
+  }
+    // control if newPass and confirmNewPass match
+  if (newPass !== cnewPass) {
+    var errn = new ValidationError('New Passwords do not match');
+    return next(errn, false);
+  }
+
+  Passport.findOne({
+    protocol: 'local',
+    user: idOperator
+  })
+    .then(function(passport) {
+
+      //Validate the old password inserted by user
+      var passValidatePassword = BluebirdPromise.promisify(passport.validatePassword);
+
+      return passValidatePassword.call(passport, password, function(err,res){
+        if (!res) {
+          err = new ValidationError('Old Password does not match');
+          return next(err, false);
+        }
+          //If New Passwords match, update passport with the new password
+        passport.password = newPass;
+
+        return Passport.update({id: passport.id}, passport)
+            .then(function(res) {
+              return next(null, true);
+            });
+      });
+    }).catch(function(err) {
+      return next(err, false);
     });
 };

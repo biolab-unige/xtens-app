@@ -7,11 +7,11 @@ const expect = require("chai").expect;
 const request = require('supertest');
 const loginHelper = require('./loginHelper');
 
-describe('DataController', function() {
+describe('SubjectController', function() {
     let token;
 
     before(function(done) {
-        loginHelper.login(request, function (bearerToken) {
+        loginHelper.loginAdmin(request, function (bearerToken) {
             token = bearerToken;
             sails.log.debug(`Got token: ${token}`);
             done();
