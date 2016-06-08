@@ -20,6 +20,7 @@
           <div class="data-input-div">
               <input class="form-control" id="birthDate" name="birthDate" placeholder="<%= __('please-select') %>" required></input>
           </div>
+      </div>
       <div class="form-group metadataform-group">
           <label for="sex" class="data-label"><%= __('sex') %></label>
           <div class="data-input-div">
@@ -49,11 +50,13 @@
      <% } %>
 
     <div id="buttonbardiv" class="row text-center">
+      <div class="btn-group btn-group-margin">
         <input type="submit" id="save" class="btn btn-primary" value="<%= data.id ? __('update-operator') : __('create-operator') %>" >
 
         <% if(data.id) { %>
           <input type="submit" id="delete" class="btn btn-danger" value="<%= __('delete')%>" >
         <% }; %>
+      </div>
     </div>
 </form>
 </div>

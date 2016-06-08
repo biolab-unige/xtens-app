@@ -270,15 +270,34 @@
       this.template = JST['views/templates/update-password.ejs'];
       this.render();
       this.$modal = this.$('.updated-password-modal');
+
     },
 
     events: {
-      'click #update':'updatePassword'
+      'click #update':'updatePassword',
+      'change input':'checkInput'
     },
 
     render: function()  {
       this.$el.html(this.template({__:i18n}));
       return this;
+    },
+
+    checkInput: function() {
+      $('input').keyup(function() {
+
+        var empty = false;
+        $('input').each(function() {
+          if (this.value.length < 7) {
+            empty = true;
+          }
+        });
+        if (empty) {
+          $('#update').attr('disabled', 'disabled');
+        } else {
+          $('#update').removeAttr('disabled');
+        }
+      });
     },
 
     updatePassword: function(ev) {
