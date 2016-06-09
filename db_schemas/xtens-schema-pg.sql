@@ -10,14 +10,14 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
@@ -85,7 +85,7 @@ ALTER DOMAIN dom_nodename OWNER TO massipg;
 
 CREATE TYPE xtens_group_privileges AS ENUM (
     'wheel',
-    'manager',
+    'admin',
     'standard'
 );
 
@@ -97,7 +97,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: biobank; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: biobank; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE biobank (
@@ -139,7 +139,7 @@ ALTER SEQUENCE biobank_id_seq OWNED BY biobank.id;
 
 
 --
--- Name: contact_information; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: contact_information; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE contact_information (
@@ -181,7 +181,7 @@ ALTER SEQUENCE contact_information_id_seq OWNED BY contact_information.id;
 
 
 --
--- Name: data; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: data; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE data (
@@ -202,7 +202,7 @@ CREATE TABLE data (
 ALTER TABLE data OWNER TO xtenspg;
 
 --
--- Name: data_file; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: data_file; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE data_file (
@@ -238,7 +238,7 @@ ALTER SEQUENCE data_file_id_seq OWNED BY data_file.id;
 
 
 --
--- Name: data_files__datafile_data; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: data_files__datafile_data; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE data_files__datafile_data (
@@ -293,7 +293,7 @@ ALTER SEQUENCE data_id_seq OWNED BY data.id;
 
 
 --
--- Name: data_type; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: data_type; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE data_type (
@@ -330,7 +330,7 @@ ALTER SEQUENCE data_type_id_seq OWNED BY data_type.id;
 
 
 --
--- Name: datafile_samples__sample_files; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: datafile_samples__sample_files; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE datafile_samples__sample_files (
@@ -364,7 +364,7 @@ ALTER SEQUENCE datafile_samples__sample_files_id_seq OWNED BY datafile_samples__
 
 
 --
--- Name: datatype_children__datatype_parents; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: datatype_children__datatype_parents; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE datatype_children__datatype_parents (
@@ -398,7 +398,7 @@ ALTER SEQUENCE datatype_children__datatype_parents_id_seq OWNED BY datatype_chil
 
 
 --
--- Name: datatype_groups__group_datatypes; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: datatype_groups__group_datatypes; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE datatype_groups__group_datatypes (
@@ -432,7 +432,7 @@ ALTER SEQUENCE datatype_groups__group_datatypes_id_seq OWNED BY datatype_groups_
 
 
 --
--- Name: datatype_privileges; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: datatype_privileges; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE datatype_privileges (
@@ -469,7 +469,7 @@ ALTER SEQUENCE datatype_privileges_id_seq OWNED BY datatype_privileges.id;
 
 
 --
--- Name: eav_attribute; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_attribute; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_attribute (
@@ -508,7 +508,7 @@ ALTER SEQUENCE eav_attribute_id_seq OWNED BY eav_attribute.id;
 
 
 --
--- Name: eav_loop; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_loop; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_loop (
@@ -543,7 +543,7 @@ ALTER SEQUENCE eav_loop_id_seq OWNED BY eav_loop.id;
 
 
 --
--- Name: eav_value_boolean; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_boolean; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_boolean (
@@ -560,7 +560,7 @@ CREATE TABLE eav_value_boolean (
 ALTER TABLE eav_value_boolean OWNER TO xtenspg;
 
 --
--- Name: eav_value_boolean_data; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_boolean_data; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_boolean_data (
@@ -618,7 +618,7 @@ ALTER SEQUENCE eav_value_boolean_id_seq OWNED BY eav_value_boolean.id;
 
 
 --
--- Name: eav_value_boolean_sample; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_boolean_sample; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_boolean_sample (
@@ -655,7 +655,7 @@ ALTER SEQUENCE eav_value_boolean_sample_id_seq OWNED BY eav_value_boolean_sample
 
 
 --
--- Name: eav_value_boolean_subject; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_boolean_subject; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_boolean_subject (
@@ -692,7 +692,7 @@ ALTER SEQUENCE eav_value_boolean_subject_id_seq OWNED BY eav_value_boolean_subje
 
 
 --
--- Name: eav_value_date; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_date; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_date (
@@ -709,7 +709,7 @@ CREATE TABLE eav_value_date (
 ALTER TABLE eav_value_date OWNER TO xtenspg;
 
 --
--- Name: eav_value_date_data; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_date_data; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_date_data (
@@ -767,7 +767,7 @@ ALTER SEQUENCE eav_value_date_id_seq OWNED BY eav_value_date.id;
 
 
 --
--- Name: eav_value_date_sample; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_date_sample; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_date_sample (
@@ -804,7 +804,7 @@ ALTER SEQUENCE eav_value_date_sample_id_seq OWNED BY eav_value_date_sample.id;
 
 
 --
--- Name: eav_value_date_subject; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_date_subject; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_date_subject (
@@ -841,7 +841,7 @@ ALTER SEQUENCE eav_value_date_subject_id_seq OWNED BY eav_value_date_subject.id;
 
 
 --
--- Name: eav_value_float; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_float; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_float (
@@ -859,7 +859,7 @@ CREATE TABLE eav_value_float (
 ALTER TABLE eav_value_float OWNER TO xtenspg;
 
 --
--- Name: eav_value_float_data; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_float_data; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_float_data (
@@ -918,7 +918,7 @@ ALTER SEQUENCE eav_value_float_id_seq OWNED BY eav_value_float.id;
 
 
 --
--- Name: eav_value_float_sample; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_float_sample; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_float_sample (
@@ -956,7 +956,7 @@ ALTER SEQUENCE eav_value_float_sample_id_seq OWNED BY eav_value_float_sample.id;
 
 
 --
--- Name: eav_value_float_subject; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_float_subject; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_float_subject (
@@ -994,7 +994,7 @@ ALTER SEQUENCE eav_value_float_subject_id_seq OWNED BY eav_value_float_subject.i
 
 
 --
--- Name: eav_value_integer; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_integer; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_integer (
@@ -1012,7 +1012,7 @@ CREATE TABLE eav_value_integer (
 ALTER TABLE eav_value_integer OWNER TO xtenspg;
 
 --
--- Name: eav_value_integer_data; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_integer_data; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_integer_data (
@@ -1071,7 +1071,7 @@ ALTER SEQUENCE eav_value_integer_id_seq OWNED BY eav_value_integer.id;
 
 
 --
--- Name: eav_value_integer_sample; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_integer_sample; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_integer_sample (
@@ -1109,7 +1109,7 @@ ALTER SEQUENCE eav_value_integer_sample_id_seq OWNED BY eav_value_integer_sample
 
 
 --
--- Name: eav_value_integer_subject; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_integer_subject; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_integer_subject (
@@ -1147,7 +1147,7 @@ ALTER SEQUENCE eav_value_integer_subject_id_seq OWNED BY eav_value_integer_subje
 
 
 --
--- Name: eav_value_text; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_text; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_text (
@@ -1164,7 +1164,7 @@ CREATE TABLE eav_value_text (
 ALTER TABLE eav_value_text OWNER TO xtenspg;
 
 --
--- Name: eav_value_text_data; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_text_data; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_text_data (
@@ -1222,7 +1222,7 @@ ALTER SEQUENCE eav_value_text_id_seq OWNED BY eav_value_text.id;
 
 
 --
--- Name: eav_value_text_sample; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_text_sample; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_text_sample (
@@ -1259,7 +1259,7 @@ ALTER SEQUENCE eav_value_text_sample_id_seq OWNED BY eav_value_text_sample.id;
 
 
 --
--- Name: eav_value_text_subject; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_text_subject; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE eav_value_text_subject (
@@ -1296,7 +1296,7 @@ ALTER SEQUENCE eav_value_text_subject_id_seq OWNED BY eav_value_text_subject.id;
 
 
 --
--- Name: germline_variant; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: germline_variant; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE germline_variant (
@@ -1329,7 +1329,7 @@ ALTER SEQUENCE germline_variant_id_seq OWNED BY germline_variant.id;
 
 
 --
--- Name: group_members__operator_groups; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: group_members__operator_groups; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE group_members__operator_groups (
@@ -1363,7 +1363,7 @@ ALTER SEQUENCE group_members__operator_groups_id_seq OWNED BY group_members__ope
 
 
 --
--- Name: operator; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: operator; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE operator (
@@ -1403,7 +1403,7 @@ ALTER SEQUENCE operator_id_seq OWNED BY operator.id;
 
 
 --
--- Name: passport; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: passport; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE passport (
@@ -1445,7 +1445,7 @@ ALTER SEQUENCE passport_id_seq OWNED BY passport.id;
 
 
 --
--- Name: personal_details; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: personal_details; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE personal_details (
@@ -1482,7 +1482,7 @@ ALTER SEQUENCE personal_details_id_seq OWNED BY personal_details.id;
 
 
 --
--- Name: project; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: project; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE project (
@@ -1518,7 +1518,7 @@ ALTER SEQUENCE project_id_seq OWNED BY project.id;
 
 
 --
--- Name: project_subjects__subject_projects; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: project_subjects__subject_projects; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE project_subjects__subject_projects (
@@ -1552,7 +1552,7 @@ ALTER SEQUENCE project_subjects__subject_projects_id_seq OWNED BY project_subjec
 
 
 --
--- Name: sample; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: sample; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE sample (
@@ -1594,7 +1594,7 @@ ALTER SEQUENCE sample_id_seq OWNED BY sample.id;
 
 
 --
--- Name: somatic_variant; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: somatic_variant; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE somatic_variant (
@@ -1627,7 +1627,7 @@ ALTER SEQUENCE somatic_variant_id_seq OWNED BY somatic_variant.id;
 
 
 --
--- Name: subject; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: subject; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE subject (
@@ -1668,7 +1668,7 @@ ALTER SEQUENCE subject_id_seq OWNED BY subject.id;
 
 
 --
--- Name: xtens_group; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: xtens_group; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE TABLE xtens_group (
@@ -2007,7 +2007,7 @@ ALTER TABLE ONLY xtens_group ALTER COLUMN id SET DEFAULT nextval('xtens_group_id
 
 
 --
--- Name: biobank_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: biobank_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY biobank
@@ -2015,7 +2015,7 @@ ALTER TABLE ONLY biobank
 
 
 --
--- Name: contact_information_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: contact_information_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY contact_information
@@ -2023,7 +2023,7 @@ ALTER TABLE ONLY contact_information
 
 
 --
--- Name: data_file_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: data_file_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY data_file
@@ -2031,7 +2031,7 @@ ALTER TABLE ONLY data_file
 
 
 --
--- Name: data_file_uri_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: data_file_uri_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY data_file
@@ -2039,7 +2039,7 @@ ALTER TABLE ONLY data_file
 
 
 --
--- Name: data_files__datafile_data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: data_files__datafile_data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY data_files__datafile_data
@@ -2047,7 +2047,7 @@ ALTER TABLE ONLY data_files__datafile_data
 
 
 --
--- Name: data_files_datafile_data_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: data_files_datafile_data_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY data_files__datafile_data
@@ -2055,7 +2055,7 @@ ALTER TABLE ONLY data_files__datafile_data
 
 
 --
--- Name: data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY data
@@ -2063,7 +2063,7 @@ ALTER TABLE ONLY data
 
 
 --
--- Name: data_type_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: data_type_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY data_type
@@ -2071,7 +2071,7 @@ ALTER TABLE ONLY data_type
 
 
 --
--- Name: datafile_samples__sample_files_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: datafile_samples__sample_files_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY datafile_samples__sample_files
@@ -2079,7 +2079,7 @@ ALTER TABLE ONLY datafile_samples__sample_files
 
 
 --
--- Name: datafile_samples__sample_files_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: datafile_samples__sample_files_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY datafile_samples__sample_files
@@ -2087,7 +2087,7 @@ ALTER TABLE ONLY datafile_samples__sample_files
 
 
 --
--- Name: datatype_children__datatype_parents_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: datatype_children__datatype_parents_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY datatype_children__datatype_parents
@@ -2095,7 +2095,7 @@ ALTER TABLE ONLY datatype_children__datatype_parents
 
 
 --
--- Name: datatype_children__datatype_parents_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: datatype_children__datatype_parents_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY datatype_children__datatype_parents
@@ -2103,7 +2103,7 @@ ALTER TABLE ONLY datatype_children__datatype_parents
 
 
 --
--- Name: datatype_groups__group_datatypes_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: datatype_groups__group_datatypes_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY datatype_groups__group_datatypes
@@ -2111,7 +2111,7 @@ ALTER TABLE ONLY datatype_groups__group_datatypes
 
 
 --
--- Name: datatype_groups__group_datatypes_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: datatype_groups__group_datatypes_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY datatype_groups__group_datatypes
@@ -2119,7 +2119,7 @@ ALTER TABLE ONLY datatype_groups__group_datatypes
 
 
 --
--- Name: datatype_name_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: datatype_name_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY data_type
@@ -2127,7 +2127,7 @@ ALTER TABLE ONLY data_type
 
 
 --
--- Name: datatype_privileges_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: datatype_privileges_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY datatype_privileges
@@ -2135,7 +2135,7 @@ ALTER TABLE ONLY datatype_privileges
 
 
 --
--- Name: datatype_xtensgroup_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: datatype_xtensgroup_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY datatype_privileges
@@ -2143,7 +2143,7 @@ ALTER TABLE ONLY datatype_privileges
 
 
 --
--- Name: eav_attribute_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_attribute_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_attribute
@@ -2151,7 +2151,7 @@ ALTER TABLE ONLY eav_attribute
 
 
 --
--- Name: eav_loop_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_loop_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_loop
@@ -2159,7 +2159,7 @@ ALTER TABLE ONLY eav_loop
 
 
 --
--- Name: eav_value_boolean_data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_boolean_data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_boolean_data
@@ -2167,7 +2167,7 @@ ALTER TABLE ONLY eav_value_boolean_data
 
 
 --
--- Name: eav_value_boolean_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_boolean_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_boolean
@@ -2175,7 +2175,7 @@ ALTER TABLE ONLY eav_value_boolean
 
 
 --
--- Name: eav_value_boolean_sample_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_boolean_sample_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_boolean_sample
@@ -2183,7 +2183,7 @@ ALTER TABLE ONLY eav_value_boolean_sample
 
 
 --
--- Name: eav_value_boolean_subject_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_boolean_subject_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_boolean_subject
@@ -2191,7 +2191,7 @@ ALTER TABLE ONLY eav_value_boolean_subject
 
 
 --
--- Name: eav_value_date_data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_date_data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_date_data
@@ -2199,7 +2199,7 @@ ALTER TABLE ONLY eav_value_date_data
 
 
 --
--- Name: eav_value_date_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_date_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_date
@@ -2207,7 +2207,7 @@ ALTER TABLE ONLY eav_value_date
 
 
 --
--- Name: eav_value_date_sample_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_date_sample_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_date_sample
@@ -2215,7 +2215,7 @@ ALTER TABLE ONLY eav_value_date_sample
 
 
 --
--- Name: eav_value_date_subject_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_date_subject_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_date_subject
@@ -2223,7 +2223,7 @@ ALTER TABLE ONLY eav_value_date_subject
 
 
 --
--- Name: eav_value_float_data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_float_data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_float_data
@@ -2231,7 +2231,7 @@ ALTER TABLE ONLY eav_value_float_data
 
 
 --
--- Name: eav_value_float_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_float_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_float
@@ -2239,7 +2239,7 @@ ALTER TABLE ONLY eav_value_float
 
 
 --
--- Name: eav_value_float_sample_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_float_sample_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_float_sample
@@ -2247,7 +2247,7 @@ ALTER TABLE ONLY eav_value_float_sample
 
 
 --
--- Name: eav_value_float_subject_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_float_subject_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_float_subject
@@ -2255,7 +2255,7 @@ ALTER TABLE ONLY eav_value_float_subject
 
 
 --
--- Name: eav_value_integer_data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_integer_data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_integer_data
@@ -2263,7 +2263,7 @@ ALTER TABLE ONLY eav_value_integer_data
 
 
 --
--- Name: eav_value_integer_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_integer_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_integer
@@ -2271,7 +2271,7 @@ ALTER TABLE ONLY eav_value_integer
 
 
 --
--- Name: eav_value_integer_sample_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_integer_sample_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_integer_sample
@@ -2279,7 +2279,7 @@ ALTER TABLE ONLY eav_value_integer_sample
 
 
 --
--- Name: eav_value_integer_subject_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_integer_subject_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_integer_subject
@@ -2287,7 +2287,7 @@ ALTER TABLE ONLY eav_value_integer_subject
 
 
 --
--- Name: eav_value_text_data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_text_data_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_text_data
@@ -2295,7 +2295,7 @@ ALTER TABLE ONLY eav_value_text_data
 
 
 --
--- Name: eav_value_text_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_text_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_text
@@ -2303,7 +2303,7 @@ ALTER TABLE ONLY eav_value_text
 
 
 --
--- Name: eav_value_text_sample_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_text_sample_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_text_sample
@@ -2311,7 +2311,7 @@ ALTER TABLE ONLY eav_value_text_sample
 
 
 --
--- Name: eav_value_text_subject_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: eav_value_text_subject_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY eav_value_text_subject
@@ -2319,7 +2319,7 @@ ALTER TABLE ONLY eav_value_text_subject
 
 
 --
--- Name: email_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: email_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY contact_information
@@ -2327,7 +2327,7 @@ ALTER TABLE ONLY contact_information
 
 
 --
--- Name: germline_variant_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: germline_variant_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY germline_variant
@@ -2335,7 +2335,7 @@ ALTER TABLE ONLY germline_variant
 
 
 --
--- Name: group_members__operator_groups_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: group_members__operator_groups_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY group_members__operator_groups
@@ -2343,7 +2343,7 @@ ALTER TABLE ONLY group_members__operator_groups
 
 
 --
--- Name: group_members__operator_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: group_members__operator_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY group_members__operator_groups
@@ -2351,7 +2351,7 @@ ALTER TABLE ONLY group_members__operator_groups
 
 
 --
--- Name: operator_email_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: operator_email_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY operator
@@ -2359,7 +2359,7 @@ ALTER TABLE ONLY operator
 
 
 --
--- Name: operator_login_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: operator_login_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY operator
@@ -2367,7 +2367,7 @@ ALTER TABLE ONLY operator
 
 
 --
--- Name: operator_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: operator_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY operator
@@ -2375,7 +2375,7 @@ ALTER TABLE ONLY operator
 
 
 --
--- Name: passport_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: passport_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY passport
@@ -2383,7 +2383,7 @@ ALTER TABLE ONLY passport
 
 
 --
--- Name: personal_details_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: personal_details_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY personal_details
@@ -2391,7 +2391,7 @@ ALTER TABLE ONLY personal_details
 
 
 --
--- Name: project_name_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: project_name_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY project
@@ -2399,7 +2399,7 @@ ALTER TABLE ONLY project
 
 
 --
--- Name: project_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: project_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY project
@@ -2407,7 +2407,7 @@ ALTER TABLE ONLY project
 
 
 --
--- Name: project_subjects__subject_projects_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: project_subjects__subject_projects_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY project_subjects__subject_projects
@@ -2415,7 +2415,7 @@ ALTER TABLE ONLY project_subjects__subject_projects
 
 
 --
--- Name: project_subjects__subject_projects_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: project_subjects__subject_projects_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY project_subjects__subject_projects
@@ -2423,7 +2423,7 @@ ALTER TABLE ONLY project_subjects__subject_projects
 
 
 --
--- Name: sample_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: sample_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY sample
@@ -2431,7 +2431,7 @@ ALTER TABLE ONLY sample
 
 
 --
--- Name: somatic_variant_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: somatic_variant_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY somatic_variant
@@ -2439,7 +2439,7 @@ ALTER TABLE ONLY somatic_variant
 
 
 --
--- Name: subject_code_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: subject_code_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY subject
@@ -2447,7 +2447,7 @@ ALTER TABLE ONLY subject
 
 
 --
--- Name: subject_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: subject_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY subject
@@ -2455,7 +2455,7 @@ ALTER TABLE ONLY subject
 
 
 --
--- Name: surname_givenname_birthdate_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: surname_givenname_birthdate_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY personal_details
@@ -2463,7 +2463,7 @@ ALTER TABLE ONLY personal_details
 
 
 --
--- Name: xtens_group_name_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: xtens_group_name_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY xtens_group
@@ -2471,7 +2471,7 @@ ALTER TABLE ONLY xtens_group
 
 
 --
--- Name: xtens_group_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: xtens_group_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY xtens_group
@@ -2479,7 +2479,7 @@ ALTER TABLE ONLY xtens_group
 
 
 --
--- Name: xtensgroup_name_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: xtensgroup_name_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 ALTER TABLE ONLY xtens_group
@@ -2487,14 +2487,14 @@ ALTER TABLE ONLY xtens_group
 
 
 --
--- Name: data_parentdata_idx; Type: INDEX; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: data_parentdata_idx; Type: INDEX; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE INDEX data_parentdata_idx ON data USING btree (parent_data);
 
 
 --
--- Name: data_type_idx; Type: INDEX; Schema: public; Owner: xtenspg; Tablespace: 
+-- Name: data_type_idx; Type: INDEX; Schema: public; Owner: xtenspg; Tablespace:
 --
 
 CREATE INDEX data_type_idx ON data USING btree (type);
@@ -3497,4 +3497,3 @@ GRANT ALL ON SEQUENCE xtens_group_id_seq TO xtenspg;
 --
 -- PostgreSQL database dump complete
 --
-

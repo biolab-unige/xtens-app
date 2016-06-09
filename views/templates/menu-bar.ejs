@@ -5,12 +5,12 @@
         <span class="fa fa-angle-down"></span>
     </a>
     <ul id="box" class="dropdown-menu">
-      <% if (session.get("isWheel")) {%><h2 id="title"><%= __("admin")%></h2>
+      <% if (session.get("isWheel")) {%><h2 id="title"><%= __("super-user")%></h2>
       <li><a href="#/groups"><%= __("groups") %></a></li>
       <li><a href="#/operators"><%= __("operators") %></a></li>
       <li><a href="#/biobanks"><%= __("biobanks") %></a></li>
       <li><a href="#/datatypes"><%= __("data-types") %></a></li><%}
-       else if (session.get("isManager")) {%><h2 id="title"><%= __("manager")%></h2>
+       else if (session.get("isAdmin")) {%><h2 id="title"><%= __("manager")%></h2>
        <li><a href="#/biobanks"><%= __("biobanks") %></a></li>
        <li><a href="#/datatypes"><%= __("data-types") %></a></li><%}
        else {%><h2 id="title"><%= __("standard")%></h2><%};%>
