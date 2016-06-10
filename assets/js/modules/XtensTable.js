@@ -128,7 +128,7 @@ function renderDatatablesDate(data, type) {
             var fieldsToShow = this.dataType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
             this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), true);  // TODO manage permission for personalDetails
             this.numLeft=this.columns.length;
-            
+
             _.each(fieldsToShow, function(field) {
                 var colTitle = field.name;
 
@@ -182,9 +182,9 @@ function renderDatatablesDate(data, type) {
             this.addLinks();
 
             this.tableOpts = {
-                data: this.data,
-                columns: this.columns,
-                info: false,
+                data:           this.data,
+                columns:        this.columns,
+                info:           true,
                 scrollX:        true,
                 scrollY:        "500px",
                 scrollCollapse: true,
