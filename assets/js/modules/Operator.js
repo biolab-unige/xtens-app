@@ -122,6 +122,9 @@
 
     saveOperator: function(ev) {
       ev.preventDefault();
+      if(!this.model.get('id')){
+        this.model.set('password') = $('#password').val();
+      }
       this.model.save(null, {
         success: function(operator) {
           console.log('Operator.Views.Edit.saveOperator - operator correctly inserted/updated!');
