@@ -14,7 +14,7 @@ describe("PassportService protocol Local", function() {
     let token;
     let passport;
     before(function(done) {
-        loginHelper.loginDemouser(request, function (bearerToken) {
+        loginHelper.loginStandardUser(request, function (bearerToken) {
             token = bearerToken;
             sails.log.debug(`Got token: ${token}`);
             done();

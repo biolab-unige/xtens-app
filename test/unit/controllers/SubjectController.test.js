@@ -11,7 +11,7 @@ describe('SubjectController', function() {
     let token;
 
     before(function(done) {
-        loginHelper.loginAdmin(request, function (bearerToken) {
+        loginHelper.loginAdminUser(request, function (bearerToken) {
             token = bearerToken;
             sails.log.debug(`Got token: ${token}`);
             done();

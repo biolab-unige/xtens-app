@@ -209,19 +209,22 @@ module.exports = {
     edit: function(req, res) {
         const co = new ControllerOut(res);
         const id = req.param("id"), code = req.param("code");
-        const idOperator = TokenService.getToken(req).id;
+        const operator = TokenService.getToken(req);
 
-        console.log("SubjectController.edit - Decoded ID is: " + idOperator);
+        console.log("SubjectController.edit - Decoded ID is: " + operator.id);
 
         return BluebirdPromise.props({
             projects: Project.find(),
             subject: SubjectService.getOneAsync(id, code),
             dataTypes: crudManager.getDataTypesByRolePrivileges({
-                idOperator: idOperator,
+                idOperator: operator.id,
                 model: SUBJECT
             }),
         })
         .then(function(results) {
+          if(!operator.canAccessPersonalData){
+            delete results['personalInfo'];
+          }
             return res.json(results);
         })
         .catch(function(err) {

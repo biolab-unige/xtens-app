@@ -11,6 +11,7 @@
  */
 module.exports = function(req, res, next) {
 
+    console.log("Called isWheel Policy");
     var payload= TokenService.getToken(req);
 
     // User is allowed, proceed to the next policy,

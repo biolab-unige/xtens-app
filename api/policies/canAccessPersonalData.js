@@ -4,19 +4,19 @@
  * isWheel
  *
  * @module      :: Policy
- * @description :: Allow any Admin user to access
+ * @description :: Allow any user to manage PersonalData
  *
  * @docs        :: http://sailsjs.org/#!documentation/policies
  *
  */
 module.exports = function(req, res, next) {
 
-    console.log("Called isAdmin Policy");
     var payload= TokenService.getToken(req);
 
+    console.log("Called canAccessPersonalData Policy", payload);
     // User is allowed, proceed to the next policy,
     // or if this is the last policy, the controller
-    if (payload.isAdmin) {
+    if (payload.canAccessPersonalData) {
         return next();
     }
 

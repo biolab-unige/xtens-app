@@ -23,35 +23,45 @@ module.exports.policies = {
     '*': 'bearerAuth',
 
     'main':{
-        '*':true
+        '*': true
     },
 
     'auth': {
         '*': true
     },
 
+    GroupController: {
+        '*': ['bearerAuth', 'isWheel']
+    },
+
     OperatorController: {
-        '*': 'isWheel',
-        'patchPassport':'bearerAuth'
+        '*': ['bearerAuth', 'isWheel'],
+        'patchPassword': 'bearerAuth'
+    },
+
+    DataTypePrivilegesController: {
+        '*': ['bearerAuth', 'isWheel'],
+        find: 'bearerAuth'
     },
 
     DataTypeController: {
-        '*': 'isAdmin',
-        find:'bearerAuth'
+        '*':  ['bearerAuth', 'isAdmin'],
+        find: 'bearerAuth'
     },
 
     BiobankController: {
-        '*': 'isAdmin',
-        find:'bearerAuth'
+        '*':  ['bearerAuth', 'isAdmin'],
+        find: 'bearerAuth'
     },
 
-    QueryController: {
-        '*': 'bearerAuth'
+    ContactInformationController: {
+        '*': ['bearerAuth', 'isAdmin']
     },
 
-    GroupController: {
-        '*': 'isWheel'
+    PersonalDetailsController: {
+        '*':  ['bearerAuth', 'canAccessPersonalData']
     }
+
 
 	// Here's an example of mapping some policies to run before
   // a controller and its actions

@@ -23,7 +23,7 @@ describe('DataController', function() {
     };
 
     before(function(done) {
-        loginHelper.loginAdmin(request, function (bearerToken) {
+        loginHelper.loginAdminUser(request, function (bearerToken) {
             token = bearerToken;
             sails.log.debug(`Got token: ${token}`);
             done();
