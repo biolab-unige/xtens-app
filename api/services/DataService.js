@@ -103,24 +103,24 @@ let DataService = BluebirdPromise.promisifyAll({
         let value, unit, group;
 
         switch(metadataField.fieldType) {
-            case FieldTypes.INTEGER:
-                value = Joi.number().integer();
+        case FieldTypes.INTEGER:
+            value = Joi.number().integer();
             break;
-            case FieldTypes.FLOAT:
-                value = Joi.number();
+        case FieldTypes.FLOAT:
+            value = Joi.number();
             break;
-            case FieldTypes.BOOLEAN:
-                value = Joi.boolean().default(false);
+        case FieldTypes.BOOLEAN:
+            value = Joi.boolean().default(false);
             break;
-            case FieldTypes.DATE:
-                value = Joi.string().isoDate();
+        case FieldTypes.DATE:
+            value = Joi.string().isoDate();
             break;
             // default is TEXT
-            default:
-                value = Joi.string();
-                if (metadataField.caseInsensitive && !metadataField.isList) {
-                    value = value.uppercase();
-                }
+        default:
+            value = Joi.string();
+            if (metadataField.caseInsensitive && !metadataField.isList) {
+                value = value.uppercase();
+            }
 
         }
 
@@ -229,16 +229,16 @@ let DataService = BluebirdPromise.promisifyAll({
     queryAndPopulateItemsById: function(foundRows, model, next) {
         let ids = _.pluck(foundRows, 'id');
         switch(model) {
-            case DataTypeClasses.SUBJECT:
-                console.log("calling Subject.find");
+        case DataTypeClasses.SUBJECT:
+            console.log("calling Subject.find");
             Subject.find({id: ids}).exec(next);
             break;
-            case DataTypeClasses.SAMPLE:
-                console.log("calling Sample.find");
+        case DataTypeClasses.SAMPLE:
+            console.log("calling Sample.find");
             Sample.find({id: ids}).exec(next);
             break;
-            default:
-                console.log("calling Data.find");
+        default:
+            console.log("calling Data.find");
             Data.find({id: ids}).exec(next);
         }
     },
@@ -344,6 +344,25 @@ let DataService = BluebirdPromise.promisifyAll({
                 });
             }, {concurrency: 1});
         });
+    },
+
+    filterOutSensitiveInfo: function(metadata, datatype) {
+        console.log('DataService - filterOutSensitiveInfo: ' + datatype.name);
+
+            //console.log(foundType);
+        let flattenedFields = DataTypeService.getFlattenedFields(datatype, false);
+            //console.log("Schema array " + JSON.stringify(flattenedFields));
+        _.each(flattenedFields, schemaField => {
+
+            if (schemaField.sensitive){
+                if(metadata[schemaField.formattedName]){
+                    delete metadata[schemaField.formattedName];
+                    console.log("DataService - filterOutSensitiveInfo - removed metadata field: " + schemaField.formattedName);
+                }
+            }
+        });
+
+        return metadata;
     }
 
 });
