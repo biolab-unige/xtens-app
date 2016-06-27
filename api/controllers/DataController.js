@@ -69,15 +69,19 @@ module.exports = {
     findOne: function(req, res) {
         const co = new ControllerOut(res);
         const id = req.param('id');
+        const operator = TokenService.getToken(req);
 
         let query = Data.findOne(id);
 
         query = QueryService.populateRequest(query, req);
 
         query.then(function(result) {
-            return res.json(result);
-        })
+          //filter Out Sensitive Info if operator can not access to Sensitive Data
+            DataService.filterOutSensitiveInfo(result, operator.canAccessSensitiveData).then(function(data) {
 
+                return res.json(data);
+            });
+        })
         .catch(function(error) {
             return co.error(error);
         });
@@ -94,6 +98,7 @@ module.exports = {
      */
     find: function(req, res) {
         const co = new ControllerOut(res);
+        const operator = TokenService.getToken(req);
 
         let query = Data.find()
         .where(QueryService.parseCriteria(req))
@@ -103,8 +108,14 @@ module.exports = {
 
         query = QueryService.populateRequest(query, req);
 
-        query.then(function(data) {
-            res.json(data);
+        query.then(function(result) {
+
+            //filter Out Sensitive Info if operator can not access to Sensitive Data
+            DataService.filterOutSensitiveInfo(result, operator.canAccessSensitiveData).then(function(data) {
+
+                res.json(data);
+            });
+
         })
         .catch(function(err) {
             sails.log.error(err.message);
@@ -208,34 +219,46 @@ module.exports = {
      * @name edit
      * @description retrieve all required information to create an EditData form
      */
-
+     //FARE TESTT
     edit: function(req, res) {
         const co = new ControllerOut(res);
         const params = req.allParams();
-        const idOperator = TokenService.getToken(req).id;
-        console.log(params);
-        return BluebirdPromise.props({
-            data: DataService.getOneAsync(params.id),
-            dataTypes: crudManager.getDataTypesByRolePrivileges({
-                idOperator: idOperator,
-                model: DATA,
-                idDataTypes: params.idDataTypes,
-                parentDataType: params.parentDataType
-            }),
-            parentSubject: SubjectService.getOneAsync(params.parentSubject, params.parentSubjectCode),
-            parentSample: SampleService.getOneAsync(params.parentSample),
-            parentData: DataService.getOneAsync(params.parentData)
-        })
+        const operator = TokenService.getToken(req);
+        let resHasData = {};
+        return DataService.hasDataSensitive(params.id).then(function(results) {
 
-        .then(function(results) {
-            return res.json(results);
-        })
+            if (resHasData.hasDataSensitive && !operator.canAccessSensitiveData){
+                return res.forbidden();
+            }
+            else{
 
-        .catch(function(err) {
-            sails.log.error(err);
-            return co.error(err);
+                return BluebirdPromise.props({
+                    data: results.data,
+                    dataTypes: crudManager.getDataTypesByRolePrivileges({
+                        idOperator: operator.id,
+                        model: DATA,
+                        idDataTypes: params.idDataTypes,
+                        parentDataType: params.parentDataType
+                    }),
+                    parentSubject: SubjectService.getOneAsync(params.parentSubject, params.parentSubjectCode),
+                    parentSample: SampleService.getOneAsync(params.parentSample),
+                    parentData: DataService.getOneAsync(params.parentData)
+                })
+
+                .then(function(results) {
+                // TODO: how to manage edit data with operator canNotAccessSensitiveData but can edit data with sensitive Data??
+                  // let dataTypePrivilege = _.filter(results.dataTypes,function (res) { return res.id === results.data['type'];});
+                  // if(resHasData.hasDataSensitive && dataTypePrivilege.privilege_level === 'edit')
+                    return res.json(results);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return co.error(err);
+                });
+            }
         });
 
     }
-
+    // let dataTypePrivilege = _.filter(results,function (res) { return res.id === data['type'];});
+    // if (dataTypePrivilege.privilege_level //DEVO CAPIRE SE IL DATATYPE HA DATI SENSITIVE)
 };

@@ -346,24 +346,96 @@ let DataService = BluebirdPromise.promisifyAll({
         });
     },
 
-    filterOutSensitiveInfo: function(metadata, datatype) {
-        console.log('DataService - filterOutSensitiveInfo: ' + datatype.name);
+    /**
+     * @name filterOutSensitiveInfo
+     * @description Filter data
+     * @param {Array} - an array of data
+     * @param {dataTypes} - an array of dataType
+     * @return {Promise} -  a Bluebird Promise with Data Array filtered
+     */
+    filterOutSensitiveInfo: function(data, canAccessSensitiveData) {
+        //if canAccessSensitiveData is true skip the function and return data
+        if(!canAccessSensitiveData){
+            let arrData = [], idDataType , forbiddenFields = {};
+            data && !_.isArray(data) ? arrData[0] = data : data && _.isArray(data) ? arrData=data : arrData=[];
 
-            //console.log(foundType);
-        let flattenedFields = DataTypeService.getFlattenedFields(datatype, false);
-            //console.log("Schema array " + JSON.stringify(flattenedFields));
-        _.each(flattenedFields, schemaField => {
+            const typeIds = _.uniq(_.map(arrData, 'type'));
+            console.log(typeIds);
+                //retrieve datatype of datum
+            return DataType.find({id : typeIds}).then(function(dataTypes){
+                // console.log("dataTypes: " + JSON.stringify(dataTypes));
 
-            if (schemaField.sensitive){
-                if(metadata[schemaField.formattedName]){
-                    delete metadata[schemaField.formattedName];
-                    console.log("DataService - filterOutSensitiveInfo - removed metadata field: " + schemaField.formattedName);
+                _.each(dataTypes,function (datatype) {
+                    //retrieve metadata fields sensitive
+                    idDataType = datatype.id;
+                    let flattenedFields = DataTypeService.getFlattenedFields(datatype, false);
+                    let forbiddenField = _.filter(flattenedFields, function(field) {return field.sensitive;});
+                    forbiddenFields[idDataType] = _.map(forbiddenField, function(field){return field.formattedName;});
+                });
+                console.log(forbiddenFields);
+
+                for (let datum of arrData) {
+                    _.each(forbiddenFields[datum.type],function (forbField) {
+
+                        if(datum.metadata[forbField]){
+                            delete datum.metadata[forbField];
+                            console.log("Deleted field: " + datum.metadata[forbField]);
+                        }
+
+                    });
                 }
-            }
+                //console.log(data);
+                return data;
+
+            }).catch(function(err){
+                sails.log(err);
+                return err;
+            });
+        }
+        else {
+            return data;
+        }
+    },
+    /**
+     * @name hasDataSensitive
+     * @description Filter data
+     * @param {integer} - indentifier of data
+     * @return {Promise} -  a Bluebird Promise with an object containing boolean and data
+     */
+    hasDataSensitive: function(id) {
+        let flattenedFields =[], forbiddenFields =[], data , hasDataSensitive;
+      //if canAccessSensitiveData is true skip the function and return data
+        return Data.findOne({id : id}).then(function(datum){
+            data = datum;
+          //retrieve datatype of datum
+            return DataType.find({id : data.type}).then(function(dataType){
+                // console.log("dataTypes: " + JSON.stringify(dataTypes));
+                    //retrieve metadata fields sensitive
+                flattenedFields = DataTypeService.getFlattenedFields(dataType[0], false);
+
+                forbiddenFields = _.filter(flattenedFields, function(field) {return field.sensitive;});
+
+                console.log(forbiddenFields);
+
+                forbiddenFields.length >0 ? hasDataSensitive = true : hasDataSensitive = false;
+                console.log(hasDataSensitive);
+                let json = {
+                    hasDataSensitive : hasDataSensitive,
+                    data : data,
+                    dataType : dataType,
+                    flattenedFields : flattenedFields
+                };
+                return json;
+
+            });
+
+        }).catch(function(err){
+            sails.log(err);
+            return err;
         });
 
-        return metadata;
     }
+
 
 });
 

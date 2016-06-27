@@ -250,25 +250,39 @@ describe('DataService', function() {
     //
     // });
 
-    describe('#filterOutSensitiveInfo', function() {
 
+    describe('#hasDataSensitive', function() {
 
-        it("should return the metadata object without sensitive fields defined on schema object", function() {
+        it("should return an object with true result of investigation", function() {
 
-            var dataStar = _.cloneDeep(fixtures.data[0]);
-            var dataTypeStar = _.cloneDeep(fixtures.datatype[dataStar.type-1]);
-            console.log("Data Star METADATA: " + JSON.stringify(dataStar.metadata));
+            var data = _.cloneDeep(fixtures.data[0]);
 
-            var metadataStarFiltered = DataService.filterOutSensitiveInfo(dataStar.metadata, dataTypeStar);
-            console.log("Metadata Star FILTERED: " + JSON.stringify(metadataStarFiltered));
+            console.log("Data Star: " + JSON.stringify(data));
 
-            delete dataStar.metadata['name'];
-            var expectedMetadataStar = dataStar.metadata;
-            console.log("EXPECTED Metadata Star: " + JSON.stringify(expectedMetadataStar));
+            DataService.hasDataSensitive(data.id).then(function(result){
 
-            expect(JSON.stringify(metadataStarFiltered)).to.eql(JSON.stringify(expectedMetadataStar));
+                console.log("Result: " + result);
+
+                expect(result.hasDataSensitive).to.be.true;
+            });
         });
 
+        it("should return an object with false result of investigation", function() {
+
+            var data = _.cloneDeep(fixtures.data[0]);
+
+            console.log(fixtures.datatype[2].schema.body[0].content[0].sensitive);
+            fixtures.datatype[2].schema.body[0].content[0].sensitive = false;
+
+            console.log("Data Star: " + JSON.stringify(data));
+
+            DataService.hasDataSensitive(data.id).then(function(result){
+
+                console.log("Result: " + result);
+
+                expect(result.hasDataSensitive).to.be.false;
+            });
+        });
     });
 
 });
