@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-    /* 
+    /*
     dataSearch: function(req, res) {
 
         var queryArgs = req.param('queryArgs');
@@ -15,17 +15,17 @@ module.exports = {
                 DataService.advancedQuery(queryArgs, callback);
             },
             function(results, callback) {
-                DataService.queryAndPopulateItemsById(results.rows, queryArgs.classTemplate, callback); 
+                DataService.queryAndPopulateItemsById(results.rows, queryArgs.classTemplate, callback);
             }
         ], function(err, result) {
             if (err) {
                 return res.serverError("error");
             }
-            return res.json(result); 
+            return res.json(result);
         });
 
     } */
-    
+
     /**
      * @method
      * @name dataSearch
@@ -36,6 +36,8 @@ module.exports = {
         var queryArgs = req.param('queryArgs');
         var data = null;
         var idDataType = queryArgs.dataType;
+        const operator = TokenService.getToken(req);
+
         DataService.executeAdvancedQueryAsync(queryArgs)
 
         /* commenting out this additional search
@@ -52,15 +54,17 @@ module.exports = {
                 return DataType.findOne(idDataType);
             }
         })
-
         .then(function(dataType) {
-            res.json({data: data, dataType: dataType });
-        })
 
+            for (var datum of data) { datum['type'] = dataType.id; }
+            DataService.filterOutSensitiveInfo(data, operator.canAccessSensitiveData).then(function(data) {
+
+                res.json({data: data, dataType: dataType });
+            });
+        })
         .catch(function(error) {
             res.serverError(error.message);
         });
+    }
 
-    } 
-	
 };

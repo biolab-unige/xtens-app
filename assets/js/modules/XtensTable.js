@@ -124,10 +124,15 @@ function renderDatatablesDate(data, type) {
             if (!this.dataType) {
                 return; //TODO add alert box
             } */
-            // var dataType = new DataTypeModel(this.dataType);
-            var fieldsToShow = this.dataType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
+            var fieldsToShow =[];
+            var flattenedFields = this.dataType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
             this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), xtens.session.get('canAccessPersonalData'));  // TODO manage permission for personalDetails
             this.numLeft=this.columns.length;
+
+            flattenedFields.forEach(function(field) {
+                if ( !field.sensitive || xtens.session.get('canAccessSensitiveData') ) {
+                    fieldsToShow.push(field);
+                }});
 
             _.each(fieldsToShow, function(field) {
                 var colTitle = field.name;

@@ -14,8 +14,7 @@ const ValidationError = require('xtens-utils').Errors.ValidationError;
 const xtensConf = global.sails.config.xtens;
 const crudManager = sails.hooks.persistence.crudManager;
 const DATA = xtensConf.constants.DataTypeClasses.DATA;
-const filterOutSensitiveInfo = BluebirdPromise.promisify(DataService.filterOutSensitiveInfo);
-const hasDataSensitive = BluebirdPromise.promisify(DataService.hasDataSensitive);
+
 module.exports = {
 
 
@@ -112,7 +111,7 @@ module.exports = {
 
         query.then(function(result) {
             //filter Out Sensitive Info if operator can not access to Sensitive Data
-            DataService.filterOutSensitiveInfo(result, false).then(function(data) {//NB CHANGE false in operator.canAccessSensitiveData
+            DataService.filterOutSensitiveInfo(result, operator.canAccessSensitiveData).then(function(data) {
 
                 console.log(data);
                 return res.json(data);
