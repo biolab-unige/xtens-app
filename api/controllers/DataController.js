@@ -14,7 +14,8 @@ const ValidationError = require('xtens-utils').Errors.ValidationError;
 const xtensConf = global.sails.config.xtens;
 const crudManager = sails.hooks.persistence.crudManager;
 const DATA = xtensConf.constants.DataTypeClasses.DATA;
-
+const filterOutSensitiveInfo = BluebirdPromise.promisify(DataService.filterOutSensitiveInfo);
+const hasDataSensitive = BluebirdPromise.promisify(DataService.hasDataSensitive);
 module.exports = {
 
 
@@ -79,6 +80,7 @@ module.exports = {
           //filter Out Sensitive Info if operator can not access to Sensitive Data
             DataService.filterOutSensitiveInfo(result, operator.canAccessSensitiveData).then(function(data) {
 
+                console.log(data);
                 return res.json(data);
             });
         })
@@ -109,13 +111,12 @@ module.exports = {
         query = QueryService.populateRequest(query, req);
 
         query.then(function(result) {
-
             //filter Out Sensitive Info if operator can not access to Sensitive Data
-            DataService.filterOutSensitiveInfo(result, operator.canAccessSensitiveData).then(function(data) {
+            DataService.filterOutSensitiveInfo(result, false).then(function(data) {//NB CHANGE false in operator.canAccessSensitiveData
 
-                res.json(data);
+                console.log(data);
+                return res.json(data);
             });
-
         })
         .catch(function(err) {
             sails.log.error(err.message);
@@ -219,15 +220,16 @@ module.exports = {
      * @name edit
      * @description retrieve all required information to create an EditData form
      */
-     //FARE TESTT
+
     edit: function(req, res) {
         const co = new ControllerOut(res);
         const params = req.allParams();
         const operator = TokenService.getToken(req);
-        let resHasData = {};
+
         return DataService.hasDataSensitive(params.id).then(function(results) {
 
-            if (resHasData.hasDataSensitive && !operator.canAccessSensitiveData){
+            console.log(results.hasDataSensitive,operator.canAccessSensitiveData);
+            if (results.hasDataSensitive && !operator.canAccessSensitiveData){
                 return res.forbidden();
             }
             else{
@@ -246,9 +248,6 @@ module.exports = {
                 })
 
                 .then(function(results) {
-                // TODO: how to manage edit data with operator canNotAccessSensitiveData but can edit data with sensitive Data??
-                  // let dataTypePrivilege = _.filter(results.dataTypes,function (res) { return res.id === results.data['type'];});
-                  // if(resHasData.hasDataSensitive && dataTypePrivilege.privilege_level === 'edit')
                     return res.json(results);
                 })
                 .catch(function(err) {

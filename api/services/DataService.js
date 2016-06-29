@@ -354,51 +354,56 @@ let DataService = BluebirdPromise.promisifyAll({
      * @return {Promise} -  a Bluebird Promise with Data Array filtered
      */
     filterOutSensitiveInfo: function(data, canAccessSensitiveData) {
-        //if canAccessSensitiveData is true skip the function and return data
-        if(!canAccessSensitiveData){
-            let arrData = [], idDataType , forbiddenFields = {};
-            data && !_.isArray(data) ? arrData[0] = data : data && _.isArray(data) ? arrData=data : arrData=[];
 
-            const typeIds = _.uniq(_.map(arrData, 'type'));
-            console.log(typeIds);
-                //retrieve datatype of datum
-            return DataType.find({id : typeIds}).then(function(dataTypes){
-                // console.log("dataTypes: " + JSON.stringify(dataTypes));
+        let arrData = [], idDataType , forbiddenFields = {}, typeIds;
+        //If data is an object create an array with length=1, else if is an array create a copy of data
+        data && !_.isArray(data) ?
+        arrData[0] = data :
+        data && _.isArray(data) ? arrData=data : arrData=[];
+
+        //retrive all unique idDatatypes from data Array
+        typeof(arrData[0]['type']) === 'object' ?
+          typeIds = _.uniq(_.map(_.uniq(_.map(arrData, 'type')), 'id')) :
+          typeIds = _.uniq(_.map(arrData, 'type'));
+        console.log(typeIds);
+
+        //retrieve datatypes of datum
+        return DataType.find({id : typeIds}).then(function(dataTypes){
+          //if canAccessSensitiveData is true skip the function and return data
+            if(!canAccessSensitiveData){
 
                 _.each(dataTypes,function (datatype) {
-                    //retrieve metadata fields sensitive
+
+                    //create an array with metadata fields sensitive for each dataType
                     idDataType = datatype.id;
                     let flattenedFields = DataTypeService.getFlattenedFields(datatype, false);
                     let forbiddenField = _.filter(flattenedFields, function(field) {return field.sensitive;});
                     forbiddenFields[idDataType] = _.map(forbiddenField, function(field){return field.formattedName;});
                 });
-                console.log(forbiddenFields);
 
                 for (let datum of arrData) {
+
                     _.each(forbiddenFields[datum.type],function (forbField) {
 
                         if(datum.metadata[forbField]){
-                            delete datum.metadata[forbField];
                             console.log("Deleted field: " + datum.metadata[forbField]);
+                            delete datum.metadata[forbField];
                         }
-
                     });
                 }
-                //console.log(data);
+                return arrData.length > 1 ? arrData : arrData[0];
+            }
+            else {
                 return data;
-
-            }).catch(function(err){
-                sails.log(err);
-                return err;
-            });
-        }
-        else {
-            return data;
-        }
+            }
+        }).catch(function(err){
+            sails.log(err);
+            return err;
+        });
     },
     /**
      * @name hasDataSensitive
-     * @description Filter data
+     * @description Return a boolean true if data has sensitive attributes, then false
      * @param {integer} - indentifier of data
      * @return {Promise} -  a Bluebird Promise with an object containing boolean and data
      */

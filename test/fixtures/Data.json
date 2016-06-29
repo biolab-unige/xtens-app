@@ -15,5 +15,17 @@
     },
     "tags": ["test","a test"],
     "notes": "just a test"
-    }
+  },
+  {
+  "id":2,
+  "type":1,
+  "date": "2012-12-28",
+  "metadata": {
+      "status":{"value":"healthy","group":"Generic Info"},
+      "disease":{"value":"neuroblastoma","group":"Generic Info"},
+      "diagnosis_age":{"value":"34","group":"Generic Info","unit":"day"}
+    },
+  "tags": ["test","a test"],
+  "notes": "just a test"
+  }
 ]

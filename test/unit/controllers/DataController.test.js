@@ -1,6 +1,6 @@
 /* jshint node: true */
 /* jshint mocha: true */
-/* globals _, sails, fixtures */
+/* globals , sails, fixtures */
 "use strict";
 
 const expect = require("chai").expect;
@@ -23,7 +23,7 @@ describe('DataController', function() {
     };
 
     before(function(done) {
-        loginHelper.loginAdminUser(request, function (bearerToken) {
+        loginHelper.loginAnotherStandardUser(request, function (bearerToken) {
             token = bearerToken;
             sails.log.debug(`Got token: ${token}`);
             done();
@@ -53,7 +53,7 @@ describe('DataController', function() {
                 var l = res.header.location;
                 var loc = l.split('/');
                 var location = '/' + loc[3]+ '/' + loc[4];
-                expect(location).to.equals('/data/2');
+                expect(location).to.equals('/data/3');
                 done();
             });
         });
@@ -79,10 +79,10 @@ describe('DataController', function() {
             const note = "New Data Updated";
 
             request(sails.hooks.http.app)
-            .put('/data/2')
+            .put('/data/3')
             .set('Authorization', `Bearer ${token}`)
             .send({
-                id: 2,
+                id: 3,
                 type: 3,
                 metadata: metadata,
                 notes: "New Data Updated"
@@ -129,12 +129,11 @@ describe('DataController', function() {
 
     });
 
-
     describe('DELETE /data', function() {
 
         it('Should return 200 OK with 1 deleted item if resource exists', function (done) {
             request(sails.hooks.http.app)
-            .delete('/data/1')
+            .delete('/data/3')
             .set('Authorization', `Bearer ${token}`)
             .send()
             .expect(200, {
@@ -144,13 +143,55 @@ describe('DataController', function() {
 
         it('Should return 200 OK with 0 deleted items if resource does not exist', function (done) {
             request(sails.hooks.http.app)
-            .delete('/data/1')
+            .delete('/data/3')
             .set('Authorization', `Bearer ${token}`)
             .send()
             .expect(200, {
                 deleted: 0
             }, done);
         });
+    });
 
+    describe('EDIT /data/edit', function() {
+
+        it('Should return 200 OK with an object containing all information required', function (done) {
+
+            request(sails.hooks.http.app)
+                .get('/data/edit/2')
+                .set('Authorization', `Bearer ${token}`)
+                .send()
+                .expect(200)
+                .end(function(err, res) {
+                    console.log("Res edit: "+JSON.stringify(res.body));
+                    expect(res.body.data).to.exist;
+                    expect(res.body.dataTypes).to.exist;
+                    expect(res.body.parentSubject).to.equal(null);
+                    expect(res.body.parentSample).to.equal(null);
+                    expect(res.body.parentData).to.equal(null);
+                    if (err) {
+                        sails.log.console.error(err);
+                        done(err);
+                    }
+                    done();
+                });
+        });
+
+        it('Should return 403 FORBIDDEN without data', function (done) {
+
+            request(sails.hooks.http.app)
+                .get('/data/edit/1')
+                .set('Authorization', `Bearer ${token}`)
+                .send()
+                .expect(403)
+                .end(function(err, res) {
+                    console.log("Res edit: "+JSON.stringify(res.body));
+                    expect(res.body).to.be.empty;
+                    if (err) {
+                        sails.log.console.error(err);
+                        done(err);
+                    }
+                    done();
+                });
+        });
     });
 });
