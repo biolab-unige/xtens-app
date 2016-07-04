@@ -75,7 +75,9 @@ module.exports = {
         }
 
         query.then(function(result) {
-            return res.json(result);
+            DataService.filterOutSensitiveInfo(result, operator.canAccessSensitiveData).then(function(data) {
+                return res.json(data);
+            });
         })
         .catch(function(error) {
             return co.error(error);
@@ -107,8 +109,10 @@ module.exports = {
             query.populate('personalInfo');
         }
 
-        query.then(function(subject) {
-            res.json(subject);
+        query.then(function(results) {
+            DataService.filterOutSensitiveInfo(results, operator.canAccessSensitiveData).then(function(data) {
+                return res.json(data);
+            });
         })
         .catch(function(err) {
             return co.error(err);
@@ -208,29 +212,38 @@ module.exports = {
      */
     edit: function(req, res) {
         const co = new ControllerOut(res);
-        const id = req.param("id"), code = req.param("code");
+        const id = req.param("id");
         const operator = TokenService.getToken(req);
 
         console.log("SubjectController.edit - Decoded ID is: " + operator.id);
 
-        return BluebirdPromise.props({
-            projects: Project.find(),
-            subject: SubjectService.getOneAsync(id, code),
-            dataTypes: crudManager.getDataTypesByRolePrivileges({
-                idOperator: operator.id,
-                model: SUBJECT
-            }),
-        })
-        .then(function(results) {
-          if(!operator.canAccessPersonalData){
-            delete results['personalInfo'];
-          }
-            return res.json(results);
-        })
-        .catch(function(err) {
-            return co.error(err);
-        });
+        return SubjectService.hasDataSensitive({id: id}).then(function(results) {
 
+            console.log(results.hasDataSensitive,operator.canAccessSensitiveData);
+            if (results.hasDataSensitive && !operator.canAccessSensitiveData){
+                return res.forbidden();
+            }
+            else{
+
+                return BluebirdPromise.props({
+                    projects: Project.find(),
+                    subject: results.data,
+                    dataTypes: crudManager.getDataTypesByRolePrivileges({
+                        idOperator: operator.id,
+                        model: SUBJECT
+                    })
+                })
+                .then(function(results) {
+                    if(!operator.canAccessPersonalData){
+                        delete results.subject['personalInfo'];
+                    }
+                    return res.json(results);
+                })
+                .catch(function(err) {
+                    return co.error(err);
+                });
+            }
+        });
     },
 
     /**

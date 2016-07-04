@@ -1,5 +1,5 @@
-/** 
- *  @module 
+/**
+ *  @module
  *  @name SubjectService
  *  @author Massimiliano Izzo
  */
@@ -28,16 +28,16 @@ let SubjectService = BluebirdPromise.promisifyAll({
                 subject[elem] = subject[elem].id || subject[elem];
             }
         });
-        
+
         // replace each project with its ID
         if (_.isArray(subject.projects)) {
-            
+
             let simplifiedProjects = [];
 
             subject.projects.forEach(function(project) {
                 simplifiedProjects.push(project.id || project);
             });
-            
+
             subject.projects = simplifiedProjects;
 
         }
@@ -63,10 +63,10 @@ let SubjectService = BluebirdPromise.promisifyAll({
                 error: "This data type is for another model: " + dataType.model
             };
         }
-        
+
         let personalInfoValidationSchema = {
             id: Joi.number().integer().positive(),
-            givenName: Joi.string().uppercase().regex(UNICODE_NAME_REGEX).trim(),            
+            givenName: Joi.string().uppercase().regex(UNICODE_NAME_REGEX).trim(),
             surname: Joi.string().uppercase().regex(UNICODE_NAME_REGEX).trim(),
             birthDate: Joi.string().isoDate(),
             createdAt: Joi.date(),
@@ -89,7 +89,7 @@ let SubjectService = BluebirdPromise.promisifyAll({
             updatedAt: Joi.date()
         };
 
-        
+
         if (performMetadataValidation) {
             let metadataValidationSchema = {};
             let flattenedFields = DataTypeService.getFlattenedFields(dataType);
@@ -102,7 +102,7 @@ let SubjectService = BluebirdPromise.promisifyAll({
         validationSchema = Joi.object().keys(validationSchema);
         return Joi.validate(subject, validationSchema);
     },
-    
+
     /**
      * @method
      * @name anonymize
@@ -111,7 +111,7 @@ let SubjectService = BluebirdPromise.promisifyAll({
     anonymize: function() {},
 
     /**
-     * @method 
+     * @method
      * @name getOne
      * @description find a Subject if ID is provided
      * @return {Object} - the found Subject
@@ -125,11 +125,46 @@ let SubjectService = BluebirdPromise.promisifyAll({
 
             if (id) criteria.id = id;
             if (code) criteria.code = code;
-            
+
             console.log(criteria);
             Subject.findOne(criteria).populateAll().exec(next);
         }
+    },
+
+    /**
+     * @name hasDataSensitive
+     * @description Return a boolean true if data has sensitive attributes, then false
+     * @param {integer} - identifier of data
+     * @return {Promise} -  a Bluebird Promise with an object containing boolean value of investigation and data
+     */
+    hasDataSensitive: function(id) {
+        let flattenedFields =[], forbiddenFields =[], hasDataSensitive;
+      //if canAccessSensitiveData is true skip the function and return data
+
+        return Subject.findOne({id : id}).populate(['type','personalInfo']).then(function(datum){
+
+            //retrieve metadata fields sensitive
+            flattenedFields = DataTypeService.getFlattenedFields(datum['type'], false);
+            forbiddenFields = _.filter(flattenedFields, function(field) {return field.sensitive;});
+
+            forbiddenFields.length >0 ? hasDataSensitive = true : hasDataSensitive = false;
+
+            let json = {
+                hasDataSensitive : hasDataSensitive,
+                data : datum,
+                flattenedFields : flattenedFields
+            };
+            return json;
+
+        }).catch(function(err){
+            sails.log(err);
+            return err;
+        });
+
     }
+
+
+
 
 });
 module.exports = SubjectService;

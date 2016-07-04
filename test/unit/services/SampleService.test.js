@@ -1,5 +1,9 @@
 // var SampleService = require('../../../api/services/SampleService.js'),
-var expect = require('chai').expect;
+var sinon = require('sinon');
+var chai = require('chai');
+var expect = chai.expect;
+var chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
 
 
 describe('SampleService', function() {
@@ -9,10 +13,10 @@ describe('SampleService', function() {
         biobankCode: "080100",
         // DataType
         type: {
-                id: 12,
-                name: "Tissue",
-                schema: {"header": {}, "body": []},
-                classTemplate: "SAMPLE"
+            id: 12,
+            name: "Tissue",
+            schema: {"header": {}, "body": []},
+            classTemplate: "SAMPLE"
         },
         metadata: {},
         // Subject
@@ -33,7 +37,7 @@ describe('SampleService', function() {
     };
 
     describe("#validate", function() {
-        
+
         it("should correctly validate a valid sample using its schema", function() {
             var sample = _.cloneDeep(fixtures.sample[0]);
             var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: sample.type}));
@@ -54,15 +58,29 @@ describe('SampleService', function() {
     });
 
     it("should replace the populated properties (e.g. type, donor, parentSample...) with their id (i.e. type -> type.id)", function() {
-         var typeId = populatedSample.type.id;
-         var donorId = populatedSample.donor.id;
-         var biobankId = populatedSample.biobank;
-         var parentSampleId = populatedSample.parentSample;
-         SampleService.simplify(populatedSample);
-         expect(populatedSample.type).to.equals(typeId);
-         expect(populatedSample.donor).to.equals(donorId);
-         expect(populatedSample.biobank).to.equals(biobankId);
-         expect(populatedSample.parentSample).to.equals(parentSampleId);
+        var typeId = populatedSample.type.id;
+        var donorId = populatedSample.donor.id;
+        var biobankId = populatedSample.biobank;
+        var parentSampleId = populatedSample.parentSample;
+        SampleService.simplify(populatedSample);
+        expect(populatedSample.type).to.equals(typeId);
+        expect(populatedSample.donor).to.equals(donorId);
+        expect(populatedSample.biobank).to.equals(biobankId);
+        expect(populatedSample.parentSample).to.equals(parentSampleId);
     });
 
+    describe('#hasDataSensitive', function() {
+
+        it("should return an object with true result of investigation", function() {
+
+            var data = _.cloneDeep(fixtures.sample[0]);
+
+            console.log("Data: " + JSON.stringify(data));
+
+            var result = SampleService.hasDataSensitive(data.id);
+
+            expect(result).to.eventually.have.deep.property('hasDataSensitive', true);
+
+        });
+    });
 });

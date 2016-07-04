@@ -1,9 +1,14 @@
 // var SubjectService = require('../../../api/services/SubjectService.js'),
-var expect = require('chai').expect,
-    sinon = require('sinon');
+
+var sinon = require('sinon');
+var chai = require('chai');
+var expect = chai.expect;
+var chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
+
 
 describe('SubjectService', function() {
-    
+
     var personalDetails = {
         givenName: 'Marcello',
         surname: 'Mastropizza',
@@ -52,18 +57,18 @@ describe('SubjectService', function() {
             expect(populatedSubject.type).to.equals(testId);
             expect(populatedSubject.projects).to.eql([1]);
         });
-     
+
     });
 
     describe("#validate", function() {
-       
-       it("should correctly validate a valid subject using its schema", function() {
+
+        it("should correctly validate a valid subject using its schema", function() {
             var subject = _.cloneDeep(fixtures.subject[0]);
             var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: subject.type}));
             var res = SubjectService.validate(subject, true, dataType);
             expect(res.error).to.be.null;
             expect(_.omit(res.value, 'personalInfo')).to.eql(_.omit(subject, 'personalInfo'));
-       });
+        });
 
         it("should correctly validate a valid subject with complete metadata using its schema", function() {
             var subject = _.cloneDeep(fixtures.subject[1]);
@@ -71,9 +76,23 @@ describe('SubjectService', function() {
             var res = SubjectService.validate(subject, true, dataType);
             expect(res.error).to.be.null;
             expect(_.omit(res.value, 'personalInfo')).to.eql(_.omit(subject, 'personalInfo'));
-       });
+        });
 
 
     });
 
+    describe('#hasDataSensitive', function() {
+
+        it("should return an object with false result of investigation", function() {
+
+            var data = _.cloneDeep(fixtures.subject[0]);
+
+            console.log("Data: " + JSON.stringify(data));
+
+            var result = SubjectService.hasDataSensitive(data.id);
+
+            expect(result).to.eventually.have.deep.property('hasDataSensitive', false);
+
+        });
+    });
 });

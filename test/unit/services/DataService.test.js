@@ -258,14 +258,9 @@ describe('DataService', function() {
 
             console.log("Data: " + JSON.stringify(data));
 
-            DataService.hasDataSensitive(data.id).then(function(result){
+            var result = DataService.hasDataSensitive(data.id);
 
-                console.log("Result: " + result);
-
-                expect(result.hasDataSensitive).to.be.true;
-            }).catch(function(err) {
-                console.log(err);
-            });
+            return expect(result).to.eventually.have.deep.property('hasDataSensitive', true);
         });
 
         it("should return an object with false result of investigation", function() {
@@ -274,14 +269,9 @@ describe('DataService', function() {
 
             console.log("Data: " + JSON.stringify(data));
 
-            DataService.hasDataSensitive(data.id).then(function(result){
+            var result = DataService.hasDataSensitive(data.id);
 
-                console.log("Result: " + result);
-
-                expect(result.hasDataSensitive).to.be.false;
-            }).catch(function(err) {
-                console.log(err);
-            });
+            expect(result).to.eventually.have.deep.property('hasDataSensitive', false);
         });
     });
 
@@ -305,20 +295,17 @@ describe('DataService', function() {
 
             console.log("Data Star METADATA: " + JSON.stringify(data));
 
-            DataService.filterOutSensitiveInfo(data, false)
-            .then(function(DataFiltered){
-                console.log("Metadata Star FILTERED: " + JSON.stringify(DataFiltered));
+            var result = DataService.filterOutSensitiveInfo(data, false);
 
-                delete data[0].metadata['name'];
-                delete data[1].metadata['gene_id'];
-                delete data[1].metadata['quality_prediction'];
-                var expectedData = data;
-                console.log("EXPECTED Metadata Star: " + JSON.stringify(expectedData));
+            delete data[0].metadata['name'];
+            delete data[1].metadata['gene_id'];
+            delete data[1].metadata['quality_prediction'];
+            var expectedData = data;
 
-                expect(JSON.stringify(DataFiltered)).to.eql(JSON.stringify(expectedData));
-            }).catch(function(err) {
-                console.log(err);
-            });
+            console.log("EXPECTED Metadata Star: " + JSON.stringify(expectedData));
+
+            expect(result).to.eventually.equal(expectedData);
+
         });
 
         it("should return the same objects array in input", function() {
@@ -337,16 +324,12 @@ describe('DataService', function() {
 
             console.log("Data Star METADATA: " + JSON.stringify(data));
 
-            DataService.filterOutSensitiveInfo(data, true)
-            .then(function(DataFiltered){
-                console.log("Metadata Star FILTERED: " + JSON.stringify(DataFiltered));
 
-                expect(JSON.stringify(DataFiltered)).to.eql(JSON.stringify(data));
-            }).catch(function(err) {
-                console.log(err);
-            });
+            var result = DataService.filterOutSensitiveInfo(data, true);
+
+            expect(result).to.eventually.equal(data);
+
         });
-
     });
 
 });

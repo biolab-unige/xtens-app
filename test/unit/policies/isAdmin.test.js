@@ -11,9 +11,9 @@ describe('Policy isAdmin', function() {
 
     let tokenSA,tokenA, isAdmin;
 
-    var res ={forbidden:function (){return 0;}};
-    var spyForb = sinon.spy(res,'forbidden');
-    var spy = sinon.spy();
+    let res ={forbidden:function (){return 0;}};
+    let spyForb = sinon.spy(res,'forbidden');
+    let spy = sinon.spy();
 
     before(function(done) {
 
@@ -37,7 +37,7 @@ describe('Policy isAdmin', function() {
             let headers= {
                 authorization: 'Bearer ' + tokenSA
             };
-            var req={headers};
+            let req={headers};
 
             isAdmin(req, res, spy);
 
@@ -53,7 +53,7 @@ describe('Policy isAdmin', function() {
                 authorization: 'Bearer ' + tokenA
             };
 
-            var req={headers};
+            let req={headers};
 
             isAdmin(req, res, spy);
 

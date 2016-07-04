@@ -34,7 +34,7 @@ module.exports = {
      */
     dataSearch: function(req, res) {
         var queryArgs = req.param('queryArgs');
-        var data = null;
+        var data = [];
         var idDataType = queryArgs.dataType;
         const operator = TokenService.getToken(req);
 
@@ -57,8 +57,13 @@ module.exports = {
         .then(function(dataType) {
 
             for (var datum of data) { datum['type'] = dataType.id; }
-            DataService.filterOutSensitiveInfo(data, operator.canAccessSensitiveData).then(function(data) {
-
+            DataService.filterOutSensitiveInfo(data, operator.canAccessSensitiveData).then(function(results) {
+                if(!_.isArray(results)){
+                    data[0]=results;
+                }
+                else {
+                    data=results;
+                }
                 res.json({data: data, dataType: dataType });
             });
         })

@@ -401,38 +401,31 @@ let DataService = BluebirdPromise.promisifyAll({
             return err;
         });
     },
+    
     /**
      * @name hasDataSensitive
      * @description Return a boolean true if data has sensitive attributes, then false
-     * @param {integer} - indentifier of data
-     * @return {Promise} -  a Bluebird Promise with an object containing boolean and data
+     * @param {integer} - identifier of data
+     * @return {Promise} -  a Bluebird Promise with an object containing boolean value of investigation and data
      */
     hasDataSensitive: function(id) {
         let flattenedFields =[], forbiddenFields =[], data , hasDataSensitive;
       //if canAccessSensitiveData is true skip the function and return data
-        return Data.findOne({id : id}).then(function(datum){
+        return Data.findOne({id : id}).populate('type').then(function(datum){
             data = datum;
-          //retrieve datatype of datum
-            return DataType.find({id : data.type}).then(function(dataType){
-                // console.log("dataTypes: " + JSON.stringify(dataTypes));
-                    //retrieve metadata fields sensitive
-                flattenedFields = DataTypeService.getFlattenedFields(dataType[0], false);
 
-                forbiddenFields = _.filter(flattenedFields, function(field) {return field.sensitive;});
+          //retrieve metadata fields sensitive
+            flattenedFields = DataTypeService.getFlattenedFields(datum['type'], false);
+            forbiddenFields = _.filter(flattenedFields, function(field) {return field.sensitive;});
 
-                console.log(forbiddenFields);
+            forbiddenFields.length >0 ? hasDataSensitive = true : hasDataSensitive = false;
 
-                forbiddenFields.length >0 ? hasDataSensitive = true : hasDataSensitive = false;
-                console.log(hasDataSensitive);
-                let json = {
-                    hasDataSensitive : hasDataSensitive,
-                    data : data,
-                    dataType : dataType,
-                    flattenedFields : flattenedFields
-                };
-                return json;
-
-            });
+            let json = {
+                hasDataSensitive : hasDataSensitive,
+                data : data,
+                flattenedFields : flattenedFields
+            };
+            return json;
 
         }).catch(function(err){
             sails.log(err);

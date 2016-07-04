@@ -64,14 +64,16 @@ module.exports = {
     findOne: function(req, res) {
         const co = new ControllerOut(res);
         const id = req.param('id');
+        const operator = TokenService.getToken(req);
         let query = Sample.findOne(id);
 
         query = QueryService.populateRequest(query, req);
 
-        query.then(function(result) {
-            return res.json(result);
+        query.then(function(sample) {
+            DataService.filterOutSensitiveInfo(sample, operator.canAccessSensitiveData).then(function(data) {
+                return res.json(data);
+            });
         })
-
         .catch(function(error) {
             return co.error(error);
         });
@@ -88,7 +90,7 @@ module.exports = {
      */
     find: function(req, res) {
         const co = new ControllerOut(res);
-
+        const operator = TokenService.getToken(req);
         let query = Sample.find()
         .where(QueryService.parseCriteria(req))
         .limit(QueryService.parseLimit(req))
@@ -97,8 +99,10 @@ module.exports = {
 
         query = QueryService.populateRequest(query, req);
 
-        query.then(function(sample) {
-            res.json(sample);
+        query.then(function(samples) {
+            DataService.filterOutSensitiveInfo(samples, operator.canAccessSensitiveData).then(function(data) {
+                return res.json(data);
+            });
         })
         .catch(function(err) {
             return co.error(err);
@@ -199,28 +203,38 @@ module.exports = {
     edit: function(req, res) {
         const co = new ControllerOut(res);
         const params = req.allParams();
-        const idOperator = TokenService.getToken(req).id;
+        const operator = TokenService.getToken(req);
         sails.log(params);
 
-        return BluebirdPromise.props({
-            sample: SampleService.getOneAsync(params.id),
-            dataTypes: crudManager.getDataTypesByRolePrivileges({
-                idOperator: idOperator,
-                model: SAMPLE,
-                idDataTypes: params.idDataTypes,
-                parentDataType: params.parentDataType
-            }),
-            biobanks: BiobankService.getAsync(params),
-            donor: SubjectService.getOneAsync(params.donor, params.donorCode),
-            parentSample: SampleService.getOneAsync(params.parentSample)
-        })
+        return SampleService.hasDataSensitive(params.id).then(function(results) {
 
-        .then(function(results) {
-            return res.json(results);
-        })
+            console.log(results.hasDataSensitive,operator.canAccessSensitiveData);
+            if (results.hasDataSensitive && !operator.canAccessSensitiveData){
+                return res.forbidden();
+            }
+            else{
 
-        .catch(function(err) {
-            return co.error(err);
+                return BluebirdPromise.props({
+                    sample: results.data,
+                    dataTypes: crudManager.getDataTypesByRolePrivileges({
+                        idOperator: operator.id,
+                        model: SAMPLE,
+                        idDataTypes: params.idDataTypes,
+                        parentDataType: params.parentDataType
+                    }),
+                    biobanks: BiobankService.getAsync(params),
+                    donor: SubjectService.getOneAsync(params.donor, params.donorCode),
+                    parentSample: SampleService.getOneAsync(params.parentSample)
+                })
+
+                .then(function(results) {
+                    return res.json(results);
+                })
+
+                .catch(function(err) {
+                    return co.error(err);
+                });
+            }
         });
 
     }

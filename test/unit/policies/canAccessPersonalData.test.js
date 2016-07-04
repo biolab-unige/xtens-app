@@ -11,9 +11,9 @@ describe('Policy canAccessPersonalData', function() {
 
     let tokenSA,tokenA, canAccessPersonalData;
 
-    var res ={forbidden:function (){return 0;}};
-    var spyForb = sinon.spy(res,'forbidden');
-    var spy = sinon.spy();
+    let res ={forbidden:function (){return 0;}};
+    let spyForb = sinon.spy(res,'forbidden');
+    let spy = sinon.spy();
 
     before(function(done) {
 
@@ -37,7 +37,7 @@ describe('Policy canAccessPersonalData', function() {
             let headers= {
                 authorization: 'Bearer ' + tokenSA
             };
-            var req={headers};
+            let req={headers};
 
             canAccessPersonalData(req, res, spy);
 
@@ -53,7 +53,7 @@ describe('Policy canAccessPersonalData', function() {
                 authorization: 'Bearer ' + tokenA
             };
 
-            var req={headers};
+            let req={headers};
 
             canAccessPersonalData(req, res, spy);
 

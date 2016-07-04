@@ -11,9 +11,9 @@ describe('Policy isWheel', function() {
 
     let tokenSA, tokenA, isWheel;
 
-    var res ={forbidden:function (){return 0;}};
-    var spyForb = sinon.spy(res,'forbidden');
-    var spy = sinon.spy();
+    let res ={forbidden:function (){return 0;}};
+    let spyForb = sinon.spy(res,'forbidden');
+    let spy = sinon.spy();
 
     before(function(done) {
 
@@ -36,7 +36,7 @@ describe('Policy isWheel', function() {
             let headers= {
                 authorization: 'Bearer ' + tokenSA
             };
-            var req={headers};
+            let req={headers};
 
             isWheel(req, res, spy);
 
@@ -52,7 +52,7 @@ describe('Policy isWheel', function() {
                 authorization: 'Bearer ' + tokenA
             };
 
-            var req={headers};
+            let req={headers};
 
             isWheel(req, res, spy);
 
