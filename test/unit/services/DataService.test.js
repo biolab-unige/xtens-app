@@ -258,18 +258,18 @@ describe('DataService', function() {
 
             console.log("Data: " + JSON.stringify(data));
 
-            var result = DataService.hasDataSensitive(data.id);
+            var result = DataService.hasDataSensitive(data.id, "Data");
 
-            return expect(result).to.eventually.have.deep.property('hasDataSensitive', true);
+            expect(result).to.eventually.have.deep.property('hasDataSensitive', true);
         });
 
         it("should return an object with false result of investigation", function() {
 
-            var data = _.cloneDeep(fixtures.data[1]);
+            var data = _.cloneDeep(fixtures.subject[1]);
 
             console.log("Data: " + JSON.stringify(data));
 
-            var result = DataService.hasDataSensitive(data.id);
+            var result = DataService.hasDataSensitive(data.id, "Subject");
 
             expect(result).to.eventually.have.deep.property('hasDataSensitive', false);
         });

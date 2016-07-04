@@ -217,7 +217,7 @@ module.exports = {
 
         console.log("SubjectController.edit - Decoded ID is: " + operator.id);
 
-        return SubjectService.hasDataSensitive({id: id}).then(function(results) {
+        return DataService.hasDataSensitive(id, SUBJECT).then(function(results) {
 
             console.log(results.hasDataSensitive,operator.canAccessSensitiveData);
             if (results.hasDataSensitive && !operator.canAccessSensitiveData){

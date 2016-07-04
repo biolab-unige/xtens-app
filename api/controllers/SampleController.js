@@ -206,7 +206,7 @@ module.exports = {
         const operator = TokenService.getToken(req);
         sails.log(params);
 
-        return SampleService.hasDataSensitive(params.id).then(function(results) {
+        return DataService.hasDataSensitive(params.id, SAMPLE).then(function(results) {
 
             console.log(results.hasDataSensitive,operator.canAccessSensitiveData);
             if (results.hasDataSensitive && !operator.canAccessSensitiveData){

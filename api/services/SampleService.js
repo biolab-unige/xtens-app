@@ -89,38 +89,6 @@ let SampleService = BluebirdPromise.promisifyAll({
         else {
             Sample.findOne(_.parseInt(id)).populateAll().exec(next);
         }
-    },
-
-    /**
-     * @name hasDataSensitive
-     * @description Return a boolean true if data has sensitive attributes, then false
-     * @param {integer} - identifier of data
-     * @return {Promise} -  a Bluebird Promise with an object containing boolean value of investigation and data
-     */
-    hasDataSensitive: function(id) {
-        let flattenedFields =[], forbiddenFields =[] , hasDataSensitive;
-      //if canAccessSensitiveData is true skip the function and return data
-
-        return Sample.findOne({id : id}).populate('type').then(function(datum){
-
-            //retrieve metadata fields sensitive
-            flattenedFields = DataTypeService.getFlattenedFields(datum['type'], false);
-            forbiddenFields = _.filter(flattenedFields, function(field) {return field.sensitive;});
-
-            forbiddenFields.length >0 ? hasDataSensitive = true : hasDataSensitive = false;
-
-            let json = {
-                hasDataSensitive : hasDataSensitive,
-                data : datum,
-                flattenedFields : flattenedFields
-            };
-            return json;
-
-        }).catch(function(err){
-            sails.log(err);
-            return err;
-        });
-
     }
 
 });

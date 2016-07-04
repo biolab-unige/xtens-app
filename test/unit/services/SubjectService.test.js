@@ -78,21 +78,6 @@ describe('SubjectService', function() {
             expect(_.omit(res.value, 'personalInfo')).to.eql(_.omit(subject, 'personalInfo'));
         });
 
-
     });
 
-    describe('#hasDataSensitive', function() {
-
-        it("should return an object with false result of investigation", function() {
-
-            var data = _.cloneDeep(fixtures.subject[0]);
-
-            console.log("Data: " + JSON.stringify(data));
-
-            var result = SubjectService.hasDataSensitive(data.id);
-
-            expect(result).to.eventually.have.deep.property('hasDataSensitive', false);
-
-        });
-    });
 });

@@ -69,18 +69,4 @@ describe('SampleService', function() {
         expect(populatedSample.parentSample).to.equals(parentSampleId);
     });
 
-    describe('#hasDataSensitive', function() {
-
-        it("should return an object with true result of investigation", function() {
-
-            var data = _.cloneDeep(fixtures.sample[0]);
-
-            console.log("Data: " + JSON.stringify(data));
-
-            var result = SampleService.hasDataSensitive(data.id);
-
-            expect(result).to.eventually.have.deep.property('hasDataSensitive', true);
-
-        });
-    });
 });

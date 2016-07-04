@@ -102,7 +102,7 @@ describe('DataController', function() {
         it('Should return 400, metadata Required', function (done) {
 
             request(sails.hooks.http.app)
-            .put('/data/2')
+            .put('/data/3')
             .set('Authorization', `Bearer ${token}`)
             .send({id:2, type:3, metadata:{}, date:"2015-12-06",tags:[],notes:"New data"})
             .expect(400, done);
@@ -162,7 +162,7 @@ describe('DataController', function() {
                 .send()
                 .expect(200)
                 .end(function(err, res) {
-                    console.log("Res edit: "+JSON.stringify(res.body));
+                    //console.log("Res edit: "+JSON.stringify(res.body));
                     expect(res.body.data).to.exist;
                     expect(res.body.dataTypes).to.exist;
                     expect(res.body.parentSubject).to.equal(null);

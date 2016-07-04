@@ -225,8 +225,8 @@ module.exports = {
         const params = req.allParams();
         const operator = TokenService.getToken(req);
 
-        return DataService.hasDataSensitive(params.id).then(function(results) {
-
+        return DataService.hasDataSensitive(params.id, DATA).then(function(results) {
+            
             console.log(results.hasDataSensitive,operator.canAccessSensitiveData);
             if (results.hasDataSensitive && !operator.canAccessSensitiveData){
                 return res.forbidden();
