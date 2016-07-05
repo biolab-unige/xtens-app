@@ -31,8 +31,8 @@ describe('Policy canAccessPersonalData', function() {
         canAccessPersonalData = global.sails.hooks.policies.middleware.canaccesspersonaldata;
     });
 
-    describe('When the policy is invoked', function(done) {
-        it('Should pass at next () and not call res.forbidden, user can access to personal data', function () {
+    describe('When the policy is invoked', function() {
+        it('Should pass at next () and not call res.forbidden, user can access to personal data', function (done) {
 
             let headers= {
                 authorization: 'Bearer ' + tokenSA
@@ -43,11 +43,11 @@ describe('Policy canAccessPersonalData', function() {
 
             expect(spy.calledOnce).to.be.true;
             expect(spyForb.calledOnce).to.be.false;
-
+            done();
 
         });
 
-        it('Should call res.forbidden, user can not access to personal data', function () {
+        it('Should call res.forbidden, user can not access to personal data', function (done) {
 
             let headers= {
                 authorization: 'Bearer ' + tokenA
@@ -58,6 +58,7 @@ describe('Policy canAccessPersonalData', function() {
             canAccessPersonalData(req, res, spy);
 
             expect(spyForb.calledOnce).to.be.true;
+            done();
         });
     });
 

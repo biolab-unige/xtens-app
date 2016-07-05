@@ -30,8 +30,8 @@ describe('Policy isWheel', function() {
         isWheel = global.sails.hooks.policies.middleware.iswheel;
     });
 
-    describe('When the policy is invoked', function(done) {
-        it('Should pass at next () and not call res forbidden, user is a SuperUser', function () {
+    describe('When the policy is invoked', function() {
+        it('Should pass at next () and not call res forbidden, user is a SuperUser', function (done) {
 
             let headers= {
                 authorization: 'Bearer ' + tokenSA
@@ -42,11 +42,11 @@ describe('Policy isWheel', function() {
 
             expect(spy.calledOnce).to.be.true;
             expect(spyForb.calledOnce).to.be.false;
-
+            done();
 
         });
 
-        it('Should call res.forbidden, user is not a SuperUser', function () {
+        it('Should call res.forbidden, user is not a SuperUser', function (done) {
 
             let headers= {
                 authorization: 'Bearer ' + tokenA
@@ -57,6 +57,7 @@ describe('Policy isWheel', function() {
             isWheel(req, res, spy);
 
             expect(spyForb.calledOnce).to.be.true;
+            done();
         });
     });
 
