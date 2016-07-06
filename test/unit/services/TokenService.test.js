@@ -18,7 +18,7 @@ describe('TokenService', function() {
 
             TokenService.getToken(req,function(res){
                 console.log(res);
-                expect(res).to.deep.equal(expectedError);
+                expect(res).to.deep.equal(expectedPayload);
                 done();
             });
         });
