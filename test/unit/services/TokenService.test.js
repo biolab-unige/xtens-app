@@ -5,7 +5,7 @@ describe('TokenService', function() {
 
     describe('#getToken', function() {
 
-        it("should return the expected payload", function() {
+        it("should return the expected payload", function(done) {
 
             var expectedPayload = {
                 id: 2,
