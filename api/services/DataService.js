@@ -13,7 +13,8 @@ let fileSystemManager = sails.config.xtens.fileSystemManager;
 let Joi = require('joi');
 let crudManager = sails.config.xtens.crudManager;
 let queryBuilder = sails.config.xtens.queryBuilder;
-let DATA = sails.config.xtens.constants.DataTypeClasses.DATA;
+const DATA = sails.config.xtens.constants.DataTypeClasses.DATA;
+const VIEW_OVERVIEW = sails.config.xtens.constants.DataTypePrivilegeLevels.VIEW_OVERVIEW;
 
 
 let DataService = BluebirdPromise.promisifyAll({
@@ -356,23 +357,18 @@ let DataService = BluebirdPromise.promisifyAll({
     filterOutSensitiveInfo: function(data, canAccessSensitiveData) {
 
         let arrData = [], idDataType , forbiddenFields = {}, typeIds;
-        //If data is an object create an array with length=1, else if is an array create a copy of data
-        data && !_.isArray(data) ?
-        arrData[0] = data :
-        data && _.isArray(data) ? arrData=data : arrData=[];
+        _.isArray(data) ? arrData=data : arrData[0] = data;
 
         //retrive all unique idDatatypes from data Array
         typeof(arrData[0]['type']) === 'object' ?
           typeIds = _.uniq(_.map(_.uniq(_.map(arrData, 'type')), 'id')) :
           typeIds = _.uniq(_.map(arrData, 'type'));
-        console.log(typeIds);
 
         //retrieve datatypes of datum
         return DataType.find({select: ['schema'], where: {id: typeIds}}).then((dataTypes) => {
 
           //if canAccessSensitiveData is true skip the function and return data
             if(!canAccessSensitiveData){
-                console.log(dataTypes);
                 _.each(dataTypes, (datatype) => {
 
                     //create an array with metadata fields sensitive for each dataType
@@ -385,7 +381,6 @@ let DataService = BluebirdPromise.promisifyAll({
                 for (let datum of arrData) {
 
                     _.each(forbiddenFields[datum.type], (forbField) => {
-
                         if(datum.metadata[forbField]){
                             console.log("Deleted field: " + datum.metadata[forbField]);
                             delete datum.metadata[forbField];
@@ -414,7 +409,7 @@ let DataService = BluebirdPromise.promisifyAll({
         let flattenedFields =[], forbiddenFields =[], data , hasDataSensitive;
 
         return global[modelName].findOne({id : id}).populateAll().then((datum) => {
-
+            //if (!datum){ return BluebirdPromise.resolve(undefined);}
             console.log("DataService hasDataSensitive - called for model: "+  datum['type'].model +" "+ modelName);
           //retrieve metadata fields sensitive
             flattenedFields = DataTypeService.getFlattenedFields(datum['type'], false);
@@ -429,14 +424,12 @@ let DataService = BluebirdPromise.promisifyAll({
             return json;
 
         }).catch((err) => {
-            console.log(err);
+
             sails.log(err);
             return err;
         });
 
     }
-
-
 });
 
 module.exports = DataService;

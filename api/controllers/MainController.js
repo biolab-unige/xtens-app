@@ -6,7 +6,7 @@
  */
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, sails, Data, DataFile, DataService, SubjectService, SampleService, QueryService, TokenService, MigrateService, GeneratedDataService */
+/* globals _, sails, Data, DataFile, DataService, DataTypeService, SubjectService, SampleService, QueryService, TokenService, MigrateService, GeneratedDataService */
 "use strict";
 let BluebirdPromise = require("bluebird");
 let path = require("path");
@@ -14,7 +14,11 @@ let fileSystemManager = BluebirdPromise.promisifyAll(sails.config.xtens.fileSyst
 let ControllerOut = require("xtens-utils").ControllerOut;
 let execFileAsync = BluebirdPromise.promisify(require("child_process").execFile);
 let execAsync = BluebirdPromise.promisify(require("child_process").exec);
+const xtensConf = global.sails.config.xtens;
 let DEFAULT_LOCAL_STORAGE = sails.config.xtens.constants.DEFAULT_LOCAL_STORAGE;
+const DOWNLOAD = xtensConf.constants.DataTypePrivilegeLevels.DOWNLOAD;
+const EDIT = xtensConf.constants.DataTypePrivilegeLevels.EDIT;
+
 
 // ES6 Map for customised data management
 let customisedDataMap = new Map();
@@ -40,23 +44,32 @@ let MainController = {
      * TODO move to another controller (?)
      */
     downloadFileContent: function(req, res) {
-
+        let dataFile = {};
         let co = new ControllerOut(res);
         let fileId = _.parseInt(req.param('id'));
+        const operator = TokenService.getToken(req);
 
-        DataFile.findOne(fileId).then(function(dataFile) {
+        DataFile.findOne(fileId).populate('data').then(function(result) {
 
-            console.log("downloadFileContent - dataFile");
-            console.log(dataFile);
+            dataFile = result;
+            return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataFile.data[0].type).then(function(dataTypePrivilege) {
 
-            let pathFrags = dataFile.uri.split("/");
-            let fileName = pathFrags[pathFrags.length-1];
+                if(!dataTypePrivilege || (dataTypePrivilege.privilegeLevel !== DOWNLOAD && dataTypePrivilege.privilegeLevel !== EDIT)){
+                    return res.forbidden();
+                }
 
-            // set response headers for file download 
-            res.setHeader('Content-Disposition', 'attachment;filename='+fileName);
+                console.log("downloadFileContent - dataFile");
+                console.log(dataFile);
 
-            return fileSystemManager.downloadFileContentAsync(dataFile.uri, res);
+                let pathFrags = dataFile.uri.split("/");
+                let fileName = pathFrags[pathFrags.length-1];
 
+            // set response headers for file download
+                res.setHeader('Content-Disposition', 'attachment;filename='+fileName);
+
+                return fileSystemManager.downloadFileContentAsync(dataFile.uri, res);
+
+            });
         })
         .then(function() {
             return res.ok(); // res.json() ??
@@ -76,7 +89,7 @@ let MainController = {
     uploadFileContent: function(req, res) {
 
         let dirName, fileName, fsPath = sails.config.xtens.fileSystemConnection.path,
-        landingDir = sails.config.xtens.fileSystemConnection.landingDirectory;
+            landingDir = sails.config.xtens.fileSystemConnection.landingDirectory;
 
 
         // if the local-fs strategy is not in use, don't allow local file upload
@@ -96,7 +109,7 @@ let MainController = {
                 console.log(__newFileStream);
                 console.log(__newFileStream.filename);
                 cb(null, path.basename(__newFileStream.filename));
-            },
+            }
         },function whenDone(err, files) {
             if (err) {
                 console.log(err);
@@ -201,4 +214,3 @@ let MainController = {
 };
 
 module.exports = MainController;
-
