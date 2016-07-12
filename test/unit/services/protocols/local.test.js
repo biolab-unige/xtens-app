@@ -63,7 +63,7 @@ describe("PassportService protocol Local", function() {
             Passport.update.restore();
             passport.validatePassword.restore();
         });
-        it("Should fire Passport.findOne with the correct input parameters", function() {
+        it("Should fire Passport.findOne with the correct input parameters", function(done) {
 
             const demouser =fixtures.operator[0];
             const passportlocal = _.find(fixtures.passport, {
@@ -80,11 +80,13 @@ describe("PassportService protocol Local", function() {
 
             passport.password = param.newPass;
 
-            PassportService.protocols.local.updatePassword(param,demouser.id,callback);
-
-            //sinon.assert.calledOnce(spyFindPassp);
-            sinon.assert.calledWith(spyFindPassp, expectedParam);
-            expect(spyFindPassp.called).to.be.true;
+            PassportService.protocols.local.updatePassword(param,demouser.id,function (err,res) {
+                console.log("Password updated: " + res);
+                //sinon.assert.calledOnce(spyFindPassp);
+                sinon.assert.calledWith(spyFindPassp, expectedParam);
+                expect(spyFindPassp.called).to.be.true;
+                done();
+            });
 
 
         });

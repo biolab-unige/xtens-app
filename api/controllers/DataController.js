@@ -234,6 +234,7 @@ module.exports = {
 
     .then(function(result) {
       //retrieve dataType id
+        if(!result){ return res.json(200, { deleted: 0 }); }
         const idDataType = _.isObject(result.type) ? result.type.id : result.type;
 
         DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType).then(function(dataTypePrivilege) {

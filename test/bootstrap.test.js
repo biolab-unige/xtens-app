@@ -6,29 +6,29 @@ var sails;
 
 // Global before hook
 before(function(done) {
-  console.log("bootstrap.test.js - before function started!");
-  Sails.lift({
+    console.log("bootstrap.test.js - before function started!");
+    Sails.lift({
     /*
     log: {
         level: 'debug'
     }, */
-    models: {
-        connection: 'test',
-        migrate: 'drop'
-    }
-  }, function(err, res) {
-    if (err) {
-        console.log("error lifting sails");
-        return done(err);
-    }
-    console.log("sails was lifted");
+        models: {
+            connection: 'test',
+            migrate: 'drop'
+        }
+    }, function(err, res) {
+        if (err) {
+            console.log("error lifting sails");
+            return done(err);
+        }
+        console.log("sails was lifted");
     // Load fixtures
-    var barrels = new Barrels();
-    var loadingOrder = ['group', 'operator', 'passport', 'datatype', 'subject', 'sample', 'data'];
+        var barrels = new Barrels();
+        var loadingOrder = [ 'group', 'datatype', 'datatypeprivileges', 'operator', 'passport', 'subject', 'sample', 'data'];
     // Save original objects in fixtures variable
-    fixtures = barrels.data;
+        fixtures = barrels.data;
 
-    sails = res;
+        sails = res;
     // sails.config.pathGeneFile = path.join('test', 'resources', 'gene-file-test.csv');
 
     // set up the CRUD Manager for in-memory tests
@@ -40,15 +40,15 @@ before(function(done) {
     console.log(sails.config.xtens.crudManager);
     console.log(global.sails.config.xtens.crudManager);
     */
-    barrels.populate(['operator', 'passport'], function(err){
-        console.log(err);
-        done(err, res);
-    }, false);
-  });
+        barrels.populate(loadingOrder, function(err){
+            console.log(err);
+            done(err, res);
+        }, false);
+    });
 });
 
 // Global after hook
 after(function(done) {
   // here you can clear fixtures, etc.
-  sails.lower(done);
+    sails.lower(done);
 });

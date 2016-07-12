@@ -1,5 +1,8 @@
-var expect = require("chai").expect;
-var sinon = require("sinon");
+"use strict";
+var chai = require("chai");
+var chaiAsPromised = require("chai-as-promised");
+chai.use(chaiAsPromised);
+var expect = chai.expect, assert = chai.assert, sinon = require('sinon');
 var BluebirdPromise = require("bluebird");
 
 describe('DataTypeService', function() {
@@ -114,6 +117,49 @@ describe('DataTypeService', function() {
                 expect(_this.transactionalPutMetadataFieldsIntoEAV.calledOnce).to.be.true;
             });
 
+        });
+    });
+
+    describe('#getDataTypePrivilegeLevel', function() {
+
+        it("should return the right privilege level of the given DataType for the operator", function(done) {
+
+            DataTypeService.getDataTypePrivilegeLevel(1, 1).then(function(result) {
+
+
+                console.log("DataType Privilege Level: " + JSON.stringify(result));
+
+                expect(result.privilegeLevel).to.be.equal("edit");
+                done();
+            }).catch(function(err) {
+                done(err);
+            });
+        });
+
+        it("should return undefined", function(done) {
+
+            DataTypeService.getDataTypePrivilegeLevel(1,undefined).then(function(result) {
+
+                console.log("DataType Privilege Level: " + JSON.stringify(result));
+
+                expect(result).to.be.undefined;
+                done();
+            }).catch(function(err) {
+                done(err);
+            });
+        });
+
+        it("should return an empty array", function(done) {
+
+            DataTypeService.getDataTypePrivilegeLevel(1,5).then(function(result) {
+
+                console.log("DataType Privilege Level: " + JSON.stringify(result));
+
+                expect(result).to.be.empty;
+                done();
+            }).catch(function(err) {
+                done(err);
+            });
         });
     });
 

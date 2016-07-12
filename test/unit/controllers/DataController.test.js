@@ -185,7 +185,7 @@ describe('DataController', function() {
                 .expect(403)
                 .end(function(err, res) {
                     console.log("Res edit: "+JSON.stringify(res.body));
-                    expect(res.body).to.be.empty;
+                    expect(res.body.code).to.be.equal("Forbidden");
                     if (err) {
                         sails.log.console.error(err);
                         done(err);

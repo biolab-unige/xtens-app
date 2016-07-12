@@ -16,7 +16,7 @@ describe('TokenService', function() {
 
             var req = {headers:{authorization : "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiaXNXaGVlbCI6ZmFsc2UsImlzQWRtaW4iOnRydWUsImNhbkFjY2Vzc1BlcnNvbmFsRGF0YSI6ZmFsc2UsImNhbkFjY2Vzc1NlbnNpdGl2ZURhdGEiOnRydWV9.fN2R-YIT2ar7DtvzkYJOpJgw6D-X4WvesbKKDPL7ulk"}};
 
-            TokenService.getToken(req,function(res){
+            TokenService.getToken(req,function(err,res){
                 console.log(res);
                 expect(res).to.deep.equal(expectedPayload);
                 done();
