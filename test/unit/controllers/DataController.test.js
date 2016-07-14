@@ -9,7 +9,7 @@ const loginHelper = require('./loginHelper');
 
 describe('DataController', function() {
 
-    let token;
+    let tokenDataSens, tokenNoDataSens;
 
     const metadata = {
         "name":{"value":"Antares", "group": "Generic Info" },
@@ -24,9 +24,14 @@ describe('DataController', function() {
 
     before(function(done) {
         loginHelper.loginAnotherStandardUser(request, function (bearerToken) {
-            token = bearerToken;
-            sails.log.debug(`Got token: ${token}`);
-            done();
+            tokenDataSens = bearerToken;
+            sails.log.debug(`Got token: ${tokenDataSens}`);
+
+            loginHelper.loginAnotherStandardUserNoDataSens(request, function (bearerToken2) {
+                tokenNoDataSens = bearerToken2;
+                sails.log.debug(`Got token: ${tokenNoDataSens}`);
+                done();
+            });
         });
     });
 
@@ -37,7 +42,7 @@ describe('DataController', function() {
 
             request(sails.hooks.http.app)
             .post('/data')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${tokenDataSens}`)
             .send({
                 "type": 3,
                 "metadata": metadata,
@@ -61,7 +66,7 @@ describe('DataController', function() {
         it('Should return 400, metadata required', function (done) {
             request(sails.hooks.http.app)
             .post('/data')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${tokenDataSens}`)
             .send({
                 type:3,
                 metadata:{},
@@ -80,7 +85,7 @@ describe('DataController', function() {
 
             request(sails.hooks.http.app)
             .put('/data/3')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${tokenDataSens}`)
             .send({
                 id: 3,
                 type: 3,
@@ -103,7 +108,7 @@ describe('DataController', function() {
 
             request(sails.hooks.http.app)
             .put('/data/3')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${tokenDataSens}`)
             .send({id:2, type:3, metadata:{}, date:"2015-12-06",tags:[],notes:"New data"})
             .expect(400, done);
         });
@@ -114,7 +119,7 @@ describe('DataController', function() {
         it('Should return OK 200', function (done) {
             request(sails.hooks.http.app)
             .get('/data')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${tokenDataSens}`)
             //.send({id:1})
             .expect(200)
             .end(function(err, res) {
@@ -134,7 +139,7 @@ describe('DataController', function() {
         it('Should return 200 OK with 1 deleted item if resource exists', function (done) {
             request(sails.hooks.http.app)
             .delete('/data/3')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${tokenDataSens}`)
             .send()
             .expect(200, {
                 deleted: 1
@@ -144,7 +149,7 @@ describe('DataController', function() {
         it('Should return 200 OK with 0 deleted items if resource does not exist', function (done) {
             request(sails.hooks.http.app)
             .delete('/data/3')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${tokenDataSens}`)
             .send()
             .expect(200, {
                 deleted: 0
@@ -158,7 +163,7 @@ describe('DataController', function() {
 
             request(sails.hooks.http.app)
                 .get('/data/edit/2')
-                .set('Authorization', `Bearer ${token}`)
+                .set('Authorization', `Bearer ${tokenDataSens}`)
                 .send()
                 .expect(200)
                 .end(function(err, res) {
@@ -180,7 +185,7 @@ describe('DataController', function() {
 
             request(sails.hooks.http.app)
                 .get('/data/edit/1')
-                .set('Authorization', `Bearer ${token}`)
+                .set('Authorization', `Bearer ${tokenNoDataSens}`)
                 .send()
                 .expect(403)
                 .end(function(err, res) {

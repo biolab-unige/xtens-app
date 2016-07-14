@@ -365,10 +365,10 @@ let DataService = BluebirdPromise.promisifyAll({
           typeIds = _.uniq(_.map(arrData, 'type'));
 
         //retrieve datatypes of datum
-        return DataType.find({select: ['schema'], where: {id: typeIds}}).then((dataTypes) => {
+        return DataType.find({select: ['schema','id'], where: {id: typeIds}}).then((dataTypes) => {
 
-          //if canAccessSensitiveData is true skip the function and return data
-            if(!canAccessSensitiveData){
+          //if canAccessSensitiveData is true or metadata is Empty skip the function and return data
+            if(!canAccessSensitiveData || (!_.isEmpty(arrData[0].metadata) && !arrData[1])){
                 _.each(dataTypes, (datatype) => {
 
                     //create an array with metadata fields sensitive for each dataType
@@ -379,7 +379,6 @@ let DataService = BluebirdPromise.promisifyAll({
                 });
 
                 for (let datum of arrData) {
-
                     _.each(forbiddenFields[datum.type], (forbField) => {
                         if(datum.metadata[forbField]){
                             console.log("Deleted field: " + datum.metadata[forbField]);

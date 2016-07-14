@@ -33,9 +33,10 @@ module.exports = {
 
         DataTypeService.getDataTypePrivilegeLevel(operator.id, data.type).then(function(dataTypePrivilege) {
 
-            if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
+            if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege) || dataTypePrivilege.privilegeLevel != EDIT) {
                 return co.forbidden();
-            } else {
+            }
+            else {
                 sails.log("DataController.create - here we are!!");
                 DataService.simplify(data);
 
@@ -47,7 +48,8 @@ module.exports = {
                         data = validationRes.value;
                         const dataTypeName = dataType && dataType.name;
                         return crudManager.createData(data, dataTypeName);
-                    } else {
+                    }
+                    else {
                         throw new ValidationError(validationRes.error);
                     }
                 })
@@ -90,19 +92,16 @@ module.exports = {
             DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType).then(function(dataTypePrivilege) {
 
               //filter Out Metadata if operator has not the privilege
-                if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel === VIEW_OVERVIEW) {
-                    data.metadata = {};
+                if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege) ){ return res.json({});}
+                else if( dataTypePrivilege.privilegeLevel === VIEW_OVERVIEW) { data.metadata = {}; }
 
-                    console.log(data);
-                    return res.json(data);
-                } else {
-                  //filter Out Sensitive Info if operator can not access to Sensitive Data
-                    DataService.filterOutSensitiveInfo(result, operator.canAccessSensitiveData).then(function(data) {
+                if( operator.canAccessSensitiveData || _.isEmpty(data.metadata) ){ return res.json(data); }
+                //filter Out Sensitive Info if operator can not access to Sensitive Data
+                DataService.filterOutSensitiveInfo(data, operator.canAccessSensitiveData).then(function(dataFiltered) {
+                    console.log(dataFiltered);
+                    return res.json(dataFiltered);
+                });
 
-                        console.log(data);
-                        return res.json(data);
-                    });
-                }
             });
         })
       .catch(function(error) {
@@ -139,26 +138,27 @@ module.exports = {
 
             DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId).then(function(privileges) {
 
+                _.isArray(privileges) ? arrPrivileges = privileges : arrPrivileges[0] = privileges;
               //filter Out Metadata if operator has not at least a privilege on Data or exists at least a VIEW_OVERVIEW privilege level
-                if (!privileges || privileges.length < dataTypesId.length ||
-                    (privileges.length === dataTypesId.length && _.find(privileges, { privilegeLevel: VIEW_OVERVIEW }))) {
+                if (!arrPrivileges || _.isEmpty(arrPrivileges) ){ return res.json({});}
+                else if( arrPrivileges.length < dataTypesId.length ||
+                    (arrPrivileges.length === dataTypesId.length && _.find(arrPrivileges, { privilegeLevel: VIEW_OVERVIEW }))) {
 
-                    _.isArray(privileges) ? arrPrivileges = privileges : arrPrivileges[0] = privileges;
                     // check for each datum if operator has the privilege to view details. If not metadata object is cleaned
                     let index = 0, arrDtPrivId = arrPrivileges.map(function(e) { return e.dataType; });
-                    for (let i = data.length-1; i >= 0; i--) {
-                        index = arrDtPrivId.indexOf(data[i].type.id);
+                    for ( let i = data.length - 1; i >= 0; i-- ) {
+                        let idDataType = _.isObject(data[i].type) ? data[i].type.id : data[i].type;
+                        index = arrDtPrivId.indexOf(idDataType);
                         if( index < 0 ){ data.splice(i,1); }
                         else if (arrPrivileges[index].privilegeLevel === VIEW_OVERVIEW) { data[i].metadata = {}; }
                     }
-                    return res.json(data);
-                } else {
-                  //filter Out Sensitive Info if operator can not access to Sensitive Data
-                    DataService.filterOutSensitiveInfo(data, operator.canAccessSensitiveData).then(function(dataFiltered) {
-                        console.log(dataFiltered);
-                        return res.json(dataFiltered);
-                    });
                 }
+                if( operator.canAccessSensitiveData ){ return res.json(data); }
+                  //filter Out Sensitive Info if operator can not access to Sensitive Data
+                DataService.filterOutSensitiveInfo(data, operator.canAccessSensitiveData).then(function(dataFiltered) {
+                    console.log(dataFiltered);
+                    return res.json(dataFiltered);
+                });
 
             });
         })
@@ -177,16 +177,23 @@ module.exports = {
    */
     update: function(req, res) {
         let data = req.body;
+        console.log(data);
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
 
-        //retrieve dataType id
-        const idDataType = _.isObject(data.type) ? data.type.id : data.type;
-        DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType).then(function(dataTypePrivilege) {
+        DataService.hasDataSensitive(data.id, DATA).then(function(result) {
 
-            if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
+            if (result.hasDataSensitive && !operator.canAccessSensitiveData) {
                 return co.forbidden();
-            } else {
+            }
+        //retrieve dataType id
+            const idDataType = _.isObject(data.type) ? data.type.id : data.type;
+            DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType).then(function(dataTypePrivilege) {
+
+                if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
+                    return co.forbidden();
+                }
+
                 DataService.simplify(data);
 
                 DataType.findOne(data.type).then(function(dataType) {
@@ -195,19 +202,20 @@ module.exports = {
                         const dataTypeName = dataType && dataType.name;
                         data = validationRes.value;
                         return crudManager.updateData(data, dataTypeName);
-                    } else {
+                    }
+                    else {
                         throw new ValidationError(validationRes.error);
                     }
                 })
-          .then(function(result) {
-              sails.log(result);
-              return res.json(result);
-          })
-          .catch(function(error) {
-              sails.log.error(error.message);
-              return co.error(error);
-          });
-            }
+                  .then(function(result) {
+                      sails.log(result);
+                      return res.json(result);
+                  })
+                    .catch(function(error) {
+                        sails.log.error(error.message);
+                        return co.error(error);
+                    });
+            });
         });
     },
 
@@ -223,41 +231,35 @@ module.exports = {
         const operator = TokenService.getToken(req);
 
         if (!id) {
-            return co.badRequest({
-                message: 'Missing data ID on DELETE request'
-            });
+            return co.badRequest({ message: 'Missing data ID on DELETE request' });
         }
 
-        Data.findOne({
-            id: id
-        })
+        Data.findOne({ id: id })
 
-    .then(function(result) {
-      //retrieve dataType id
-        if(!result){ return res.json(200, { deleted: 0 }); }
-        const idDataType = _.isObject(result.type) ? result.type.id : result.type;
+        .then(function(result) {
+            if(!result){ return res.json(200, { deleted: 0 }); }
+          //retrieve dataType id
+            const idDataType = _.isObject(result.type) ? result.type.id : result.type;
 
-        DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType).then(function(dataTypePrivilege) {
+            DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType).then(function(dataTypePrivilege) {
 
-            if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
-                return co.forbidden();
-            } else {
+                if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
+                    return co.forbidden();
+                }
                 sails.log.info(`Data to be deleted:  ${result.data}`);
 
                 return crudManager.deleteData(id)
 
-          .then(function(deleted) {
-              return res.json(200, {
-                  deleted: deleted
-              });
-          })
-            .catch(function(err) {
-                return co.error(err);
+                .then(function(deleted) {
+                    return res.json(200, {
+                        deleted: deleted
+                    });
+                })
+                .catch(function(err) {
+                    return co.error(err);
+                });
             });
-            }
         });
-    });
-
     },
 
   /**
@@ -271,71 +273,40 @@ module.exports = {
         const params = req.allParams();
         const operator = TokenService.getToken(req);
 
-        //if params.id exist, filter Data. Otherwise skip and retrive needed informations to create new data
-        if (params.id) {
-
-            DataService.hasDataSensitive(params.id, DATA).then(function(results) {
-
-                if (results.hasDataSensitive && !operator.canAccessSensitiveData) {
-                    return co.forbidden();
-                } else {
-
+        BluebirdPromise.props({
+            data: DataService.getOneAsync(params.id),
+            dataTypes: crudManager.getDataTypesByRolePrivileges({
+                idOperator: operator.id,
+                model: DATA,
+                idDataTypes: params.idDataTypes,
+                parentDataType: params.parentDataType,
+                privilegeLevel: EDIT
+            }),
+            parentSubject: SubjectService.getOneAsync(params.parentSubject, params.parentSubjectCode),
+            parentSample: SampleService.getOneAsync(params.parentSample),
+            parentData: DataService.getOneAsync(params.parentData)
+        })
+            .then(function(results) {
+                if(results.data){
                     const idDataTypes = _.isObject(results.data.type) ? results.data.type.id : results.data.type;
 
-                    DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataTypes).then(function(dataTypePrivilege) {
-
-                        if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
+                    DataService.hasDataSensitive(results.data.id, DATA).then(function(r) {
+                      //if operator has not access to Sensitive Data and dataType has Data Sensitive, or
+                      // operator has not the privilege to EDIT datatype, then return forbidden
+                        if ((r.hasDataSensitive && !operator.canAccessSensitiveData)
+                          || _.isEmpty(results.dataTypes) || !_.find(results.dataTypes, {name : results.data.type.name})  ){
                             return co.forbidden();
-                        } else {
-
-                            BluebirdPromise.props({
-                                data: results.data,
-                                dataTypes: crudManager.getDataTypesByRolePrivileges({
-                                    idOperator: operator.id,
-                                    model: DATA,
-                                    idDataTypes: params.idDataTypes,
-                                    parentDataType: params.parentDataType,
-                                    privilegeLevel: EDIT
-                                }),
-                                parentSubject: SubjectService.getOneAsync(params.parentSubject, params.parentSubjectCode),
-                                parentSample: SampleService.getOneAsync(params.parentSample),
-                                parentData: DataService.getOneAsync(params.parentData)
-                            })
-
-                            .then(function(results) {
-                                return res.json(results);
-                            })
-                              .catch(function(err) {
-                                  sails.log.error(err);
-                                  return co.error(err);
-                              });
                         }
-                    });
-                }
+                        return res.json(results);
+                    });}
+                else {
+                  //if operator has not the privilege to EDIT datatype, then return forbidden
+                    if (_.isEmpty(results.dataTypes)){ return co.forbidden(); }
+                    return res.json(results);}
+            })
+            .catch(function(err) {
+                return co.error(err);
             });
-        } else {
-            BluebirdPromise.props({
-                data: undefined,
-                dataTypes: crudManager.getDataTypesByRolePrivileges({
-                    idOperator: operator.id,
-                    model: DATA,
-                    idDataTypes: params.idDataTypes,
-                    parentDataType: params.parentDataType,
-                    privilegeLevel: EDIT
-                }),
-                parentSubject: SubjectService.getOneAsync(params.parentSubject, params.parentSubjectCode),
-                parentSample: SampleService.getOneAsync(params.parentSample),
-                parentData: DataService.getOneAsync(params.parentData)
-            })
-
-            .then(function(results) {
-                return res.json(results);
-            })
-              .catch(function(err) {
-                  sails.log.error(err);
-                  return co.error(err);
-              });
-        }
     }
 
 };

@@ -45,4 +45,16 @@
     "createdAt": "2015-06-18T10:13:13.000Z",
     "updatedAt": "2015-06-18T10:13:13.000Z",
     "user": 4
+},
+{
+    "id": 5,
+    "protocol": "local",
+    "password": "testUser",
+    "provider": null,
+    "identifier": null,
+    "tokens": null,
+    "accessToken": null,
+    "createdAt": "2015-06-18T10:13:13.000Z",
+    "updatedAt": "2015-06-18T10:13:13.000Z",
+    "user": 5
 }]

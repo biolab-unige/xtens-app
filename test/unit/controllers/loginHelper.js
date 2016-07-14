@@ -110,3 +110,30 @@ module.exports.loginAnotherStandardUser = function(request, done) {
         done(token);
     });
 };
+
+module.exports.loginAnotherStandardUserNoDataSens = function(request, done) {
+    const demouser = fixtures.operator[4];
+    const passport = _.find(fixtures.passport, {
+        'user': demouser.id,
+        'protocol': 'local'
+    });
+    console.log(demouser,passport);
+    sails.log("DataController.test - demouser and local passport is: ");
+    sails.log(demouser);
+    sails.log(passport);
+
+    request(sails.hooks.http.app)
+    .post('/login')
+    .send({identifier: demouser.login, password: passport.password})
+    .end(function(err, res) {
+        if (err) {
+            sails.log.error("DataController.test - login failed");
+            sails.log.error(err.message);
+            done(err);
+        }
+        console.log(res.body);
+        token = res.body && res.body.token;
+        sails.log("Bearer token is: " + token);
+        done(token);
+    });
+};

@@ -20,12 +20,12 @@ describe('Policy canAccessPersonalData', function() {
         loginHelper.loginSuperAdmin(request, function (bearerToken) {
             tokenSA = bearerToken;
             sails.log.debug(`Got token: ${tokenSA}`);
-        });
 
-        loginHelper.loginAnotherStandardUser (request, function (bearerToken) {
-            tokenA = bearerToken;
-            sails.log.debug(`Got token: ${tokenA}`);
-            done();
+            loginHelper.loginAnotherStandardUser (request, function (bearerToken2) {
+                tokenA = bearerToken2;
+                sails.log.debug(`Got token: ${tokenA}`);
+                done();
+            });
         });
 
         canAccessPersonalData = global.sails.hooks.policies.middleware.canaccesspersonaldata;

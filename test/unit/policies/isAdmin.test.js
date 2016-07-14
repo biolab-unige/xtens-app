@@ -20,12 +20,12 @@ describe('Policy isAdmin', function() {
         loginHelper.loginAdminUser(request, function (bearerToken) {
             tokenSA = bearerToken;
             sails.log.debug(`Got token: ${tokenSA}`);
-        });
 
-        loginHelper.loginAnotherStandardUser (request, function (bearerToken) {
-            tokenA = bearerToken;
-            sails.log.debug(`Got token: ${tokenA}`);
-            done();
+            loginHelper.loginAnotherStandardUser (request, function (bearerToken2) {
+                tokenA = bearerToken2;
+                sails.log.debug(`Got token: ${tokenA}`);
+                done();
+            });
         });
 
         isAdmin = global.sails.hooks.policies.middleware.isadmin;

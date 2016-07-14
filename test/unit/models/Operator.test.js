@@ -38,7 +38,7 @@ describe("Operator", function() {
                 expect(payload.isWheel).to.equals(false);
                 expect(payload.isAdmin).to.equals(false);
                 expect(payload.canAccessPersonalData).to.equals(false);
-                expect(payload.canAccessSensitiveData).to.equals(false);
+                expect(payload.canAccessSensitiveData).to.equals(true);
                 done();
             });
 

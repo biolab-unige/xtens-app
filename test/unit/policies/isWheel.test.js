@@ -20,11 +20,12 @@ describe('Policy isWheel', function() {
         loginHelper.loginSuperAdmin(request, function (bearerToken) {
             tokenSA = bearerToken;
             sails.log.debug(`Got token: ${tokenSA}`);
-        });
 
-        loginHelper.loginAdminUser (request, function (bearerToken) {
-            tokenA = bearerToken;
-            done();
+            loginHelper.loginAdminUser (request, function (bearerToken2) {
+                tokenA = bearerToken2;
+                sails.log.debug(`Got token: ${tokenA}`);
+                done();
+            });
         });
 
         isWheel = global.sails.hooks.policies.middleware.iswheel;
