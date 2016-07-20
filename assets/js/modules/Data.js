@@ -42,19 +42,19 @@
     function getFieldValue($el, ev, options) {
         switch (options.view.component.fieldType) {
 
-            case FieldTypes.INTEGER:
-                return parseInt($el.val());
+        case FieldTypes.INTEGER:
+            return parseInt($el.val());
 
-            case FieldTypes.FLOAT:
-                return parseFloat($el.val());
+        case FieldTypes.FLOAT:
+            return parseFloat($el.val());
 
             // return the date string in ISO format
-            case FieldTypes.DATE:
-                var dateArray = $el.val().split("/");
+        case FieldTypes.DATE:
+            var dateArray = $el.val().split("/");
             return dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0];
 
-            default:
-                return $el.val();
+        default:
+            return $el.val();
 
         }
     }
@@ -547,14 +547,14 @@
                 this.$fieldValue.prop('required', true);
             }
             switch (this.component.fieldType) {
-                case FieldTypes.INTEGER:
-                    this.$fieldValue.attr("data-parsley-type", "integer");
+            case FieldTypes.INTEGER:
+                this.$fieldValue.attr("data-parsley-type", "integer");
                 break;
-                case FieldTypes.FLOAT:
-                    this.$fieldValue.attr("data-parsley-type", "number");
+            case FieldTypes.FLOAT:
+                this.$fieldValue.attr("data-parsley-type", "number");
                 break;
-                case FieldTypes.DATE:
-                    this.initDatepicker();
+            case FieldTypes.DATE:
+                this.initDatepicker();
                 break;
             }
             if (this.component.hasRange) {
@@ -647,7 +647,7 @@
 
     Data.List = Backbone.Collection.extend({
         model: Data.Model,
-        url: '/data',
+        url: '/data'
     });
 
     /**
@@ -956,11 +956,11 @@
          * @extends Backbone.View.initialize
          */
         initialize: function(options) {
-          $("#main").html(this.el);
-          this.template = JST["views/templates/data-details.ejs"];
+            $("#main").html(this.el);
+            this.template = JST["views/templates/data-details.ejs"];
           // var filename= this.getFileName(this.model);
           //  this.model.set("filename", filename);
-          this.render();
+            this.render();
         },
 
         render: function() {
@@ -990,15 +990,15 @@
 
                 // store data in view (from model) as DD/MM/YYYY (European format)
                 onGet: function(value, options) {
-                  if (value) {
+                    if (value) {
                       /*
                       var dateArray = value instanceof Date ? value.toISOString().split('-') : moment(value).format('L');
                       var dateArray2 = dateArray[2].split('T');
                       dateArray[2] = dateArray2[0];
                       return dateArray[2] + '/' + dateArray[1] + '/' + dateArray[0]; */
-                      return moment(value).lang("it").format('L');
-                  }
-                },
+                        return moment(value).lang("it").format('L');
+                    }
+                }
 
             },
             '#tags': {
@@ -1077,7 +1077,7 @@
             return this;
         },
 
-         events: {
+        events: {
             'click #newData': 'openNewDataView'
         },
 
@@ -1114,7 +1114,7 @@
             paramName: "uploadFile",
             maxFilesize: 2048, // max 2 GiB
             uploadMultiple: false,
-            method: "POST",
+            method: "POST"
         },
 
         initialize: function() {
@@ -1183,7 +1183,7 @@
             }
             var modal = new ModalDialog({
                 title: i18n('ok'),
-                body: i18n('data-correctly-stored-on-server'),
+                body: i18n('data-correctly-stored-on-server')
             });
             this.$modal.append(modal.render().el);
             modal.show();

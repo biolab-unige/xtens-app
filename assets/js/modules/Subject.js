@@ -15,6 +15,7 @@
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
     var sexOptions = xtens.module("xtensconstants").SexOptions;
 
+    var MISSING_VALUE_ALERT = true;
     /*
        function initializeProjectsField($el, model, option) {
        var data =
@@ -170,22 +171,28 @@
          * @name initialize
          */
         initialize: function(options) {
-          $("#main").html(this.el);
-          this.template = JST["views/templates/subject-details.ejs"];
-          this.render();
-          if (xtens.session.get('canAccessPersonalData')) {
-              this.addPersonalDetailsParam();
-          }
+            $("#main").html(this.el);
+            this.template = JST["views/templates/subject-details.ejs"];
+            this.render();
+            if (xtens.session.get('canAccessPersonalData')) {
+                this.addPersonalDetailsParam();
+            }
         },
         render: function() {
-          var dataType = new DataTypeModel(this.model.get("type"));
-          var fields = dataType.getFlattenedFields();
+            var dataType = new DataTypeModel(this.model.get("type"));
+            var fields = dataType.getFlattenedFields();
 
             this.$el.html(this.template({
                 __: i18n,
                 data: this.model,
                 fields: fields
             }));
+
+            if (MISSING_VALUE_ALERT) {
+                this.$('div[name="metadata-value"]').filter(function() {
+                    return $(this).text().trim() === '';
+                }).addClass("text-warning").html(i18n("missing-value"));
+            }
         },
         addPersonalDetailsParam: function() {
             var model = new PersonalDetails.Model(this.model.get("personalInfo"));
@@ -272,8 +279,8 @@
 
                 // set margins, width and height of the svg container
                 var margin = {top: 40, right: 120, bottom: 40, left: 120},
-                width = 1000 - margin.left - margin.right,
-                height = 800 - margin.top - margin.bottom;
+                    width = 1000 - margin.left - margin.right,
+                    height = 800 - margin.top - margin.bottom;
 
                 var color = d3.scale.category20();
 
@@ -329,7 +336,7 @@
                 // Create nodes for each unique source and target.
                 links.forEach(function(link) {
                     var parent = link.source = nodeByName(link.source),
-                    child = link.target = nodeByName(link.target);
+                        child = link.target = nodeByName(link.target);
                     if (parent.children) parent.children.push(child);
                     else parent.children = [child];
                 });

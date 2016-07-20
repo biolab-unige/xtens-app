@@ -97,10 +97,10 @@
                         </span>
                         <div class="col-md-5 text-left">
 
-                            <% value = metadata[field.formattedName].value;
-                            values = metadata[field.formattedName].values;
+                          <% value =  metadata[field.formattedName] ? metadata[field.formattedName].value : null;
+                            values = metadata[field.formattedName] ? metadata[field.formattedName].values : null;
                             if (field.fieldType==="Date"){value=moment(value).lang("it").format('L');}
-                            unit = metadata[field.formattedName].unit; %>
+                            unit = metadata[field.formattedName] ? metadata[field.formattedName].unit : null; %>
                             <div name="metadata-value" class="data-value">
                                 <% if (_.isArray(values)) { %>
                                     <%=  !_.isEmpty(values) ? values.join(", ") : "" %>

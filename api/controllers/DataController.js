@@ -134,7 +134,7 @@ module.exports = {
             data = result;
 
             //retrieve dataType id
-            const dataTypesId = _.isObject(data.type) ? _.uniq(_.pluck(_.pluck(data, 'type'), 'id')) : _.uniq(_.pluck(data, 'type'));
+            const dataTypesId = _.isObject(data[0].type) ? _.uniq(_.pluck(_.pluck(data, 'type'), 'id')) : _.uniq(_.pluck(data, 'type'));
 
             DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId).then(function(privileges) {
 
@@ -177,7 +177,6 @@ module.exports = {
    */
     update: function(req, res) {
         let data = req.body;
-        console.log(data);
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
 
