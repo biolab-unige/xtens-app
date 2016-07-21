@@ -256,7 +256,7 @@ module.exports = {
 
             sails.log.info(`Subject to be deleted:  ${subject.data}`);
 
-            return crudManager.deleteSubject(id)
+            return crudManager.deleteSubject(id);
         })
         .then(deleted => {
             return res.json(200, {
