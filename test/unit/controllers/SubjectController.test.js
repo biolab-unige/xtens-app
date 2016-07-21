@@ -140,7 +140,7 @@ describe('SubjectController', function() {
             .set('Authorization', `Bearer ${token}`)
             //.send({id:1})
             .expect(function(res) {
-                console.log(res.body);
+                sails.log.info(res.body);
                 expect(res.body).to.have.length(fixtures.subject.length + 1);
             })
             .expect(200, done);

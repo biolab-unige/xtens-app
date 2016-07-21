@@ -12,6 +12,8 @@ const ControllerOut = require("xtens-utils").ControllerOut;
 const crudManager = sails.hooks.persistence.crudManager;
 const BluebirdPromise = require('bluebird');
 const ValidationError = require('xtens-utils').Errors.ValidationError;
+const PrivilegesError = require('xtens-utils').Errors.PrivilegesError;
+const NonexistentResourceError = require('xtens-utils').Errors.NonexistentResourceError;
 const xtensConf = global.sails.config.xtens;
 const SUBJECT = xtensConf.constants.DataTypeClasses.SUBJECT;
 const DATA = xtensConf.constants.DataTypeClasses.DATA;
@@ -30,13 +32,15 @@ module.exports = {
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
 
-        DataTypeService.getDataTypePrivilegeLevel(operator.id, subject.type).then(function(dataTypePrivilege) {
+        DataTypeService.getDataTypePrivilegeLevel(operator.id, subject.type).then(dataTypePrivilege => {
 
             if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege) || dataTypePrivilege.privilegeLevel != EDIT) {
-                return co.forbidden();
+                throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type ${subject.type}`)
             } else {
-                DataType.findOne(subject.type)
-        .then(function(subjectType) {
+                return DataType.findOne(subject.type);
+            }
+        })
+        .then(subjectType => {
             let validationRes = SubjectService.validate(subject, true, subjectType);
             if (validationRes.error === null) {
                 subject = validationRes.value;
@@ -47,17 +51,16 @@ module.exports = {
                 throw new ValidationError(validationRes.error);
             }
         })
-        .then(function(result) {
-            console.log(result);
+        .then(result => {
+            sails.log.info(result);
             res.set('Location', req.baseUrl + req.url + '/'  + result.id);
             return res.json(201, result);
         })
-        .catch(function(error) {
-            console.log("SubjectController.create: " + error.message);
+        .catch(error => {
+            sails.log.error("SubjectController.create: " + error.message);
             return co.error(error);
         });
-            }
-        });
+
     },
 
     /**
@@ -71,31 +74,32 @@ module.exports = {
         const id = req.param('id');
         const operator = TokenService.getToken(req);
         let query = Subject.findOne(id);
-        let subject = {};
+        let subject;
         query = QueryService.populateRequest(query, req, { blacklist: ['personalInfo'] });
 
         if (operator.canAccessPersonalData) {
             query.populate('personalInfo');
         }
 
-        query.then(function(result) {
+        query.then(result => {
             subject = result;
             const idDataType = _.isObject(subject.type) ? subject.type.id : subject.type;
-          //retrieve dataTypePrivilege
-            DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType).then(function(dataTypePrivilege) {
 
-            //filter Out Metadata if operator has not the privilege
-                if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege)){ return res.json({});}
+            //retrieve dataTypePrivilege
+            return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+        })
+        .then(dataTypePrivilege => {
+                //filter Out Metadata if operator has not the privilege
+                if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege)){ return {};}
                 else if( dataTypePrivilege.privilegeLevel === VIEW_OVERVIEW) { subject.metadata = {}; }
 
-                if( operator.canAccessSensitiveData || _.isEmpty(subject.metadata) ){ return res.json(subject); }
-                DataService.filterOutSensitiveInfo(subject, operator.canAccessSensitiveData).then(function(subjectFiltered) {
-                    return res.json(subjectFiltered);
-                });
-
-            });
+                if( operator.canAccessSensitiveData || _.isEmpty(subject.metadata) ){ return subject; }
+                return DataService.filterOutSensitiveInfo(subject, operator.canAccessSensitiveData);
         })
-        .catch(function(error) {
+        .then(filteredSubject => {
+            return res.json(filteredSubject);
+        })
+        .catch(error => {
             return co.error(error);
         });
 
@@ -112,7 +116,7 @@ module.exports = {
     find: function(req, res) {
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
-        let subjects = [], arrPrivileges = [];
+        let subjects = [], arrPrivileges = [], dataTypesId;
         let query = Subject.find(QueryService.parseSelect(req))
         .where(QueryService.parseCriteria(req))
         .limit(QueryService.parseLimit(req))
@@ -125,37 +129,43 @@ module.exports = {
             query.populate('personalInfo');
         }
 
-        query.then(function(results) {
+        query.then(results => {
             subjects = results;
 
           //retrieve dataType id
-            const dataTypesId = _.isObject(subjects[0].type) ? _.uniq(_.pluck(_.pluck(subjects, 'type'), 'id')) : _.uniq(_.pluck(subjects, 'type'));
+            dataTypesId = _.isObject(subjects[0].type) ? _.uniq(_.pluck(_.pluck(subjects, 'type'), 'id')) : _.uniq(_.pluck(subjects, 'type'));
 
-            DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId).then(function(privileges) {
+            return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId);
+
+        }).then(privileges => {
 
                 _.isArray(privileges) ? arrPrivileges = privileges : arrPrivileges[0] = privileges;
-            //filter Out Metadata if operator has not at least a privilege on Data or exists at least a VIEW_OVERVIEW privilege level
-                if (!arrPrivileges || _.isEmpty(arrPrivileges) ){ return res.json({});}
+                //filter Out Metadata if operator has not at least a privilege on Data or exists at least a VIEW_OVERVIEW privilege level
+                if (!arrPrivileges || _.isEmpty(arrPrivileges) ) {
+                    return [];
+                }
                 else if( arrPrivileges.length < dataTypesId.length ||
                   (arrPrivileges.length === dataTypesId.length && _.find(arrPrivileges, { privilegeLevel: VIEW_OVERVIEW }))) {
 
                   // check for each datum if operator has the privilege to view details. If not metadata object is cleaned
-                    let index = 0, arrDtPrivId = arrPrivileges.map(function(e) { return e.dataType; });
+                    let index = 0, arrDtPrivId = arrPrivileges.map(e => { return e.dataType; });
                     for ( let i = subjects.length - 1; i >= 0; i-- ) {
-                        let idDataType = _.isObject(subjects[i].type) ? subjects[i].type.id : subjects[i].type;
+                        const idDataType = _.isObject(subjects[i].type) ? subjects[i].type.id : subjects[i].type;
                         index = arrDtPrivId.indexOf(idDataType);
-                        if( index < 0 ){ subjects.splice(i,1); }
+                        if( index < 0 ){ subjects.splice(i, 1); }
                         else if (arrPrivileges[index].privilegeLevel === VIEW_OVERVIEW) { subjects[i].metadata = {}; }
                     }
                 }
-                if( operator.canAccessSensitiveData ) { return res.json(subjects); }
+                if( operator.canAccessSensitiveData ) { return subjects; }
+
                   //filter Out Sensitive Info if operator can not access to Sensitive Data
-                DataService.filterOutSensitiveInfo(subjects, operator.canAccessSensitiveData).then(function(data) {
-                    return res.json(data);
-                });
-            });
+                return DataService.filterOutSensitiveInfo(subjects, operator.canAccessSensitiveData);
+
+        }).then(data => {
+            return res.json(data);
         })
-        .catch(function(err) {
+        .catch(err => {
+            sails.log.error(err);
             return co.error(err);
         });
     },
@@ -171,40 +181,44 @@ module.exports = {
         let subject = req.allParams();
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
-        DataService.hasDataSensitive(subject.id, SUBJECT).then(function(result) {
+        DataService.hasDataSensitive(subject.id, SUBJECT).then(result => {
 
             if (result.hasDataSensitive && !operator.canAccessSensitiveData) {
                 return co.forbidden();
             }
-        //retrieve dataType id
+            //retrieve dataType id
             const idDataType = _.isObject(subject.type) ? subject.type.id : subject.type;
-            DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType).then(function(dataTypePrivilege) {
+            return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+
+        })
+        .then(dataTypePrivilege => {
 
                 if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
-                    return co.forbidden();
+                    throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type ${subject.type}`);
                 }
                 SubjectService.simplify(subject);
 
-                DataType.findOne(subject.type).then(function(dataType) {
-                    const validationRes = SubjectService.validate(subject, true, dataType);
-                    if (validationRes.error === null) {
-                        subject = validationRes.value;
-                        return crudManager.updateSubject(subject, dataType.name);
-                    }
-                    else {
-                        throw new ValidationError(validationRes.error);
-                    }
-                })
-                  .then(function(result) {
-                      console.log(result);
-                      res.set('Location', req.baseUrl + req.url + '/'  + result.id);
-                      return res.json(result);
-                  })
-                    .catch(function(error) {
-                        console.log(error.message);
-                        return co.error(error);
-                    });
-            });
+                return DataType.findOne(subject.type);
+
+        })
+        .then(dataType => {
+            const validationRes = SubjectService.validate(subject, true, dataType);
+            if (validationRes.error === null) {
+                subject = validationRes.value;
+                return crudManager.updateSubject(subject, dataType.name);
+            }
+            else {
+                throw new ValidationError(validationRes.error);
+            }
+        })
+        .then(result => {
+              sails.log.info(result);
+              res.set('Location', req.baseUrl + req.url + '/'  + result.id);
+              return res.json(result);
+        })
+        .catch(error => {
+            sails.log.error(error);
+            return co.error(error);
         });
     },
 
@@ -218,38 +232,45 @@ module.exports = {
         const co = new ControllerOut(res);
         const id = req.param('id');
         const operator = TokenService.getToken(req);
+        let subject;
 
         if (!id) {
             return co.badRequest({message: 'Missing subject ID on DELETE request'});
         }
 
-        Subject.findOne({ id: id })
+        Subject.findOne({ id: id }).then(result => {
+            if (!result) {
+                throw new NonexistentResourceError("Missing Resource");
+            }
+            subject = result;
+            //retrieve dataType id
+            const idDataType = _.isObject(subject.type) ? subject.type.id : subject.type;
 
-        .then(function(result) {
-            if(!result){ return res.json(200, { deleted: 0 }); }
-          //retrieve dataType id
-            const idDataType = _.isObject(result.type) ? result.type.id : result.type;
+            return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+        })
+        .then(dataTypePrivilege => {
 
-            DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType).then(function(dataTypePrivilege) {
+            if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
+                throw PrivilegesError(`Authenticated user does not have edit privileges on the subject type ${subject.type}`)
+            }
 
-                if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
-                    return co.forbidden();
-                }
+            sails.log.info(`Subject to be deleted:  ${subject.data}`);
 
-                sails.log.info(`Subject to be deleted:  ${result.data}`);
-
-                return crudManager.deleteSubject(id)
-
-                .then(function(deleted) {
-                    return res.json(200, {
-                        deleted: deleted
-                    });
-                })
-                .catch(function(err) {
-                    return co.error(err);
-                });
+            return crudManager.deleteSubject(id)
+        })
+        .then(deleted => {
+            return res.json(200, {
+                deleted: deleted
             });
+        })
+        .catch(err => {
+            if (err instanceof NonexistentResourceError) {
+                return res.json(200, { deleted: 0 });
+            }
+            sails.log.error(err);
+            return co.error(err);
         });
+
     },
 
     /**
@@ -261,8 +282,9 @@ module.exports = {
         const co = new ControllerOut(res);
         const id = req.param("id"), code = req.param("code");
         const operator = TokenService.getToken(req);
+        let payload;
 
-        console.log("SubjectController.edit - Decoded ID is: " + operator.id);
+        sails.log.info("SubjectController.edit - Decoded ID is: " + operator.id);
 
         return BluebirdPromise.props({
             projects: Project.find(),
@@ -273,27 +295,40 @@ module.exports = {
                 privilegeLevel: EDIT
             })
         })
-      .then(function(results) {
-          if(results.subject){
-              const idDataTypes = _.isObject(results.subject.type) ? results.subject.type.id : results.subject.type;
+        .then(results => {
+            payload = results;
+            // sails.log.info(payload);
 
-              DataService.hasDataSensitive(results.subject.id, SUBJECT).then(function(r) {
-                //if operator has not access to Sensitive Data and dataType has Data Sensitive, or
-                // operator has not the privilege to EDIT datatype, then return forbidden
-                  if ((r.dataSensitive.hasDataSensitive && !operator.canAccessSensitiveData)
-                    || _.isEmpty(results.dataTypes) || !_.find(results.dataTypes, {name : results.subject.name})  ){
-                      return co.forbidden();
-                  }
-                  return res.json(results);
-              });}
-          else {
-            //if operator has not the privilege to EDIT datatype, then return forbidden
-              if (_.isEmpty(results.dataTypes)){ return co.forbidden(); }
-              return res.json(results); }
-      })
-      .catch(function(err) {
-          return co.error(err);
-      });
+            if (results.subject) {
+                const idDataTypes = _.isObject(results.subject.type) ? results.subject.type.id : results.subject.type;
+                return DataService.hasDataSensitive(results.subject.id, SUBJECT);
+            }
+            else {
+              //if operator has not the privilege to EDIT datatype, then return forbidden
+                if (_.isEmpty(results.dataTypes)) {
+                    throw new PrivilegesError(`Authenticated user does not have EDIT privileges on any data type`);
+                }
+            }
+
+        })
+        .then(sensitiveRes => {
+
+            // sails.log.info(sensitiveRes);
+            // if operator has not access to Sensitive Data and dataType has sensitive data, then return forbidden
+            if ((sensitiveRes.hasDataSensitive && !operator.canAccessSensitiveData)) {
+                return co.forbidden("Authenticated user is not allowed to edit sensitive data");
+            }
+            // operator has not the privilege to EDIT datatype, then throw Privileges Error
+            if (_.isEmpty(payload.dataTypes) || !_.find(payload.dataTypes, {id : payload.subject.type.id})) {
+                throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type`)
+            }
+            return res.json(payload);
+
+        })
+        .catch(err => {
+            sails.log.error(err);
+            return co.error(err);
+        });
 
     },
 
@@ -304,7 +339,7 @@ module.exports = {
      * @description generate and visualize the (nested/multi level) data graph for a given subject.
      *              Note: The current limit for the number of instances is 100.
      */
-    createGraph:function(req,res){
+    createGraph:function(req,res) {
         const co = new ControllerOut(res);
         const idSubject = req.param("idPatient");
         const fetchSubjectDataTree = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTree;
@@ -318,6 +353,7 @@ module.exports = {
             else {
                 console.log(resp.rows);
                 let links = [];
+
                 BluebirdPromise.map(resp.rows, function(row) {
 
                     if (row.parent_data !== null) {
@@ -332,13 +368,10 @@ module.exports = {
 
                 })
                 .then(function(link){
-
                     console.log(link);
                     links = link;
                     let json = {'links':links};
                     return res.json(json);
-
-
                 })
                 .catch(function(err){
                     console.log(err);
@@ -413,4 +446,5 @@ module.exports = {
 
         fetchSubjectDataTreeSimple(idSubject, subjectTreeSimpleCb);
     }
+
 };
