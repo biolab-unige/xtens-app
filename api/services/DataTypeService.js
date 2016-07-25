@@ -398,26 +398,26 @@ next(null, result.rows);
      * @description service function to retrieve the dataType privilege
      */
     getDataTypePrivilegeLevel: function(operatorId, dataTypesId) {
-        if (typeof dataTypesId !== 'undefined' && dataTypesId !== null) {
+        let groupId;
+        if ( typeof dataTypesId !== 'undefined' && dataTypesId !== null ) {
             console.log("getDataTypePrivilegeLevel on Datatype: " + dataTypesId + ". Operator: " + operatorId);
-            let groupId = [];
 
-            return Operator.findOne( {id : operatorId} ).populate('groups')
+            return Operator.findOne( {id : operatorId} ).populate('groups').then(operator => {
+                groupId = _.pluck(operator.groups,'id');
 
-              .then(function(operator) {
-                  groupId = _.pluck(operator.groups,'id');
+                return sails.models.datatypeprivileges.find({ where: {group: groupId, dataType: dataTypesId} });
+            })
+            .then(dataTypePrivileges => {
+                if (!dataTypePrivileges){
+                    return dataTypePrivileges = [];
+                }
+                return dataTypePrivileges.length === 1 ? dataTypePrivileges[0] : dataTypePrivileges;
+            })
+            .catch((err) => {
+                sails.log(err);
+                return err;
+            });
 
-                  return sails.models.datatypeprivileges.find({
-                      where: {group: groupId, dataType: dataTypesId}
-                  })
-
-                  .then(function(dataTypePrivileges) {
-                      if (!dataTypePrivileges){
-                          return dataTypePrivileges = [];
-                      }
-                      return dataTypePrivileges.length === 1 ? dataTypePrivileges[0] : dataTypePrivileges;
-                  });
-              });
         }
         else {
             return BluebirdPromise.resolve(undefined);
@@ -432,34 +432,33 @@ next(null, result.rows);
      * @description service function to filter dataTypes compared to operator Privileges
      */
     filterDataTypes: function(operatorId, dataTypes) {
-        if (typeof dataTypes !== 'undefined' && dataTypes !== null) {
-            let groupId = [];
+        let groupId;
+        if ( typeof dataTypes !== 'undefined' && dataTypes !== null ) {
 
-            return Operator.findOne( {id : operatorId} ).populate('groups')
+            return Operator.findOne( {id : operatorId} ).populate('groups').then(function(operator) {
 
-              .then(function(operator) {
+                groupId = _.pluck(operator.groups,'id');
 
-                  groupId = _.pluck(operator.groups,'id');
+                return sails.models.datatypeprivileges.find({ where: {group: groupId} });
+            })
+            .then(dataTypePrivileges => {
+                if (!dataTypePrivileges){
+                    return dataTypes = [];
+                }
 
-                  return sails.models.datatypeprivileges.find({
-                      where: {group: groupId}
-                  })
-
-                  .then(function(dataTypePrivileges) {
-                      if (!dataTypePrivileges){
-                          return dataTypes = [];
-                      }
-
-                      let idPriv = _.pluck(dataTypePrivileges,'dataType');
-                      for(let datatype of dataTypes){
-                        //If there is not privilege on datatype, remove it from datatypes array
-                          if( _.indexOf( idPriv, datatype.id) < 0){
-                              dataTypes = _.without(dataTypes, _.findWhere(dataTypes, {id: datatype.id}));
-                          }
-                      }
-                      return dataTypes;
-                  });
-              });
+                let idPriv = _.pluck(dataTypePrivileges,'dataType');
+                for(let datatype of dataTypes){
+                  //If there is not privilege on datatype, remove it from datatypes array
+                    if( _.indexOf( idPriv, datatype.id) < 0){
+                        dataTypes = _.without(dataTypes, _.findWhere(dataTypes, {id: datatype.id}));
+                    }
+                }
+                return dataTypes;
+            })
+            .catch((err) => {
+                sails.log(err);
+                return err;
+            });
         }
         else {
             return BluebirdPromise.resolve(undefined);

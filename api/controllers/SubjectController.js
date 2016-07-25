@@ -35,7 +35,7 @@ module.exports = {
         DataTypeService.getDataTypePrivilegeLevel(operator.id, subject.type).then(dataTypePrivilege => {
 
             if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege) || dataTypePrivilege.privilegeLevel != EDIT) {
-                throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type ${subject.type}`)
+                throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type ${subject.type}`);
             } else {
                 return DataType.findOne(subject.type);
             }
@@ -82,6 +82,9 @@ module.exports = {
         }
 
         query.then(result => {
+            if (!result) {
+                return {};
+            }
             subject = result;
             const idDataType = _.isObject(subject.type) ? subject.type.id : subject.type;
 
@@ -89,12 +92,13 @@ module.exports = {
             return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
         })
         .then(dataTypePrivilege => {
-                //filter Out Metadata if operator has not the privilege
-                if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege)){ return {};}
-                else if( dataTypePrivilege.privilegeLevel === VIEW_OVERVIEW) { subject.metadata = {}; }
+            //filter Out Metadata if operator has not the privilege
+            if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege)){ return {};}
+            else if( dataTypePrivilege.privilegeLevel === VIEW_OVERVIEW) { subject.metadata = {}; }
 
-                if( operator.canAccessSensitiveData || _.isEmpty(subject.metadata) ){ return subject; }
-                return DataService.filterOutSensitiveInfo(subject, operator.canAccessSensitiveData);
+            if( operator.canAccessSensitiveData || _.isEmpty(subject.metadata) ){ return subject; }
+            //filter Out Sensitive Info if operator can not access to Sensitive Data
+            return DataService.filterOutSensitiveInfo(subject, operator.canAccessSensitiveData);
         })
         .then(filteredSubject => {
             return res.json(filteredSubject);
@@ -130,6 +134,9 @@ module.exports = {
         }
 
         query.then(results => {
+            if (!results) {
+                return {};
+            }
             subjects = results;
 
           //retrieve dataType id
@@ -139,27 +146,27 @@ module.exports = {
 
         }).then(privileges => {
 
-                _.isArray(privileges) ? arrPrivileges = privileges : arrPrivileges[0] = privileges;
-                //filter Out Metadata if operator has not at least a privilege on Data or exists at least a VIEW_OVERVIEW privilege level
-                if (!arrPrivileges || _.isEmpty(arrPrivileges) ) {
-                    return [];
-                }
-                else if( arrPrivileges.length < dataTypesId.length ||
+            _.isArray(privileges) ? arrPrivileges = privileges : arrPrivileges[0] = privileges;
+            //filter Out Metadata if operator has not at least a privilege on Data or exists at least a VIEW_OVERVIEW privilege level
+            if (!arrPrivileges || _.isEmpty(arrPrivileges) ) {
+                return [];
+            }
+            else if( arrPrivileges.length < dataTypesId.length ||
                   (arrPrivileges.length === dataTypesId.length && _.find(arrPrivileges, { privilegeLevel: VIEW_OVERVIEW }))) {
 
                   // check for each datum if operator has the privilege to view details. If not metadata object is cleaned
-                    let index = 0, arrDtPrivId = arrPrivileges.map(e => { return e.dataType; });
-                    for ( let i = subjects.length - 1; i >= 0; i-- ) {
-                        const idDataType = _.isObject(subjects[i].type) ? subjects[i].type.id : subjects[i].type;
-                        index = arrDtPrivId.indexOf(idDataType);
-                        if( index < 0 ){ subjects.splice(i, 1); }
-                        else if (arrPrivileges[index].privilegeLevel === VIEW_OVERVIEW) { subjects[i].metadata = {}; }
-                    }
+                let index = 0, arrDtPrivId = arrPrivileges.map(e => { return e.dataType; });
+                for ( let i = subjects.length - 1; i >= 0; i-- ) {
+                    const idDataType = _.isObject(subjects[i].type) ? subjects[i].type.id : subjects[i].type;
+                    index = arrDtPrivId.indexOf(idDataType);
+                    if( index < 0 ){ subjects.splice(i, 1); }
+                    else if (arrPrivileges[index].privilegeLevel === VIEW_OVERVIEW) { subjects[i].metadata = {}; }
                 }
-                if( operator.canAccessSensitiveData ) { return subjects; }
+            }
+            if( operator.canAccessSensitiveData ) { return subjects; }
 
                   //filter Out Sensitive Info if operator can not access to Sensitive Data
-                return DataService.filterOutSensitiveInfo(subjects, operator.canAccessSensitiveData);
+            return DataService.filterOutSensitiveInfo(subjects, operator.canAccessSensitiveData);
 
         }).then(data => {
             return res.json(data);
@@ -184,7 +191,7 @@ module.exports = {
         DataService.hasDataSensitive(subject.id, SUBJECT).then(result => {
 
             if (result.hasDataSensitive && !operator.canAccessSensitiveData) {
-                return co.forbidden();
+                throw new PrivilegesError(`"Authenticated user is not allowed to modify sensitive data"`);
             }
             //retrieve dataType id
             const idDataType = _.isObject(subject.type) ? subject.type.id : subject.type;
@@ -193,12 +200,12 @@ module.exports = {
         })
         .then(dataTypePrivilege => {
 
-                if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
-                    throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type ${subject.type}`);
-                }
-                SubjectService.simplify(subject);
+            if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
+                throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type ${subject.type}`);
+            }
+            SubjectService.simplify(subject);
 
-                return DataType.findOne(subject.type);
+            return DataType.findOne(subject.type);
 
         })
         .then(dataType => {
@@ -212,9 +219,9 @@ module.exports = {
             }
         })
         .then(result => {
-              sails.log.info(result);
-              res.set('Location', req.baseUrl + req.url + '/'  + result.id);
-              return res.json(result);
+            sails.log.info(result);
+            res.set('Location', req.baseUrl + req.url + '/'  + result.id);
+            return res.json(result);
         })
         .catch(error => {
             sails.log.error(error);
@@ -251,7 +258,7 @@ module.exports = {
         .then(dataTypePrivilege => {
 
             if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
-                throw PrivilegesError(`Authenticated user does not have edit privileges on the subject type ${subject.type}`)
+                throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type ${subject.type}`);
             }
 
             sails.log.info(`Subject to be deleted:  ${subject.data}`);
@@ -315,12 +322,12 @@ module.exports = {
 
             // sails.log.info(sensitiveRes);
             // if operator has not access to Sensitive Data and dataType has sensitive data, then return forbidden
-            if ((sensitiveRes.hasDataSensitive && !operator.canAccessSensitiveData)) {
-                return co.forbidden("Authenticated user is not allowed to edit sensitive data");
+            if (sensitiveRes && ((sensitiveRes.hasDataSensitive && !operator.canAccessSensitiveData))) {
+                throw new PrivilegesError("Authenticated user is not allowed to edit sensitive data");
             }
             // operator has not the privilege to EDIT datatype, then throw Privileges Error
-            if (_.isEmpty(payload.dataTypes) || !_.find(payload.dataTypes, {id : payload.subject.type.id})) {
-                throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type`)
+            if (payload.subject && (_.isEmpty(payload.dataTypes) || !_.find(payload.dataTypes, {id : payload.subject.type.id}))) {
+                throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type`);
             }
             return res.json(payload);
 

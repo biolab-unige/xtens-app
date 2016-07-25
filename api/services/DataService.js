@@ -356,7 +356,8 @@ let DataService = BluebirdPromise.promisifyAll({
      */
     filterOutSensitiveInfo: function(data, canAccessSensitiveData) {
 
-        let arrData = [], idDataType , forbiddenFields = {}, typeIds;
+        let arrData = [], idDataType, typeIds, flattenedFields,
+            forbiddenField, forbiddenFields;
         _.isArray(data) ? arrData=data : arrData[0] = data;
 
         //retrive all unique idDatatypes from data Array
@@ -365,16 +366,16 @@ let DataService = BluebirdPromise.promisifyAll({
           typeIds = _.uniq(_.map(arrData, 'type'));
 
         //retrieve datatypes of datum
-        return DataType.find({select: ['schema','id'], where: {id: typeIds}}).then((dataTypes) => {
+        return DataType.find({select: ['schema','id'], where: {id: typeIds}}).then(dataTypes => {
 
-          //if canAccessSensitiveData is true or metadata is Empty skip the function and return data
+            //if canAccessSensitiveData is true or metadata is Empty skip the function and return data
             if(!canAccessSensitiveData || (!_.isEmpty(arrData[0].metadata) && !arrData[1])){
                 _.each(dataTypes, (datatype) => {
 
-                    //create an array with metadata fields sensitive for each dataType
+                  //create an array with metadata fields sensitive for each dataType
                     idDataType = datatype.id;
-                    let flattenedFields = DataTypeService.getFlattenedFields(datatype, false);
-                    let forbiddenField = _.filter(flattenedFields, (field) => {return field.sensitive;});
+                    flattenedFields = DataTypeService.getFlattenedFields(datatype, false);
+                    forbiddenField = _.filter(flattenedFields, (field) => {return field.sensitive;});
                     forbiddenFields[idDataType] = _.map(forbiddenField, (field) => {return field.formattedName;});
                 });
 
@@ -391,7 +392,8 @@ let DataService = BluebirdPromise.promisifyAll({
             else {
                 return data;
             }
-        }).catch((err) => {
+        })
+        .catch((err) => {
             sails.log(err);
             return err;
         });
@@ -405,14 +407,14 @@ let DataService = BluebirdPromise.promisifyAll({
      */
     hasDataSensitive: function(id, modelName) {
 
-        let flattenedFields =[], forbiddenFields =[], data , hasDataSensitive;
+        let hasDataSensitive;
 
         return global[modelName].findOne({id : id}).populateAll().then((datum) => {
             //if (!datum){ return BluebirdPromise.resolve(undefined);}
-            console.log("DataService hasDataSensitive - called for model: "+  datum['type'].model +" "+ modelName);
-          //retrieve metadata fields sensitive
-            flattenedFields = DataTypeService.getFlattenedFields(datum['type'], false);
-            forbiddenFields = _.filter(flattenedFields, (field) => { return field.sensitive; });
+            console.log("DataService hasDataSensitive - called for model: "+  datum['type'].model);
+            //retrieve metadata fields sensitive
+            let flattenedFields = DataTypeService.getFlattenedFields(datum['type'], false);
+            let forbiddenFields = _.filter(flattenedFields, (field) => { return field.sensitive; });
 
             forbiddenFields.length > 0 ? hasDataSensitive = true : hasDataSensitive = false;
 
@@ -421,9 +423,8 @@ let DataService = BluebirdPromise.promisifyAll({
                 data : datum
             };
             return json;
-
-        }).catch((err) => {
-
+        })
+        .catch((err) => {
             sails.log(err);
             return err;
         });
