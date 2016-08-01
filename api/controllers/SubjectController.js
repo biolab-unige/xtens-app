@@ -134,8 +134,8 @@ module.exports = {
         }
 
         query.then(results => {
-            if (!results) {
-                return {};
+            if (!results || _.isEmpty(results)) {
+                return [];
             }
             subjects = results;
 

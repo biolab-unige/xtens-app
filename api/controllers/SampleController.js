@@ -129,7 +129,9 @@ module.exports = {
         query = QueryService.populateRequest(query, req);
 
         query.then(function(results) {
-            if (!results) { return {}; }
+            if (!results || _.isEmpty(results)) {
+                return [];
+            }
             samples = results;
 
           //retrieve dataType id

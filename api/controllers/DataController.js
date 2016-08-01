@@ -134,8 +134,8 @@ module.exports = {
         query = QueryService.populateRequest(query, req);
 
         query.then(results => {
-            if (!results) {
-                return {};
+            if (!results || _.isEmpty(results)) {
+                return [];
             }
             data = results;
 
