@@ -357,7 +357,7 @@ let DataService = BluebirdPromise.promisifyAll({
     filterOutSensitiveInfo: function(data, canAccessSensitiveData) {
 
         let arrData = [], idDataType, typeIds, flattenedFields,
-            forbiddenField, forbiddenFields;
+            forbiddenField, forbiddenFields  = [];
         _.isArray(data) ? arrData=data : arrData[0] = data;
 
         //retrive all unique idDatatypes from data Array
