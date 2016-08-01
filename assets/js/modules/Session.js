@@ -4,17 +4,17 @@
  */
 
 (function(xtens, Session) {
-    
+
     var i18n = xtens.module("i18n").en;
     var GroupPrivilegeLevels = xtens.module("xtensconstants").GroupPrivilegeLevels;
-    
+
     /**
      * @class
      * @name Session.Model
      * @extends Backbone.Model
      */
     Session.Model = Backbone.Model.extend({
-        
+
         defaults: {
             login: null,
             accessToken: null
@@ -36,13 +36,13 @@
 
             this.set("login", options.user && options.user.login);
             this.set("accessToken", options.token);
-            
+
             if (_.isEmpty(options.user.groups)) {
                 return;
             }
             var privilegeLevelArr = _.pluck(options.user.groups, 'privilegeLevel');
             this.set("isWheel", privilegeLevelArr.indexOf(GroupPrivilegeLevels.WHEEL) > -1);
-            this.set("isManager", this.get("isWheel") || privilegeLevelArr.indexOf(GroupPrivilegeLevels.MANAGER) > -1);
+            this.set("isAdmin", this.get("isWheel") || privilegeLevelArr.indexOf(GroupPrivilegeLevels.ADMIN) > -1);
             this.set("canAccessPersonalData", _.pluck(options.user.groups, 'canAccessPersonalData').indexOf(true) > -1);
             this.set("canAccessSensitiveData", _.pluck(options.user.groups, 'canAccessSensitiveData').indexOf(true) > -1);
 
@@ -65,7 +65,7 @@
      * @description session-related menu bar
      */
     Session.Views.MenuBar = Backbone.View.extend({
-        
+
         el: '#menuBarNav',
 
         initialize : function(){
@@ -73,10 +73,10 @@
             this.template = JST['views/templates/menu-bar.ejs'];
             this.render();
         },
-        
+
         render: function() {
             this.$el.html(this.template({
-                __:i18n, 
+                __:i18n,
                 session: xtens.session
             }));
             return this;

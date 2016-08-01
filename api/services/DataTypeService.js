@@ -1,11 +1,11 @@
-/** 
+/**
  *  @module
  *  @name DataTypeService
  *  @author Massimiliano Izzo
  */
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, sails, Group, DataType, QueryService */
+/* globals _, sails , Group, DataType, QueryService, Operator */
 "use strict";
 let Joi = require("joi");
 let BluebirdPromise = require("bluebird");
@@ -196,7 +196,7 @@ let idDataTypes = params.idDataTypes.split(',').map(function(val) {return _.pars
 let fragments = [];
 for (let i=0; i<idDataTypes.length; i++) {
 fragments.push('$' + (vals.length + i + 1));
-} 
+}
 whereClause += ' AND d.id IN (' + fragments.join(",") + ')';
 vals.push(idDataTypes);
 vals = _.flatten(vals);
@@ -226,7 +226,7 @@ next(null, result.rows);
      * @param next - a callback
      * @return {Array} - list of found DataType entities
      * @description find the list of allowed DataTypes for a specific Operator, through its Groups
-     * TODO move to xtens-transact  
+     * TODO move to xtens-transact
      *
 
 getByOperatorAndParentDataType: function(idOperator, params, next) {
@@ -281,7 +281,7 @@ next(null, result.rows);
                         if (loopContent[k].label === constants.METADATA_FIELD) {
 
                             // add to the field a private flag that specifies its belonging to a loop
-                            flattened.push(_.extend(loopContent[k], {_loop: true}));                         
+                            flattened.push(_.extend(loopContent[k], {_loop: true}));
 
                         }
                     }
@@ -295,7 +295,7 @@ next(null, result.rows);
     /**
      * @method
      * @name putMetadataFieldIntoEAV
-     * @description extract the Metadata Fields from the JSON schema and stores each one in a dedicated 
+     * @description extract the Metadata Fields from the JSON schema and stores each one in a dedicated
      *              ATTRIBUTE table, for use in an EAV catalogue
      * @param {Integer} dataType - the id of the DataType
      */
@@ -340,13 +340,13 @@ next(null, result.rows);
      * @name getDataTypesToEditPrivileges
      * @param{integer} privilegesId
      * @param{function} next - callback function
-     * @description service function to retrieve the right set of dataType(s) when editing 
+     * @description service function to retrieve the right set of dataType(s) when editing
      *              an existing DataTypePrivileges entity
      */
     getDataTypeToEditPrivileges: function(privilegesId) {
         if (privilegesId) {
-            return sails.models.datatypeprivileges.findOne({ 
-                select: ['dataType'], where: {id: privilegesId} 
+            return sails.models.datatypeprivileges.findOne({
+                select: ['dataType'], where: {id: privilegesId}
             })
 
             .then(function(privileges) {
@@ -365,7 +365,7 @@ next(null, result.rows);
      * @param{integer} groupId
      * @param{integer} privilegesId
      * @param{function} next - callback function
-     * @description service function to retrieve the right set of dataType(s) when creating 
+     * @description service function to retrieve the right set of dataType(s) when creating
      *              a new DataTypePrivileges entity
      */
     getDataTypesToCreateNewPrivileges: function(groupId, privilegesId) {
@@ -376,12 +376,88 @@ next(null, result.rows);
 
             .then(function(privileges) {
                 console.log(privileges);
-                
+
                 let whereObj = _.isEmpty(privileges) ? {} : {
                     id: {'!': _.pluck(privileges, 'dataType')}
                 };
 
                 return DataType.find({ where: whereObj });
+            });
+        }
+        else {
+            return BluebirdPromise.resolve(undefined);
+        }
+    },
+
+    /**
+     * @method
+     * @name getDataTypePrivilegeLevel
+     * @param{integer} operatorId
+     * @param{integer} dataTypesId
+     * @param{function} next - callback function
+     * @description service function to retrieve the dataType privilege
+     */
+    getDataTypePrivilegeLevel: function(operatorId, dataTypesId) {
+        let groupId;
+        if ( typeof dataTypesId !== 'undefined' && dataTypesId !== null ) {
+            console.log("getDataTypePrivilegeLevel on Datatype: " + dataTypesId + ". Operator: " + operatorId);
+
+            return Operator.findOne( {id : operatorId} ).populate('groups').then(operator => {
+                groupId = _.pluck(operator.groups,'id');
+
+                return sails.models.datatypeprivileges.find({ where: {group: groupId, dataType: dataTypesId} });
+            })
+            .then(dataTypePrivileges => {
+                if (!dataTypePrivileges){
+                    return dataTypePrivileges = [];
+                }
+                return dataTypePrivileges.length === 1 ? dataTypePrivileges[0] : dataTypePrivileges;
+            })
+            .catch((err) => {
+                sails.log(err);
+                return err;
+            });
+
+        }
+        else {
+            return BluebirdPromise.resolve(undefined);
+        }
+    },
+
+    /**
+     * @method
+     * @name filterDataTypes
+     * @param{integer} operatorId
+     * @param{array} dataTypes
+     * @description service function to filter dataTypes compared to operator Privileges
+     */
+    filterDataTypes: function(operatorId, dataTypes) {
+        let groupId;
+        if ( typeof dataTypes !== 'undefined' && dataTypes !== null ) {
+
+            return Operator.findOne( {id : operatorId} ).populate('groups').then(function(operator) {
+
+                groupId = _.pluck(operator.groups,'id');
+
+                return sails.models.datatypeprivileges.find({ where: {group: groupId} });
+            })
+            .then(dataTypePrivileges => {
+                if (!dataTypePrivileges){
+                    return dataTypes = [];
+                }
+
+                let idPriv = _.pluck(dataTypePrivileges,'dataType');
+                for(let datatype of dataTypes){
+                  //If there is not privilege on datatype, remove it from datatypes array
+                    if( _.indexOf( idPriv, datatype.id) < 0){
+                        dataTypes = _.without(dataTypes, _.findWhere(dataTypes, {id: datatype.id}));
+                    }
+                }
+                return dataTypes;
+            })
+            .catch((err) => {
+                sails.log(err);
+                return err;
             });
         }
         else {

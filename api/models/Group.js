@@ -13,7 +13,7 @@ var Group = {
 
         // there are three permission levels for user groups:
         // 1) wheel: superusers/superadmins
-        // 2) manager: admins
+        // 2) admin: manager
         // 3) standard: basic privileges
         privilegeLevel: {
             type: 'string',

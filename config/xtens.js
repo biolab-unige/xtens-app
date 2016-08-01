@@ -124,7 +124,7 @@ module.exports.xtens = {
          */
         GroupPrivilegeLevels: {
             WHEEL: 'wheel', // superusers
-            MANAGER: 'manager', // can edit DataTypes/Biobanks and so on
+            ADMIN: 'admin', // can edit DataTypes/Biobanks and so on
             STANDARD: 'standard'
         },
 
@@ -135,7 +135,7 @@ module.exports.xtens = {
             VIEW_OVERVIEW: 'view_overview', // level 0
             VIEW_DETAILS: 'view_details', // level 1
             DOWNLOAD: 'download', // level 2
-            EDIT: 'edit', // level 3
+            EDIT: 'edit' // level 3
         },
 
         /**

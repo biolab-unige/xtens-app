@@ -12,7 +12,7 @@ describe('OperatorController', function() {
     let token;
 
     before(function(done) {
-        loginHelper.loginDemouser(request, function (bearerToken) {
+        loginHelper.loginStandardUser(request, function (bearerToken) {
             token = bearerToken;
             sails.log.debug(`Got token: ${token}`);
             done();
@@ -24,7 +24,7 @@ describe('OperatorController', function() {
 
         it('Should return 204 No Content, Password Updated', function(done) {
 
-            const demouser = fixtures.operator[1];
+            const demouser = fixtures.operator[2];
             const passport = _.find(fixtures.passport, {
                 'user': demouser.id,
                 'protocol': 'local'});
@@ -42,9 +42,9 @@ describe('OperatorController', function() {
             .expect(204,done);
 
         });
-        it('Should return 400 bad Request, Old Password  Wrong', function(done) {
+        it('Should return 400 bad Request, Old Password and New Password can not match', function(done) {
 
-            const demouser = fixtures.operator[1];
+            const demouser = fixtures.operator[2];
             const passport = _.find(fixtures.passport, {
                 'user': demouser.id,
                 'protocol': 'local'});
@@ -62,7 +62,7 @@ describe('OperatorController', function() {
 
         it('Should return 400 bad Request, Old Password  Wrong', function(done) {
 
-            const demouser = fixtures.operator[1];
+            const demouser = fixtures.operator[2];
 
             request(sails.hooks.http.app)
           .patch('/operator')
@@ -74,9 +74,10 @@ describe('OperatorController', function() {
           })
           .expect(400, done);
         });
+
         it('Should return 400 bad Request, New Password and Confirm Confirm New Password do not match', function(done) {
 
-            const demouser = fixtures.operator[1];
+            const demouser = fixtures.operator[2];
             const passport = _.find(fixtures.passport, {
                 'user': demouser.id,
                 'protocol': 'local'});

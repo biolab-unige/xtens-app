@@ -41,6 +41,7 @@ module.exports.routes = {
     'POST /graph':{controller:'dataType',action:'buildGraph'},
 
     'POST /subjectGraph':{controller:'subject',action:'createGraph'},
+    
     'PATCH /operator':{controller:'operator',action:'patchPassword'},
     // 'GET /populateEAV': {controller: 'main', action: 'populateEAV'},
     //

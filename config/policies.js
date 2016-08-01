@@ -19,16 +19,49 @@ module.exports.policies = {
   // Default policy for all controllers and actions
   // (`true` allows public access)
   // TODO change Passport policy for authentication
-  
-  '*': 'bearerAuth',
 
-  'main':{
-     '*':true
-  },
+    '*': 'bearerAuth',
 
-  'auth': {
-    '*': true
-  }
+    'main':{
+        '*': true
+    },
+
+    'auth': {
+        '*': true
+    },
+
+    GroupController: {
+        '*': ['bearerAuth', 'isWheel']
+    },
+
+    OperatorController: {
+        '*': ['bearerAuth', 'isWheel'],
+        'patchPassword': 'bearerAuth'
+    },
+
+    DataTypePrivilegesController: {
+        '*': ['bearerAuth', 'isWheel'],
+        find: 'bearerAuth'
+    },
+
+    DataTypeController: {
+        '*':  ['bearerAuth', 'isAdmin'],
+        find: 'bearerAuth'
+    },
+
+    BiobankController: {
+        '*':  ['bearerAuth', 'isAdmin'],
+        find: 'bearerAuth'
+    },
+
+    ContactInformationController: {
+        '*': ['bearerAuth', 'isAdmin']
+    },
+
+    PersonalDetailsController: {
+        '*':  ['bearerAuth', 'canAccessPersonalData']
+    }
+
 
 	// Here's an example of mapping some policies to run before
   // a controller and its actions

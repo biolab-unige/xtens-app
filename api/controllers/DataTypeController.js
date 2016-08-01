@@ -22,6 +22,7 @@
      */
      find: function(req, res) {
          const co = new ControllerOut(res);
+         const operator = TokenService.getToken(req);
 
          let query = DataType.find()
         .where(QueryService.parseCriteria(req))
@@ -38,7 +39,11 @@
          }
 
          query.then(function(dataTypes) {
-             res.json(dataTypes);
+             DataTypeService.filterDataTypes(operator.id, dataTypes).then(function (dataTypesFiltered) {
+                 console.log(dataTypesFiltered);
+                 return res.json(dataTypesFiltered);
+
+             });
          })
         .catch(function(err) {
             return co.error(err);

@@ -13,7 +13,8 @@ let fileSystemManager = sails.config.xtens.fileSystemManager;
 let Joi = require('joi');
 let crudManager = sails.config.xtens.crudManager;
 let queryBuilder = sails.config.xtens.queryBuilder;
-let DATA = sails.config.xtens.constants.DataTypeClasses.DATA;
+const DATA = sails.config.xtens.constants.DataTypeClasses.DATA;
+const VIEW_OVERVIEW = sails.config.xtens.constants.DataTypePrivilegeLevels.VIEW_OVERVIEW;
 
 
 let DataService = BluebirdPromise.promisifyAll({
@@ -103,24 +104,24 @@ let DataService = BluebirdPromise.promisifyAll({
         let value, unit, group;
 
         switch(metadataField.fieldType) {
-            case FieldTypes.INTEGER:
-                value = Joi.number().integer();
+        case FieldTypes.INTEGER:
+            value = Joi.number().integer();
             break;
-            case FieldTypes.FLOAT:
-                value = Joi.number();
+        case FieldTypes.FLOAT:
+            value = Joi.number();
             break;
-            case FieldTypes.BOOLEAN:
-                value = Joi.boolean().default(false);
+        case FieldTypes.BOOLEAN:
+            value = Joi.boolean().default(false);
             break;
-            case FieldTypes.DATE:
-                value = Joi.string().isoDate();
+        case FieldTypes.DATE:
+            value = Joi.string().isoDate();
             break;
             // default is TEXT
-            default:
-                value = Joi.string();
-                if (metadataField.caseInsensitive && !metadataField.isList) {
-                    value = value.uppercase();
-                }
+        default:
+            value = Joi.string();
+            if (metadataField.caseInsensitive && !metadataField.isList) {
+                value = value.uppercase();
+            }
 
         }
 
@@ -229,16 +230,16 @@ let DataService = BluebirdPromise.promisifyAll({
     queryAndPopulateItemsById: function(foundRows, model, next) {
         let ids = _.pluck(foundRows, 'id');
         switch(model) {
-            case DataTypeClasses.SUBJECT:
-                console.log("calling Subject.find");
+        case DataTypeClasses.SUBJECT:
+            console.log("calling Subject.find");
             Subject.find({id: ids}).exec(next);
             break;
-            case DataTypeClasses.SAMPLE:
-                console.log("calling Sample.find");
+        case DataTypeClasses.SAMPLE:
+            console.log("calling Sample.find");
             Sample.find({id: ids}).exec(next);
             break;
-            default:
-                console.log("calling Data.find");
+        default:
+            console.log("calling Data.find");
             Data.find({id: ids}).exec(next);
         }
     },
@@ -344,8 +345,91 @@ let DataService = BluebirdPromise.promisifyAll({
                 });
             }, {concurrency: 1});
         });
-    }
+    },
 
+    /**
+     * @name filterOutSensitiveInfo
+     * @description Filter data
+     * @param {Array} - an array of data
+     * @param {dataTypes} - an array of dataType
+     * @return {Promise} -  a Bluebird Promise with Data Array filtered
+     */
+    filterOutSensitiveInfo: function(data, canAccessSensitiveData) {
+
+        let arrData = [], idDataType, typeIds, flattenedFields,
+            forbiddenField, forbiddenFields;
+        _.isArray(data) ? arrData=data : arrData[0] = data;
+
+        //retrive all unique idDatatypes from data Array
+        typeof(arrData[0]['type']) === 'object' ?
+          typeIds = _.uniq(_.map(_.uniq(_.map(arrData, 'type')), 'id')) :
+          typeIds = _.uniq(_.map(arrData, 'type'));
+
+        //retrieve datatypes of datum
+        return DataType.find({select: ['schema','id'], where: {id: typeIds}}).then(dataTypes => {
+
+            //if canAccessSensitiveData is true or metadata is Empty skip the function and return data
+            if(!canAccessSensitiveData || (!_.isEmpty(arrData[0].metadata) && !arrData[1])){
+                _.each(dataTypes, (datatype) => {
+
+                  //create an array with metadata fields sensitive for each dataType
+                    idDataType = datatype.id;
+                    flattenedFields = DataTypeService.getFlattenedFields(datatype, false);
+                    forbiddenField = _.filter(flattenedFields, (field) => {return field.sensitive;});
+                    forbiddenFields[idDataType] = _.map(forbiddenField, (field) => {return field.formattedName;});
+                });
+
+                for (let datum of arrData) {
+                    _.each(forbiddenFields[datum.type], (forbField) => {
+                        if(datum.metadata[forbField]){
+                            console.log("Deleted field: " + datum.metadata[forbField]);
+                            delete datum.metadata[forbField];
+                        }
+                    });
+                }
+                return arrData.length > 1 ? arrData : arrData[0];
+            }
+            else {
+                return data;
+            }
+        })
+        .catch((err) => {
+            sails.log(err);
+            return err;
+        });
+    },
+
+    /**
+     * @name hasDataSensitive
+     * @description Return a boolean true if data has sensitive attributes, then false
+     * @param {integer, string} - identifier of data, model Name of data
+     * @return {Promise} -  a Bluebird Promise with an object containing boolean value of investigation and data
+     */
+    hasDataSensitive: function(id, modelName) {
+
+        let hasDataSensitive;
+
+        return global[modelName].findOne({id : id}).populateAll().then((datum) => {
+            //if (!datum){ return BluebirdPromise.resolve(undefined);}
+            console.log("DataService hasDataSensitive - called for model: "+  datum['type'].model);
+            //retrieve metadata fields sensitive
+            let flattenedFields = DataTypeService.getFlattenedFields(datum['type'], false);
+            let forbiddenFields = _.filter(flattenedFields, (field) => { return field.sensitive; });
+
+            forbiddenFields.length > 0 ? hasDataSensitive = true : hasDataSensitive = false;
+
+            let json = {
+                hasDataSensitive : hasDataSensitive,
+                data : datum
+            };
+            return json;
+        })
+        .catch((err) => {
+            sails.log(err);
+            return err;
+        });
+
+    }
 });
 
 module.exports = DataService;

@@ -250,4 +250,86 @@ describe('DataService', function() {
 
     });
 
+    describe('#hasDataSensitive', function() {
+
+        it("should return an object with true result of investigation", function() {
+
+            var data = _.cloneDeep(fixtures.data[0]);
+
+            console.log("Data: " + JSON.stringify(data));
+
+            var result = DataService.hasDataSensitive(data.id, "Data");
+
+            expect(result).to.eventually.have.deep.property('hasDataSensitive', true);
+        });
+
+        it("should return an object with false result of investigation", function() {
+
+            var data = _.cloneDeep(fixtures.subject[1]);
+
+            console.log("Data: " + JSON.stringify(data));
+
+            var result = DataService.hasDataSensitive(data.id, "Subject");
+
+            expect(result).to.eventually.have.deep.property('hasDataSensitive', false);
+        });
+    });
+
+    describe('#filterOutSensitiveInfo', function() {
+
+
+        it("should return the object array without sensitive fields defined on schema objects", function() {
+            var data = [];
+            data = _.cloneDeep(fixtures.data);
+            data[2] ={
+                "type": 5,
+                "metadata": {
+                    "name":{"value":"Prova","group":"Generic Info"},
+                    "gene_id":{"value":"34553","group":"Generic Info"},
+                    "deleteriousness":{"value":1,"group":"Generic Info"},
+                    "quality_prediction":{"value":"Benign","group":"Generic Info"}
+                },
+                "id": 2
+            };
+
+
+            console.log("Data Star METADATA: " + JSON.stringify(data));
+
+            var result = DataService.filterOutSensitiveInfo(data, false);
+
+            delete data[0].metadata['name'];
+            delete data[1].metadata['gene_id'];
+            delete data[1].metadata['quality_prediction'];
+            var expectedData = data;
+
+            console.log("EXPECTED Metadata Star: " + JSON.stringify(expectedData));
+
+            expect(result).to.eventually.equal(expectedData);
+
+        });
+
+        it("should return the same objects array in input", function() {
+            var data = [];
+            data = _.cloneDeep(fixtures.data);
+            data[2] ={
+                "type": 5,
+                "metadata": {
+                    "name":{"value":"Prova","group":"Generic Info"},
+                    "gene_id":{"value":"34553","group":"Generic Info"},
+                    "deleteriousness":{"value":1,"group":"Generic Info"},
+                    "quality_prediction":{"value":"Benign","group":"Generic Info"}
+                },
+                "id": 2
+            };
+
+            console.log("Data Star METADATA: " + JSON.stringify(data));
+
+
+            var result = DataService.filterOutSensitiveInfo(data, true);
+
+            expect(result).to.eventually.equal(data);
+
+        });
+    });
+
 });

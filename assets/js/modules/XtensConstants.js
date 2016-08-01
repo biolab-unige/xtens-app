@@ -29,7 +29,7 @@
         BOOLEAN: 'Boolean',
         DATE: 'Date'
     };
-    
+
     XtensConstants.SexOptions = {
         MALE: 'M',
         FEMALE: 'F',
@@ -42,17 +42,17 @@
      */
     XtensConstants.GroupPrivilegeLevels = {
         WHEEL: 'wheel', // superusers
-        MANAGER: 'manager', // can edit DataTypes/Biobanks and so on
-        STANDARD: 'standard' 
+        ADMIN: 'admin', // can edit DataTypes/Biobanks and so on
+        STANDARD: 'standard'
     };
 
     XtensConstants.DataTypePrivilegeLevels = {
         VIEW_OVERVIEW: 'view_overview', // level 0
         VIEW_DETAILS: 'view_details', // level 1
         DOWNLOAD: 'download', // level 2
-        EDIT: 'edit', // level 3
+        EDIT: 'edit' // level 3
     };
 
-    XtensConstants.useFormattedMetadataFieldNames = true; 
+    XtensConstants.useFormattedMetadataFieldNames = true;
 
 } (xtens, xtens.module("xtensconstants")));

@@ -7,7 +7,7 @@ var constants = sails.config.xtens.constants;
 var Operator = {
     tableName: 'operator',
     schema:true,
-  
+
     attributes: {
 
         firstName: {
@@ -46,7 +46,7 @@ var Operator = {
             required: true,
             max: 64
         },
-        
+
         passports: {
             collection: 'passport',
             via: 'user'
@@ -57,14 +57,14 @@ var Operator = {
             columnName: 'created_at'
         },
 
-        updatedAt: { 
+        updatedAt: {
             type:'datetime',
             columnName: 'updated_at'
         },
         groups: {
             collection:'group',
             via:'members'
-        }, 
+        },
 
         // Override toJSON instance method
         // to remove password value
@@ -73,7 +73,7 @@ var Operator = {
             delete obj.password;
             return obj;
         },
-        
+
         /**
          * @method
          * @name formatForTokenPayload
@@ -84,7 +84,7 @@ var Operator = {
          *                      2) login[string]
          *                      3) groups [array]
          *                      4) isWheel [boolean]
-         *                      5) isManager [boolean]
+         *                      5) isAdmin [boolean]
          *                      6) canAccessPersonalData [boolean]
          *                      7) canAccessSensitiveData [boolean]
          */
@@ -92,16 +92,16 @@ var Operator = {
             var operator = _.pick(this.toObject(), ['id', 'groups']);
             var privilegesArray = _.pluck(operator.groups, 'privilegeLevel');
             operator.isWheel = privilegesArray.indexOf(constants.GroupPrivilegeLevels.WHEEL) > -1;
-            operator.isManager = operator.isWheel || privilegesArray.indexOf(constants.GroupPrivilegeLevels.MANAGER) > -1;
+            operator.isAdmin = operator.isWheel || privilegesArray.indexOf(constants.GroupPrivilegeLevels.ADMIN) > -1;
             operator.canAccessPersonalData = _.pluck(operator.groups, 'canAccessPersonalData').indexOf(true) > -1;
             operator.canAccessSensitiveData = _.pluck(operator.groups, 'canAccessSensitiveData').indexOf(true) > -1;
             delete operator.groups;
             return operator;
         }
 
-        
+
     }
-    
+
     /*,
     // Lifecycle Callbacks
     beforeCreate: function(values, next) {
