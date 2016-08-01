@@ -60,7 +60,7 @@
             if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege) ){ return {}; }
             else if( dataTypePrivilege.privilegeLevel === VIEW_OVERVIEW) {
                 for (var datum of data) { datum['metadata'] = {}; }
-                return {data: data, dataType: dataType };
+                return data;
             }
                 //populate type attributes of data and filter Out Sensitive Info
             for (datum of data) { datum['type'] = dataType.id; }
@@ -69,10 +69,10 @@
         .then(results => {
 
             if(results && !_.isArray(results)){
-                data[0]=results;
+                data[0] = results;
             }
             else if (results){
-                data=results;
+                data = results;
             }
             res.json({data: data, dataType: dataType });
 
