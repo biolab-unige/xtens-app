@@ -190,7 +190,7 @@ describe('DataController', function() {
                 .expect(403)
                 .end(function(err, res) {
                     console.log("Res edit: "+JSON.stringify(res.body));
-                    expect(res.body.code).to.be.equal("Forbidden");
+                    expect(res.body.error.message).to.be.equal("Authenticated user is not allowed to edit sensitive data");
                     if (err) {
                         sails.log.console.error(err);
                         done(err);
