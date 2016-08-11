@@ -197,6 +197,7 @@ let MainController = {
 
         ps.stderr.on('data', (data) => {
             console.log(`stderr: ${data}`);
+            return co.error(data);
         });
 
         ps.on('exit', (code) => {
