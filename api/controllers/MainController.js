@@ -24,6 +24,7 @@ const EDIT = xtensConf.constants.DataTypePrivilegeLevels.EDIT;
 // ES6 Map for customised data management
 let customisedDataMap = new Map();
 customisedDataMap.set('CGH', '../migrate-utils/createCGH.js');
+customisedDataMap.set('CBINFO', '../migrate-utils/updateCBInfo.js');
 
 let MainController = {
 
@@ -189,25 +190,28 @@ let MainController = {
         let co = new ControllerOut(res);
         let key = req.param('dataType');
         console.log("MainController.executeCustomDataManagement - executing customised function");
-        require("child_process").execFile(customisedDataMap.get(key), function(err, stdout, stderr) {
-            console.log('stdout: ' + stdout);
-            console.log('stderr: ' + stderr);
-            if (err) {
-                return co.error(err);
-            }
-            else {
-                let cmd = 'rm ' + DEFAULT_LOCAL_STORAGE + '/tmp/*';
-                console.log("MainController.executeCustomDataManagement - cmd: " + cmd);
-                require("child_process").exec(cmd, function(err, stdout, stderr) {
-                    console.log('stdout: ' + stdout);
-                    console.log('stderr: ' + stderr);
-                    if (err) {
-                        return co.error(err);
-                    }
-                    console.log("MainController.executeCustomDataManagement - all went fine!");
-                    return res.ok();
-                });
-            }
+        const ps = require("child_process").spawn(customisedDataMap.get(key), {});
+        ps.stdout.on('data', (data) => {
+            console.log(`stdout: ${data}`);
+        });
+
+        ps.stderr.on('data', (data) => {
+            console.log(`stderr: ${data}`);
+        });
+
+        ps.on('exit', (code) => {
+            console.log(`child process exited with code ${code}`);
+
+            let cmd = 'rm ' + DEFAULT_LOCAL_STORAGE + '/tmp/*';
+            require("child_process").exec(cmd, function(err, stdout, stderr) {
+                console.log('stdout: ' + stdout);
+                console.log('stderr: ' + stderr);
+                if (err) {
+                    return co.error(err);
+                }
+                console.log("MainController.executeCustomDataManagement - all went fine!");
+                return res.ok();
+            });
         });
 
     }
