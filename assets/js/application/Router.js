@@ -36,15 +36,15 @@
         if(queryString){
             _.each(
                 _.map(decodeURI(queryString).split(/&/g),function(el,i){
-                var aux = el.split('='), o = {};
-                if(aux.length >= 1){
-                    var val = null;
-                    if(aux.length == 2)
-                        val = aux[1];
-                    o[aux[0]] = val;
-                }
-                return o;
-            }),
+                    var aux = el.split('='), o = {};
+                    if(aux.length >= 1){
+                        var val = null;
+                        if(aux.length == 2)
+                            val = aux[1];
+                        o[aux[0]] = val;
+                    }
+                    return o;
+                }),
             function(o){
                 _.extend(params,o);
             }
@@ -289,19 +289,27 @@
         dataList: function(queryString) {
             var queryParams = parseQueryString(queryString);
             var dataTypes = new DataType.List();
+            var privileges = new DataTypePrivileges.List();
             var data = new Data.List();
+            var operator = new Operator.List();
             var that = this;
             var $dataTypesDeferred = dataTypes.fetch({
                 data: $.param({ populate: ['children'] })
             });
+            var $operatorDeferred = operator.fetch({
+                data: $.param({login: xtens.session.get("login"), populate: ['groups']})
+            });
+            var $privilegesDeferred = privileges.fetch();
             var $dataDeferred = data.fetch({
                 data: $.param(_.assign(_.omit(queryParams, ['parentDataType', 'parentSubjectCode']), { // omit "parentSubjectCode" as param in server-side GET request
                     populate: ['type'],
-                    limit: DEFAULT_LIMIT,
+                    limit: DEFAULT_LIMIT
                 }))
             });
-            $.when($dataTypesDeferred, $dataDeferred).then(function(dataTypesRes, dataRes) {
+            $.when($dataTypesDeferred, $dataDeferred, $privilegesDeferred, $operatorDeferred).then(function(dataTypesRes, dataRes, privilegesRes, operatorRes) {
                 that.loadView(new Data.Views.List({
+                    operator : new Operator.List(operatorRes && operatorRes[0]),
+                    dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
                     data: new Data.List(dataRes && dataRes[0]),
                     dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
                     params: queryParams
@@ -420,22 +428,22 @@
 
         operatorEdit:function(id) {
 
-          var that = this;
-          var operator = new Operator.Model();
-          if (id) {
-              operator.set('id', id);
-              operator.fetch({
-              success: function(operator) {
-                that.loadView(new Operator.Views.Edit({model: operator}));
-              },
-              error: function(err) {
-                  xtens.error(err);
-              }
-          });
-        }
-        else {
-            this.loadView(new Operator.Views.Edit({model: operator}));
-        }
+            var that = this;
+            var operator = new Operator.Model();
+            if (id) {
+                operator.set('id', id);
+                operator.fetch({
+                    success: function(operator) {
+                        that.loadView(new Operator.Views.Edit({model: operator}));
+                    },
+                    error: function(err) {
+                        xtens.error(err);
+                    }
+                });
+            }
+            else {
+                this.loadView(new Operator.Views.Edit({model: operator}));
+            }
         },
 
         updatePassword:function() {
@@ -443,9 +451,15 @@
         },
 
         subjectList: function() {
+            var privileges = new DataTypePrivileges.List();
+            var operator = new Operator.List();
             var dataTypes = new DataType.List();
             var subjects = new Subject.List();
             var that = this;
+            var $operatorDeferred = operator.fetch({
+                data: $.param({login: xtens.session.get("login"), populate: ['groups']})
+            });
+            var $privilegesDeferred = privileges.fetch();
             var $dataTypesDeferred = dataTypes.fetch({
                 data: $.param({ populate: ['children'] })
             });
@@ -455,8 +469,10 @@
                     limit: DEFAULT_LIMIT
                 })
             });
-            $.when($dataTypesDeferred, $subjectsDeferred).then(function(dataTypesRes, subjectsRes) {
+            $.when($dataTypesDeferred, $subjectsDeferred, $privilegesDeferred, $operatorDeferred).then(function(dataTypesRes, subjectsRes, privilegesRes, operatorRes) {
                 that.loadView(new Subject.Views.List({
+                    operator : new Operator.List(operatorRes && operatorRes[0]),
+                    dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
                     subjects: new Subject.List(subjectsRes && subjectsRes[0]),
                     dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])
                 }));
@@ -528,9 +544,15 @@
          */
         sampleList: function(queryString) {
             var queryParams = parseQueryString(queryString);
+            var privileges = new DataTypePrivileges.List();
+            var operator = new Operator.List();
             var dataTypes = new DataType.List();
             var samples = new Sample.List();
             var that = this;
+            var $operatorDeferred = operator.fetch({
+                data: $.param({login: xtens.session.get("login"), populate: ['groups']})
+            });
+            var $privilegesDeferred = privileges.fetch();
             var $dataTypesDeferred = dataTypes.fetch({
                 data: $.param({populate:['children']})
             });
@@ -540,8 +562,10 @@
                     limit: DEFAULT_LIMIT
                 }))
             });
-            $.when($dataTypesDeferred, $samplesDeferred).then( function(dataTypesRes, samplesRes) {
+            $.when($dataTypesDeferred, $samplesDeferred, $privilegesDeferred, $operatorDeferred).then( function(dataTypesRes, samplesRes, privilegesRes, operatorRes) {
                 that.loadView(new Sample.Views.List({
+                    operator : new Operator.List(operatorRes && operatorRes[0]),
+                    dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
                     samples: new Sample.List(samplesRes && samplesRes[0]),
                     dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
                     params: queryParams

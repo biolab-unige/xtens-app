@@ -30,7 +30,11 @@
                         <td><%= subject.get("sex") %></td>
                         <td><%= subject.get("projects").map(function(project) {return (" " + project.name); }).toString().trim() %></td>
                         <td>
+                          <% var privilege = dataTypePrivileges.find(function(model) {
+                            return model.get('dataType') === subject.get("type").id; });
+                           if(privilege.get("privilegeLevel") === "edit" ){ %>
                             <a class="btn" href="<%= subject.get("editLink") %>" ><%=__("edit") %></a>
+                            <%} %>
                             <% if (subject.get("newSampleLink") && subject.get("newSampleLink").length) {%>
                                 <a class="btn" href="<%= subject.get("newSampleLink") %>"><%=__("new-sample") %></a>
                             <%} %>

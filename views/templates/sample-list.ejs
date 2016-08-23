@@ -1,4 +1,4 @@
-<h2><%= __("samples") %></h2> 
+<h2><%= __("samples") %></h2>
 
 <div id="content">
     <div class="row">
@@ -18,8 +18,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                    <% _.each(samples, function(sample) { 
-                    var metadata = sample.get("metadata") %> 
+                    <% _.each(samples, function(sample) {
+                    var metadata = sample.get("metadata") %>
                     <tr>
                         <td><%= sample.get("biobank") && sample.get("biobank").acronym %></td>
                         <td><%= metadata.arrival_code && metadata.arrival_code.value %></td>
@@ -29,16 +29,20 @@
                         <td><%= metadata.pathology &&  metadata.pathology.value %></td>
                         <td><%= metadata.sample_codification && metadata.sample_codification.value %></td>
                         <td>
+                          <% var privilege = dataTypePrivileges.find(function(model) {
+                            return model.get('dataType') === sample.get("type").id; });
+                           if(privilege.get("privilegeLevel") === "edit" ){ %>
                             <a class="btn" href="<%= sample.get("editLink") %>"><%=__("edit") %></a>
+                            <%} %>
                             <% if (sample.get("newDerivativeLink") && sample.get("newDerivativeLink").length > 0) {%>
                             <a class="btn" href="<%= sample.get("newDerivativeLink") %>"><%=__("new-derivative-sample") %></a>
                             <%} %>
                             <% if (sample.get("newDataLink") && sample.get("newDataLink").length > 0) {%>
                             <a class="btn" href="<%= sample.get("newDataLink") %>"><%= __("new-data") %></a>
-                            <%} %>   
+                            <%} %>
                         </td>
                     </tr>
-                    <% }) %> 
+                    <% }) %>
                     </tbody>
                 </table>
             </div>

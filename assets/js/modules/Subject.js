@@ -212,6 +212,8 @@
 
         initialize: function(options) {
             $("#main").html(this.el);
+            var groupId = options.operator.models[0].get("groups")[0].id;
+            this.dataTypePrivileges = options.dataTypePrivileges.where({group : groupId});
             this.dataTypes = options.dataTypes;
             this.subjects = options.subjects;
             this.template = JST["views/templates/subject-list.ejs"];
@@ -221,8 +223,10 @@
 
         addLinksToModels: function() {
             _.each(this.subjects.models, function(subject) {
+                var privilege = _.find(this.dataTypePrivileges, function(model){ return model.get('dataType') === subject.get("type").id;});
+                if(privilege.get('privilegeLevel') === "edit" ){
+                    subject.set("editLink", "#/subject/edit/" + subject.id);}
                 var type = this.dataTypes.get(subject.get("type").id);
-                subject.set("editLink", "#/subjects/edit/" + subject.id);
                 if (type.get("children") && type.get("children").length > 0) {
                     var sampleTypeChildren = _.where(type.get("children"), {"model": Classes.SAMPLE});
                     if (sampleTypeChildren.length) {
@@ -238,7 +242,7 @@
         },
 
         render: function() {
-            this.$el.html(this.template({__: i18n, subjects: this.subjects.models}));
+            this.$el.html(this.template({__: i18n, subjects: this.subjects.models, dataTypePrivileges: this.dataTypePrivileges}));
             var table = this.$('.table').DataTable();
             return this;
         }

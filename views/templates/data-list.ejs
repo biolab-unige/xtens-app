@@ -40,11 +40,17 @@
                         -->
                         <td><%= data.get("notes") %></td>
                         <td>
+                          <% var privilege = dataTypePrivileges.find(function(model) {
+                            return model.get('dataType') === data.get("type").id; });
+                           if(privilege.get("privilegeLevel") !== "view_overview" ){ %>
                             <a class="btn" href="<%= data.get("detailsLink") %>"><%=__("data-details") %>
+                          <%} %>
+                          <% if(privilege.get("privilegeLevel") === "edit" ){ %>
                             <a class="btn" href="<%= data.get("editLink") %>"><%=__("edit") %></a>
-                            <% if (data.get("newDataLink") && data.get("newDataLink").length > 0) {%>
-                            <a class="btn" href="<%= data.get("newDataLink") %>"><%=__("new-data") %></a>
                             <%} %>
+                            <% if (data.get("newDataLink") && data.get("newDataLink").length > 0) { %>
+                            <a class="btn" href="<%= data.get("newDataLink") %>"><%=__("new-data") %></a>
+                            <%}%>
                         </td>
                     </tr>
                     <% }) %>
