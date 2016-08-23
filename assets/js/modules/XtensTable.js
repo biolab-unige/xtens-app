@@ -45,8 +45,9 @@ function renderDatatablesDate(data, type) {
             this.dataType = new DataTypeModel(options.dataType);
             console.log(options.data);
             this.data = options.data;
+            this.dataTypePrivilege = options.dataTypePrivilege;
             this.childrenViews = [];
-            this.prepareDataForRenderingJSON();
+            this.prepareDataForRenderingJSON(this.dataTypePrivilege);
             // this.render();
         },
 
@@ -119,17 +120,20 @@ function renderDatatablesDate(data, type) {
          * @name prepareDataForRenderingJSON
          * @description Format the data according to the dataType schema and prepare data for visualization through DataTables
          */
-        prepareDataForRenderingJSON: function(headers) {
+        prepareDataForRenderingJSON: function(dataTypePrivilege) {
             /*
             if (!this.dataType) {
                 return; //TODO add alert box
             } */
+            var fileUpload = this.dataType.get("schema").header.fileUpload;
+            var hasDataSensitive = false;
             var fieldsToShow =[];
             var flattenedFields = this.dataType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
             this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), xtens.session.get('canAccessPersonalData'));  // TODO manage permission for personalDetails
             this.numLeft=this.columns.length;
 
             flattenedFields.forEach(function(field) {
+                if (field.sensitive) { hasDataSensitive = true; }
                 if ( !field.sensitive || xtens.session.get('canAccessSensitiveData') ) {
                     fieldsToShow.push(field);
                 }});
@@ -184,7 +188,7 @@ function renderDatatablesDate(data, type) {
             }, this);
 
             // add links
-            this.addLinks();
+            this.addLinks(dataTypePrivilege, hasDataSensitive, fileUpload);
 
             this.tableOpts = {
                 data:           this.data,
@@ -215,7 +219,7 @@ function renderDatatablesDate(data, type) {
             }
             dataType = new DataTypeModel(dataType);
             var fields = dataType.getFlattenedFields(true);
-            var columns = this.insertModelSpecificColumns(dataType.get("model"), xtens.session.get('canAccessPersonalData'));  // TODO manage permission for personalDetails
+            var columns = this.insertModelSpecificColumns(dataType.get("model"), xtens.session.get('canAccessPersonalData'));
 
             var i, j, row = "<thead><tr>", value, unit;
 
@@ -299,12 +303,17 @@ function renderDatatablesDate(data, type) {
          * @name addLinks
          * @description add the proper links to each row in the table given the dataType Model
          */
-        addLinks: function() {
+        addLinks: function(dataTypePrivilege, hasDataSensitive, fileUpload) {
 
             var btnGroupTemplate = JST["views/templates/xtenstable-buttongroup.ejs"];
 
             _.each(this.data, function(datum) {
-                datum._links = btnGroupTemplate({__:i18n});
+                datum._links = btnGroupTemplate({
+                    __:i18n,
+                    privilegeLevel : dataTypePrivilege.privilegeLevel,
+                    hasDataSensitive: hasDataSensitive,
+                    fileUpload: fileUpload
+                });
             });
 
             this.columns.push({

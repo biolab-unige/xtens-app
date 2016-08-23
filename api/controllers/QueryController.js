@@ -33,12 +33,12 @@
     /**
      * @method
      * @name dataSearch
-     * @return {Object} - an object containing an array of found Data matching the criteria, and the DataType of the found Data
+     * @return {Object} - an object containing an array of found Data matching the criteria, the DataType of the found Data and the DataTypePrivilegeLevel
      * @description perfor an advanced and nested query on the Data stored within the repository
      */
      dataSearch: function(req, res) {
          var queryArgs = req.param('queryArgs');
-         var data, dataType;
+         var data, dataType, dataPrivilege;
          var idDataType = queryArgs.dataType;
          const operator = TokenService.getToken(req);
 
@@ -55,6 +55,7 @@
         })
         .then(dataTypePrivilege => {
             if (_.isEmpty(data)) { return; }
+            dataPrivilege = dataTypePrivilege;
             //if operator has not privilege on dataType return empty data
             //else if operator has not at least Details privilege level delete metadata object
             if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege) ){ return {}; }
@@ -74,7 +75,7 @@
             else if (results){
                 data = results;
             }
-            res.json({data: data, dataType: dataType });
+            res.json({data: data, dataType: dataType, dataTypePrivilege : dataPrivilege });
 
         })
         .catch(error => {

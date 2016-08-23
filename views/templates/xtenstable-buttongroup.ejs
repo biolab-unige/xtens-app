@@ -1,7 +1,39 @@
 <div class="btn-group" role="group" aria-label="...">
+  <% switch(privilegeLevel){
+     case "view_overview":%>
+     <button type="button" class="btn btn-xs btn-default xtenstable-derivedsamples"><%= __('derived-samples') %></button>
+     <button type="button" class="btn btn-xs btn-default xtenstable-deriveddata"><%= __('derived-data') %></button>
+  <% break;
+
+     case "view_details":%>
     <button type="button" class="btn btn-xs btn-default xtenstable-details"><%= __('details') %></button>
-    <button type="button" class="btn btn-xs btn-default xtenstable-edit"><%= __('edit') %></button>
-    <button type="button" class="btn btn-xs btn-default xtenstable-files"><%= __('files') %></button>
     <button type="button" class="btn btn-xs btn-default xtenstable-derivedsamples"><%= __('derived-samples') %></button>
     <button type="button" class="btn btn-xs btn-default xtenstable-deriveddata"><%= __('derived-data') %></button>
+  <% break;
+
+     case "download":%>
+    <button type="button" class="btn btn-xs btn-default xtenstable-details"><%= __('details') %></button>
+    <% if(fileUpload){ %>
+      <button type="button" class="btn btn-xs btn-default xtenstable-files"><%= __('files') %></button>
+    <%}%>
+    <button type="button" class="btn btn-xs btn-default xtenstable-derivedsamples"><%= __('derived-samples') %></button>
+    <button type="button" class="btn btn-xs btn-default xtenstable-deriveddata"><%= __('derived-data') %></button>
+  <% break;
+
+  case "edit":%>
+    <button type="button" class="btn btn-xs btn-default xtenstable-details"><%= __('details') %></button>
+    <% if(fileUpload){ %>
+    <button type="button" class="btn btn-xs btn-default xtenstable-files"><%= __('files') %></button>
+    <%}%>
+    <% if(xtens.session.get("canAccessSensitiveData") || !hasDataSensitive){ %>
+      <button type="button" class="btn btn-xs btn-default xtenstable-edit"><%= __('edit') %></button>
+      <%}%>
+    <button type="button" class="btn btn-xs btn-default xtenstable-derivedsamples"><%= __('derived-samples') %></button>
+    <button type="button" class="btn btn-xs btn-default xtenstable-deriveddata"><%= __('derived-data') %></button>
+  <% break;
+  
+     default: %>
+     <button type="button" class="btn btn-xs btn-default xtenstable-derivedsamples"><%= __('derived-samples') %></button>
+     <button type="button" class="btn btn-xs btn-default xtenstable-deriveddata"><%= __('derived-data') %></button>
+  <%}%>
 </div>
