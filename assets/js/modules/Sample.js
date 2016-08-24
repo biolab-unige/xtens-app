@@ -324,10 +324,9 @@
 
         initialize: function(options) {
             $("#main").html(this.el);
-            var groupId = options.operator.models[0].get("groups")[0].id;
-            this.dataTypePrivileges = options.dataTypePrivileges.where({group : groupId});
             this.dataTypes = options.dataTypes;
             this.samples = options.samples;
+            this.dataTypePrivileges = options.dataTypePrivileges.models;
             this.template = JST["views/templates/sample-list.ejs"];
             this.addLinksToModels();
             this.donor = options.params && options.params.donor;

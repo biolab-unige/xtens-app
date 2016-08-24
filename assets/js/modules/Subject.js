@@ -212,10 +212,9 @@
 
         initialize: function(options) {
             $("#main").html(this.el);
-            var groupId = options.operator.models[0].get("groups")[0].id;
-            this.dataTypePrivileges = options.dataTypePrivileges.where({group : groupId});
             this.dataTypes = options.dataTypes;
             this.subjects = options.subjects;
+            this.dataTypePrivileges = options.dataTypePrivileges.models;
             this.template = JST["views/templates/subject-list.ejs"];
             this.addLinksToModels();
             this.render();

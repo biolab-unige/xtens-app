@@ -278,7 +278,7 @@
          * @return {Object} the required subcomponent
          */
         getChild: function(index) {
-            return this.nestedViews[i];
+            return this.nestedViews[index];
         },
 
         /**
@@ -1046,10 +1046,9 @@
          */
         initialize: function(options) {
             $("#main").html(this.el);
-            var groupId = options.operator.models[0].get("groups")[0].id;
-            this.dataTypePrivileges = options.dataTypePrivileges.where({group : groupId});
             this.dataTypes = options.dataTypes;
             this.data = options.data;
+            this.dataTypePrivileges = options.dataTypePrivileges.models;
             this.template = JST["views/templates/data-list.ejs"];
             this.addLinksToModels();
             this.parentDataType = options.params && options.params.parentDataType;

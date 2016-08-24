@@ -47,7 +47,7 @@
         .then(results => {
 
             data = results.rows;
-            return DataType.findOne(idDataType);
+            return DataType.findOne(idDataType).populate('children');
         })
         .then(result => {
             dataType = result;

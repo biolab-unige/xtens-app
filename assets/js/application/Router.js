@@ -293,31 +293,39 @@
             var data = new Data.List();
             var operator = new Operator.List();
             var that = this;
-            var $dataTypesDeferred = dataTypes.fetch({
-                data: $.param({ populate: ['children'] })
-            });
+
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
-            var $privilegesDeferred = privileges.fetch();
-            var $dataDeferred = data.fetch({
-                data: $.param(_.assign(_.omit(queryParams, ['parentDataType', 'parentSubjectCode']), { // omit "parentSubjectCode" as param in server-side GET request
-                    populate: ['type'],
-                    limit: DEFAULT_LIMIT
-                }))
-            });
-            $.when($dataTypesDeferred, $dataDeferred, $privilegesDeferred, $operatorDeferred).then(function(dataTypesRes, dataRes, privilegesRes, operatorRes) {
-                that.loadView(new Data.Views.List({
-                    operator : new Operator.List(operatorRes && operatorRes[0]),
-                    dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
-                    data: new Data.List(dataRes && dataRes[0]),
-                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
-                    params: queryParams
-                }));
-            }, function(jqxhr) {
+            $.when($operatorDeferred).then(function(operatorRes) {
+                var groupId = operatorRes && operatorRes[0].groups[0].id;
+                var $dataTypesDeferred = dataTypes.fetch({
+                    data: $.param({ populate: ['children'] })
+                });
+                var $privilegesDeferred = privileges.fetch({
+                    data: $.param({group: groupId})
+                });
+                var $dataDeferred = data.fetch({
+                    data: $.param(_.assign(_.omit(queryParams, ['parentDataType', 'parentSubjectCode']), { // omit "parentSubjectCode" as param in server-side GET request
+                        populate: ['type'],
+                        limit: DEFAULT_LIMIT
+                    }))
+                });
+                $.when($dataTypesDeferred, $dataDeferred, $privilegesDeferred).then(function(dataTypesRes, dataRes, privilegesRes) {
+                    that.loadView(new Data.Views.List({
+                        dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
+                        data: new Data.List(dataRes && dataRes[0]),
+                        dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
+                        params: queryParams
+                    }));
+                }, function(jqxhr) {
+                    xtens.error(jqxhr);
+                });
+            // this.loadView(new Data.Views.List());
+            }
+          , function(jqxhr) {
                 xtens.error(jqxhr);
             });
-            // this.loadView(new Data.Views.List());
         },
 
         /**
@@ -459,23 +467,29 @@
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
-            var $privilegesDeferred = privileges.fetch();
-            var $dataTypesDeferred = dataTypes.fetch({
-                data: $.param({ populate: ['children'] })
-            });
-            var $subjectsDeferred = subjects.fetch({
-                data: $.param({
-                    populate: ['type', 'projects'],
-                    limit: DEFAULT_LIMIT
-                })
-            });
-            $.when($dataTypesDeferred, $subjectsDeferred, $privilegesDeferred, $operatorDeferred).then(function(dataTypesRes, subjectsRes, privilegesRes, operatorRes) {
-                that.loadView(new Subject.Views.List({
-                    operator : new Operator.List(operatorRes && operatorRes[0]),
-                    dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
-                    subjects: new Subject.List(subjectsRes && subjectsRes[0]),
-                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])
-                }));
+            $.when($operatorDeferred).then(function(operatorRes) {
+                var groupId = operatorRes && operatorRes[0].groups[0].id;
+                var $privilegesDeferred = privileges.fetch({
+                    data: $.param({group: groupId})
+                });
+                var $dataTypesDeferred = dataTypes.fetch({
+                    data: $.param({ populate: ['children'] })
+                });
+                var $subjectsDeferred = subjects.fetch({
+                    data: $.param({
+                        populate: ['type', 'projects'],
+                        limit: DEFAULT_LIMIT
+                    })
+                });
+                $.when($dataTypesDeferred, $subjectsDeferred, $privilegesDeferred).then(function(dataTypesRes, subjectsRes, privilegesRes) {
+                    that.loadView(new Subject.Views.List({
+                        dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
+                        subjects: new Subject.List(subjectsRes && subjectsRes[0]),
+                        dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])
+                    }));
+                }, function(jqxhr) {
+                    xtens.error(jqxhr);
+                });
             }, function(jqxhr) {
                 xtens.error(jqxhr);
             });
@@ -552,24 +566,30 @@
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
-            var $privilegesDeferred = privileges.fetch();
-            var $dataTypesDeferred = dataTypes.fetch({
-                data: $.param({populate:['children']})
-            });
-            var $samplesDeferred = samples.fetch({
-                data: $.param(_.assign(_.omit(queryParams, ['parentDataType','donorCode']), {      // omit "donorCode" as param in server-side GET request
-                    populate: ['type', 'biobank', 'donor'],
-                    limit: DEFAULT_LIMIT
-                }))
-            });
-            $.when($dataTypesDeferred, $samplesDeferred, $privilegesDeferred, $operatorDeferred).then( function(dataTypesRes, samplesRes, privilegesRes, operatorRes) {
-                that.loadView(new Sample.Views.List({
-                    operator : new Operator.List(operatorRes && operatorRes[0]),
-                    dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
-                    samples: new Sample.List(samplesRes && samplesRes[0]),
-                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
-                    params: queryParams
-                }));
+            $.when($operatorDeferred).then( function(operatorRes) {
+                var groupId = operatorRes && operatorRes[0].groups[0].id;
+                var $privilegesDeferred = privileges.fetch({
+                    data: $.param({group: groupId})
+                });
+                var $dataTypesDeferred = dataTypes.fetch({
+                    data: $.param({populate:['children']})
+                });
+                var $samplesDeferred = samples.fetch({
+                    data: $.param(_.assign(_.omit(queryParams, ['parentDataType','donorCode']), {      // omit "donorCode" as param in server-side GET request
+                        populate: ['type', 'biobank', 'donor'],
+                        limit: DEFAULT_LIMIT
+                    }))
+                });
+                $.when($dataTypesDeferred, $samplesDeferred, $privilegesDeferred).then( function(dataTypesRes, samplesRes, privilegesRes) {
+                    that.loadView(new Sample.Views.List({
+                        dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
+                        samples: new Sample.List(samplesRes && samplesRes[0]),
+                        dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
+                        params: queryParams
+                    }));
+                }, function(jqxhr) {
+                    xtens.error(jqxhr);
+                });
             }, function(jqxhr) {
                 xtens.error(jqxhr);
             });

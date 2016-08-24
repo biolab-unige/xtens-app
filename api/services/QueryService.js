@@ -65,7 +65,7 @@ let QueryService = {
      * mutuated by: https://github.com/balderdashy/sails/blob/master/lib/hooks/blueprints/actionUtil.js
      */
     parseLimit: function(req) {
-        let DEFAULT_LIMIT = sails.config.blueprints.defaultLimit || 100;
+        let DEFAULT_LIMIT = sails.config.blueprints.defaultLimit || 30;
         let limit = req.param('limit') || DEFAULT_LIMIT;
         if (limit) { limit = +limit; }
         return limit;
@@ -98,24 +98,24 @@ let QueryService = {
      * @name
      * @param {Request} req
      */
-     parseSelect: function(req) {
-         let select = req.param('select');
-         try {
-             select = JSON.parse(select);
-             if (_.isEmpty(select)) {
-                 return null;
-             }
-             select = _.isArray(select) ? select : null;
-             console.log(select);
-             return {
-                 'select': select
-             };
-         }
+    parseSelect: function(req) {
+        let select = req.param('select');
+        try {
+            select = JSON.parse(select);
+            if (_.isEmpty(select)) {
+                return null;
+            }
+            select = _.isArray(select) ? select : null;
+            console.log(select);
+            return {
+                'select': select
+            };
+        }
          catch(err) {
              console.log(err.message);
              return null;
          }
-     },
+    },
 
     dataSearch: function(queryParams) {
         let queryBuilder = sails.config.xtens.queryBuilder;
@@ -151,7 +151,7 @@ let QueryService = {
      * @return {Query}
      */
     populateRequest: function(query, req, options) {
-        let DEFAULT_POPULATE_LIMIT = req._sails.config.blueprints.defaultLimit || 100;
+        let DEFAULT_POPULATE_LIMIT = req._sails.config.blueprints.defaultLimit || 30;
         let _options = req.options;
         let aliasFilter = req.param('populate');
         let shouldPopulate = _options.populate;
@@ -218,14 +218,14 @@ let QueryService = {
      * @return {Query}
      */
     populateQuery: function(query, associations, sails) {
-        let DEFAULT_POPULATE_LIMIT = (sails && sails.config.blueprints.defaultLimit) || 100;
+        let DEFAULT_POPULATE_LIMIT = (sails && sails.config.blueprints.defaultLimit) || 30;
 
         return _.reduce(associations, (query, association) => {
             return query.populate(association.alias, {
                 limit: association.limit || DEFAULT_POPULATE_LIMIT
             });
         }, query);
-    },
+    }
 
 };
 

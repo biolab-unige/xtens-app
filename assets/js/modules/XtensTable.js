@@ -128,6 +128,15 @@ function renderDatatablesDate(data, type) {
             var fileUpload = this.dataType.get("schema").header.fileUpload;
             var hasDataSensitive = false;
             var fieldsToShow =[];
+            var hasDataChildren = false, hasSampleChildren = false;
+            var dataTypeChildren = _.where(this.dataType.get("children"), {"model": Classes.DATA});
+            var sampleTypeChildren = _.where(this.dataType.get("children"), {"model": Classes.SAMPLE});
+            if (dataTypeChildren.length > 0) {
+                hasDataChildren = true;
+            }
+            if (sampleTypeChildren.length > 0) {
+                hasSampleChildren = true;
+            }
             var flattenedFields = this.dataType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
             this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), xtens.session.get('canAccessPersonalData'));  // TODO manage permission for personalDetails
             this.numLeft=this.columns.length;
@@ -188,7 +197,7 @@ function renderDatatablesDate(data, type) {
             }, this);
 
             // add links
-            this.addLinks(dataTypePrivilege, hasDataSensitive, fileUpload);
+            this.addLinks(dataTypePrivilege, hasDataSensitive, fileUpload, hasDataChildren, hasSampleChildren);
 
             this.tableOpts = {
                 data:           this.data,
@@ -303,7 +312,7 @@ function renderDatatablesDate(data, type) {
          * @name addLinks
          * @description add the proper links to each row in the table given the dataType Model
          */
-        addLinks: function(dataTypePrivilege, hasDataSensitive, fileUpload) {
+        addLinks: function(dataTypePrivilege, hasDataSensitive, fileUpload, hasDataChildren, hasSampleChildren) {
 
             var btnGroupTemplate = JST["views/templates/xtenstable-buttongroup.ejs"];
 
@@ -312,7 +321,9 @@ function renderDatatablesDate(data, type) {
                     __:i18n,
                     privilegeLevel : dataTypePrivilege.privilegeLevel,
                     hasDataSensitive: hasDataSensitive,
-                    fileUpload: fileUpload
+                    fileUpload: fileUpload,
+                    hasDataChildren: hasDataChildren,
+                    hasSampleChildren: hasSampleChildren
                 });
             });
 
