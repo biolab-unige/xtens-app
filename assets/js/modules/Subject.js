@@ -215,6 +215,7 @@
             this.dataTypes = options.dataTypes;
             this.subjects = options.subjects;
             this.dataTypePrivileges = options.dataTypePrivileges.models;
+            this.params = options.params;
             this.template = JST["views/templates/subject-list.ejs"];
             this.addLinksToModels();
             this.render();

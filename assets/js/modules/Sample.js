@@ -329,6 +329,7 @@
             this.dataTypePrivileges = options.dataTypePrivileges.models;
             this.template = JST["views/templates/sample-list.ejs"];
             this.addLinksToModels();
+            this.params = options.params;
             this.donor = options.params && options.params.donor;
             this.donorCode = options.params && options.params.donorCode;
             this.parentSample = options.params && options.params.parentSample;
@@ -372,10 +373,11 @@
             ev.preventDefault();
             var that = this;
             that.samples.fetch({
-                data: $.param({ populate: ['children','type'],
-                limit: 30,
-                skip: that.samples.length
-              }),
+                data: $.param(_.assign(_.omit(that.params, ['parentDataType','donorCode']), {      // omit "donorCode" as param in server-side GET request
+                    populate: ['type', 'biobank', 'donor'],
+                    limit: 30,
+                    skip: that.samples.length
+                })),
                 remove: false,
                 success: function (results) {
                     that.addLinksToModels();

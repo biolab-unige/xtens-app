@@ -1051,6 +1051,7 @@
             this.dataTypePrivileges = options.dataTypePrivileges.models;
             this.template = JST["views/templates/data-list.ejs"];
             this.addLinksToModels();
+            this.params = options.params;
             this.parentDataType = options.params && options.params.parentDataType;
             this.parentSubject = options.params && options.params.parentSubject;
             this.parentSubjectCode = options.params && options.params.parentSubjectCode;
