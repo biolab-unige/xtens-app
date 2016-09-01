@@ -240,10 +240,34 @@
             }, this);
         },
 
-        render: function() {
+        render: function(options) {
             this.$el.html(this.template({__: i18n, subjects: this.subjects.models, dataTypePrivileges: this.dataTypePrivileges}));
-            var table = this.$('.table').DataTable();
+            this.table = this.$('.table').DataTable();
+            if(options && options.pageActive){
+                this.table.page( options.pageActive.page ).draw('page');
+            }
             return this;
+        },
+
+        loadResults: function (ev) {
+            ev.preventDefault();
+            var that = this;
+            that.subjects.fetch({
+                data: $.param({ populate: ['children','type'],
+                limit: 30,
+                skip: that.subjects.length
+              }),
+                remove: false,
+                success: function (results) {
+                    that.addLinksToModels();
+                    var pageActive= that.table.page.info();
+                    that.render({pageActive:pageActive});
+                }
+            });
+        },
+
+        events: {
+            'click #moreData':'loadResults'
         }
     });
 
