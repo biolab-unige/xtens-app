@@ -128,7 +128,7 @@
                     this.navigate('login', {trigger: true});
                     return false;
                 }
-                else if (!this.menuBarView) {
+                else if (!this.menuBarView || this.menuBarView.$el.children().length < 1) {
                     this.menuBarView = new Session.Views.MenuBar();
                 }
             }
@@ -419,8 +419,8 @@
         },
 
         logIn: function() {
-            if (this.menuBarView) {
-                this.menuBarView.remove();
+            if (this.menuBarView && this.menuBarView.$el.children().length > 0) {
+                this.menuBarView.$el.children().remove();
             }
             this.loadView(new Operator.Views.Login());
         },
