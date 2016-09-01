@@ -20,7 +20,7 @@
     var FileManager= xtens.module("filemanager");
     var Session = xtens.module("session");
 
-    var DEFAULT_LIMIT = 100;
+    var DEFAULT_LIMIT = 30;
 
     /**
      * @method

@@ -138,6 +138,7 @@
         /* views/templates/subject-list */
         "subject-list": "Subject List",
         "new-subject": "New Subject",
+        "more-data": "More Data",
         /* views/templates/subject-edit.ejs */
         "subject-manager": "Subject Manager",
         "create-subject": "Create Subject",

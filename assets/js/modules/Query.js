@@ -24,10 +24,10 @@
     function QueryViewFactory() {
         this.createModelQueryView = function(dataTypeModel, specializedFieldsObj) {
             switch(dataTypeModel) {
-                case DataTypeClasses.SUBJECT:
-                    return new Query.Views.Subject({ model: new Query.SubjectModel(specializedFieldsObj) });
-                case DataTypeClasses.SAMPLE:
-                    return new Query.Views.Sample({ model: new Query.SampleModel(specializedFieldsObj) , biobanks: arguments[2]});
+            case DataTypeClasses.SUBJECT:
+                return new Query.Views.Subject({ model: new Query.SubjectModel(specializedFieldsObj) });
+            case DataTypeClasses.SAMPLE:
+                return new Query.Views.Sample({ model: new Query.SampleModel(specializedFieldsObj) , biobanks: arguments[2]});
             }
         };
     }
@@ -679,8 +679,8 @@
             ev.stopPropagation();
             var childView = new Query.Views.Row({fieldList: this.dataTypes.get(this.model.get('dataType')).getFlattenedFields(),
                                                 model: new Query.RowModel()});
-                                                this.$el.append(childView.render().el);
-                                                this.add(childView);
+            this.$el.append(childView.render().el);
+            this.add(childView);
         },
 
         /**
@@ -836,7 +836,7 @@
             this.$addLoopButton = this.$("[name='add-loop']");
             this.$addNestedButton = this.$("[name='add-nested']");
             if (this.model.get("dataType")) {
-               this.createDataTypeRow(this.model.get("dataType"));
+                this.createDataTypeRow(this.model.get("dataType"));
             }
             this.listenTo(this.model, 'change:dataType', this.dataTypeOnChange);
             return this;
@@ -879,7 +879,7 @@
             this.$tableCnt = this.$("#result-table-cnt");
             this.$queryModal = this.$(".query-modal");
             this.$queryNoResultCnt = this.$("#queryNoResultCnt");
-            this.$queryErrorCnt = this.$("#queryErrorCnt")
+            this.$queryErrorCnt = this.$("#queryErrorCnt");
             this.tableView = null;
             this.$("#query-form").append(this.queryView.render({}).el);
             this.listenToOnce(this, 'search', this.sendQuery);
@@ -895,7 +895,7 @@
         },
 
         events : {
-            'click #search': 'sendQuery',
+            'click #search': 'sendQuery'
         },
 
         /**
@@ -908,7 +908,7 @@
             // extend queryArgs with flags to retrieve subject and personal informations
             var queryArgs = _.extend({
                 wantsSubject: true,
-                wantsPersonalInfo: xtens.session.get('canAccessPersonalData'),
+                wantsPersonalInfo: xtens.session.get('canAccessPersonalData')
             }, this.queryView.serialize());
 
             var queryParameters = JSON.stringify({queryArgs: queryArgs});

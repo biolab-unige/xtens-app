@@ -1077,12 +1077,34 @@
 
         render: function(options) {
             this.$el.html(this.template({__: i18n, data: this.data.models, dataTypePrivileges: this.dataTypePrivileges}));
-            var table = this.$('.table').DataTable();
+            this.table = this.$('.table').DataTable();
+            if(options && options.pageActive){
+                this.table.page( options.pageActive.page ).draw('page');
+            }
             return this;
         },
 
+        loadResults: function (ev) {
+            ev.preventDefault();
+            var that = this;
+            that.data.fetch({
+                data:  $.param(_.assign(_.omit(that.params, ['parentDataType', 'parentSubjectCode']), {
+                    populate: ['type'],
+                    limit: 30,
+                    skip: that.data.length
+                })),
+                remove: false,
+                success: function (results) {
+                    that.addLinksToModels();
+                    var pageActive= that.table.page.info();
+                    that.render({pageActive:pageActive});
+                }
+            });
+        },
+
         events: {
-            'click #newData': 'openNewDataView'
+            'click #newData': 'openNewDataView',
+            'click #moreData':'loadResults'
         },
 
         openNewDataView: function(ev) {

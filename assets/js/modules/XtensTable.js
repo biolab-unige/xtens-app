@@ -208,6 +208,7 @@ function renderDatatablesDate(data, type) {
                 scrollCollapse: true,
                 paging:         true,
                 autoWidth:      false,
+                deferRender:    true,
                 columnDefs: [
                   {"className": "dt-center", "targets": "_all"}
                 ],
