@@ -254,7 +254,7 @@
             ev.preventDefault();
             var that = this;
             that.subjects.fetch({
-                data: $.param({ populate: ['children','type'],
+                data: $.param({ populate: ['type', 'projects'],
                 limit: 30,
                 skip: that.subjects.length
               }),
