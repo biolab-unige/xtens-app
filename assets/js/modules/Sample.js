@@ -341,10 +341,9 @@
             _.each(this.samples.models, function(sample) {
                 var privilege = _.find(this.dataTypePrivileges, function(model){ return model.get('dataType') === sample.get("type").id;});
                 if(privilege.get('privilegeLevel') === "edit" ){
-                    sample.set("editLink", "#/sample/edit/" + sample.id);}
+                    sample.set("editLink", "#/samples/edit/" + sample.id);}
                 var typeId = sample.get("type").id;
                 var type = this.dataTypes.get(typeId);
-                sample.set("editLink", "#/samples/edit/" + sample.id);
                 if (type.get("children") && type.get("children").length > 0) {
                     var sampleTypeChildren = _.where(type.get("children"), {"model": Classes.SAMPLE});
                     if (sampleTypeChildren.length > 0) {

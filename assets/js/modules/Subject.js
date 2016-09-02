@@ -225,7 +225,7 @@
             _.each(this.subjects.models, function(subject) {
                 var privilege = _.find(this.dataTypePrivileges, function(model){ return model.get('dataType') === subject.get("type").id;});
                 if(privilege.get('privilegeLevel') === "edit" ){
-                    subject.set("editLink", "#/subject/edit/" + subject.id);}
+                    subject.set("editLink", "#/subjects/edit/" + subject.id);}
                 var type = this.dataTypes.get(subject.get("type").id);
                 if (type.get("children") && type.get("children").length > 0) {
                     var sampleTypeChildren = _.where(type.get("children"), {"model": Classes.SAMPLE});
