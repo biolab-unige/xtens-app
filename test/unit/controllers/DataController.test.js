@@ -162,7 +162,7 @@ describe('DataController', function() {
         it('Should return 200 OK with an object containing all information required', function (done) {
 
             request(sails.hooks.http.app)
-                .get('/data/edit/2')
+                .get('/data/edit?id=2')
                 .set('Authorization', `Bearer ${tokenDataSens}`)
                 .send()
                 .expect(200)
@@ -184,7 +184,7 @@ describe('DataController', function() {
         it('Should return 403 FORBIDDEN without data', function (done) {
 
             request(sails.hooks.http.app)
-                .get('/data/edit/1')
+                .get('/data/edit?id=1')
                 .set('Authorization', `Bearer ${tokenNoDataSens}`)
                 .send()
                 .expect(403)
