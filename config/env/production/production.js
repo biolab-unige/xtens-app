@@ -36,6 +36,8 @@ module.exports = {
   // }
 
     blueprints: {
+        action: false,
+        rest: true,
         shortcuts: false
     }
 

@@ -29,18 +29,18 @@ var GroupController = {
             r.save(function(err){console.log(err);});
         });
     },
-    
+
     /**
      * @method
      * @name addDatatype
-     */    
+     */
     addDatatype: function(req, res) {
         console.log(req.params());
 
         var co = new ControllerOut(res);
         var group = req.param('id_group');
         var dataType = req.param('id_datatype');
-        
+
         global.sails.models.datatypeprivileges.create({
             group: group,
             dataType: dataType,
@@ -51,7 +51,7 @@ var GroupController = {
             return res.ok();
         })
 
-        .catch(function(err) {  
+        .catch(function(err) {
             return co.error(err);
         });
 
@@ -61,11 +61,11 @@ var GroupController = {
             r.save(function(err){console.log(err);});
         }); */
     },
-    
+
     /**
      * @method
      * @name removeDatatype
-     */    
+     */
     removeDatatype: function(req, res) {
 
         var co = new ControllerOut(res);
@@ -74,14 +74,14 @@ var GroupController = {
 
         global.sails.models.datatypeprivileges.destroy({
             group: group,
-            dataType: dataType
+            dataType: datatype
         })
 
         .then(function(result) {
             return res.ok();
         })
 
-        .catch(function(err) {  
+        .catch(function(err) {
             return co.error(err);
         });
 

@@ -131,58 +131,6 @@ let MainController = {
 
     /**
      * @method
-     * @test
-     * TODO remove this one! Only for testing data population
-     */
-    populateDB: function(req,res) {
-        let num = _.isNaN(_.parseInt(req.param("num"))) ? 1 : num;
-        GeneratedDataService.generateAll(1)
-
-        .then(function(result) {
-            console.log("MainController.populateDB: created Patients: " + result);
-            return res.json(result);
-        })
-
-        .catch(function(err) {
-            console.log("MainController.populateDB - error caught: " + err.message);
-            return res.serverError(err.message);
-        });
-    },
-
-    /**
-     * @method
-     * @name migrate
-     * TODO remove this one! Only for testing data population
-     */
-    migrate: function(req, res) {
-        console.log(req.allParams());
-        let subject = _.parseInt(req.param("idSubj"));
-        MigrateService.execute(subject)
-        .then(function() {
-            return res.ok("Done!");
-        })
-        .catch(function(err) {
-            return res.serverError(err.details || err.message);
-        });
-    },
-
-    /**
-     * @method
-     * @name migrateCGH
-     * TODO remove this one
-     */
-    migrateCGH: function(req, res) {
-        MigrateService.migrateCGHAsync()
-        .then(function() {
-            return res.ok();
-        })
-        .catch(function(err) {
-            return res.serverError(err.message);
-        });
-    },
-
-    /**
-     * @method
      * @name excuteCustomDataMangement
      */
     executeCustomDataManagement: function(req, res) {
@@ -216,6 +164,59 @@ let MainController = {
         });
 
     }
+    // /**
+    //  * @method
+    //  * @test
+    //  * TODO remove this one! Only for testing data population
+    //  */
+    // populateDB: function(req,res) {
+    //     let num = _.isNaN(_.parseInt(req.param("num"))) ? 1 : num;
+    //     GeneratedDataService.generateAll(1)
+    //
+    //     .then(function(result) {
+    //         console.log("MainController.populateDB: created Patients: " + result);
+    //         return res.json(result);
+    //     })
+    //
+    //     .catch(function(err) {
+    //         console.log("MainController.populateDB - error caught: " + err.message);
+    //         return res.serverError(err.message);
+    //     });
+    // },
+    //
+    // /**
+    //  * @method
+    //  * @name migrate
+    //  * TODO remove this one! Only for testing data population
+    //  */
+    // migrate: function(req, res) {
+    //     console.log(req.allParams());
+    //     let subject = _.parseInt(req.param("idSubj"));
+    //     MigrateService.execute(subject)
+    //     .then(function() {
+    //         return res.ok("Done!");
+    //     })
+    //     .catch(function(err) {
+    //         return res.serverError(err.details || err.message);
+    //     });
+    // },
+    //
+    // /**
+    //  * @method
+    //  * @name migrateCGH
+    //  * TODO remove this one
+    //  */
+    // migrateCGH: function(req, res) {
+    //     MigrateService.migrateCGHAsync()
+    //     .then(function() {
+    //         return res.ok();
+    //     })
+    //     .catch(function(err) {
+    //         return res.serverError(err.message);
+    //     });
+    // },
+
+
 
 };
 

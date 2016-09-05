@@ -21,6 +21,8 @@ module.exports = {
   //   connection: 'someMongodbServer'
   // }
     blueprints: {
+        action: false,
+        rest: true,
         shortcuts: true
     }
 };

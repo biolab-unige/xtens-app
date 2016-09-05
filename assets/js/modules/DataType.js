@@ -161,7 +161,15 @@
             $("#main").html(this.el);
             this.template = JST["views/templates/datatype-edit.ejs"];
             this.nestedViews = [];
+            this.idDataType = parseInt(options.params.id);
             this.existingDataTypes = options.dataTypes;
+            if (this.idDataType) {
+                var that =this;
+                this.model = new DataType.Model(_.find(this.existingDataTypes, function(dt){ return dt.id === that.idDataType; }));
+            }
+            else {
+                this.model = new DataType.Model();
+            }
             this.render();
             this.listenTo(this.model, 'invalid', this.handleValidationErrors);
         },
@@ -197,7 +205,7 @@
                     }
                 },
                 getVal: function($el, ev, options) {
-                    return $el.val().map(function(value) {
+                    return $el.val() && $el.val().map(function(value) {
                         return _.findWhere(options.view.existingDataTypes, {id: parseInt(value)});
                         // return _.parseInt(value);
                     });
@@ -209,15 +217,11 @@
         },
 
         render: function() {
-            if (this.model.id){
-                this.$el.html(this.template({__: i18n, dataType: this.model}));
-            }
-            else {
-                this.$el.html(this.template({__: i18n, dataType: null}));
-            }
-            this.stickit();
+
+            this.$el.html(this.template({__: i18n, dataType: this.model}));
             this.$form = this.$("form");
             this.$form.parsley(parsleyOpts);
+            this.stickit();
             if (this.model.get("schema") && _.isArray(this.model.get('schema').body)) {
                 var body = this.model.get('schema').body;
                 for (var i=0, len=body.length; i<len; i++) {

@@ -148,6 +148,28 @@
 
      },
 
+      /**
+      * @method
+      * @name edit
+      * @description return all the info required for a datatype edit
+      */
+     edit: function(req, res) {
+         let co = new ControllerOut(res);
+         let params = req.allParams();
+
+         DataType.find()
+
+        .then(function(result) {
+            return res.json({params: params, dataTypes: result});
+        })
+
+        .catch(function(err) {
+            console.log(err);
+            return co.error(err);
+        });
+
+     },
+
     /**
      * @deprecated
      */
@@ -233,7 +255,6 @@
 
             fetchDataTypeTree(id, dataTypeTreeCb);
         });
-
      }
 
 

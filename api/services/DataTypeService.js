@@ -463,6 +463,26 @@ next(null, result.rows);
         else {
             return BluebirdPromise.resolve(undefined);
         }
+    },
+
+    /**
+     * @method
+     * @name getOne
+     * @description find a Datatype if ID is provided
+     * @return {Object} - the found DataType
+     */
+    getOne: function(id) {
+        if (!id) {
+            return BluebirdPromise.resolve(null);
+        }
+        else {
+            let criteria = {};
+
+            if (id) criteria.id = id;
+
+            console.log(criteria);
+            return DataType.findOne(criteria).populate('parents');
+        }
     }
 
 

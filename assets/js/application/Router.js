@@ -257,21 +257,22 @@
         dataTypeEdit: function(id) {
             var model, that = this;
             var dataTypes = new DataType.List();
-            dataTypes.fetch({
-                data: $.param({populate: ['parents']}),
-                success: function(dataTypes) {
-                    if (id) {
-                        model = dataTypes.get(id);
-                    }
-                    else {
-                        model = new DataType.Model();
-                    }
-                    that.loadView(new DataType.Views.Edit({id: id, dataTypes: dataTypes.toJSON(), model: model}));
+            $.ajax({
+                url: '/dataType/edit',
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                 },
-                error: function(model, res) {
-                    xtens.error(res);
+                data: {id:id},
+                contentType: 'application/json',
+                success: function(results) {
+                    that.loadView(new DataType.Views.Edit(results));
+                },
+                error: function(err) {
+                    xtens.error(err);
                 }
             });
+
         },
 
         /**

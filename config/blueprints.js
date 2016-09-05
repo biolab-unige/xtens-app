@@ -57,7 +57,7 @@ module.exports.blueprints = {
   // if you'd like to continue to use controller/action autorouting in a production deployment,
   // you must take great care not to inadvertently expose unsafe/unintentional controller logic
   // to GET requests.
-  actions: true,
+    actions: false,
 
 
 
@@ -78,7 +78,7 @@ module.exports.blueprints = {
   // `rest` blueprint routes are enabled by default, and are suitable for use
   // in a production scenario, as long you take standard security precautions
   // (combine w/ policies, etc.)
-  rest: true,
+    rest: true,
 
 
   // Shortcut blueprints are simple helpers to provide access to a controller's CRUD methods
@@ -86,7 +86,7 @@ module.exports.blueprints = {
   // for the controller's`find`, `create`, `update`, and `destroy` actions.
   //
   // `shortcuts` are enabled by default, but should be disabled in production.
-  shortcuts: true,
+    shortcuts: false,
 
 
 
@@ -105,7 +105,7 @@ module.exports.blueprints = {
   // `DELETE /api/v2/foo/:id`
   //
   // By default, no prefix is used.
-  prefix: '',
+    prefix: '',
 
 
 
@@ -118,9 +118,9 @@ module.exports.blueprints = {
   // POST   /foos
   // PUT    /foos/:id?
   // DELETE /foos/:id?
-  pluralize: false,
+    pluralize: false,
 
   // Do not automatically populate model fetches with data from other models
-  populate: false
+    populate: false
 
 };
