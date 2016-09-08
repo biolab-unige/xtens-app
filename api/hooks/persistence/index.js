@@ -3,10 +3,11 @@ const dbConnectionMap = new Map([
     ['sails-memory', 'xtens-waterline']
 ]);
 
-module.exports = function persistence() {
+module.exports = function persistence(sails) {
 
     this.crudManager = null;
-
+    this.fileSystemManager = null;
+    this.fileSystemConnections =  null;
     return {
 
         defaults: {
@@ -16,16 +17,22 @@ module.exports = function persistence() {
         configure: function() {
             const connection = sails.config.connections[sails.config.models.connection];
             const adapter = connection.adapter;
-            const fileSystemConnections =  sails.config.fileSystemConnections;
-            sails.log.debug(adapter);
+            this.fileSystemConnections =  sails.config.fileSystemConnections;
+            const FileSystemManager = require('xtens-fs').FileSystemManager;
+            // sails.log.debug(adapter);
             const databaseManager = require(dbConnectionMap.get(adapter));
-            sails.log.debug(databaseManager);
-            this.crudManager = new databaseManager.CrudManager(null, connection, fileSystemConnections[fileSystemConnections.default]);
-            sails.log.debug(this.crudManager);
+            // sails.log.debug(databaseManager);
+            this.crudManager = new databaseManager.CrudManager(null, connection, this.fileSystemConnections[this.fileSystemConnections.default]);
+            this.fileSystemManager = new FileSystemManager(this.fileSystemConnections[this.fileSystemConnections.default]);
+            // sails.log.debug(this.crudManager);
         },
 
         getCrudManager: function() {
-            return crudManager;
+            return this.crudManager;
+        },
+
+        getFileSystem: function() {
+            return { manager: this.fileSystemManager, defaultConnection: this.fileSystemConnections[this.fileSystemConnections.default] };
         }
 
     };

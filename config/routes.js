@@ -28,48 +28,76 @@ module.exports.routes = {
     //
     // (Alternatively, remove this and add an `index.html` file in your `assets` directory)
 
-    // 'POST /logout' : {controller:'main',action:'logout'},
 
     'GET /': {view: 'home'},
+    // Auth Controller
+    'POST /login': {controller: 'auth', action: 'login'},
+    'POST /logout' : {controller:'auth',action:'logout'},
+
+    // Biobank Controller
+
+    // ContactInformation Controller
+
+    // Data Controller
+    'GET /data/edit': {controller: 'data', action: 'edit'},
     /*
     'GET /data': {controller: 'data', action: 'find'},
     'POST /data': {controller: 'data', action: 'create'},
     'PUT /data': {controller: 'data', action: 'upadate'},
     */
-    'POST /login': {controller: 'auth', action: 'login'},
 
-    'POST /graph':{controller:'dataType',action:'buildGraph'},
-
-    'POST /subjectGraph':{controller:'subject',action:'createGraph'},
-    
-    'PATCH /operator':{controller:'operator',action:'patchPassword'},
-    // 'GET /populateEAV': {controller: 'main', action: 'populateEAV'},
-    //
-    'POST /populateDB': {controller: 'main', action: 'populateDB'},
-
+    // DataFile Controller
     // '/upload-file':{controller:'dataFile',action:'upload'},
-
     // 'POST /download-file':{controller:'dataFile',action:'download'},
 
+    // DataType Controller
+    'GET /dataType/edit': {controller: 'dataType', action: 'edit'},
+    'POST /graph':{controller:'dataType',action:'buildGraph'},
+    'GET /graph/buildHierarchy':{controller:'dataType',action:'buildHierarchy'},
+
+    // DataTypePrivileges Controller
+    'GET /dataTypePrivileges/edit': {controller: 'dataTypePrivileges', action: 'edit'},
+
+    // Group Controller
     '/groupOperator/associate':{controller:'group', action:'addOperator'},
-
     '/groupOperator/dissociate':{controller:'group', action:'removeOperator'},
-
     '/groupDatatype/associate':{controller:'group', action:'addDatatype'},
-
     '/groupDatatype/dissociate':{controller:'group',action:'removeDatatype'},
 
+    // Main Controller
+    'POST /customisedData': {controller: 'main', action: 'executeCustomDataManagement'},
     'GET /fileManager': {controller: 'main', action: 'getFileSystemStrategy'},
 
-    'POST /migrate': {controller: 'main', action: 'migrate'},
+    // 'GET /fileContent': {controller: 'main', action: 'downloadFileContent'},
+    // 'POST /fileContent': {controller: 'main', action: 'uploadFileContent'},
 
-    'POST /migrateCGH': {controller: 'main', action: 'migrateCGH'},
 
-    'GET /fileContent': {controller: 'main', action: 'downloadFileContent'},
+    // 'POST /populateDB': {controller: 'main', action: 'populateDB'},
+    // 'POST /migrate': {controller: 'main', action: 'migrate'},
+    // 'POST /migrateCGH': {controller: 'main', action: 'migrateCGH'},
+    // 'GET /populateEAV': {controller: 'main', action: 'populateEAV'},
 
-    'POST /fileContent': {controller: 'main', action: 'uploadFileContent'},
+    // Operator Controller
+    'PATCH /operator':{controller:'operator',action:'patchPassword'},
 
-    'POST /customisedData': {controller: 'main', action: 'executeCustomDataManagement'},
+    // PersonalDetails Controller
+
+    // Project Controller
+
+    // Query Controller
+    // Advanced Search API
+    'POST /query/dataSearch': {controller: 'query', action: 'dataSearch'},
+
+    // Sample Controller
+    'GET /sample/edit': {controller: 'sample', action: 'edit'},
+
+    // Subject Controller
+    'GET /subject/edit': {controller: 'subject', action: 'edit'},
+    'POST /subjectGraph':{controller:'subject',action:'createGraph'}
+
+
+
+
 
     // REST API for subject (with personal info)
     // 'GET /subjectWithPersonalDetails': {controller: 'subject', action: 'findWithPersonalDetails'},
@@ -78,8 +106,6 @@ module.exports.routes = {
     // 'POST /subjectWithPersonalDetails': {controller: 'subject', action: 'createWithPersonalDetails'},
     // 'DELETE /subjectWithPersonalDetails': {controller: 'subject', action: 'deleteWithPersonalDetails'},
 
-    // Advanced Search API
-    'POST /query/dataSearch': {controller: 'query', action: 'dataSearch'}
 
 
 
