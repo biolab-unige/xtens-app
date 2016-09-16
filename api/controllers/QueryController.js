@@ -5,7 +5,12 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
  /* globals _, sails, Data, DataType, DataService, DataTypeService, SubjectService, SampleService, QueryService, TokenService */
+ "use strict";
 
+ let pg = require('pg');
+ let pgp = require('pg-promise')();
+ let QueryStream = require('pg-query-stream');
+ let JSONStream = require('JSONStream');
  const xtensConf = global.sails.config.xtens;
  const VIEW_OVERVIEW = xtensConf.constants.DataTypePrivilegeLevels.VIEW_OVERVIEW;
 
@@ -13,7 +18,7 @@
     /*
     dataSearch: function(req, res) {
 
-        var queryArgs = req.param('queryArgs');
+        let queryArgs = req.param('queryArgs');
         async.waterfall([
             function(callback) {
                 DataService.advancedQuery(queryArgs, callback);
@@ -37,50 +42,68 @@
      * @description perfor an advanced and nested query on the Data stored within the repository
      */
      dataSearch: function(req, res) {
-         var queryArgs = req.param('queryArgs');
-         var data, dataType, dataPrivilege;
-         var idDataType = queryArgs.dataType;
+         let queryArgs = req.param('queryArgs');
+         let queryObj, dataType, dataPrivilege, forbiddenFields;
+         let idDataType = queryArgs.dataType;
          const operator = TokenService.getToken(req);
+         let idOperator = operator.id;
+         let db = pgp('postgres://xtenspg:xtenspg@localhost:5432/xtensigg');
 
-         DataService.executeAdvancedQueryAsync(queryArgs)
+         DataService.preprocessQueryParams(queryArgs,idOperator,idDataType)
 
-        .then(results => {
+         .then(processedArgs => {
+             let data = [], first = true, dataSent;
+             dataType = processedArgs.dataType;
+             dataPrivilege = processedArgs.dataTypePrivilege;
+             queryObj = processedArgs.queryObj;
+             forbiddenFields = processedArgs.forbiddenFields;
 
-            data = results.rows;
-            return DataType.findOne(idDataType).populate('children');
-        })
-        .then(result => {
-            dataType = result;
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataType.id);
-        })
-        .then(dataTypePrivilege => {
-            if (_.isEmpty(data)) { return; }
-            dataPrivilege = dataTypePrivilege;
-            //if operator has not privilege on dataType return empty data
-            //else if operator has not at least Details privilege level delete metadata object
-            if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege) ){ return {}; }
-            else if( dataTypePrivilege.privilegeLevel === VIEW_OVERVIEW) {
-                for (var datum of data) { datum['metadata'] = {}; }
-                return data;
-            }
-                //populate type attributes of data and filter Out Sensitive Info
-            for (datum of data) { datum['type'] = dataType.id; }
-            return DataService.filterOutSensitiveInfo(data, operator.canAccessSensitiveData);
-        })
-        .then(results => {
+             let query = new QueryStream(queryObj.statement,queryObj.parameters);
 
-            if(results && !_.isArray(results)){
-                data[0] = results;
-            }
-            else if (results){
-                data = results;
-            }
-            res.json({data: data, dataType: dataType, dataTypePrivilege : dataPrivilege });
+             db.stream(query, function (stream) {
 
-        })
-        .catch(error => {
-            res.serverError(error.message);
-        });
+                 stream.once('data',function () {
+                     stream.pause();
+                     stream.push({dataPrivilege:dataPrivilege});
+                     stream.push({dataType:dataType});
+                     stream.resume();
+                 });
+
+                 stream.on('end', () => {
+                     console.log('Stream ended');
+                     stream.close();
+                 });
+
+                 stream.on('data',function (chunk) {
+
+                     if(chunk.dataType || chunk.dataPrivilege){ return; }
+
+                          //else if operator has not at least Details privilege level delete metadata object
+                     if (!dataPrivilege || _.isEmpty(dataPrivilege) ) { return; }
+
+                     else if( dataPrivilege.privilegeLevel === VIEW_OVERVIEW) { chunk.metadata = {}; }
+
+                   else if( forbiddenFields.length > 0 && operator.canAccessSensitiveData){
+                       _.each(forbiddenFields, (forbField) => {
+                           if(chunk.metadata[forbField.formattedName]){
+                               console.log("Deleted field: " + chunk.metadata[forbField.formattedName]);
+                               delete chunk.metadata[forbField.formattedName];
+                           }
+                       });
+                   }
+
+                 });
+      // initiate streaming into the console:
+                 stream.pipe(JSONStream.stringify()).pipe(res);
+             })
+           .then(function (data) {
+               console.log("Total rows processed:", data.processed, "Duration in milliseconds:", data.duration);
+           })
+           .catch(function (error) {
+               console.log("ERROR:", error.message || error);
+           });
+
+         });
      }
 
  };

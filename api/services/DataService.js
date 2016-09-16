@@ -200,19 +200,31 @@ let DataService = BluebirdPromise.promisifyAll({
      * @param{Object} queryArgs - a nested object containing all the query arguments
      * @return{Promise} promise with argument a list of retrieved items matching the query
      */
-    executeAdvancedQuery: function(queryArgs, next) {
+    preprocessQueryParams: function(queryArgs, idOperator, idDataType, next) {
         let queryObj = queryBuilder.compose(queryArgs);
         console.log("DataService.executeAdvancedQuery - query: " + queryObj.statement);
         console.log(queryObj.parameters);
         // Using Prepared Statements for efficiency and SQL-injection protection
         // https://github.com/brianc/node-postgres/wiki/Client#method-query-prepared
         // TODO move to xtens-transact
-        return crudManager.query(queryObj, next);
-        /*
-        Data.query({
-            text: query.statement,
-            values: query.parameters
-        }, next); */
+
+        let dataType, dataPrivilege;
+
+        return DataType.findOne(idDataType).populate('children')
+
+         .then(result => {
+             dataType = result;
+             return DataTypeService.getDataTypePrivilegeLevel(idOperator, idDataType);
+         })
+         .then(dataTypePrivilege => {
+             let flattenedFields = DataTypeService.getFlattenedFields(dataType, false);
+             let forbiddenFields = _.filter(flattenedFields, (field) => {return field.sensitive;});
+             dataPrivilege = dataTypePrivilege;
+
+             return {queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: forbiddenFields};
+         });
+
+        // return crudManager.query(queryObj, next);
     },
 
     /**
@@ -354,7 +366,7 @@ let DataService = BluebirdPromise.promisifyAll({
      * @param {dataTypes} - an array of dataType
      * @return {Promise} -  a Bluebird Promise with Data Array filtered
      */
-    filterOutSensitiveInfo: function(data, canAccessSensitiveData) {
+    filterOutSensitiveInfo: function(data, canAccessSensitiveData, datatype) {
 
         let arrData = [], idDataType, typeIds, flattenedFields,
             forbiddenField, forbiddenFields  = [];
@@ -430,6 +442,7 @@ let DataService = BluebirdPromise.promisifyAll({
         });
 
     }
+
 });
 
 module.exports = DataService;

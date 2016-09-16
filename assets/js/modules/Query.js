@@ -1,5 +1,5 @@
 (function(xtens, Query) {
-
+    // io.sails.autoConnect = false;
     var i18n = xtens.module("i18n").en;
 
     // TODO: retrieve this info FROM DATABASE ideally or from the server-side anyway
@@ -852,6 +852,10 @@
      *
      */
     Query.Views.Builder = Backbone.View.extend({
+        events : {
+            'click #search': 'sendQuery'
+        },
+
 
         className: 'query',
 
@@ -894,9 +898,6 @@
             return this;
         },
 
-        events : {
-            'click #search': 'sendQuery'
-        },
 
         /**
          * @method
@@ -915,6 +916,28 @@
             console.log(this.queryView.serialize());
             var path = '/query/' + encodeURIComponent(queryParameters);
             xtens.router.navigate(path, {trigger: false});
+            // console.log(io.socket);
+            // io.sails.url = 'http://localhost:1337';
+            // var socket = io.sails.connect();
+            // // var stream = ss.createStream();
+            // socket.request({
+            //     method: 'POST',
+            //     url: '/query/dataSearch',
+            //     data: queryParameters,
+            //     headers: {
+            //         'Authorization': 'Bearer ' + xtens.session.get("accessToken"),
+            //         'x-csrf-token': 'Bearer ' + xtens.session.get("accessToken")
+            //     }
+            // }, function (resData, jwres) {
+            //     if (jwres.error) {
+            //         console.log(jwres.statusCode); // => e.g. 403
+            //         return;
+            //     }
+            //     console.log(jwres.statusCode); // => e.g. 200
+            // });
+            // ss(socket).on('message',function (e) {
+            //     console.log(e);
+            // },this);
             $.ajax({
                 method: 'POST',
                 headers: {
