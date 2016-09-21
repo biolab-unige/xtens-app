@@ -42,7 +42,7 @@
      * @description perfor an advanced and nested query on the Data stored within the repository
      */
      dataSearch: function(req, res) {
-         let queryArgs = req.param('queryArgs');
+         let queryArgs = JSON.parse(req.body.queryArgs);
          let queryObj, dataType, dataPrivilege, forbiddenFields;
          let idDataType = queryArgs.dataType;
          const operator = TokenService.getToken(req);
@@ -78,7 +78,6 @@
 
                      if(chunk.dataType || chunk.dataPrivilege){ return; }
 
-                          //else if operator has not at least Details privilege level delete metadata object
                      if (!dataPrivilege || _.isEmpty(dataPrivilege) ) { return; }
 
                      else if( dataPrivilege.privilegeLevel === VIEW_OVERVIEW) { chunk.metadata = {}; }
@@ -86,7 +85,7 @@
                    else if( forbiddenFields.length > 0 && operator.canAccessSensitiveData){
                        _.each(forbiddenFields, (forbField) => {
                            if(chunk.metadata[forbField.formattedName]){
-                               console.log("Deleted field: " + chunk.metadata[forbField.formattedName]);
+                              //  console.log("Deleted field: " + chunk.metadata[forbField.formattedName]);
                                delete chunk.metadata[forbField.formattedName];
                            }
                        });
@@ -94,7 +93,7 @@
 
                  });
       // initiate streaming into the console:
-                 stream.pipe(JSONStream.stringify()).pipe(res);
+                 stream.pipe(JSONStream.stringify("","@#","")).pipe(res);
              })
            .then(function (data) {
                console.log("Total rows processed:", data.processed, "Duration in milliseconds:", data.duration);

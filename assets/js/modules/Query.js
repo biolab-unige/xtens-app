@@ -868,7 +868,7 @@
          *                  - queryObj - a (possibly nested) query object, as the one sent to server side requests
          */
         initialize: function(options) {
-            _.bindAll(this, ['queryOnSuccess', 'queryOnError']);
+            _.bindAll(this, ['initializeDataTable', 'queryOnError']);
             this.template = JST["views/templates/query-builder.ejs"];
             $('#main').html(this.el);
             this.biobanks = options.biobanks || [];
@@ -916,39 +916,70 @@
             console.log(this.queryView.serialize());
             var path = '/query/' + encodeURIComponent(queryParameters);
             xtens.router.navigate(path, {trigger: false});
-            // console.log(io.socket);
-            // io.sails.url = 'http://localhost:1337';
-            // var socket = io.sails.connect();
-            // // var stream = ss.createStream();
-            // socket.request({
-            //     method: 'POST',
-            //     url: '/query/dataSearch',
-            //     data: queryParameters,
-            //     headers: {
-            //         'Authorization': 'Bearer ' + xtens.session.get("accessToken"),
-            //         'x-csrf-token': 'Bearer ' + xtens.session.get("accessToken")
-            //     }
-            // }, function (resData, jwres) {
-            //     if (jwres.error) {
-            //         console.log(jwres.statusCode); // => e.g. 403
-            //         return;
-            //     }
-            //     console.log(jwres.statusCode); // => e.g. 200
-            // });
-            // ss(socket).on('message',function (e) {
-            //     console.log(e);
-            // },this);
-            $.ajax({
+
+            fetch('/query/dataSearch',{
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken"),
+                    "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
                 },
-                contentType: 'application/json;charset:utf-8',
-                url: '/query/dataSearch',
-                data: queryParameters,
-                success: this.queryOnSuccess,
-                error: this.queryOnError
+                body: 'queryArgs='+JSON.stringify(queryArgs)
+            })
+            .then(function(res) {
+                return pump(res.body.getReader());
+            })
+            .catch(function(ex) {
+                console.log('parsing failed', ex);
             });
+            let temp = "", that = this, options = {}, tempBuffer= [];
+            function pump(reader) {
+                return reader.read().then(function (result) {
+                    if (result.done) {
+                        console.log(result);
+                        return;
+                    }
+
+                    const chunk = result.value;
+                    let decoded = new TextDecoder("utf-8").decode(chunk);
+                    decoded = decoded.split("@#");
+
+                    if (temp){
+                        decoded[0] = temp.concat(decoded[0]);
+                        temp = "";
+                    }
+
+                    let jsonParsed = {data:[]};
+                    decoded.forEach(data =>{
+                        let parsed;
+                        if(data !== ""){
+                            try {
+                                parsed = JSON.parse(data);
+                                parsed.dataType ? options.dataType = parsed.dataType :
+                              parsed.dataPrivilege ? options.dataPrivilege = parsed.dataPrivilege :
+                              jsonParsed.data.push(parsed);
+                                console.log(jsonParsed);
+                            } catch (e) {
+                                temp = data;
+                            }
+                        }
+                    });
+                    if(!options.dataType || !options.dataPrivilege){
+                        tempBuffer = tempBuffer.concat(jsonParsed.data); }
+                    if(options && (options.dataType && options.dataPrivilege && (!_.isEmpty(jsonParsed.data) || !_.isEmpty(tempBuffer)))) {
+                        jsonParsed.dataType = options.dataType;
+                        jsonParsed.dataPrivilege = options.dataPrivilege;
+                        jsonParsed = jsonParsed.data.concat(tempBuffer);
+                        delete options, tempBuffer;
+                        that.initializeDataTable(jsonParsed) ;
+                    }
+                    if(this.table){}
+
+                    return pump(reader);
+
+                });
+            }
+
+
             this.modal = new ModalDialog({
                 title: i18n('please-wait-for-query-to-complete'),
                 body: JST["views/templates/progressbar.ejs"]({valuemin: 0, valuemax: 100, valuenow: 100})
@@ -962,7 +993,7 @@
          * @method
          * @name queryOnSuccess
          */
-        queryOnSuccess: function(result) {
+        initializeDataTable: function(result) {
             this.$(".query-hidden").hide();
             this.modal && this.modal.hide();
             if (this.tableView) {

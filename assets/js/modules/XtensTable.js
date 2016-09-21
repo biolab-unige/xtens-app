@@ -34,6 +34,14 @@ function renderDatatablesDate(data, type) {
      * @name Views.Datatable
      */
     XtensTable.Views.DataTable = Backbone.View.extend({
+      
+        events: {
+            "click .xtenstable-details": "showDetailsView",
+            "click .xtenstable-edit": "showEditView",
+            "click .xtenstable-files": "showFileList",
+            "click .xtenstable-derivedsamples": "showDerivedSampleList",
+            "click .xtenstable-deriveddata": "showDerivedDataList"
+        },
 
         tagName: 'table',
         className: 'query-table',
@@ -51,13 +59,7 @@ function renderDatatablesDate(data, type) {
             // this.render();
         },
 
-        events: {
-            "click .xtenstable-details": "showDetailsView",
-            "click .xtenstable-edit": "showEditView",
-            "click .xtenstable-files": "showFileList",
-            "click .xtenstable-derivedsamples": "showDerivedSampleList",
-            "click .xtenstable-deriveddata": "showDerivedDataList"
-        },
+
 
         /**
          * @method
