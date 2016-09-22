@@ -906,6 +906,8 @@
          * @return{boolean} false
          */
         sendQuery: function() {
+            let temp, options = {}, tempBuffer= [], that = this, initialized = false;
+
             // extend queryArgs with flags to retrieve subject and personal informations
             var queryArgs = _.extend({
                 wantsSubject: true,
@@ -930,12 +932,27 @@
             })
             .catch(function(ex) {
                 console.log('parsing failed', ex);
+                that.queryOnError();
             });
-            let temp = "", that = this, options = {}, tempBuffer= [];
+
             function pump(reader) {
                 return reader.read().then(function (result) {
-                    if (result.done) {
-                        console.log(result);
+                    let jsonParsed = {data:[]};
+
+                    //if stream end and no data found, render dataTable without results
+                    if (result.done && tempBuffer.length === 0 && !initialized) {
+                        that.initializeDataTable(jsonParsed);
+                        return;
+                    }
+                    //if stream end and NO more data to be rendered
+                    if (result.done && tempBuffer.length === 0 && initialized) {
+                        // that.hideProgressbar();
+                        return;
+                    }
+                    //if stream end and more data to be rendered
+                    else if(result.done && tempBuffer.length > 0){
+                        that.tableView.addRowDataTable(tempBuffer);
+                        // that.hideProgressbar();
                         return;
                     }
 
@@ -943,36 +960,45 @@
                     let decoded = new TextDecoder("utf-8").decode(chunk);
                     decoded = decoded.split("@#");
 
+                    //If temp exist, it was found a corrupted json in previous cycle
+                    //It must be concatenated with next decoded data and then parsed again
                     if (temp){
                         decoded[0] = temp.concat(decoded[0]);
                         temp = "";
                     }
 
-                    let jsonParsed = {data:[]};
+                    //each data string must be parsed and pushed in tempBuffer
                     decoded.forEach(data =>{
                         let parsed;
                         if(data !== ""){
+                            //try to parse data string if pass
+                            //it is pushed in a buffer or in options object if it is dataType or dataPrivilege obj
                             try {
                                 parsed = JSON.parse(data);
                                 parsed.dataType ? options.dataType = parsed.dataType :
-                              parsed.dataPrivilege ? options.dataPrivilege = parsed.dataPrivilege :
-                              jsonParsed.data.push(parsed);
-                                console.log(jsonParsed);
-                            } catch (e) {
+                                parsed.dataPrivilege ? options.dataPrivilege = parsed.dataPrivilege :
+                                tempBuffer.push(parsed);
+                            }
+                            catch (e) {
                                 temp = data;
                             }
                         }
                     });
-                    if(!options.dataType || !options.dataPrivilege){
-                        tempBuffer = tempBuffer.concat(jsonParsed.data); }
-                    if(options && (options.dataType && options.dataPrivilege && (!_.isEmpty(jsonParsed.data) || !_.isEmpty(tempBuffer)))) {
+
+                    if(!initialized && (options.dataType && options.dataPrivilege && tempBuffer)) {
+
                         jsonParsed.dataType = options.dataType;
-                        jsonParsed.dataPrivilege = options.dataPrivilege;
-                        jsonParsed = jsonParsed.data.concat(tempBuffer);
-                        delete options, tempBuffer;
-                        that.initializeDataTable(jsonParsed) ;
+                        jsonParsed.dataTypePrivilege = options.dataPrivilege;
+                        jsonParsed.data = tempBuffer;
+                        initialized = true;
+                        tempBuffer = [];
+                        that.initializeDataTable(jsonParsed);
                     }
-                    if(this.table){}
+
+                    if (initialized && tempBuffer.length > 1000){
+                        that.tableView.addRowDataTable(tempBuffer);
+                        tempBuffer = [];
+                    }
 
                     return pump(reader);
 
@@ -994,8 +1020,8 @@
          * @name queryOnSuccess
          */
         initializeDataTable: function(result) {
-            this.$(".query-hidden").hide();
-            this.modal && this.modal.hide();
+
+            this.hideProgressbar();
             if (this.tableView) {
                 this.tableView.destroy();
             }
@@ -1030,6 +1056,16 @@
                 this.tableView.destroy();
             }
             this.$queryErrorCnt.show();
+        },
+
+        /**
+         * @method
+         * @name hideProgressbar
+         * @description
+         */
+        hideProgressbar: function() {
+            this.$(".query-hidden").hide();
+            this.modal && this.modal.hide();
         }
 
     });

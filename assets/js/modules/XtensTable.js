@@ -34,7 +34,7 @@ function renderDatatablesDate(data, type) {
      * @name Views.Datatable
      */
     XtensTable.Views.DataTable = Backbone.View.extend({
-      
+
         events: {
             "click .xtenstable-details": "showDetailsView",
             "click .xtenstable-edit": "showEditView",
@@ -79,6 +79,20 @@ function renderDatatablesDate(data, type) {
                 this.$el.empty();
             }
             this.remove();
+        },
+
+        /**
+         * @method
+         * @name addRowDataTable
+         */
+        addRowDataTable: function(data) {
+            if (data) {
+                this.data = this.data.concat(data);
+                this.addLinks(this.optLinks);
+                this.table.rows.add(data);
+                var currentPage = this.table.page();
+                this.table.page(currentPage).draw(false);    
+            }
         },
 
         /**
@@ -149,6 +163,8 @@ function renderDatatablesDate(data, type) {
                     fieldsToShow.push(field);
                 }});
 
+            this.optLinks = {dataTypePrivilege: dataTypePrivilege, hasDataSensitive : hasDataSensitive, fileUpload : fileUpload, hasDataChildren : hasDataChildren, hasSampleChildren : hasSampleChildren};
+
             _.each(fieldsToShow, function(field) {
                 var colTitle = field.name;
 
@@ -199,9 +215,10 @@ function renderDatatablesDate(data, type) {
             }, this);
 
             // add links
-            this.addLinks(dataTypePrivilege, hasDataSensitive, fileUpload, hasDataChildren, hasSampleChildren);
+            this.addLinks(this.optLinks);
 
             this.tableOpts = {
+                // processing:     true,
                 data:           this.data,
                 columns:        this.columns,
                 info:           true,
@@ -214,7 +231,7 @@ function renderDatatablesDate(data, type) {
                 columnDefs: [
                   {"className": "dt-center", "targets": "_all"}
                 ],
-                paginationType: "full_numbers" // DOES NOT WORK!!
+                pagingType: "full_numbers" // DOES NOT WORK!!
             };
 
 
@@ -315,18 +332,18 @@ function renderDatatablesDate(data, type) {
          * @name addLinks
          * @description add the proper links to each row in the table given the dataType Model
          */
-        addLinks: function(dataTypePrivilege, hasDataSensitive, fileUpload, hasDataChildren, hasSampleChildren) {
+        addLinks: function(options) {
 
             var btnGroupTemplate = JST["views/templates/xtenstable-buttongroup.ejs"];
 
             _.each(this.data, function(datum) {
                 datum._links = btnGroupTemplate({
                     __:i18n,
-                    privilegeLevel : dataTypePrivilege.privilegeLevel,
-                    hasDataSensitive: hasDataSensitive,
-                    fileUpload: fileUpload,
-                    hasDataChildren: hasDataChildren,
-                    hasSampleChildren: hasSampleChildren
+                    privilegeLevel : options.dataTypePrivilege.privilegeLevel,
+                    hasDataSensitive: options.hasDataSensitive,
+                    fileUpload: options.fileUpload,
+                    hasDataChildren: options.hasDataChildren,
+                    hasSampleChildren: options.hasSampleChildren
                 });
             });
 
