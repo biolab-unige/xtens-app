@@ -51,7 +51,7 @@ function renderDatatablesDate(data, type) {
                 throw new Error("Missing required options: dataType");
             }
             this.dataType = new DataTypeModel(options.dataType);
-            console.log(options.data);
+            // console.log(options.data);
             this.data = options.data;
             this.dataTypePrivilege = options.dataTypePrivilege;
             this.childrenViews = [];
@@ -91,7 +91,7 @@ function renderDatatablesDate(data, type) {
                 this.addLinks(this.optLinks);
                 this.table.rows.add(data);
                 var currentPage = this.table.page();
-                this.table.page(currentPage).draw(false);    
+                this.table.page(currentPage).draw(false);
             }
         },
 

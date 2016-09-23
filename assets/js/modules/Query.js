@@ -908,8 +908,9 @@
         sendQuery: function() {
             let temp, options = {}, tempBuffer= [], that = this, initialized = false;
 
-            // extend queryArgs with flags to retrieve subject and personal informations
+            // extend queryArgs with flags to retrieve subject and personal informations and if retrieve data in stream mode
             var queryArgs = _.extend({
+                isStream: true,
                 wantsSubject: true,
                 wantsPersonalInfo: xtens.session.get('canAccessPersonalData')
             }, this.queryView.serialize());
@@ -918,23 +919,37 @@
             console.log(this.queryView.serialize());
             var path = '/query/' + encodeURIComponent(queryParameters);
             xtens.router.navigate(path, {trigger: false});
+            if (queryArgs.isStream) {
+                fetch('/query/dataSearch',{
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + xtens.session.get("accessToken"),
+                        "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+                    },
+                    body: 'queryArgs='+JSON.stringify(queryArgs)
+                })
+              .then(function(res) {
+                  return pump(res.body.getReader());
+              })
+              .catch(function(ex) {
+                  console.log('parsing failed', ex);
+                  that.queryOnError();
+              });
+            }
+            else {
 
-            fetch('/query/dataSearch',{
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + xtens.session.get("accessToken"),
-                    "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
-                },
-                body: 'queryArgs='+JSON.stringify(queryArgs)
-            })
-            .then(function(res) {
-                return pump(res.body.getReader());
-            })
-            .catch(function(ex) {
-                console.log('parsing failed', ex);
-                that.queryOnError();
-            });
-
+                $.ajax({
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                    },
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    url: '/query/dataSearch',
+                    data: 'queryArgs='+JSON.stringify(queryArgs),
+                    success: this.initializeDataTable,
+                    error: this.queryOnError
+                });
+            }
             function pump(reader) {
                 return reader.read().then(function (result) {
                     let jsonParsed = {data:[]};
@@ -985,7 +1000,7 @@
                         }
                     });
 
-                    if(!initialized && (options.dataType && options.dataPrivilege && tempBuffer)) {
+                    if(!initialized && (options.dataType && options.dataPrivilege && tempBuffer.length == 10)) {
 
                         jsonParsed.dataType = options.dataType;
                         jsonParsed.dataTypePrivilege = options.dataPrivilege;
@@ -995,7 +1010,7 @@
                         that.initializeDataTable(jsonParsed);
                     }
 
-                    if (initialized && tempBuffer.length > 1000){
+                    if (initialized && tempBuffer.length > 8000){
                         that.tableView.addRowDataTable(tempBuffer);
                         tempBuffer = [];
                     }

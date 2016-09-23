@@ -198,7 +198,7 @@ let DataService = BluebirdPromise.promisifyAll({
      * @method
      * @name executeAdvancedQuery
      * @param{Object} queryArgs - a nested object containing all the query arguments
-     * @return{Promise} promise with argument a list of retrieved items matching the query
+     * @return{Promise} promise with all parameters needed for the query
      */
     preprocessQueryParams: function(queryArgs, idOperator, idDataType, next) {
         let queryObj = queryBuilder.compose(queryArgs);
@@ -224,7 +224,22 @@ let DataService = BluebirdPromise.promisifyAll({
              return {queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: forbiddenFields};
          });
 
-        // return crudManager.query(queryObj, next);
+    },
+
+    /**
+     * @method
+     * @name executeAdvancedQuery
+     * @param{Object} queryArgs - a nested object containing all the query arguments
+     * @return{Promise} promise with argument a list of retrieved items matching the query
+     */
+    executeAdvancedQuery: function(queryObj, next) {
+
+        return crudManager.query(queryObj, next);
+        /*
+        Data.query({
+            text: query.statement,
+            values: query.parameters
+        }, next); */
     },
 
     /**
@@ -394,7 +409,7 @@ let DataService = BluebirdPromise.promisifyAll({
                 for (let datum of arrData) {
                     _.each(forbiddenFields[datum.type], (forbField) => {
                         if(datum.metadata[forbField]){
-                            console.log("Deleted field: " + datum.metadata[forbField]);
+                            // console.log("Deleted field: " + datum.metadata[forbField]);
                             delete datum.metadata[forbField];
                         }
                     });
