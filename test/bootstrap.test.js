@@ -24,7 +24,7 @@ before(function(done) {
         console.log("sails was lifted");
     // Load fixtures
         var barrels = new Barrels();
-        var loadingOrder = [ 'group', 'datatype', 'datatypeprivileges', 'operator', 'passport', 'subject', 'sample', 'data'];
+        var loadingOrder = [ 'group', 'datatype', 'datatypeprivileges', 'operator', 'passport', 'subject', 'sample', 'data', 'datafile'];
     // Save original objects in fixtures variable
         fixtures = barrels.data;
 
