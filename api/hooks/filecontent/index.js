@@ -7,7 +7,7 @@
 
 // lib/hooks/myhook.js
 module.exports = function filecontent(sails){
- // private methods and variables
+    // private methods and variables
     let BluebirdPromise = require("bluebird");
     let path = require("path");
     let ControllerOut = require("xtens-utils").ControllerOut;
@@ -42,64 +42,64 @@ module.exports = function filecontent(sails){
                     dataFile = result;
                     return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataFile.data[0].type);
                 })
-                  .then(dataTypePrivilege => {
+                .then(dataTypePrivilege => {
 
-                      if(!dataTypePrivilege || (dataTypePrivilege.privilegeLevel !== DOWNLOAD && dataTypePrivilege.privilegeLevel !== EDIT)){
-                          throw new PrivilegesError(`Authenticated user does not have download privileges on the data type ${dataFile.data.id}`);
-                      }
+                    if(!dataTypePrivilege || (dataTypePrivilege.privilegeLevel !== DOWNLOAD && dataTypePrivilege.privilegeLevel !== EDIT)){
+                        throw new PrivilegesError(`Authenticated user does not have download privileges on the data type ${dataFile.data.id}`);
+                    }
 
-                      console.log("downloadFileContent - dataFile");
-                      console.log(dataFile);
+                    sails.log.info("downloadFileContent - dataFile");
+                    sails.log.info(dataFile);
 
-                      let pathFrags = dataFile.uri.split("/");
-                      let fileName = pathFrags[pathFrags.length-1];
+                    let pathFrags = dataFile.uri.split("/");
+                    let fileName = pathFrags[pathFrags.length-1];
 
-                      // set response headers for file download
-                      res.setHeader('Content-Disposition', 'attachment;filename='+fileName);
+                    // set response headers for file download
+                    res.setHeader('Content-Disposition', `attachment;filename=${fileName}`);
 
-                      return fileSystem.downloadFileContentAsync(dataFile.uri, res);
-                  })
-                 .then(result => {
-                     return res.ok(); // res.json() ??
-                 })
-                 .catch(function(err) {
-                     return co.error(err);
-                 });
+                    return fileSystem.downloadFileContentAsync(dataFile.uri, res);
+                })
+                .then(result => {
+                    return res.ok(); // res.json() ??
+                })
+                .catch(function(err) {
+                    return co.error(err);
+                });
 
             };
 
             this.upload = function uploadFileContent(req, res) {
 
                 let dirName, fileName, fsPath = sails.config.xtens.fileSystemConnection.path,
-                    landingDir = sails.config.xtens.fileSystemConnection.landingDirectory;
-                  // if the local-fs strategy is not in use, don't allow local file upload
+                landingDir = sails.config.xtens.fileSystemConnection.landingDirectory;
+                // if the local-fs strategy is not in use, don't allow local file upload
                 // if (this.fileSystemManager.type && this.fileSystemManager.type !== 'local-fs') {
                 //     return res.badRequest('Files cannot be uploaded on server local file system.');
                 // }
 
-              // if path exists use local fs connection, otherwise use default local storage connection
+                // if path exists use local fs connection, otherwise use default local storage connection
                 dirName = fsPath ? path.resolve(fsPath, landingDir) : path.resolve(DEFAULT_LOCAL_STORAGE, 'tmp');
 
-              // fileName = req.param("fileName") || req.param('filename') || 'uploaded-file';
-                console.log("MainController.uploadFileContent - dirname: " + dirName);
-                // console.log("MainController.uploadFileContent - filename: " + fileName);
+                // fileName = req.param("fileName") || req.param('filename') || 'uploaded-file';
+                sails.log.info("filecontent.uploadFileContent - dirname: " + dirName);
+                // sails.log.info("filecontent.uploadFileContent - filename: " + fileName);
                 req.file('uploadFile').upload({
                     dirname: dirName,
                     saveAs: function (__newFileStream, cb) {
-                        console.log(__newFileStream);
-                        console.log(__newFileStream.filename);
+                        sails.log.debug(__newFileStream);
+                        sails.log.debug(__newFileStream.filename);
                         cb(null, path.basename(__newFileStream.filename));
                     }
                 },function whenDone(err, files) {
                     if (err) {
-                        console.log(err);
+                        sails.log.error(err);
                         return res.negotiate(err);
                     }
 
                     if (files.length === 0) {
                         return res.badRequest('No file was uploaded');
                     }
-                    console.log("MainController.uploadFileContent - file uploaded: " + files[0]);
+                    sails.log.info("filecontent.uploadFileContent - file uploaded: " + files[0]);
 
                     return res.json({
                         name: files[0]
@@ -110,8 +110,8 @@ module.exports = function filecontent(sails){
             };
         },
 
-  //  optional route: attribute to set functionality
-  //  before and after controller action
+        //  optional route: attribute to set functionality
+        //  before and after controller action
         // route: {
         //     before: {
         //         '/routeA': function(req,res,next) {
@@ -128,8 +128,8 @@ module.exports = function filecontent(sails){
         //     }
         // },
 
-   // initialize is not required, but if included
-   // it must return cb();
+        // initialize is not required, but if included
+        // it must return cb();
         initialize: function(cb) {
 
             let upload =this.upload;
@@ -138,14 +138,14 @@ module.exports = function filecontent(sails){
 
             sails.after('hook:persistence:loaded', function() {
                 let fileSystem = BluebirdPromise.promisifyAll(sails.hooks['persistence'].getFileSystem());
-                // console.log(fileSystem.defaultConnection.type);
+                // sails.log.info(fileSystem.defaultConnection.type);
 
                 // if (fileSystem.manager.type && this.fileSystem.manager.type !== 'local-fs') {
                 if(fileSystem.defaultConnection.type && fileSystem.defaultConnection.type === 'local-fs'){
                     return cb();
                 }
                 sails.on('router:before', function () {
-                    
+
                     sails.router.bind(routePath, upload, 'POST',{});
                     sails.router.bind(routePath, download, 'GET',{});
 
