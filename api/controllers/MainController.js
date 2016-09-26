@@ -38,96 +38,97 @@ let MainController = {
         return res.json(conn);
     },
 
-    /**
-     * @method
-     * @name downloadFileContent
-     * @description download a file from the remote file system
-     * @param{integer} - id: the file unique ID
-     * TODO move to another controller (?)
-     */
-    downloadFileContent: function(req, res) {
-        let dataFile;
-        let co = new ControllerOut(res);
-        let fileId = _.parseInt(req.param('id'));
-        const operator = TokenService.getToken(req);
-
-        DataFile.findOne(fileId).populate('data').then(result => {
-
-            dataFile = result;
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataFile.data[0].type);
-        })
-        .then(dataTypePrivilege => {
-
-            if(!dataTypePrivilege || (dataTypePrivilege.privilegeLevel !== DOWNLOAD && dataTypePrivilege.privilegeLevel !== EDIT)){
-                throw new PrivilegesError(`Authenticated user does not have download privileges on the data type ${dataFile.data.id}`);
-            }
-
-            console.log("downloadFileContent - dataFile");
-            console.log(dataFile);
-
-            let pathFrags = dataFile.uri.split("/");
-            let fileName = pathFrags[pathFrags.length-1];
-
-            // set response headers for file download
-            res.setHeader('Content-Disposition', 'attachment;filename='+fileName);
-
-            return fileSystemManager.downloadFileContentAsync(dataFile.uri, res);
-        })
-        .then(result => {
-            return res.ok(); // res.json() ??
-        })
-        .catch(function(err) {
-            return co.error(err);
-        });
-
-    },
-
-    /**
-     * @method
-     * @name uploadFileContent
-     * @description upload a file to the local server storage
-     * TODO move to another controller (?)
-     */
-    uploadFileContent: function(req, res) {
-
-        let dirName, fileName, fsPath = sails.config.xtens.fileSystemConnection.path,
-            landingDir = sails.config.xtens.fileSystemConnection.landingDirectory;
-
-
-        // if the local-fs strategy is not in use, don't allow local file upload
-        if (fileSystemManager.type && fileSystemManager.type !== 'local-fs') {
-            return res.badRequest('Files cannot be uploaded on server local file system.');
-        }
-
-        // if path exists use local fs connection, otherwise use default local storage connection
-        dirName = fsPath ? path.resolve(fsPath, landingDir) : path.resolve(DEFAULT_LOCAL_STORAGE, 'tmp');
-
-        // fileName = req.param("fileName") || req.param('filename') || 'uploaded-file';
-        console.log("MainController.uploadFileContent - dirname: " + dirName);
-        // console.log("MainController.uploadFileContent - filename: " + fileName);
-        req.file('uploadFile').upload({
-            dirname: dirName,
-            saveAs: function (__newFileStream, cb) {
-                console.log(__newFileStream);
-                console.log(__newFileStream.filename);
-                cb(null, path.basename(__newFileStream.filename));
-            }
-        },function whenDone(err, files) {
-            if (err) {
-                console.log(err);
-                return res.negotiate(err);
-            }
-
-            if (files.length === 0) {
-                return res.badRequest('No file was uploaded');
-            }
-            console.log("MainController.uploadFileContent - file uploaded: " + files[0]);
-
-            return res.json({
-                name: files[0]
-            });
-        });
-    },
+    // /**
+    //  * @method
+    //  * @name downloadFileContent
+    //  * @description download a file from the remote file system
+    //  * @param{integer} - id: the file unique ID
+    //  * TODO move to another controller (?)
+    //  */
+    // downloadFileContent: function(req, res) {
+    //     let dataFile;
+    //     let co = new ControllerOut(res);
+    //     let fileId = _.parseInt(req.param('id'));
+    //     const operator = TokenService.getToken(req);
+    //
+    //     DataFile.findOne(fileId).populate('data').then(result => {
+    //
+    //         dataFile = result;
+    //         return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataFile.data[0].type);
+    //     })
+    //     .then(dataTypePrivilege => {
+    //
+    //         if(!dataTypePrivilege || (dataTypePrivilege.privilegeLevel !== DOWNLOAD && dataTypePrivilege.privilegeLevel !== EDIT)){
+    //             throw new PrivilegesError(`Authenticated user does not have download privileges on the data type ${dataFile.data.id}`);
+    //         }
+    //
+    //         console.log("downloadFileContent - dataFile");
+    //         console.log(dataFile);
+    //
+    //         let pathFrags = dataFile.uri.split("/");
+    //         let fileName = pathFrags[pathFrags.length-1];
+    //
+    //         // set response headers for file download
+    //         res.setHeader('Content-Disposition', 'attachment;filename='+fileName);
+    //
+            // return fileSystemManager.downloadFileContentAsync(dataFile.uri, res);
+    //     })
+    //     .then(result => {
+    //         return res.ok(); // res.json() ??
+    //     })
+    //     .catch(function(err) {
+    //         return co.error(err);
+    //     });
+    //
+    // },
+    //
+    // /**
+    //  * @method
+    //  * @name uploadFileContent
+    //  * @description upload a file to the local server storage
+    //  * TODO move to another controller (?)
+    //  */
+    //
+    // uploadFileContent: function(req, res) {
+    //
+    //     let dirName, fileName, fsPath = sails.config.xtens.fileSystemConnection.path,
+    //         landingDir = sails.config.xtens.fileSystemConnection.landingDirectory;
+    //
+    //
+    //     // if the local-fs strategy is not in use, don't allow local file upload
+    //     if (fileSystemManager.type && fileSystemManager.type !== 'local-fs') {
+    //         return res.badRequest('Files cannot be uploaded on server local file system.');
+    //     }
+    //
+    //     // if path exists use local fs connection, otherwise use default local storage connection
+    //     dirName = fsPath ? path.resolve(fsPath, landingDir) : path.resolve(DEFAULT_LOCAL_STORAGE, 'tmp');
+    //
+    //     // fileName = req.param("fileName") || req.param('filename') || 'uploaded-file';
+    //     console.log("MainController.uploadFileContent - dirname: " + dirName);
+    //     // console.log("MainController.uploadFileContent - filename: " + fileName);
+    //     req.file('uploadFile').upload({
+    //         dirname: dirName,
+    //         saveAs: function (__newFileStream, cb) {
+    //             console.log(__newFileStream);
+    //             console.log(__newFileStream.filename);
+    //             cb(null, path.basename(__newFileStream.filename));
+    //         }
+    //     },function whenDone(err, files) {
+    //         if (err) {
+    //             console.log(err);
+    //             return res.negotiate(err);
+    //         }
+    //
+    //         if (files.length === 0) {
+    //             return res.badRequest('No file was uploaded');
+    //         }
+    //         console.log("MainController.uploadFileContent - file uploaded: " + files[0]);
+    //
+    //         return res.json({
+    //             name: files[0]
+    //         });
+    //     });
+    // },
 
     /**
      * @method

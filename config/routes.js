@@ -67,8 +67,9 @@ module.exports.routes = {
     // Main Controller
     'POST /customisedData': {controller: 'main', action: 'executeCustomDataManagement'},
     'GET /fileManager': {controller: 'main', action: 'getFileSystemStrategy'},
-    'GET /fileContent': {controller: 'main', action: 'downloadFileContent'},
-    'POST /fileContent': {controller: 'main', action: 'uploadFileContent'},
+    // 'GET /fileContent': {controller: 'main', action: 'downloadFileContent'},
+    // 'POST /fileContent': {controller: 'main', action: 'uploadFileContent'},
+
 
     // 'POST /populateDB': {controller: 'main', action: 'populateDB'},
     // 'POST /migrate': {controller: 'main', action: 'migrate'},
