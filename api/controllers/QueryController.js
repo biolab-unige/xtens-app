@@ -40,7 +40,7 @@
      * @description perfor an advanced and nested query on the Data stored within the repository
      */
      dataSearch: function(req, res) {
-         let queryArgs = JSON.parse(req.body.queryArgs);
+         let queryArgs = _.isString(req.body.queryArgs) ? JSON.parse(req.body.queryArgs) : req.body.queryArgs;
          let queryObj, dataType, dataPrivilege, forbiddenFields, data;
          let idDataType = queryArgs.dataType;
          const operator = TokenService.getToken(req);
