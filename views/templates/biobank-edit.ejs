@@ -1,7 +1,7 @@
 <h1><%= __("biobank-manager") %></h1>
 <h2><%= biobank.id ? __("update-biobank") : __("create-biobank") %></h2>
 
-<div id="content"> 
+<div id="content">
 
     <form id="biobank-form" class="form-horizontal edit-biobank-form" role="form">
         <div class="form-group biobankform-group">
@@ -31,7 +31,7 @@
             </div>
             <label for="country" class="biobank-label"><%= __('country') %></label>
             <div class="biobank-halfinput-div">
-                <input text class="form-control" id="country" name="country" required 
+                <input text class="form-control" id="country" name="country" required
                 data-parsley-pattern="[a-zA-Z]+" data-parsley-length="[2,2]"></input>
             </div>
         </div>
@@ -53,3 +53,4 @@
         </div>
     </form>
 </div> <!-- content -->
+<div class="biobank-modal"></div>

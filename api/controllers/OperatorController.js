@@ -19,6 +19,7 @@ const ValidationError = require('xtens-utils').Errors.ValidationError;
 var OperatorController = {
 
     create: function(req, res) {
+        const co = new ControllerOut(res);
         console.log(req.allParams());
         return createUser(req.allParams())
 
@@ -30,6 +31,9 @@ var OperatorController = {
             console.log(operator);
             return res.json(200, operator);
 
+        }).catch(function(error) {
+            console.log(error.message);
+            return co.error(error);
         });
 
     },
@@ -39,7 +43,7 @@ var OperatorController = {
      * @name patchPassword
      * @description given a correct old password and a new password (with confirmation)
      *              updates the local stored password
-     */     
+     */
     patchPassword: function(req, res) {
         const co = new ControllerOut(res);
         const idOperator = TokenService.getToken(req).id;

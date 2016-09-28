@@ -11,6 +11,7 @@
     var DataTypeClasses = xtens.module("xtensconstants").DataTypeClasses;
     var MetadataComponent = xtens.module("metadatacomponent");
     var MetadataGroup = xtens.module("metadatagroup");
+    var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
 
     // XTENS router alias
     var router = xtens.router;
@@ -34,11 +35,11 @@
      */
     DataType.Model = Backbone.Model.extend({
 
-        urlRoot: '/dataType',
-
         defaults: {
             model: DataTypeClasses.DATA
         },
+
+        urlRoot: '/dataType',
 
         /**
          * @description flattens the metadata schema returning a 1D array containing all the metadata fields
@@ -221,6 +222,7 @@
             this.$el.html(this.template({__: i18n, dataType: this.model}));
             this.$form = this.$("form");
             this.$form.parsley(parsleyOpts);
+            this.$modal = this.$(".datatype-modal");
             this.stickit();
             if (this.model.get("schema") && _.isArray(this.model.get('schema').body)) {
                 var body = this.model.get('schema').body;
@@ -240,7 +242,8 @@
 
         events: {
             'submit .edit-datatype-form': 'saveDataType',
-            'click .add-metadata-group': 'addMetadataGroupOnClick'    // not used yet
+            'click .add-metadata-group': 'addMetadataGroupOnClick',  // not used yet
+            'click button.delete': 'deleteDataType'
         },
 
         serialize: function() {
@@ -256,6 +259,7 @@
             var id = $('#id').val();
             var header = this.$("#schemaHeader").find("select, input, textarea").serializeObject();
             header.fileUpload = header.fileUpload ? true : false;
+            var that = this;
             var body = this.serialize();
             var dataTypeDetails = {
                 id: id,
@@ -271,12 +275,71 @@
             this.model.save(dataTypeDetails, {
                 //  patch: true,
                 success: function(dataType) {
-                    console.log(dataType);
-                    router.navigate('datatypes', {trigger: true});
+                    if (that.modal) {
+                        that.modal.hide();
+                    }
+                    var modal = new ModalDialog({
+                        title: i18n('ok'),
+                        body: i18n('datatype-correctly-stored-on-server')
+                    });
+                    that.$modal.append(modal.render().el);
+                    $('.modal-header').addClass('alert-success');
+                    modal.show();
+
+                    setTimeout(function(){ modal.hide(); }, 1200);
+                    that.$('.datatype-modal').on('hidden.bs.modal', function (e) {
+                        modal.remove();
+                        xtens.router.navigate('datatypes', {trigger: true});
+                    });
+
                 },
-                error: xtens.error
+                error: function(model, res) {
+                    xtens.error(res);
+                }
             });
             return false;
+        },
+
+        deleteDataType: function(ev) {
+            ev.preventDefault();
+            var that = this;
+            if (this.modal) {
+                this.modal.hide();
+            }
+
+            var modal = new ModalDialog({
+                template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
+                title: i18n('confirm-deletion'),
+                body: i18n('datatype-will-be-permanently-deleted-are-you-sure')
+            });
+
+            this.$modal.append(modal.render().el);
+            modal.show();
+
+            this.$('#confirm-delete').click( function (e) {
+                modal.hide();
+
+                that.model.destroy({
+                    success: function(model, res) {
+                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
+                        modal.title= i18n('ok');
+                        modal.body= i18n('datatype-deleted');
+                        that.$modal.append(modal.render().el);
+                        $('.modal-header').addClass('alert-success');
+                        modal.show();
+                        setTimeout(function(){ modal.hide(); }, 1200);
+                        that.$modal.on('hidden.bs.modal', function (e) {
+                            modal.remove();
+                            xtens.router.navigate('datatypes', {trigger: true});
+                        });
+                    },
+                    error: function(model, res) {
+                        xtens.error(res);
+                    }
+                });
+                return false;
+            });
+
         },
 
         addMetadataGroupOnClick: function(ev) {

@@ -3,13 +3,14 @@
  * @description This file conatins all the Backbone classes for handling Samples
  */
 (function(xtens, Sample) {
-
+    var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames;
     var i18n = xtens.module("i18n").en;
     var DataType = xtens.module("datatype");
     var DataTypeModel = xtens.module("datatype").Model;
     var Data = xtens.module("data");
     var Subject = xtens.module("subject");
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
+    var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
 
     var MISSING_VALUE_ALERT = true;
 
@@ -187,7 +188,99 @@
 
         events: {
             'click #editDonor': 'editDonor',
-            'click #save': 'saveData'
+            'click #save': 'saveSample',
+            "click button.delete": "deleteSample"
+        },
+
+        /**
+         * @method
+         * @name saveData
+         * @description retrieve all the Sample properties from the form (the metadata value(s)-unit(s) pairs, the files' paths, etc...)
+         *              and save the Sample model on the server
+         * @param {event} - the form submission event
+         * @return {false} - to suppress the HTML form submission
+         */
+        saveSample: function(ev) {
+            var targetRoute = $(ev.currentTarget).data('targetRoute') || 'samples';
+            if (this.schemaView && this.schemaView.serialize) {
+                var that = this;
+                this.$modal = this.$(".sample-modal");
+                var metadata = this.schemaView.serialize(useFormattedNames);
+                this.model.set("metadata", metadata);
+                // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
+                this.retrieveAndSetFiles();
+                // console.log(this.model);
+                this.model.save(null, {
+                    success: function(data) {
+
+                        if (that.modal) {
+                            that.modal.hide();
+                        }
+                        var modal = new ModalDialog({
+                            title: i18n('ok'),
+                            body: i18n('sample-correctly-stored-on-server')
+                        });
+                        that.$modal.append(modal.render().el);
+                        $('.modal-header').addClass('alert-success');
+                        modal.show();
+
+                        setTimeout(function(){ modal.hide(); }, 1200);
+                        that.$('.sample-modal').on('hidden.bs.modal', function (e) {
+                            modal.remove();
+                            xtens.router.navigate(targetRoute, {trigger: true});
+                        });
+
+                    },
+                    error: function(model, res) {
+                        xtens.error(res);
+                    }
+                });
+            }
+            return false;
+        },
+
+        deleteSample: function(ev) {
+            ev.preventDefault();
+            var that = this;
+            this.$modal = this.$(".sample-modal");
+            if (this.modal) {
+                this.modal.hide();
+            }
+
+            var modal = new ModalDialog({
+                template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
+                title: i18n('confirm-deletion'),
+                body: i18n('sample-will-be-permanently-deleted-are-you-sure')
+            });
+
+            this.$modal.append(modal.render().el);
+            modal.show();
+
+            this.$('#confirm-delete').click( function (e) {
+                modal.hide();
+                var targetRoute = $(ev.currentTarget).data('targetRoute') || 'samples';
+
+                that.model.destroy({
+                    success: function(model, res) {
+                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
+                        modal.title= i18n('ok');
+                        modal.body= i18n('sample-deleted');
+                        that.$modal.append(modal.render().el);
+                        $('.modal-header').addClass('alert-success');
+                        modal.show();
+                        setTimeout(function(){ modal.hide(); }, 1200);
+                        that.$modal.on('hidden.bs.modal', function (e) {
+                            modal.remove();
+                            xtens.router.navigate(targetRoute, {trigger: true});
+                        });
+                    },
+                    error: function(model, res) {
+                        xtens.error(res);
+                    }
+                });
+                return false;
+            });
+
         },
 
         /**
@@ -214,7 +307,7 @@
             var donors = new Subject.List(), that = this;
             donors.fetch({
                 data: $.param({
-                    select: JSON.stringify(["id", "code", "personalInfo"]),
+                    select: JSON.stringify(["id", "code", "personalInfo", "type"]),
                     limit: 2000
                 }),
                 success: function(donors) {

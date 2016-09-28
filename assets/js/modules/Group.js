@@ -7,21 +7,21 @@
 (function(xtens, Group) {
 
     // dependencies
-    var i18n = xtens.module("i18n").en;    
+    var i18n = xtens.module("i18n").en;
     var router = xtens.router;
     var GroupPrivilegeLevels = xtens.module("xtensconstants").GroupPrivilegeLevels;
     var Datatype = xtens.module("datatype");
     var Operator = xtens.module("operator");
-
+    var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
 
     Group.Model = Backbone.Model.extend({
-        urlRoot: '/group',
+        urlRoot: '/group'
     });
 
 
     Group.List = Backbone.Collection.extend({
         url: '/group',
-        model: Group.Model,
+        model: Group.Model
     });
 
 
@@ -32,20 +32,25 @@
      */
     Group.Views.Edit = Backbone.View.extend({
 
+        events: {
+            'click #save': 'saveGroup',
+            'click #delete': 'deleteGroup'
+        },
+
         tagName: 'div',
         className: 'group',
 
         initialize: function(options) {
             // _.bindAll(this,'fetchSuccess');
             $("#main").html(this.el);
-            this.template = JST["views/templates/group-edit.ejs"]; 
+            this.template = JST["views/templates/group-edit.ejs"];
             this.render();
         },
 
         bindings: {
             '#name': 'name',
 
-            '#privilege-level': { 
+            '#privilege-level': {
                 observe: 'privilegeLevel',
                 selectOptions: {
                     collection: function() {
@@ -81,36 +86,79 @@
 
         render: function()  {
             this.$el.html(this.template({__:i18n, group: this.model}));
+            this.$modal = this.$(".group-modal");
             this.stickit();
             return this;
         },
 
-        events: {
-            'click #save': 'saveGroup',
-            'click #delete': 'deleteGroup'
-        },
-        
+
         saveGroup: function(ev) {
+            var that = this;
             this.model.save(null, {
                 success: function(group) {
-                    console.log("Group.Views.Edit.saveGroup - group correctly inserted/updated!");
-                    router.navigate('groups', {trigger: true});
+                    if (this.modal) {
+                        this.modal.hide();
+                    }
+                    var modal = new ModalDialog({
+                        title: i18n('ok'),
+                        body: i18n('group-correctly-stored-on-server')
+                    });
+                    that.$modal.append(modal.render().el);
+                    $('.modal-header').addClass('alert-success');
+                    modal.show();
+
+                    setTimeout(function(){ modal.hide(); }, 1200);
+                    that.$('.group-modal').on('hidden.bs.modal', function (e) {
+                        modal.remove();
+                        xtens.router.navigate('groups', {trigger: true});
+                    });
                 },
-                error: xtens.error,    
+                error: xtens.error
             });
 
             return false;
         },
-        
+
         deleteGroup: function (ev) {
-            this.group.destroy({
-                success: function () {
-                    console.log('Group.Views.Edit - group destroyed');
-                    router.navigate('groups', {trigger:true});
-                },
-                error: xtens.error
+            ev.preventDefault();
+            var that = this;
+            if (this.modal) {
+                this.modal.hide();
+            }
+
+            var modal = new ModalDialog({
+                template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
+                title: i18n('confirm-deletion'),
+                body: i18n('group-will-be-permanently-deleted-are-you-sure')
             });
-            return false;
+
+            this.$modal.append(modal.render().el);
+            modal.show();
+
+            this.$('#confirm-delete').click( function (e) {
+                modal.hide();
+                var targetRoute = $(ev.currentTarget).data('targetRoute') || 'data';
+
+                that.model.destroy({
+                    success: function(model, res) {
+                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
+                        modal.title= i18n('ok');
+                        modal.body= i18n('group-deleted');
+                        that.$modal.append(modal.render().el);
+                        $('.modal-header').addClass('alert-success');
+                        modal.show();
+                        setTimeout(function(){ modal.hide(); }, 1200);
+                        that.$modal.on('hidden.bs.modal', function (e) {
+                            modal.remove();
+                            xtens.router.navigate('groups', {trigger: true});
+                        });
+                    },
+                    error: function(model, res) {
+                        xtens.error(res);
+                    }
+                });
+                return false;
+            });
         }
     });
 
@@ -136,6 +184,7 @@
                 },
                 error: 	xtens.error
             });
+            return this;
         }
 
     });

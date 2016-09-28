@@ -1,6 +1,6 @@
 <h2><%= privilege.id ? __("update-data-type-privileges") : __("create-data-type-privileges") %></h2>
 
-<div id="content"> 
+<div id="content">
 
     <form class="form-horizontal edit-datatypeprivileges-form" role="form">
 
@@ -16,7 +16,7 @@
             <div class="col-md-6">
                 <% if (!privilege.id) {%>
                 <select class ="form-control" name="data-type" id="data-type" ></select>
-                <% } else {%> 
+                <% } else {%>
                 <span class="form-control" name="data-type" id="data-type">
                     <%= dataType.name %>
                 </span>
@@ -44,3 +44,4 @@
     </form>
 
 </div>
+<div class="privilege-modal"></div>

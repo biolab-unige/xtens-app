@@ -7,7 +7,7 @@
 
     // TODO: retrieve this info FROM DATABASE ideally or from the server-side anyway
     var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames;
-
+    var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
     var i18n = xtens.module("i18n").en;
     var Data = xtens.module("data");
     var DataTypeModel = xtens.module("datatype").Model;
@@ -117,7 +117,8 @@
         },
 
         events: {
-            "click #save": "saveData"
+            "click #save": "saveSubject",
+            "click button.delete": "deleteSubject"
             // "click #add-personal-details": "addPersonalDetailsView"
         },
 
@@ -130,7 +131,9 @@
          * @return {false} - to suppress the HTML form submission
          * @override
          */
-        saveData: function() {
+        saveSubject: function() {
+            this.$modal = this.$(".subject-modal");
+            var that = this;
             var metadata = this.schemaView && this.schemaView.serialize(useFormattedNames);
             this.model.set("metadata", metadata);
             // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
@@ -139,13 +142,71 @@
             }
             this.model.save(null, {
                 success: function(subject) {
-                    xtens.router.navigate('subjects', {trigger: true});
+                    if (that.modal) {
+                        that.modal.hide();
+                    }
+                    var modal = new ModalDialog({
+                        title: i18n('ok'),
+                        body: i18n('subject-correctly-stored-on-server')
+                    });
+                    that.$modal.append(modal.render().el);
+                    $('.modal-header').addClass('alert-success');
+                    modal.show();
+                    setTimeout(function(){ modal.hide(); }, 1200);
+                    that.$('.subject-modal').on('hidden.bs.modal', function (e) {
+                        modal.remove();
+                        xtens.router.navigate('subjects', {trigger: true});
+                    });
                 },
                 error: function(model, res) {
                     xtens.error(res);
                 }
             });
             return false;
+        },
+
+        deleteSubject: function(ev) {
+            ev.preventDefault();
+            var that = this;
+            this.$modal = this.$(".subject-modal");
+            if (this.modal) {
+                this.modal.hide();
+            }
+
+            var modal = new ModalDialog({
+                template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
+                title: i18n('confirm-deletion'),
+                body: i18n('subject-will-be-permanently-deleted-are-you-sure')
+            });
+
+            this.$modal.append(modal.render().el);
+            modal.show();
+
+            this.$('#confirm-delete').click( function (e) {
+                modal.hide();
+                var targetRoute = $(ev.currentTarget).data('targetRoute') || 'subjects';
+
+                that.model.destroy({
+                    success: function(model, res) {
+                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
+                        modal.title= i18n('ok');
+                        modal.body= i18n('subject-deleted');
+                        that.$modal.append(modal.render().el);
+                        $('.modal-header').addClass('alert-success');
+                        modal.show();
+                        setTimeout(function(){ modal.hide(); }, 1200);
+                        that.$modal.on('hidden.bs.modal', function (e) {
+                            modal.remove();
+                            xtens.router.navigate(targetRoute, {trigger: true});
+                        });
+                    },
+                    error: function(model, res) {
+                        xtens.error(res);
+                    }
+                });
+                return false;
+            });
+
         },
 
         addPersonalDetailsView: function() {
@@ -165,6 +226,10 @@
      * @description view containing the details (metadata and files) of a Subject (Subject.Model) instance
      */
     Subject.Views.Details = Data.Views.Details.fullExtend({
+
+        events: {
+            'click #moreData':'loadResults'
+        },
 
         /**
          * @method
@@ -265,11 +330,9 @@
                     that.render({pageActive:pageActive});
                 }
             });
-        },
-
-        events: {
-            'click #moreData':'loadResults'
         }
+
+
     });
 
     Subject.Views.Graph = Backbone.View.extend({
@@ -297,7 +360,7 @@
         createGraph : function () {
             var patient = document.getElementById('select').value;
 
-            // retrieve all the descendant samples and data for the given patient
+            // retrieve all the descendant subjects and data for the given patient
             $.post('/subjectGraph',{
                 idPatient:patient
             },function(err,res,body){

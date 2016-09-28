@@ -7,6 +7,7 @@
     // dependencies
     var i18n = xtens.module("i18n").en;
     var ContactInformation = xtens.module("contactinformation");
+    var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
 
     // XTENS router alias
     var router = xtens.router;
@@ -31,11 +32,16 @@
         url: '/biobank',
         model: Biobank.Model
     });
-    
+
     Biobank.Views.Edit = Backbone.View.extend({
-        
+
         tagName: 'div',
         className: 'biobank',
+
+        events: {
+            'submit #biobank-form': 'saveBiobank',
+            'click button.delete': 'deleteBiobank'
+        },
 
         initialize: function(options) {
             $("#main").html(this.el);
@@ -60,34 +66,98 @@
 
         render: function() {
             this.$el.html(this.template({__: i18n, biobank: this.model}));
+            this.$modal = this.$(".biobank-modal");
             this.stickit();
             return this;
-        },
-        
-        events: {
-            'submit #biobank-form': 'saveBiobank'
         },
 
         saveBiobank: function() {
             var contactInformation = _.clone(this.personalContactView.model.attributes);
+            var that = this;
+
             this.model.save({
-                contactInformation: contactInformation,
+                contactInformation: contactInformation
             }, {
                 success: function(biobank) {
-                    router.navigate('biobanks', {trigger: true});
+                    if (that.modal) {
+                        that.modal.hide();
+                    }
+                    var modal = new ModalDialog({
+                        title: i18n('ok'),
+                        body: i18n('biobank-correctly-stored-on-server')
+                    });
+                    that.$modal.append(modal.render().el);
+                    $('.modal-header').addClass('alert-success');
+                    modal.show();
+
+                    setTimeout(function(){ modal.hide(); }, 1200);
+                    that.$('.biobank-modal').on('hidden.bs.modal', function (e) {
+                        modal.remove();
+                        xtens.router.navigate('biobanks', {trigger: true});
+                    });
+
                 },
-                error: xtens.error
+                error: function(model, res) {
+                    xtens.error(res);
+                }
             });
             return false;
+        },
+
+        /**
+         * @method
+         * @name deleteDate
+         * TODO - not implemented yet
+         */
+        deleteBiobank: function(ev) {
+            ev.preventDefault();
+            var that = this;
+            if (this.modal) {
+                this.modal.hide();
+            }
+
+            var modal = new ModalDialog({
+                template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
+                title: i18n('confirm-deletion'),
+                body: i18n('biobank-will-be-permanently-deleted-are-you-sure')
+            });
+
+            this.$modal.append(modal.render().el);
+            modal.show();
+
+            this.$('#confirm-delete').click( function (e) {
+                modal.hide();
+
+                that.model.destroy({
+                    success: function(model, res) {
+                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
+                        modal.title= i18n('ok');
+                        modal.body= i18n('biobank-deleted');
+                        that.$modal.append(modal.render().el);
+                        $('.modal-header').addClass('alert-success');
+                        modal.show();
+                        setTimeout(function(){ modal.hide(); }, 1200);
+                        that.$modal.on('hidden.bs.modal', function (e) {
+                            modal.remove();
+                            xtens.router.navigate('biobanks', {trigger: true});
+                        });
+                    },
+                    error: function(model, res) {
+                        xtens.error(res);
+                    }
+                });
+                return false;
+            });
+
         }
-    
+
     });
 
     Biobank.Views.List = Backbone.View.extend({
         tagName: 'div',
         className: 'biobanks',
 
-         initialize: function() {
+        initialize: function() {
             $("#main").html(this.el);
             this.template = JST["views/templates/biobank-list.ejs"];
             this.render();

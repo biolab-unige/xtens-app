@@ -658,6 +658,11 @@
      */
     Data.Views.Edit = Backbone.View.extend({
 
+        events: {
+            "click #save": "saveData",
+            "click button.delete": "deleteData"
+        },
+
         tagName: 'div',
         className: 'data',
 
@@ -689,7 +694,7 @@
             this.stickit();
             this.listenTo(this.model, 'change:type', this.dataTypeOnChange);
             this.$('#tags').select2({tags: []});
-
+            this.$modal = this.$(".data-modal");
             // initialize Parsley
             this.$form.parsley(parsleyOpts);
             /*
@@ -783,11 +788,6 @@
 
         },
 
-        events: {
-            "click #save": "saveData",
-            "click button.delete": "deleteData"
-        },
-
         /**
          * @method
          * @name saveData
@@ -799,6 +799,7 @@
         saveData: function(ev) {
             var targetRoute = $(ev.currentTarget).data('targetRoute') || 'data';
             if (this.schemaView && this.schemaView.serialize) {
+                var that = this;
                 var metadata = this.schemaView.serialize(useFormattedNames);
                 this.model.set("metadata", metadata);
                 // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
@@ -806,7 +807,24 @@
                 console.log(this.model);
                 this.model.save(null, {
                     success: function(data) {
-                        xtens.router.navigate(targetRoute, {trigger: true});
+
+                        if (that.modal) {
+                            that.modal.hide();
+                        }
+                        var modal = new ModalDialog({
+                            title: i18n('ok'),
+                            body: i18n('data-correctly-stored-on-server')
+                        });
+                        that.$modal.append(modal.render().el);
+                        $('.modal-header').addClass('alert-success');
+                        modal.show();
+
+                        setTimeout(function(){ modal.hide(); }, 1200);
+                        that.$('.data-modal').on('hidden.bs.modal', function (e) {
+                            modal.remove();
+                            xtens.router.navigate(targetRoute, {trigger: true});
+                        });
+
                     },
                     error: function(model, res) {
                         xtens.error(res);
@@ -823,17 +841,45 @@
          */
         deleteData: function(ev) {
             ev.preventDefault();
-            var targetRoute = $(ev.currentTarget).data('targetRoute') || 'data';
-            this.model.destroy({
-                success: function(model, res) {
-                    console.log(res.statusCode);
-                    xtens.router.navigate(targetRoute, {trigger: true});
-                },
-                error: function(model, res) {
-                    xtens.error(res);
-                }
+            var that = this;
+            if (this.modal) {
+                this.modal.hide();
+            }
+
+            var modal = new ModalDialog({
+                template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
+                title: i18n('confirm-deletion'),
+                body: i18n('data-will-be-permanently-deleted-are-you-sure')
             });
-            return false;
+
+            this.$modal.append(modal.render().el);
+            modal.show();
+
+            this.$('#confirm-delete').click( function (e) {
+                modal.hide();
+                var targetRoute = $(ev.currentTarget).data('targetRoute') || 'data';
+
+                that.model.destroy({
+                    success: function(model, res) {
+                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
+                        modal.title= i18n('ok');
+                        modal.body= i18n('data-deleted');
+                        that.$modal.append(modal.render().el);
+                        $('.modal-header').addClass('alert-success');
+                        modal.show();
+                        setTimeout(function(){ modal.hide(); }, 1200);
+                        that.$modal.on('hidden.bs.modal', function (e) {
+                            modal.remove();
+                            xtens.router.navigate(targetRoute, {trigger: true});
+                        });
+                    },
+                    error: function(model, res) {
+                        xtens.error(res);
+                    }
+                });
+                return false;
+            });
+
         },
 
         getSelectedSchema: function(dataType) {
@@ -1038,6 +1084,11 @@
      */
     Data.Views.List = Backbone.View.extend({
 
+        events: {
+            'click #newData': 'openNewDataView',
+            'click #moreData':'loadResults'
+        },
+
         tagName: 'div',
         className: 'data',
 
@@ -1103,10 +1154,7 @@
             });
         },
 
-        events: {
-            'click #newData': 'openNewDataView',
-            'click #moreData':'loadResults'
-        },
+
 
         openNewDataView: function(ev) {
             ev.preventDefault();
@@ -1133,16 +1181,12 @@
      */
     Data.Views.DedicatedManagement = Backbone.View.extend({
 
+        events: {
+            'click #save': 'saveCustomisedData'
+        },
+
         tagName: 'div',
         className: 'data',
-
-        dropzoneOpts: {
-            url: '/fileContent',
-            paramName: "uploadFile",
-            maxFilesize: 2048, // max 2 GiB
-            uploadMultiple: false,
-            method: "POST"
-        },
 
         initialize: function() {
             _.bindAll(this, 'saveOnSuccess');
@@ -1150,6 +1194,14 @@
             this.template = JST["views/templates/dedicated-data-edit.ejs"];
             this.render();
             this.$modal = this.$(".customised-data-modal");
+        },
+
+        dropzoneOpts: {
+            url: '/fileContent',
+            paramName: "uploadFile",
+            maxFilesize: 2048, // max 2 GiB
+            uploadMultiple: false,
+            method: "POST"
         },
 
         render: function() {
@@ -1169,9 +1221,7 @@
             return this;
         },
 
-        events: {
-            'click #save': 'saveCustomisedData'
-        },
+
 
         saveCustomisedData: function(ev) {
             ev.preventDefault();

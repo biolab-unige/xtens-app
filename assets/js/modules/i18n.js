@@ -32,6 +32,9 @@
         "delete": "Delete",
         "metadata-group-name": "Metadata Group Name",
         "metadata-loop-name": "Metadata Loop Name",
+        "datatype-deleted": "Datatype Deleted",
+        "datatype-will-be-permanently-deleted-are-you-sure": "Datatype will be permanently deleted. Are you sure?",
+        'datatype-correctly-stored-on-server': "Datatype correctly stored on server",
         // assets/js/modules/DataType.js --> DataType.Model
         "please-add-at-least-a-metadata-group": "Please add at least a Metadata Group",
         "please-add-at-least-a-metadata-field": "Please add at least a Metadata Field",
@@ -105,6 +108,9 @@
         "create-operator": "Create Operator",
         "save-operator" : "Save Operator",
         "update-operator" : "Update Operator",
+        "operator-deleted": "Operator Deleted",
+        "operator-will-be-permanently-deleted-are-you-sure": "Operator will be permanently deleted. Are you sure?",
+        'operator-correctly-stored-on-server': "Operator correctly stored on server",
         /* views/templates/data-edit-partial.ejs */
         "date": "Date",
         "tags": "Tags/Keywords",
@@ -120,6 +126,9 @@
         "can-access-personal-data": "Can Access Personal Data",
         "can-access-sensitive-data": "Can Access Sensitive Data",
         "save-group": "Save Group",
+        "group-deleted": "Group Deleted",
+        "group-will-be-permanently-deleted-are-you-sure": "Group will be permanently deleted. Are you sure?",
+        'group-correctly-stored-on-server': "Group correctly stored on server",
         /*views/templates/association.ejs */
         "associated":"Associated",
         "no-associated":"Not Associated",
@@ -144,6 +153,9 @@
         "create-subject": "Create Subject",
         "update-subject": "Update Subject",
         "add-personal-details": "Add Personal Details",
+        "subject-deleted": "Subject Deleted",
+        "subject-will-be-permanently-deleted-are-you-sure": "Subject will be permanently deleted. Are you sure?",
+        "subject-correctly-stored-on-server": "Subject correctly stored on server",
         /* views/templates/subject-edit-partial.ejs */
         "code": "Code",
         "project": "Project",
@@ -157,6 +169,9 @@
         "donor": "Donor",
         "edit-donor": "Edit Donor",
         "parent-sample": "Parent Sample",
+        "sample-deleted": "Sample Deleted",
+        'sample-correctly-stored-on-server': "Sample correctly stored on server",
+        "sample-will-be-permanently-deleted-are-you-sure": "Sample will be permanently deleted. Are you sure?",
         /* views/templates/sample-list */
         "new-sample": "New Sample",
         "diagnosis": "Diagnosis",
@@ -166,7 +181,6 @@
         /* view/templates/biobank-edit */
         "biobanks": "Biobanks",
         "new-biobank": "New Biobank",
-        /* view/templates/biobank-edit */
         "biobank-manager": "Biobank Manager",
         "create-biobank": "Create Biobank",
         "update-biobank": "Update Biobank",
@@ -177,6 +191,9 @@
         "biobank-url": "Biobank URL",
         "juristic-person": "Juristic Person",
         "save-biobank": "Save Biobank",
+        "biobank-deleted": "Biobank Deleted",
+        "biobank-will-be-permanently-deleted-are-you-sure": "Biobank will be permanently deleted. Are you sure?",
+        'biobank-correctly-stored-on-server': "Biobank correctly stored on server",
         /* view/templates/contactinformation-edit.js */
         "contact-information": "Contact Information",
         "phone": "Phone",
@@ -232,12 +249,19 @@
         /* views/templates/datatypeprivileges-list.ejs */
         "data-type-name": "Data Type Name",
         "new-data-type-privilege": "New Data Type Privilege",
+        /* views/templates/datatypeprivileges-edit.ejs */
+        "privilege-deleted": "Privilege Deleted",
+        "privilege-will-be-permanently-deleted-are-you-sure": "Privilege will be permanently deleted. Are you sure?",
+        'privilege-correctly-stored-on-server': "Privilege correctly stored on server",
         /* views/templates/data-list.ejs */
         "details": "Details",
         /* views/templates/dedicated-data-management */
         "customised-data-management": "Customised Data Management",
         /* assets/js/modules/Data.js */
         "ok": "OK",
+        "confirm-deletion": "CONFIRM DELETION",
+        "data-deleted": "Data Deleted",
+        "data-will-be-permanently-deleted-are-you-sure": "Data will be permanently deleted. Are you sure?",
         "data-correctly-stored-on-server": "Data correctly stored on server",
         "please-wait-for-data-registration-to-complete": "Please wait for data registration to complete",
         /* views/templates/update-password.ejs */

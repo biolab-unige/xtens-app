@@ -12,7 +12,7 @@
      * @description A class to implement a modal dialog based on Bootstrap Library
      */
     XtensBootstrap.Views.ModalDialog = Backbone.View.extend({
-        
+  
         className: 'xtens-modal',
 
         events: {
@@ -20,7 +20,7 @@
         },
 
         initialize: function(options) {
-            this.template = JST['views/templates/dialog-bootstrap.ejs'];
+            options.template ? this.template = options.template: this.template = JST['views/templates/dialog-bootstrap.ejs'];
             this.title = options.title;
             this.body = options.body;
         },
@@ -57,7 +57,7 @@
      * @name XtensBootstrap.Views.Popover
      */
     XtensBootstrap.Views.Popover = Backbone.View.extend({
-        
+
         className: 'xtens-popover',
 
         initialize: function(options) {
