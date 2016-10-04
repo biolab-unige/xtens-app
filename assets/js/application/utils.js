@@ -18,11 +18,11 @@
         console.log(res.message);
 
         var error = res.responseJSON.error._internal;
-        var details = res.responseJSON.error.message.details;
+        var details = res.responseJSON.error.message && res.responseJSON.error.message.details;
 
-        var title = error.name || res.statusMessage || 'Error';
-        var body = _.isArray(details) ? details[0].message : error.message ? error.message : 'Error - Generic';
-        if(_.isArray(details) && details[0].path)  {
+        var title = (error && error.name) || res.statusMessage || 'Error';
+        var body = _.isArray(details) ? details[0].message : (error && error.message) ? error.message : 'Error - Generic';
+        if(_.isArray(details) && details[0].path) {
             var path = details[0].path.split(".");
             body = path[0] + " " + path[1].toUpperCase() + " " + body;
         }
