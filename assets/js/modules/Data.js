@@ -659,7 +659,7 @@
     Data.Views.Edit = Backbone.View.extend({
 
         events: {
-            "click #save": "saveData",
+            "submit .edit-data-form": "saveData",
             "click button.delete": "deleteData"
         },
 

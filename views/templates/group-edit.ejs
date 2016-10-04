@@ -6,14 +6,14 @@
         $(document).ready(function() { $("select#dissociationop").select2(); });
     </script>
 
-    <form name = "Myform" class="form-horizontal edit-group-form" role="form">
+    <form name = "Myform" class="form-horizontal edit-group-form" role="form" data-parsley-trigger="focusout" data-parsley-validate>
 
         <legend class="legend"align="center"><%= group ? 'Edit' : 'New' %> Group</legend>
 
         <div class="form-group row">
             <label for="name" class="col-md-3 control-label"><%= __("name") %></label>
             <div class="col-md-6">
-                <input class ="form-control" name="name" id="name" type="text" value="<%= group ? group.get('name') : '' %>">
+                <input required class ="form-control" name="name" id="name" type="text" value="<%= group ? group.get('name') : '' %>">
             </div>
         </div>
 

@@ -1,7 +1,7 @@
 <h1><%= __("data-manager") %></h1>
 <h2><%= data.id ? __("update-data") : __("create-data") %></h2>
 <div id="content">
-    <form class="form-horizontal edit-data-form" role="form">
+    <form class="form-horizontal edit-data-form" role="form" data-parsley-trigger="focusout" data-parsley-validate>
         <div class="container data-header-cnt">
             <div id="data-header-row" class="row data-header-row">
                 <div id="data-header" class="data-header-col">

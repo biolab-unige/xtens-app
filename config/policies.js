@@ -36,6 +36,7 @@ module.exports.policies = {
 
     OperatorController: {
         '*': ['bearerAuth', 'isWheel'],
+        find: 'bearerAuth',
         'patchPassword': 'bearerAuth'
     },
 

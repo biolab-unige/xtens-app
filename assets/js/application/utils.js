@@ -4,8 +4,8 @@
 
 
 (function(xtens) {
-    
-    var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog; 
+
+    var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
 
     /**
      * @method
@@ -14,34 +14,35 @@
      */
     function handleError(res){
         var modal;
-        if (res.status === 403) {
-            window.location.replace('/#login');
-        }
-        else if (res.status === 401) {
-            window.location.replace('/#login');
-        }
-        else {
-            console.log(res.message);
-            
-            var message = res.responseJSON.error.message;
-            var details = res.responseJSON.error.message.details; 
 
-            var title = message.name || res.statusMessage || 'Error';
-            var body = _.isArray(details) ? details[0].message : 'Error - Generic';
+        console.log(res.message);
 
-            modal = new ModalDialog({
-                title: title,
-                body: body
-            });
-            
-            $("#main").append(modal.render().el);
-            modal.show();
-            
-            $('#main .xtens-modal').on('hidden.bs.modal', function (e) {
-                modal.remove();
-            });
+        var error = res.responseJSON.error._internal;
+        var details = res.responseJSON.error.message.details;
 
+        var title = error.name || res.statusMessage || 'Error';
+        var body = _.isArray(details) ? details[0].message : error.message ? error.message : 'Error - Generic';
+        if(_.isArray(details) && details[0].path)  {
+            var path = details[0].path.split(".");
+            body = path[0] + " " + path[1].toUpperCase() + " " + body;
         }
+        modal = new ModalDialog({
+            title: title,
+            body: body
+        });
+
+        $("#main").append(modal.render().el);
+        $('.modal-header').addClass('alert-danger');
+        modal.show();
+
+        $('#main .xtens-modal').on('hidden.bs.modal', function (e) {
+
+            modal.remove();
+            if (res.status === (403 || 401)) {
+                window.location.replace('/#homepage');
+            }
+        });
+
     }
 
     xtens.error = handleError;
@@ -128,7 +129,7 @@
 
     /*  $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
         options.url = 'http://localhost:1337' + options.url;
-        });  */   
+        });  */
 
     /**
      *  @method

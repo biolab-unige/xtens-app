@@ -16,6 +16,7 @@
     var sexOptions = xtens.module("xtensconstants").SexOptions;
 
     var MISSING_VALUE_ALERT = true;
+
     /*
        function initializeProjectsField($el, model, option) {
        var data =
@@ -116,8 +117,16 @@
             }
         },
 
+        // render : function () {
+        //     this.$el.html(this.template({__: i18n, data: this.model}));
+        //
+        //     this.$form = this.$('form');
+        //     this.$form.parsley(parsleyOpts);
+        //     return this;
+        // },
+
         events: {
-            "click #save": "saveSubject",
+            "submit .edit-subject-form": "saveSubject",
             "click button.delete": "deleteSubject"
             // "click #add-personal-details": "addPersonalDetailsView"
         },
@@ -131,7 +140,7 @@
          * @return {false} - to suppress the HTML form submission
          * @override
          */
-        saveSubject: function() {
+        saveSubject: function(ev) {
             this.$modal = this.$(".subject-modal");
             var that = this;
             var metadata = this.schemaView && this.schemaView.serialize(useFormattedNames);
@@ -214,7 +223,7 @@
             this.personalDetailsView = new PersonalDetails.Views.Edit({model: model});
             // var $parent = $(ev.currentTarget).parent();
             this.$('#personal-details').empty();
-            this.$('#personal-details').html(this.personalDetailsView.render().el);
+            this.$('#personal-details').append(this.personalDetailsView.render().el);
         }
 
     });
@@ -271,6 +280,10 @@
 
 
     Subject.Views.List = Backbone.View.extend({
+
+        events: {
+            'click #moreData':'loadResults'
+        },
 
         tagName: 'div',
         className: 'subject',

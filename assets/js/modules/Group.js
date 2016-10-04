@@ -14,6 +14,18 @@
     var Operator = xtens.module("operator");
     var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
 
+    var parsleyOpts = {
+        priorityEnabled: false,
+        // excluded: "select[name='fieldUnit']",
+        successClass: "has-success",
+        errorClass: "has-error",
+        classHandler: function(el) {
+            return el.$element.parent();
+        },
+        errorsWrapper: "<span class='help-block'></span>",
+        errorTemplate: "<span></span>"
+    };
+
     Group.Model = Backbone.Model.extend({
         urlRoot: '/group'
     });
@@ -33,7 +45,7 @@
     Group.Views.Edit = Backbone.View.extend({
 
         events: {
-            'click #save': 'saveGroup',
+            'submit .edit-group-form': 'saveGroup',
             'click #delete': 'deleteGroup'
         },
 
@@ -87,6 +99,8 @@
         render: function()  {
             this.$el.html(this.template({__:i18n, group: this.model}));
             this.$modal = this.$(".group-modal");
+            this.$form = this.$('form');
+            this.$form.parsley(parsleyOpts);
             this.stickit();
             return this;
         },

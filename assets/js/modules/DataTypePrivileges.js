@@ -13,6 +13,17 @@
     var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
     var router = xtens.router;
 
+    var parsleyOpts = {
+        priorityEnabled: false,
+        // excluded: "select[name='fieldUnit']",
+        successClass: "has-success",
+        errorClass: "has-error",
+        classHandler: function(el) {
+            return el.$element.parent();
+        },
+        errorsWrapper: "<span class='help-block'></span>",
+        errorTemplate: "<span></span>"
+    };
 
     /**
      * @class
@@ -48,7 +59,7 @@
         className: 'dataTypePrivilege',
 
         events: {
-            'click #save-privilege': 'privilegesOnSave',
+            'submit .edit-datatypeprivileges-form': 'privilegesOnSave',
             'click .delete': 'privilegesOnDelete'
         },
 
@@ -92,6 +103,8 @@
                     }
                 });
             }
+            this.$form = this.$('form');
+            this.$form.parsley(parsleyOpts);
             return this;
         },
 

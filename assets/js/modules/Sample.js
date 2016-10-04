@@ -188,7 +188,7 @@
 
         events: {
             'click #editDonor': 'editDonor',
-            'click #save': 'saveSample',
+            "submit .edit-sample-form": "saveSample",
             "click button.delete": "deleteSample"
         },
 

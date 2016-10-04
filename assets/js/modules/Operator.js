@@ -11,14 +11,13 @@
 
     var parsleyOpts = {
         priorityEnabled: false,
-        // excluded: "select[name='fieldUnit']",
-        successClass: 'has-success',
-        errorClass: 'has-error',
+        successClass: "has-success",
+        errorClass: "has-error",
         classHandler: function(el) {
             return el.$element.parent();
         },
-        errorsWrapper: '<span class=\'help-block col-sm-4 col-sm-offset-2\'></span>',
-        errorTemplate: '<span></span>'
+        errorsWrapper: "<span class='help-block'></span>",
+        errorTemplate: "<span></span>"
     };
 
     // define an Operator
@@ -35,8 +34,8 @@
     Operator.Views.Edit = Backbone.View.extend({
 
         events: {
-            'click #delete': 'deleteOperator',
-            'click #save':'saveOperator'
+            'click button.delete': 'deleteOperator',
+            'submit .edit-operator-form': 'saveOperator'
         },
 
         initialize: function(options) {
@@ -116,18 +115,19 @@
 
         render: function()  {
             this.$el.html(this.template({__:i18n, data: this.model}));
+            this.$form = this.$("form");
+            this.$form.parsley(parsleyOpts);
             this.$modal = this.$(".operator-modal");
             this.stickit();
             return this;
         },
 
         saveOperator: function(ev) {
-      // ev.preventDefault();
             var that = this;
-            if(!this.model.get('id')){
-                this.model.set('password',$('#password').val());
+            if(!that.model.get('id')){
+                that.model.set('password',$('#password').val());
             }
-            this.model.save(null, {
+            that.model.save(null, {
                 success: function(operator) {
                     if (that.modal) {
                         that.modal.hide();
@@ -172,7 +172,6 @@
             modal.show();
 
             this.$('#confirm-delete').click( function (e) {
-
                 modal.hide();
                 that.model.destroy({
                     success: function(model, res) {
@@ -318,8 +317,8 @@
     Operator.Views.updatePassword = Backbone.View.extend({
 
         events: {
-            'click #update':'updatePassword',
-            'change input':'checkInput'
+            'submit .edit-password-form':'updatePassword'
+            // 'change input':'checkInput'
         },
 
         initialize: function(options) {
@@ -333,25 +332,27 @@
 
         render: function()  {
             this.$el.html(this.template({__:i18n}));
+            this.$form = this.$("form");
+            this.$form.parsley(parsleyOpts);
             return this;
         },
 
-        checkInput: function() {
-            $('input').keyup(function() {
-
-                var empty = false;
-                $('input').each(function() {
-                    if (this.value.length < 7) {
-                        empty = true;
-                    }
-                });
-                if (empty) {
-                    $('#update').attr('disabled', 'disabled');
-                } else {
-                    $('#update').removeAttr('disabled');
-                }
-            });
-        },
+        // checkInput: function() {
+        //     $('input').keyup(function() {
+        //
+        //         var empty = false;
+        //         $('input').each(function() {
+        //             if (this.value.length < 7) {
+        //                 empty = true;
+        //             }
+        //         });
+        //         if (empty) {
+        //             $('#update').attr('disabled', 'disabled');
+        //         } else {
+        //             $('#update').removeAttr('disabled');
+        //         }
+        //     });
+        // },
 
         updatePassword: function(ev) {
             ev.preventDefault();

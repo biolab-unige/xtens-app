@@ -105,6 +105,8 @@
         "sample": "Sample",
         /* views/templates/operator-edit.ejs */
         "operator-manager": "Operator Manager",
+        "confirm-password": "Confirm Password",
+        "min-8-characters": "Minimum of 8 characters",
         "create-operator": "Create Operator",
         "save-operator" : "Save Operator",
         "update-operator" : "Update Operator",
