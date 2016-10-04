@@ -671,21 +671,33 @@
         queryBuilder: function(queryString) {
             var params = queryString ? JSON.parse(queryString) : undefined;
             console.log(params);
+            var privileges = new DataTypePrivileges.List();
+            var operator = new Operator.List();
             var dataTypes = new DataType.List();
             var biobanks = new Biobank.List();
-            var $dataTypesDeferred = dataTypes.fetch({
-                data: $.param({populate:['children']})
-            });
-            var $biobanksDeferred = biobanks.fetch();
             var that = this;
-            $.when($dataTypesDeferred, $biobanksDeferred).then( function(dataTypesRes, biobanksRes) {
-                that.loadView(new Query.Views.Builder({
-                    queryObj: params && params.queryArgs,
-                    biobanks: new Biobank.List(biobanksRes && biobanksRes[0]),
-                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])
-                }));
-            }, function(jqxhr) {
-                xtens.error(jqxhr);
+            var $operatorDeferred = operator.fetch({
+                data: $.param({login: xtens.session.get("login"), populate: ['groups']})
+            });
+            $.when($operatorDeferred).then( function(operatorRes) {
+                var groupId = operatorRes && operatorRes[0].groups[0].id;
+                var $privilegesDeferred = privileges.fetch({
+                    data: $.param({group: groupId})
+                });
+                var $dataTypesDeferred = dataTypes.fetch({
+                    data: $.param({populate:['children']})
+                });
+                var $biobanksDeferred = biobanks.fetch();
+                $.when($dataTypesDeferred, $biobanksDeferred, $privilegesDeferred).then( function(dataTypesRes, biobanksRes, privilegesRes) {
+                    that.loadView(new Query.Views.Builder({
+                        queryObj: params && params.queryArgs,
+                        biobanks: new Biobank.List(biobanksRes && biobanksRes[0]),
+                        dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
+                        dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0])
+                    }));
+                }, function(jqxhr) {
+                    xtens.error(jqxhr);
+                });
             });
         },
 

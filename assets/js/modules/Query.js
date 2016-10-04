@@ -14,7 +14,8 @@
     var sexOptions = xtens.module("xtensconstants").SexOptions;
     var XtensTable = xtens.module("xtenstable");
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
-
+    var Privileges = xtens.module("xtensconstants").DataTypePrivilegeLevels;
+    var VIEW_OVERVIEW = Privileges.VIEW_OVERVIEW;
     // constant to define the field-value HTML element
     var FIELD_VALUE = 'field-value';
 
@@ -666,6 +667,7 @@
             this.biobanks = options.biobanks || [];
             this.dataTypes = options.dataTypes || [];
             this.dataTypesComplete = options.dataTypesComplete || [];
+            this.dataTypePrivileges = options.dataTypePrivileges || [];
             // this.listenTo(this.model, 'change:dataType', this.dataTypeOnChange);
         },
 
@@ -716,6 +718,7 @@
                 biobanks: this.biobanks,
                 dataTypes: childrenDataTypes,
                 dataTypesComplete: this.dataTypesComplete,
+                dataTypePrivileges:this.dataTypePrivileges,
                 model: new Query.Model(queryObj)
             });
 
@@ -750,6 +753,7 @@
         createDataTypeRow: function(idDataType) {
             var personalInfoQueryView, modelQueryView, childView, queryContent = this.model.get("content");
             this.selectedDataType = this.dataTypes.get(idDataType);
+            this.selectedPrivilege = this.dataTypePrivileges.findWhere({'dataType' : idDataType});
             this.model.set("model", this.selectedDataType.get("model"));
             if (this.model.get("model") === DataTypeClasses.SUBJECT && xtens.session.get('canAccessPersonalData')) {      //TODO add policy to filter those not allowed to see personal info
                 personalInfoQueryView = new Query.Views.PersonalInfo({
@@ -766,8 +770,16 @@
             if (modelQueryView) {
                 this.addSubqueryView(modelQueryView);
             }
-            this.$addFieldButton.removeClass('hidden');
+            if (this.selectedPrivilege.get('privilegeLevel') !== VIEW_OVERVIEW) {
+                this.$addFieldButton.removeClass('hidden');
+            }
             this.$addNestedButton.removeClass('hidden');
+
+            let flattenedFields = this.selectedDataType.getFlattenedFields();
+            if (!xtens.session.get('canAccessSensitiveData') && this.selectedPrivilege.get('privilegeLevel') !== VIEW_OVERVIEW){
+                flattenedFields = _.filter(flattenedFields, (field) => { return !field.sensitive; });
+            }
+
             // this.model.set("model", this.selectedDataType.get("model"));
             // queryContent = this.model.get("content");
             if (_.isArray(queryContent) && queryContent.length > 0) {
@@ -781,18 +793,22 @@
                     }
                     // it is a leaf query element
                     else {
-                        childView = new Query.Views.Row({
-                            fieldList: this.selectedDataType.getFlattenedFields(),
-                            model: new Query.RowModel(queryElem)
-                        });
-                        this.addSubqueryView(childView);
+                        if (this.selectedPrivilege.get('privilegeLevel') !== VIEW_OVERVIEW) {
+                            childView = new Query.Views.Row({
+                                fieldList: flattenedFields,
+                                model: new Query.RowModel(queryElem)
+                            });
+                            this.addSubqueryView(childView);
+                        }
                     }
                 }, this);
             }
             else {
-                childView = new Query.Views.Row({fieldList: this.selectedDataType.getFlattenedFields(), model: new Query.RowModel()});
-                this.$el.append(childView.render().el);
-                this.add(childView);
+                if (this.selectedPrivilege.get('privilegeLevel') !== VIEW_OVERVIEW) {
+                    childView = new Query.Views.Row({fieldList: flattenedFields, model: new Query.RowModel()});
+                    this.$el.append(childView.render().el);
+                    this.add(childView);
+                }
             }
         },
 
@@ -869,11 +885,13 @@
             $('#main').html(this.el);
             this.biobanks = options.biobanks || [];
             this.dataTypes = options.dataTypes || [];
+            this.dataTypePrivileges = options.dataTypePrivileges || [];
             this.render(options);
             this.queryView = new Query.Views.Composite({
                 biobanks: this.biobanks,
                 dataTypes: this.dataTypes,
                 dataTypesComplete: this.dataTypes,
+                dataTypePrivileges: this.dataTypePrivileges,
                 model: new Query.Model(options.queryObj)
             });
             this.$tableCnt = this.$("#result-table-cnt");

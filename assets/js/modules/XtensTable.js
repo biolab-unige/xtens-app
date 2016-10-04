@@ -23,12 +23,13 @@ function renderDatatablesDate(data, type) {
     var i18n = xtens.module("i18n").en;
     var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames;
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
+    var Privileges = xtens.module("xtensconstants").DataTypePrivilegeLevels;
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
     var DataTypeModel = xtens.module("datatype").Model;
     var Data = xtens.module("data");
     var Sample = xtens.module("sample");
     var DataFile = xtens.module("datafile");
-
+    var VIEW_OVERVIEW = Privileges.VIEW_OVERVIEW;
     /**
      * @class
      * @name Views.Datatable
@@ -141,11 +142,13 @@ function renderDatatablesDate(data, type) {
             this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), xtens.session.get('canAccessPersonalData'));  // TODO manage permission for personalDetails
             this.numLeft=this.columns.length;
 
-            flattenedFields.forEach(function(field) {
-                if (field.sensitive) { hasDataSensitive = true; }
-                if ( !field.sensitive || xtens.session.get('canAccessSensitiveData') ) {
-                    fieldsToShow.push(field);
-                }});
+            if(dataTypePrivilege && dataTypePrivilege.privilegeLevel !== VIEW_OVERVIEW){
+                flattenedFields.forEach(function(field) {
+                    if (field.sensitive) { hasDataSensitive = true; }
+                    if ( !field.sensitive || xtens.session.get('canAccessSensitiveData') ) {
+                        fieldsToShow.push(field);
+                    }});
+            }
 
             _.each(fieldsToShow, function(field) {
                 var colTitle = field.name;
