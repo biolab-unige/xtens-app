@@ -13,19 +13,31 @@
      *
      */
     function handleError(res){
-        var modal;
-
-        console.log(res.message);
+        var modal,body;
 
         var error = res.responseJSON.error._internal;
-        var details = res.responseJSON.error.message && res.responseJSON.error.message.details;
+
+        if (_.isObject(error)){
+          //error is an object
+            var details = res.responseJSON.error.message.details;
+            if (_.isArray(details)){
+              //error.message is object and has details
+                var path = details[0].path.split(".");
+                body = path[0] + " " + path[1].toUpperCase() + " " + details[0].message;
+            }
+            else{
+              //error.message is a string
+                body = error.message;
+            }
+        }
+        else {
+          //error is a string
+            var splitted = error.split(":");
+            body = splitted[1];
+        }
 
         var title = (error && error.name) || res.statusMessage || 'Error';
-        var body = _.isArray(details) ? details[0].message : (error && error.message) ? error.message : 'Error - Generic';
-        if(_.isArray(details) && details[0].path) {
-            var path = details[0].path.split(".");
-            body = path[0] + " " + path[1].toUpperCase() + " " + body;
-        }
+        !body ? body = 'Error - Generic' : null;
         modal = new ModalDialog({
             title: title,
             body: body

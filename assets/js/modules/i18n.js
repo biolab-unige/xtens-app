@@ -33,7 +33,7 @@
         "metadata-group-name": "Metadata Group Name",
         "metadata-loop-name": "Metadata Loop Name",
         "datatype-deleted": "Datatype Deleted",
-        "datatype-will-be-permanently-deleted-are-you-sure": "Datatype will be permanently deleted. Are you sure?",
+        "datatype-will-be-permanently-deleted-are-you-sure": "Deleting this Datatype, you will permanently <strong>DELETE ALL DATA</strong> associated. Are you sure to continue?",
         'datatype-correctly-stored-on-server': "Datatype correctly stored on server",
         // assets/js/modules/DataType.js --> DataType.Model
         "please-add-at-least-a-metadata-group": "Please add at least a Metadata Group",

@@ -1218,6 +1218,8 @@
                 console.log("Data.Views.DedicatedUpload -  file uploaded successfully");
             });
 
+
+
             return this;
         },
 
@@ -1243,6 +1245,7 @@
                     if (that.modal)
                         that.modal.hide();
                     xtens.error(err);
+                    that.dropzone.removeAllFiles(true);
                 }
             });
             this.modal = new ModalDialog({
