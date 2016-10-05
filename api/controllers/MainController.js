@@ -135,7 +135,7 @@ let MainController = {
      * @name excuteCustomDataMangement
      */
     executeCustomDataManagement: function(req, res) {
-
+        let error="";
         let co = new ControllerOut(res);
         let key = req.param('dataType');
         console.log("MainController.executeCustomDataManagement - executing customised function");
@@ -146,18 +146,18 @@ let MainController = {
 
         ps.stderr.on('data', (data) => {
             console.log(`stderr: ${data}`);
-            return co.error(data);
+            error += data.toString();
         });
 
-        ps.on('exit', (code) => {
+        ps.on('close', (code) => {
             console.log(`child process exited with code ${code}`);
 
             let cmd = 'rm ' + DEFAULT_LOCAL_STORAGE + '/tmp/*';
             require("child_process").exec(cmd, function(err, stdout, stderr) {
                 console.log('stdout: ' + stdout);
                 console.log('stderr: ' + stderr);
-                if (err) {
-                    return co.error(err);
+                if ((code !== 0 && error)) {
+                    return co.error(error);
                 }
                 console.log("MainController.executeCustomDataManagement - all went fine!");
                 return res.ok();
