@@ -2593,7 +2593,7 @@ ALTER TABLE ONLY group_members__operator_groups
 --
 
 ALTER TABLE ONLY passport
-    ADD CONSTRAINT operator_fkey FOREIGN KEY (operator) REFERENCES operator(id) MATCH FULL;
+    ADD CONSTRAINT operator_fkey FOREIGN KEY (operator) REFERENCES operator(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
