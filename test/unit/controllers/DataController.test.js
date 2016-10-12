@@ -31,6 +31,7 @@ describe('DataController', function() {
                 tokenNoDataSens = bearerToken2;
                 sails.log.debug(`Got token: ${tokenNoDataSens}`);
                 done();
+                return;
             });
         });
     });
@@ -60,6 +61,7 @@ describe('DataController', function() {
                 var location = '/' + loc[3]+ '/' + loc[4];
                 expect(location).to.equals('/data/3');
                 done();
+                return;
             });
         });
 
@@ -74,7 +76,9 @@ describe('DataController', function() {
                 tags:[],
                 notes:"New data"
             })
-            .expect(400, done);
+            .expect(400);
+            done();
+            return;
         });
 
     });
@@ -98,8 +102,10 @@ describe('DataController', function() {
                 expect(res.body[0].notes).to.equals(note);
                 if (err) {
                     done(err);
+                    return;
                 }
                 done();
+                return;
             });
 
         });
@@ -110,7 +116,9 @@ describe('DataController', function() {
             .put('/data/3')
             .set('Authorization', `Bearer ${tokenDataSens}`)
             .send({id:2, type:3, metadata:{}, date:"2015-12-06",tags:[],notes:"New data"})
-            .expect(400, done);
+            .expect(400);
+            done();
+            return;
         });
     });
 
@@ -127,8 +135,10 @@ describe('DataController', function() {
                 if (err) {
                     sails.log.console.error(err);
                     done(err);
+                    return;
                 }
                 done();
+                return;
             });
         });
 
@@ -143,7 +153,9 @@ describe('DataController', function() {
             .send()
             .expect(200, {
                 deleted: 1
-            }, done);
+            });
+            done();
+            return;
         });
 
         it('Should return 200 OK with 0 deleted items if resource does not exist', function (done) {
@@ -153,7 +165,9 @@ describe('DataController', function() {
             .send()
             .expect(200, {
                 deleted: 0
-            }, done);
+            });
+            done();
+            return;
         });
     });
 
@@ -176,8 +190,10 @@ describe('DataController', function() {
                     if (err) {
                         sails.log.console.error(err);
                         done(err);
+                        return;
                     }
                     done();
+                    return;
                 });
         });
 
@@ -194,8 +210,10 @@ describe('DataController', function() {
                     if (err) {
                         sails.log.console.error(err);
                         done(err);
+                        return;
                     }
                     done();
+                    return;
                 });
         });
     });

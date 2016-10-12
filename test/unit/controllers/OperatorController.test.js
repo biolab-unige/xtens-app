@@ -16,6 +16,7 @@ describe('OperatorController', function() {
             token = bearerToken;
             sails.log.debug(`Got token: ${token}`);
             done();
+            return;
         });
     });
 
@@ -39,8 +40,9 @@ describe('OperatorController', function() {
                 newPass: "NewPassword",
                 cnewPass: "NewPassword"
             })
-            .expect(204,done);
-
+            .expect(204);
+            done();
+            return;
         });
         it('Should return 400 bad Request, Old Password and New Password can not match', function(done) {
 
@@ -57,7 +59,9 @@ describe('OperatorController', function() {
               newPass: passport.password,
               cnewPass: passport.password
           })
-          .expect(400, done);
+          .expect(400);
+            done();
+            return;
         });
 
         it('Should return 400 bad Request, Old Password  Wrong', function(done) {
@@ -72,7 +76,9 @@ describe('OperatorController', function() {
               newPass: "NewPassword",
               cnewPass: "NewPassword"
           })
-          .expect(400, done);
+          .expect(400);
+            done();
+            return;
         });
 
         it('Should return 400 bad Request, New Password and Confirm Confirm New Password do not match', function(done) {
@@ -90,7 +96,9 @@ describe('OperatorController', function() {
             newPass: "NewPassword",
             cnewPass: "OtherNewPassword"
         })
-        .expect(400, done);
+        .expect(400);
+            done();
+            return;
         });
     });
 });

@@ -20,6 +20,7 @@ describe('TokenService', function() {
                 console.log(res);
                 expect(res).to.deep.equal(expectedPayload);
                 done();
+                return;
             });
         });
 
@@ -33,6 +34,7 @@ describe('TokenService', function() {
                 console.log(res);
                 expect(res).to.deep.equal(expectedError);
                 done();
+                return;
             });
         });
         it("should return Error: JsonWebTokenError: jwt malformed", function(done) {
@@ -45,6 +47,7 @@ describe('TokenService', function() {
                 console.log(res);
                 expect(res).to.deep.equal(expectedError);
                 done();
+                return;
             });
         });
     });

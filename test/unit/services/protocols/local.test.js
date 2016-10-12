@@ -17,7 +17,7 @@ describe("PassportService protocol Local", function() {
         loginHelper.loginStandardUser(request, function (bearerToken) {
             token = bearerToken;
             sails.log.debug(`Got token: ${token}`);
-            done();
+            return;
         });
 
         const demouser =fixtures.operator[0];
@@ -28,8 +28,11 @@ describe("PassportService protocol Local", function() {
         }).then(function(res){
             passport=res;
             // console.log("Passport found: "+ JSON.stringify(passport));
+            done();
             return true;
-        }).catch(function(err){return false;});
+        }).catch(function(err){
+            done(err);
+            return false;});
 
     });
 
@@ -86,6 +89,7 @@ describe("PassportService protocol Local", function() {
                 sinon.assert.calledWith(spyFindPassp, expectedParam);
                 expect(spyFindPassp.called).to.be.true;
                 done();
+                return;
             });
 
 

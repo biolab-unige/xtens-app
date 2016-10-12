@@ -15,6 +15,7 @@ describe('SubjectController', function() {
             token = bearerToken;
             sails.log.debug(`Got token: ${token}`);
             done();
+            return;
         });
     });
 
@@ -50,7 +51,9 @@ describe('SubjectController', function() {
                 const location = `/${loc[3]}/${loc[4]}`;
                 expect(location).to.equals('/subject/4');
             })
-            .expect(201, done);
+            .expect(201);
+            done();
+            return;
 
 
         });
@@ -67,7 +70,9 @@ describe('SubjectController', function() {
                 tags: [],
                 notes: "New subject"
             })
-            .expect(400, done);
+            .expect(400);
+            done();
+            return;
 
         });
     });
@@ -110,7 +115,9 @@ describe('SubjectController', function() {
                 //console.log(res.body[0].notes);
                 expect(res.body[0].notes).to.equals(note);
             })
-            .expect(200, done);
+            .expect(200);
+            done();
+            return;
             //}).catch(function(err){console.log(err);});
         });
 
@@ -127,7 +134,9 @@ describe('SubjectController', function() {
                 tags: [],
                 notes: "New subject"
             })
-            .expect(400, done);
+            .expect(400);
+            done();
+            return;
         });
 
     });
@@ -143,7 +152,9 @@ describe('SubjectController', function() {
                 sails.log.info(res.body);
                 expect(res.body).to.have.length(fixtures.subject.length + 1);
             })
-            .expect(200, done);
+            .expect(200);
+            done();
+            return;
 
         });
         //
@@ -169,7 +180,9 @@ describe('SubjectController', function() {
                 console.log('N° Subject deleted: ' + res.body.deleted);
                 expect(res.body.deleted).to.equals(1);
             })
-            .expect(200, done);
+            .expect(200);
+            done();
+            return;
         });
 
         it('Should return OK 200, with array lenght to 0', function (done) {
@@ -181,7 +194,9 @@ describe('SubjectController', function() {
                 console.log('N° Subject deleted: ' + res.body.deleted);
                 expect(res.body.deleted).to.equals(0);
             })
-            .expect(200, done);
+            .expect(200);
+            done();
+            return;
         });
 
 

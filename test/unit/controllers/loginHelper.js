@@ -26,6 +26,7 @@ module.exports.loginSuperAdmin = function(request, done) {
         token = res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);
+        return;
     });
 };
 
@@ -53,6 +54,7 @@ module.exports.loginAdminUser = function(request, done) {
         token = res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);
+        return;
     });
 };
 
@@ -81,6 +83,7 @@ module.exports.loginStandardUser = function(request, done) {
         token = res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);
+        return;
     });
 };
 
@@ -108,6 +111,7 @@ module.exports.loginAnotherStandardUser = function(request, done) {
         token = res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);
+        return;
     });
 };
 
@@ -135,5 +139,6 @@ module.exports.loginAnotherStandardUserNoDataSens = function(request, done) {
         token = res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);
+        return;
     });
 };

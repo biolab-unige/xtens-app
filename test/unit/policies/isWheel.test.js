@@ -25,6 +25,7 @@ describe('Policy isWheel', function() {
                 tokenA = bearerToken2;
                 sails.log.debug(`Got token: ${tokenA}`);
                 done();
+                return;
             });
         });
 
@@ -44,7 +45,7 @@ describe('Policy isWheel', function() {
             expect(spy.calledOnce).to.be.true;
             expect(spyForb.calledOnce).to.be.false;
             done();
-
+            return;
         });
 
         it('Should call res.forbidden, user is not a SuperUser', function (done) {
@@ -59,6 +60,7 @@ describe('Policy isWheel', function() {
 
             expect(spyForb.calledOnce).to.be.true;
             done();
+            return;
         });
     });
 

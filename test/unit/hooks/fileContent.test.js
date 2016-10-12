@@ -36,12 +36,12 @@ describe('fileContent Hook', function() {
                     console.log(err);
                     done(err);
                 }
-
                 let fileNameReceived = res.headers['content-disposition'].split('=')[1];
                 console.log(fileNameReceived);
 
                 expect(fileNameReceived).to.equals(fileNameExpected);
                 done();
+                return;
             });
         });
 

@@ -29,7 +29,7 @@ before(function(done) {
         fixtures = barrels.data;
 
         sails = res;
-    // sails.config.pathGeneFile = path.join('test', 'resources', 'gene-file-test.csv');
+        sails.config.pathGeneFile = path.join('test', 'resources', 'gene-file-test.csv');
 
     // set up the CRUD Manager for in-memory tests
     /*
