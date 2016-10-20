@@ -906,11 +906,10 @@
          * @return{boolean} false
          */
         sendQuery: function() {
-            let temp, options = {}, tempBuffer= [], that = this, initialized = false;
-
+            var that = this;
+            var isStream = true;
             // extend queryArgs with flags to retrieve subject and personal informations and if retrieve data in stream mode
             var queryArgs = _.extend({
-                isStream: true,
                 wantsSubject: true,
                 wantsPersonalInfo: xtens.session.get('canAccessPersonalData')
             }, this.queryView.serialize());
@@ -919,17 +918,18 @@
             console.log(this.queryView.serialize());
             var path = '/query/' + encodeURIComponent(queryParameters);
             xtens.router.navigate(path, {trigger: false});
-            if (queryArgs.isStream) {
+            if (isStream) {
                 fetch('/query/dataSearch',{
                     method: 'POST',
                     headers: {
                         'Authorization': 'Bearer ' + xtens.session.get("accessToken"),
                         "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
                     },
-                    body: 'queryArgs='+JSON.stringify(queryArgs)
+                    body: 'queryArgs='+JSON.stringify(queryArgs)+'&isStream='+JSON.stringify(isStream)
                 })
               .then(function(res) {
-                  return pump(res.body.getReader());
+                  that.buffer = [], that.optStream = {}, that.tableInitialized = false;
+                  return that.pumpStream(res.body.getReader());
               })
               .catch(function(ex) {
                   console.log('parsing failed', ex);
@@ -945,81 +945,11 @@
                     },
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                     url: '/query/dataSearch',
-                    data: 'queryArgs='+JSON.stringify(queryArgs),
+                    data: 'queryArgs='+JSON.stringify(queryArgs)+'&isStream='+JSON.stringify(isStream),
                     success: this.initializeDataTable,
                     error: this.queryOnError
                 });
             }
-            function pump(reader) {
-                return reader.read().then(function (result) {
-                    let jsonParsed = {data:[]};
-
-                    //if stream end and no data found, render dataTable without results
-                    if (result.done && tempBuffer.length === 0 && !initialized) {
-                        that.initializeDataTable(jsonParsed);
-                        return;
-                    }
-                    //if stream end and NO more data to be rendered
-                    if (result.done && tempBuffer.length === 0 && initialized) {
-                        // that.hideProgressbar();
-                        return;
-                    }
-                    //if stream end and more data to be rendered
-                    else if(result.done && tempBuffer.length > 0){
-                        that.tableView.addRowDataTable(tempBuffer);
-                        // that.hideProgressbar();
-                        return;
-                    }
-
-                    const chunk = result.value;
-                    let decoded = new TextDecoder("utf-8").decode(chunk);
-                    decoded = decoded.split("@#");
-
-                    //If temp exist, it was found a corrupted json in previous cycle
-                    //It must be concatenated with next decoded data and then parsed again
-                    if (temp){
-                        decoded[0] = temp.concat(decoded[0]);
-                        temp = "";
-                    }
-
-                    //each data string must be parsed and pushed in tempBuffer
-                    decoded.forEach(data =>{
-                        let parsed;
-                        if(data !== ""){
-                            //try to parse data string if pass
-                            //it is pushed in a buffer or in options object if it is dataType or dataPrivilege obj
-                            try {
-                                parsed = JSON.parse(data);
-                                parsed.dataType ? options.dataType = parsed.dataType :
-                                parsed.dataPrivilege ? options.dataPrivilege = parsed.dataPrivilege :
-                                tempBuffer.push(parsed);
-                            }
-                            catch (e) {
-                                temp = data;
-                            }
-                        }
-                    });
-
-                    if(!initialized && (options.dataType && options.dataPrivilege && tempBuffer.length == 10)) {
-
-                        jsonParsed.dataType = options.dataType;
-                        jsonParsed.dataTypePrivilege = options.dataPrivilege;
-                        jsonParsed.data = tempBuffer;
-                        initialized = true;
-                        tempBuffer = [];
-                        that.initializeDataTable(jsonParsed);
-                    }
-
-                    if (initialized && tempBuffer.length > 8000){
-                        that.tableView.addRowDataTable(tempBuffer);
-                        tempBuffer = [];
-                    }
-
-                    return pump(reader);
-
-                });
-            }
-
 
             this.modal = new ModalDialog({
                 title: i18n('please-wait-for-query-to-complete'),
@@ -1032,14 +962,84 @@
 
         /**
          * @method
-         * @name queryOnSuccess
+         * @name pumpStream
+         * @description Receive and decode json stream and initialize dataTable
+         * @param{Readable Stream}
+           @return{function} recursivly itself until stream end
+         */
+        pumpStream: function(reader) {
+            var that = this;
+            return reader.read().then(function (result) {
+
+                //if stream end and table is initialized
+                if (result.done && that.tableInitialized) {
+                  //if more data to be rendered
+                    if(that.buffer.length !== 0){
+                        that.tableView.addRowDataTable(that.buffer);
+                    }
+                    that.buffer = [];
+                    return reader.cancel();
+                }
+
+                var chunk = result.value;
+                var decoded = new TextDecoder().decode(chunk);
+                decoded = decoded.split(/\r?\n/);
+
+                //If temp exist, it was found a corrupted json in previous cycle
+                //It must be concatenated with next decoded data and then parsed again
+                if (that.temp){
+                    decoded[0] = that.temp.concat(decoded[0]);
+                    that.temp = "";
+                }
+              //each data string must be parsed and pushed in the buffer
+                decoded.forEach(function(data){
+                  //try to parse data string if pass
+                  //object is pushed in buffer or in options object if it is dataType or dataPrivilege obj
+                    try {
+                        var parsed = JSON.parse(data);
+                        parsed.dataType ? that.optStream.dataType = parsed.dataType :
+                            parsed.dataPrivilege ? that.optStream.dataPrivilege = parsed.dataPrivilege :
+                            parsed.error ? that.optStream.error = parsed.error :
+                            that.buffer.push(parsed);
+                    }
+                    catch (e) {
+                        that.temp = data;
+                    }
+                    finally{
+                        parsed = null;
+                    }
+                });
+
+                if(that.optStream.error){
+                    that.queryOnError(that.optStream.error);
+                    return reader.cancel();
+                }
+
+                if(!that.tableInitialized && ((that.optStream.dataType && that.optStream.dataPrivilege && that.buffer.length >= 8000) || (result.done && that.buffer.length >= 0))) {
+                    var jsonParsed = {data:[]};
+                    jsonParsed.dataType = that.optStream.dataType;
+                    jsonParsed.dataTypePrivilege = that.optStream.dataPrivilege;
+                    jsonParsed.data = that.buffer;
+                    that.tableInitialized = true;
+                    that.buffer = [];
+                    that.initializeDataTable(jsonParsed);
+                }
+
+                return that.pumpStream(reader);
+
+            });
+        },
+
+        /**
+         * @method
+         * @name initializeDataTable
          */
         initializeDataTable: function(result) {
 
-            this.hideProgressbar();
             if (this.tableView) {
                 this.tableView.destroy();
             }
+            this.hideProgressbar();
             if (!result) this.queryOnError(null, null, "Missing result object");
 
             if (_.isEmpty(result.data)) {

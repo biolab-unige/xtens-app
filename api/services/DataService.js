@@ -7,6 +7,7 @@
 
 let http = require('http');
 let BluebirdPromise = require('bluebird');
+let JSONStream = require('JSONStream');
 let DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
 let FieldTypes = sails.config.xtens.constants.FieldTypes;
 let fileSystemManager = sails.config.xtens.fileSystemManager;
@@ -74,7 +75,7 @@ let DataService = BluebirdPromise.promisifyAll({
 
         // validate metadata against metadata schema if skipMetadataValidation is set to false
         if (performMetadataValidation) {
-            console.log("Performing metadata validation: " + performMetadataValidation);
+            sails.log("Performing metadata validation: " + performMetadataValidation);
             let metadataValidationSchema = {
                 __DATA: Joi.any()   // key to store any possible data object or "blob"
             };
@@ -83,7 +84,7 @@ let DataService = BluebirdPromise.promisifyAll({
                 metadataValidationSchema[field.formattedName] = DataService.buildMetadataFieldValidationSchema(field);
             });
             validationSchema.metadata = Joi.object().required().keys(metadataValidationSchema);
-            console.log(validationSchema.metadata);
+            sails.log(validationSchema.metadata);
         }
 
         validationSchema = Joi.object().keys(validationSchema);
@@ -200,15 +201,11 @@ let DataService = BluebirdPromise.promisifyAll({
      * @param{Object} queryArgs - a nested object containing all the query arguments
      * @return{Promise} promise with all parameters needed for the query
      */
-    preprocessQueryParams: function(queryArgs, idOperator, idDataType, next) {
-        let queryObj = queryBuilder.compose(queryArgs);
-        console.log("DataService.executeAdvancedQuery - query: " + queryObj.statement);
-        console.log(queryObj.parameters);
-        // Using Prepared Statements for efficiency and SQL-injection protection
-        // https://github.com/brianc/node-postgres/wiki/Client#method-query-prepared
-        // TODO move to xtens-transact
-
+    preprocessQueryParams: function(queryArgs, idOperator, idDataType) {
         let dataType, dataPrivilege;
+        let queryObj = queryBuilder.compose(queryArgs);
+        sails.log("DataService.executeAdvancedQuery - query: ", queryObj.statement);
+        sails.log(queryObj.parameters);
 
         return DataType.findOne(idDataType).populate('children')
 
@@ -222,25 +219,14 @@ let DataService = BluebirdPromise.promisifyAll({
              dataPrivilege = dataTypePrivilege;
 
              return {queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: forbiddenFields};
+         })
+         .catch(function (err) {
+             sails.log(err);
+             throw new Error(err);
          });
 
     },
 
-    /**
-     * @method
-     * @name executeAdvancedQuery
-     * @param{Object} queryArgs - a nested object containing all the query arguments
-     * @return{Promise} promise with argument a list of retrieved items matching the query
-     */
-    executeAdvancedQuery: function(queryObj, next) {
-
-        return crudManager.query(queryObj, next);
-        /*
-        Data.query({
-            text: query.statement,
-            values: query.parameters
-        }, next); */
-    },
 
     /**
      * @method
@@ -258,15 +244,15 @@ let DataService = BluebirdPromise.promisifyAll({
         let ids = _.pluck(foundRows, 'id');
         switch(model) {
         case DataTypeClasses.SUBJECT:
-            console.log("calling Subject.find");
+            sails.log("calling Subject.find");
             Subject.find({id: ids}).exec(next);
             break;
         case DataTypeClasses.SAMPLE:
-            console.log("calling Sample.find");
+            sails.log("calling Sample.find");
             Sample.find({id: ids}).exec(next);
             break;
         default:
-            console.log("calling Data.find");
+            sails.log("calling Data.find");
             Data.find({id: ids}).exec(next);
         }
     },
@@ -280,10 +266,10 @@ let DataService = BluebirdPromise.promisifyAll({
             fileSystemManager.storeFile(file, id, dataTypeName, callback);
         }, function(err) {
             if (err) {
-                console.log("moving to next(error)");
+                sails.log("moving to next(error)");
                 next(err);
             } else {
-                console.log("DataService.moveFiles - moving to next()");
+                sails.log("DataService.moveFiles - moving to next()");
                 next();
             }
         });
@@ -349,7 +335,7 @@ let DataService = BluebirdPromise.promisifyAll({
 
         let modelName = arguments.length < 2 ? 'data' :
             (arguments[1].toLowerCase() === 'subject' || arguments[1].toLowerCase() === 'sample') ? arguments[1].toLowerCase() : 'data';
-        console.log("modelName: " + modelName);
+        sails.log("modelName: " + modelName);
 
         let query = BluebirdPromise.promisify(Data.query, Data);
 
@@ -357,16 +343,16 @@ let DataService = BluebirdPromise.promisifyAll({
 
         .then(function(res) {
             let count = res.rows[0].count;
-            console.log("total count is: " + count);
+            sails.log("total count is: " + count);
             let iterations = Math.ceil(count/limit);
-            console.log("iterations: " + iterations);
+            sails.log("iterations: " + iterations);
             return BluebirdPromise.map(new Array(iterations), function() {
-                console.log("offset: " + offset);
-                console.log("limit: " + limit);
+                sails.log("offset: " + offset);
+                sails.log("limit: " + limit);
                 return query("SELECT id FROM " + modelName + " LIMIT $1 OFFSET $2", [limit,offset]).then(function(result) {
                     offset += limit;
                     let ids = _.pluck(result.rows, 'id');
-                    // console.log(ids);
+                    // sails.log(ids);
                     return DataService.storeMetadataIntoEAV(ids);
                     // return;
                 });
@@ -409,7 +395,7 @@ let DataService = BluebirdPromise.promisifyAll({
                 for (let datum of arrData) {
                     _.each(forbiddenFields[datum.type], (forbField) => {
                         if(datum.metadata[forbField]){
-                            // console.log("Deleted field: " + datum.metadata[forbField]);
+                            // sails.log("Deleted field: " + datum.metadata[forbField]);
                             delete datum.metadata[forbField];
                         }
                     });
@@ -438,7 +424,7 @@ let DataService = BluebirdPromise.promisifyAll({
 
         return global[modelName].findOne({id : id}).populateAll().then((datum) => {
             //if (!datum){ return BluebirdPromise.resolve(undefined);}
-            console.log("DataService hasDataSensitive - called for model: "+  datum['type'].model);
+            sails.log("DataService hasDataSensitive - called for model: "+  datum['type'].model);
             //retrieve metadata fields sensitive
             let flattenedFields = DataTypeService.getFlattenedFields(datum['type'], false);
             let forbiddenFields = _.filter(flattenedFields, (field) => { return field.sensitive; });
@@ -456,7 +442,108 @@ let DataService = BluebirdPromise.promisifyAll({
             return err;
         });
 
+    },
+
+    /**
+    * @method
+    * @name executeAdvancedQuery
+    * @param{Object} queryArgs - a nested object containing all the query arguments
+    * @return{Promise} promise with argument a list of retrieved items matching the query
+    */
+    executeAdvancedQuery: function(processedArgs, operator, next) {
+        let dataType = processedArgs.dataType,
+            dataPrivilege = processedArgs.dataTypePrivilege,
+            queryObj = processedArgs.queryObj,
+            forbiddenFields = processedArgs.forbiddenFields,
+            data;
+
+        crudManager.query(queryObj, (err, results) => {
+            if (err){
+                sails.log(err);
+                return next(err,null);
+            }
+            data = results.rows;
+
+          //if operator has not privilege on dataType return empty data
+            if (!dataPrivilege || _.isEmpty(dataPrivilege) ){ data = []; }
+
+          //else if operator has not at least Details privilege level delete metadata object
+            else if( dataPrivilege.privilegeLevel === VIEW_OVERVIEW) {
+                for (var datum of data) { datum['metadata'] = {}; }
+                return data;
+            }
+            //else if operator can not access to Sensitive Data and datatype has Sensitive data, remove them.
+            else if( forbiddenFields.length > 0 && !operator.canAccessSensitiveData){
+                _.each(forbiddenFields, (forbField) => {
+                    _.each(data, (datum) => {
+                        if(datum.metadata[forbField.formattedName]){
+                 //  sails.log("Deleted field: " + chunk.metadata[forbField.formattedName]);
+                            delete datum.metadata[forbField.formattedName];
+                        }
+                    });
+                });
+            }
+
+            let json = {data: data, dataType: dataType, dataTypePrivilege : dataPrivilege };
+
+            return next(null,json);
+
+        });
+    },
+    /**
+     * @name queryStream
+     * @description Return a stream of data
+     * @param {object} - contains all required params to perfom the db query
+     * @return {Promise} -  a stream of data containing all rows satisfating the query
+     */
+    executeAdvancedStreamQuery: function(processedArgs, operator, next) {
+        let dataType = processedArgs.dataType,
+            dataPrivilege = processedArgs.dataTypePrivilege,
+            queryObj = processedArgs.queryObj,
+            forbiddenFields = processedArgs.forbiddenFields;
+        let count = 0;
+        return crudManager.queryStream(queryObj, stream => {
+
+            stream.once('data', () => {
+                stream.pause();
+                stream.push({dataPrivilege: dataPrivilege});
+                stream.push({dataType: dataType});
+                stream.resume();
+            });
+
+            stream.on('end', () => {
+                sails.log('Stream ended');
+                console.log(count);
+                stream.close();
+            });
+
+            stream.on('error', (err) => {
+                sails.log('Error Stream: ', err.toString());
+            });
+
+            stream.on('data',chunk => {
+                count = count +1;
+                if(chunk.dataType || chunk.dataPrivilege){ return; }
+
+                if (!dataPrivilege || _.isEmpty(dataPrivilege) ) { return; }
+
+                else if( dataPrivilege.privilegeLevel === VIEW_OVERVIEW) { chunk.metadata = {}; }
+
+              else if( forbiddenFields.length > 0 && !operator.canAccessSensitiveData){
+                  _.each(forbiddenFields, (forbField) => {
+                      if(chunk.metadata[forbField.formattedName]){
+                     //  sails.log("Deleted field: " + chunk.metadata[forbField.formattedName]);
+                          delete chunk.metadata[forbField.formattedName];
+                      }
+                  });
+              }
+
+            });
+            return next(null, stream);
+        });
+
     }
+
 
 });
 

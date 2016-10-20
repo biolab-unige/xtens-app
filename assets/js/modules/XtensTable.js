@@ -76,8 +76,10 @@ function renderDatatablesDate(data, type) {
         destroy: function() {
             if (this.table) {
                 this.table.destroy(true);
+                this.table = null;
                 this.$el.empty();
             }
+          // Remove view from DOM
             this.remove();
         },
 

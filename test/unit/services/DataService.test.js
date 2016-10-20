@@ -1,14 +1,19 @@
 /* jshint node:true */
 /* jshint mocha: true */
-/* globals _, sails, fixtures, Data, Sample, Subject, DataService */
+/* globals _, sails, fixtures, Data, Sample, Subject, DataService, TokenService */
 "use strict";
 var chai = require("chai");
 var chaiAsPromised = require("chai-as-promised");
+var chaiStream = require('chai-stream');
 chai.use(chaiAsPromised);
+chai.use(chaiStream);
+
 var expect = chai.expect, assert = chai.assert, sinon = require('sinon');
 var Joi = require("joi");
 var BluebirdPromise = require('bluebird');
 const writeFileSync = require("fs").writeFileSync;
+const request = require('supertest');
+const loginHelper = require('../controllers/loginHelper');
 
 
 
@@ -25,6 +30,22 @@ callback.withArgs(null, foundRecords).returns(foundRecords);
 callback.returns(1);
 
 describe('DataService', function() {
+
+    let tokenSA, tokenNS;
+    before(function(done) {
+
+        loginHelper.loginSuperAdmin(request, function (bearerToken) {
+            tokenSA = bearerToken;
+            console.log(`Got token: ${tokenSA}`);
+            loginHelper.loginAnotherStandardUserNoDataSens(request, function (bearerToken) {
+                tokenNS = bearerToken;
+                console.log(`Got token: ${tokenSA}`);
+
+                done();
+            });
+
+        });
+    });
 
     describe("#validate", function() {
 
@@ -330,6 +351,260 @@ describe('DataService', function() {
             expect(result).to.eventually.equal(data);
 
         });
+    });
+
+    describe('#preprocessQueryParams', function() {
+
+        var composeStub, operatorPayload;
+        var queryStatement = "SELECT DISTINCT d.id, d.metadata FROM data d WHERE d.type = $1";
+
+
+          /**
+           * @description BEFORE HOOK: stub all the methods wrapped inside DataService.executeAdvancedQuery()
+           */
+        beforeEach(function() {
+            var bearer = "Bearer "+ tokenSA;
+            var req = {headers:{authorization : bearer}};
+            operatorPayload = TokenService.getToken(req);
+
+            composeStub = sinon.stub(sails.config.xtens.queryBuilder, 'compose', function(args) {
+                return ({
+                    statement: queryStatement,
+                    parameters: [args.dataType]
+                });
+            });
+            // afterEach(function() {
+            //     sails.config.xtens.queryBuilder.compose.restore();
+            // });
+
+        });
+
+        it("should return an object with the right queryObject, dataPrivilege, dataType and forbiddenFields array", function(done) {
+            var dataType = _.cloneDeep(fixtures.datatype[2]);
+            var dataPrivilege = _.cloneDeep(fixtures.datatypeprivileges[2]);
+            var param = [dataType.id];
+            var queryObj = { statement: queryStatement, parameters: param};
+            var queryArgs = {
+                "wantsSubject":false,
+                "dataType":3,
+                "model":"Data",
+                "content":[]
+            };
+            var expectedResults = {
+                queryObj:queryObj,
+                dataType: dataType,
+                dataTypePrivilege: dataPrivilege,
+                forbiddenFields: [{
+                    "label":"METADATA FIELD",
+                    "fieldType":"Text",
+                    "name":"Name",
+                    "formattedName":"name",
+                    "ontologyUri":null,
+                    "customValue":null,
+                    "visible":true,
+                    "caseInsensitive":true,
+                    "required":true,
+                    "sensitive":true,
+                    "hasRange":false,
+                    "isList":false,
+                    "possibleValues":null,
+                    "hasUnit":false,
+                    "possibleUnits":null
+                }]
+            };
+            DataService.preprocessQueryParams(queryArgs, operatorPayload.id, dataType.id).then(function (results) {
+
+                expect(results.queryObj).to.eql(expectedResults.queryObj);
+                expect(results.dataTypePrivilege.id).to.equal(expectedResults.dataTypePrivilege.id);
+                expect(results.dataType.id).to.eql(expectedResults.dataType.id);
+                expect(results.forbiddenFields).to.eql(expectedResults.forbiddenFields);
+                done();
+                return;
+            }).catch(function (err) {
+                console.log(err);
+                done(err);
+            });
+        });
+    });
+
+    describe('#executeAdvancedQuery', function() {
+
+        var queryStub, operatorPayload;
+        var queryStatement = "WITH s AS (SELECT id, code, sex, personal_info FROM subject), pd AS (SELECT id, given_name, surname, birth_date FROM personal_details) SELECT DISTINCT d.id, s.code, s.sex, pd.given_name, pd.surname, pd.birth_date, d.metadata FROM data d LEFT JOIN s ON s.id = d.parent_subject LEFT JOIN pd ON pd.id = s.personal_info WHERE d.type = $1;";
+        var recordFound =[{
+            "id":1,
+            "type":3,
+            "date": "2012-12-28",
+            "metadata": {
+                "name":{"value":"Aldebaran","group":"Generic Info"},
+                "constellation":{"value":"orion","group":"Generic Info"},
+                "classification":{"value":"giant","group":"Generic Info"},
+                "designation":{"values":["87 Tauri","Alpha Tauri","SAO 94027","Borgil(?)"],"group":"Generic Info","loop":"Other Designations"},
+                "mass":{"value":1.7,"unit":"M☉","group":"Physical Details"},
+                "radius":{"value":44.2,"unit":"R☉","group":"Physical Details"},
+                "luminosity":{"value":518,"unit":"L☉","group":"Physical Details"},
+                "temperature":{"value":3910,"unit":"K","group":"Physical Details"}
+            },
+            "tags": ["test","a test"],
+            "notes": "just a test"
+        }];
+
+          /**
+           * @description BEFORE HOOK: stub all the methods wrapped inside DataService.executeAdvancedQuery()
+           */
+        beforeEach(function(done) {
+
+
+            queryStub = sinon.stub(sails.config.xtens.crudManager, "query", function(query,next) {
+                if (query.statement === queryStatement && _.isArray(query.parameters)) {
+                    next(null, {rows:recordFound});
+                }
+                else {
+                    next(new Error("wrong or malformed query argumenent"));
+                }
+            });
+            done();
+        });
+
+        afterEach(function(done) {
+            sails.config.xtens.crudManager.query.restore();
+            done();
+        });
+
+
+        it("should return an object with right attributes", function(done) {
+            var bearer = "Bearer "+ tokenSA;
+            var req = {headers:{authorization : bearer}};
+            operatorPayload = TokenService.getToken(req);
+            var expectedData = _.cloneDeep(fixtures.data[0]);
+            var dataType = _.cloneDeep(fixtures.datatype[2]);
+            var dataPrivilege = _.cloneDeep(fixtures.datatypeprivileges[2]);
+            var param = [dataType.id];
+            var queryObj = { statement: queryStatement, parameters: param};
+            var processedArgs = {queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: []};
+
+            DataService.executeAdvancedQuery(processedArgs, operatorPayload, (err, results) =>{
+                if (err) {
+                    console.log(err);
+                    done(err);
+                    return;
+                }
+
+                expect(results.dataType).to.eql(dataType);
+                expect(results.dataTypePrivilege).to.eql(dataPrivilege);
+                expect(results.data[0]).to.eql(expectedData);
+                done();
+                return;
+            });
+        });
+
+        it("should return an object with right attributes and data without sensitive informations", function(done) {
+            var expectedData = [{
+                "id":1,
+                "type":3,
+                "date": "2012-12-28",
+                "metadata": {
+                    "constellation":{"value":"orion","group":"Generic Info"},
+                    "classification":{"value":"giant","group":"Generic Info"},
+                    "designation":{"values":["87 Tauri","Alpha Tauri","SAO 94027","Borgil(?)"],"group":"Generic Info","loop":"Other Designations"},
+                    "mass":{"value":1.7,"unit":"M☉","group":"Physical Details"},
+                    "radius":{"value":44.2,"unit":"R☉","group":"Physical Details"},
+                    "luminosity":{"value":518,"unit":"L☉","group":"Physical Details"},
+                    "temperature":{"value":3910,"unit":"K","group":"Physical Details"}
+                },
+                "tags": ["test","a test"],
+                "notes": "just a test"
+            }];
+            var bearer = "Bearer "+ tokenNS;
+            var req = {headers:{authorization : bearer}};
+            operatorPayload = TokenService.getToken(req);
+            var dataType = _.cloneDeep(fixtures.datatype[2]);
+            var dataPrivilege = _.cloneDeep(fixtures.datatypeprivileges[2]);
+            var param = [dataType.id];
+            var queryObj = { statement: queryStatement, parameters: param};
+            var processedArgs = {queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: [{"label":"METADATA FIELD","fieldType":"Text","name":"Name","formattedName":"name","ontologyUri":null,"customValue":null,"visible":true,"caseInsensitive":true,"required":true,"sensitive":true,"hasRange":false,"isList":false,"possibleValues":null,"hasUnit":false,"possibleUnits":null}]};
+
+            DataService.executeAdvancedQuery(processedArgs, operatorPayload, (err, results) =>{
+                if (err) {
+                    console.log(err);
+                    done(err);
+                    return;
+                }
+
+                expect(results.dataType).to.eql(dataType);
+                expect(results.dataTypePrivilege).to.eql(dataPrivilege);
+                expect(results.data).to.eql(expectedData);
+                done();
+                return;
+            });
+        });
+
+        it("should return an error and results should be null", function(done) {
+            var expectedData = _.cloneDeep(fixtures.data[0]);
+            var dataType = _.cloneDeep(fixtures.datatype[2]);
+            var dataPrivilege = _.cloneDeep(fixtures.datatypeprivileges[2]);
+            var invalidQueryStatement = "WITH s AS (SELECT id, code, sex, personal_info FROM subject), pd AS (SELECT id, given_name, surname, birth_date FROM personal_details) SELECT DISTINCT d.id, s.code, s.sex, pd.given_name, pd.surname, pd.birth_date, d.metadata FROM data d LEFT JOIN s ON s.id = d.parent_subject LEFT JOIN pd ON pd.id = s.personal_info WHERE d.type = ;";
+            var param = [dataType.id];
+            var queryObj = { statement: invalidQueryStatement, parameters: param};
+            var processedArgs = {queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: []};
+
+            DataService.executeAdvancedQuery(processedArgs, operatorPayload, (err, results) =>{
+
+
+                expect(err).to.be.an('error');
+                expect(results).to.equal(null);
+
+                done();
+                return;
+            });
+        });
+
+    });
+
+    describe('#executeAdvancedStreamQuery', function() {
+
+        var queryStub, operatorPayload;
+        var queryStatement = "WITH s AS (SELECT id, code, sex, personal_info FROM subject), pd AS (SELECT id, given_name, surname, birth_date FROM personal_details) SELECT DISTINCT d.id, s.code, s.sex, pd.given_name, pd.surname, pd.birth_date, d.metadata FROM data d LEFT JOIN s ON s.id = d.parent_subject LEFT JOIN pd ON pd.id = s.personal_info WHERE d.type = $1;";
+        var recordFound =[{
+            "id":1,
+            "type":3,
+            "date": "2012-12-28",
+            "metadata": {
+                "name":{"value":"Aldebaran","group":"Generic Info"},
+                "constellation":{"value":"orion","group":"Generic Info"},
+                "classification":{"value":"giant","group":"Generic Info"},
+                "designation":{"values":["87 Tauri","Alpha Tauri","SAO 94027","Borgil(?)"],"group":"Generic Info","loop":"Other Designations"},
+                "mass":{"value":1.7,"unit":"M☉","group":"Physical Details"},
+                "radius":{"value":44.2,"unit":"R☉","group":"Physical Details"},
+                "luminosity":{"value":518,"unit":"L☉","group":"Physical Details"},
+                "temperature":{"value":3910,"unit":"K","group":"Physical Details"}
+            },
+            "tags": ["test","a test"],
+            "notes": "just a test"
+        }];
+
+        it("should return a Readable Stream and should end", function(done) {
+            var expectedData = _.cloneDeep(fixtures.data[0]);
+            var dataType = _.cloneDeep(fixtures.datatype[2]);
+            var dataPrivilege = _.cloneDeep(fixtures.datatypeprivileges[2]);
+            var param = [dataType.id];
+            var queryObj = { statement: queryStatement, parameters: param};
+            var processedArgs = {queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: []};
+
+            DataService.executeAdvancedStreamQuery(processedArgs, operatorPayload, (err, stream) =>{
+                if (err) {
+                    console.log(err);
+                    done(err);
+                    return;
+                }
+                assert.isStream(stream);
+                expect(stream).to.be.a.ReadableStream;
+                expect(stream).to.end;
+                done();
+                return;
+            });
+        });
+
     });
 
 });

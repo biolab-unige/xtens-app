@@ -670,7 +670,6 @@
 
         queryBuilder: function(queryString) {
             var params = queryString ? JSON.parse(queryString) : undefined;
-            console.log(params);
             var dataTypes = new DataType.List();
             var biobanks = new Biobank.List();
             var $dataTypesDeferred = dataTypes.fetch({
