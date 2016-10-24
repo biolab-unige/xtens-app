@@ -201,13 +201,13 @@ let DataService = BluebirdPromise.promisifyAll({
      * @param{Object} queryArgs - a nested object containing all the query arguments
      * @return{Promise} promise with all parameters needed for the query
      */
-    preprocessQueryParams: function(queryArgs, idOperator, idDataType) {
+    preprocessQueryParams: function(queryArgs, idOperator, idDataType, next) {
         let dataType, dataPrivilege;
         let queryObj = queryBuilder.compose(queryArgs);
-        sails.log("DataService.executeAdvancedQuery - query: ", queryObj.statement);
+        sails.log("DataService.executeAdvancedQuery - query: " + queryObj.statement);
         sails.log(queryObj.parameters);
 
-        return DataType.findOne(idDataType).populate('children')
+        DataType.findOne(idDataType).populate('children')
 
          .then(result => {
              dataType = result;
@@ -218,11 +218,11 @@ let DataService = BluebirdPromise.promisifyAll({
              let forbiddenFields = _.filter(flattenedFields, (field) => {return field.sensitive;});
              dataPrivilege = dataTypePrivilege;
 
-             return {queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: forbiddenFields};
+             return next(false,{queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: forbiddenFields});
          })
          .catch(function (err) {
              sails.log(err);
-             throw new Error(err);
+             next(err,false);
          });
 
     },
@@ -463,7 +463,7 @@ let DataService = BluebirdPromise.promisifyAll({
                 return next(err,null);
             }
             data = results.rows;
-
+            console.log(data);
           //if operator has not privilege on dataType return empty data
             if (!dataPrivilege || _.isEmpty(dataPrivilege) ){ data = []; }
 

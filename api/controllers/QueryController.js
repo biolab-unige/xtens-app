@@ -47,7 +47,7 @@
          const operator = TokenService.getToken(req);
          let idOperator = operator.id;
 
-         return DataService.preprocessQueryParams(queryArgs, idOperator, idDataType)
+         return DataService.preprocessQueryParamsAsync(queryArgs, idOperator, idDataType)
 
          .then(processedArgs => {
              sails.log(processedArgs);

@@ -412,7 +412,7 @@ describe('DataService', function() {
                     "possibleUnits":null
                 }]
             };
-            DataService.preprocessQueryParams(queryArgs, operatorPayload.id, dataType.id).then(function (results) {
+            DataService.preprocessQueryParamsAsync(queryArgs, operatorPayload.id, dataType.id).then(function (results) {
 
                 expect(results.queryObj).to.eql(expectedResults.queryObj);
                 expect(results.dataTypePrivilege.id).to.equal(expectedResults.dataTypePrivilege.id);
