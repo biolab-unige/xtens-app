@@ -37,7 +37,7 @@ describe('fileContent Hook', function() {
                     done(err);
                 }
                 let fileNameReceived = res.headers['content-disposition'].split('=')[1];
-                console.log(fileNameReceived);
+                // console.log(fileNameReceived);
 
                 expect(fileNameReceived).to.equals(fileNameExpected);
                 done();
@@ -69,7 +69,7 @@ describe('fileContent Hook', function() {
                 }
 
                 let finaldest = res.body.name.fd;
-                console.log(finaldest);
+                // console.log(finaldest);
 
                 expect(finaldest).to.equals(finalDestExpected);
                 done();

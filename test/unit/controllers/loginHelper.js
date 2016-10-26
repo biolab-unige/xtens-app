@@ -1,3 +1,4 @@
+"use strict";
 /**
  * @method
  * @description login helper function for supertest
@@ -23,7 +24,7 @@ module.exports.loginSuperAdmin = function(request, done) {
             done(err);
         }
         console.log(res.body);
-        token = res.body && res.body.token;
+        var token =  res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);
         return;
@@ -51,7 +52,7 @@ module.exports.loginAdminUser = function(request, done) {
             done(err);
         }
         console.log(res.body);
-        token = res.body && res.body.token;
+        var token =  res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);
         return;
@@ -80,7 +81,7 @@ module.exports.loginStandardUser = function(request, done) {
             done(err);
         }
         console.log(res.body);
-        token = res.body && res.body.token;
+        var token =  res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);
         return;
@@ -108,7 +109,7 @@ module.exports.loginAnotherStandardUser = function(request, done) {
             done(err);
         }
         console.log(res.body);
-        token = res.body && res.body.token;
+        var token =  res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);
         return;
@@ -136,7 +137,7 @@ module.exports.loginAnotherStandardUserNoDataSens = function(request, done) {
             done(err);
         }
         console.log(res.body);
-        token = res.body && res.body.token;
+        var token =  res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);
         return;

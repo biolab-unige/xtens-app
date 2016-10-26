@@ -83,7 +83,7 @@ let DataService = BluebirdPromise.promisifyAll({
                 metadataValidationSchema[field.formattedName] = DataService.buildMetadataFieldValidationSchema(field);
             });
             validationSchema.metadata = Joi.object().required().keys(metadataValidationSchema);
-            console.log(validationSchema.metadata);
+            // console.log(validationSchema.metadata);
         }
 
         validationSchema = Joi.object().keys(validationSchema);

@@ -252,33 +252,37 @@ describe('DataService', function() {
 
     describe('#hasDataSensitive', function() {
 
-        it("should return an object with true result of investigation", function() {
+        it("should return an object with true result of investigation", function(done) {
 
             var data = _.cloneDeep(fixtures.data[0]);
 
-            console.log("Data: " + JSON.stringify(data));
+            // console.log("Data: " + JSON.stringify(data));
 
             var result = DataService.hasDataSensitive(data.id, "Data");
 
             expect(result).to.eventually.have.deep.property('hasDataSensitive', true);
+            done();
+            return;
         });
 
-        it("should return an object with false result of investigation", function() {
+        it("should return an object with false result of investigation", function(done) {
 
             var data = _.cloneDeep(fixtures.subject[1]);
 
-            console.log("Data: " + JSON.stringify(data));
+            // console.log("Data: " + JSON.stringify(data));
 
             var result = DataService.hasDataSensitive(data.id, "Subject");
 
             expect(result).to.eventually.have.deep.property('hasDataSensitive', false);
+            done();
+            return;
         });
     });
 
     describe('#filterOutSensitiveInfo', function() {
 
 
-        it("should return the object array without sensitive fields defined on schema objects", function() {
+        it("should return the object array without sensitive fields defined on schema objects", function(done) {
             var data = [];
             data = _.cloneDeep(fixtures.data);
             data[2] ={
@@ -293,7 +297,7 @@ describe('DataService', function() {
             };
 
 
-            console.log("Data Star METADATA: " + JSON.stringify(data));
+            // console.log("Data Star METADATA: " + JSON.stringify(data));
 
             var result = DataService.filterOutSensitiveInfo(data, false);
 
@@ -302,13 +306,15 @@ describe('DataService', function() {
             delete data[1].metadata['quality_prediction'];
             var expectedData = data;
 
-            console.log("EXPECTED Metadata Star: " + JSON.stringify(expectedData));
+            // console.log("EXPECTED Metadata Star: " + JSON.stringify(expectedData));
 
             expect(result).to.eventually.equal(expectedData);
+            done();
+            return;
 
         });
 
-        it("should return the same objects array in input", function() {
+        it("should return the same objects array in input", function(done) {
             var data = [];
             data = _.cloneDeep(fixtures.data);
             data[2] ={
@@ -322,12 +328,14 @@ describe('DataService', function() {
                 "id": 2
             };
 
-            console.log("Data Star METADATA: " + JSON.stringify(data));
+            // console.log("Data Star METADATA: " + JSON.stringify(data));
 
 
             var result = DataService.filterOutSensitiveInfo(data, true);
 
             expect(result).to.eventually.equal(data);
+            done();
+            return;
 
         });
     });

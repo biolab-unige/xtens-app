@@ -11,42 +11,18 @@ const BluebirdPromise = require('bluebird');
 
 
 describe("PassportService protocol Local", function() {
+
     let token;
     let passport;
     before(function(done) {
         loginHelper.loginStandardUser(request, function (bearerToken) {
             token = bearerToken;
             sails.log.debug(`Got token: ${token}`);
+            done();
             return;
         });
 
-        const demouser =fixtures.operator[0];
-
-        Passport.findOne({
-            protocol: 'local',
-            user: demouser.id
-        }).then(function(res){
-            passport=res;
-            // console.log("Passport found: "+ JSON.stringify(passport));
-            done();
-            return true;
-        }).catch(function(err){
-            done(err);
-            return false;});
-
     });
-
-    const foundRecords = [
-        {"type": "sometype", "metadata": {"somemetadata": {"value": "val"}}},
-        {"type": "sometype", "metadata": {"someothermetadata": {"value": "val"}}}
-    ];
-
-    const callback = sinon.stub();
-    callback.withArgs(new Error,false).returns("Got an error");
-    callback.withArgs(new ValidationError('Old Password do Not Match'),false).returns("Wrong Old Password");
-    callback.withArgs(new ValidationError('New Passwords do Not Match'),false).returns("Not Match Password");
-    callback.withArgs(null, foundRecords).returns(foundRecords);
-    callback.returns(1);
 
     describe("#updatePassword", function() {
 
@@ -54,17 +30,13 @@ describe("PassportService protocol Local", function() {
         var spyFindPassp, spyValPassw, spyUpPassp, expectedError;
 
         beforeEach(function() {
-
             spyFindPassp = sinon.spy(Passport,'findOne');
             spyUpPassp = sinon.spy(Passport,'update');
-            spyValPassw = sinon.stub(passport,'validatePassword',function() {
-                return BluebirdPromise.try(function() { return [1]; }); });
         });
 
         afterEach(function() {
             Passport.findOne.restore();
             Passport.update.restore();
-            passport.validatePassword.restore();
         });
         it("Should fire Passport.findOne with the correct input parameters", function(done) {
 
@@ -81,13 +53,17 @@ describe("PassportService protocol Local", function() {
                 protocol: 'local',
                 user: demouser.id};
 
-            passport.password = param.newPass;
+            // passport.password = param.newPass;
 
             PassportService.protocols.local.updatePassword(param,demouser.id,function (err,res) {
+                if(err){
+                    console.log(err);
+                    done(err);
+                }
                 console.log("Password updated: " + res);
-                //sinon.assert.calledOnce(spyFindPassp);
                 sinon.assert.calledWith(spyFindPassp, expectedParam);
                 expect(spyFindPassp.called).to.be.true;
+                expect(spyUpPassp.called).to.be.true;
                 done();
                 return;
             });

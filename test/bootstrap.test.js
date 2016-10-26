@@ -15,8 +15,13 @@ before(function(done) {
         models: {
             connection: 'test',
             migrate: 'drop'
-        }
+        },
+        hooks: {grunt: false}
+        
     }, function(err, res) {
+
+        PassportService.loadStrategies();
+
         if (err) {
             console.log("error lifting sails");
             return done(err);
@@ -41,7 +46,10 @@ before(function(done) {
     console.log(global.sails.config.xtens.crudManager);
     */
         barrels.populate(loadingOrder, function(err){
-            console.log(err);
+            if (err) {
+                console.log(err);
+                done(err);
+            }
             done(err, res);
         }, false);
     });

@@ -17,23 +17,22 @@ var BluebirdPromise = require("bluebird");
 module.exports.bootstrap = function(cb) {
 
     // loading passport strategies (local, bearer, ...)
-    PassportService.loadStrategies();
 
     // create default operators if no operator is available
-    sails.on('lifted', function() {
-
-        if (sails.config.models.connection === 'test') {
-            let Barrels = require('barrels');
-            let barrels = new Barrels();
-
-            let fixtures = barrels.data;
-
-            barrels.populate(function(err) {
-                console.log(err);
-            }, false);
-        }
-
-        else {
+    if (sails.config.models.connection !== 'test') {
+        sails.on('lifted', function() {
+            PassportService.loadStrategies();
+        //     let Barrels = require('barrels');
+        //     let barrels = new Barrels();
+        //
+        //     let fixtures = barrels.data;
+        //
+        //     barrels.populate(function(err) {
+        //         console.log(err);
+        //     }, false);
+        // }
+        //
+        // else {
 
             let createUser = BluebirdPromise.promisify(PassportService.protocols.local.createUser);
 
@@ -52,10 +51,10 @@ module.exports.bootstrap = function(cb) {
                 console.log(createdOperators);
             });
 
-        }
 
-    });
+        });
 
+    }
     // It's very important to trigger this callack method when you are finished
     // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
     cb();
