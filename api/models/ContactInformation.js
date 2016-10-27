@@ -15,7 +15,7 @@ module.exports = {
             required: true,
             max: 64,
             alpha: true,
-            columnName: 'given_name',
+            columnName: 'given_name'
         },
         // MIABIS-07B
         surname: {
@@ -59,7 +59,7 @@ module.exports = {
             minLength: 2,
             maxLength: 2
         },
-        
+
         createdAt: {
             type: 'datetime',
             columnName: 'created_at'
@@ -71,4 +71,3 @@ module.exports = {
 
     }
 };
-

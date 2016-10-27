@@ -13,7 +13,7 @@
      *
      */
     function handleError(res){
-        var modal,body;
+        var modal, body;
 
         var error = res.responseJSON.error._internal;
 
@@ -32,8 +32,12 @@
         }
         else {
           //error is a string
-            var splitted = error.split(":");
-            body = splitted[1];
+            var splitted = error && error.split(":");
+            body = splitted && splitted[1];
+            if(res.responseJSON.error.raw){
+                var err = res.responseJSON.error.raw;
+                body = "Error on column <b>" + err.column + "</b> in  <b>" + err.table + "</b>";
+            }
         }
 
         var title = (error && error.name) || res.statusMessage || 'Error';

@@ -1,14 +1,14 @@
 (function(xtens,FileManager) {
     var i18n = xtens.module("i18n").en;
-    var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;    
+    var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
     var router = xtens.router;
 
     // TODO: move this to server side config
     // var baseUri = "http://130.251.10.60:8080/irods-rest-4.0.2.1-SNAPSHOT/rest/fileContents/biolabZone/home/xtensdevel";
     // var landingRepo = "landing";
     Dropzone.autoDiscover = false;
-    
-    /** 
+
+    /**
      * @class
      * @name LocalFileSystemStrategy
      * @description class implemented according to the strategy pattern to implement client interaction with local server file storage
@@ -22,7 +22,7 @@
         getUrl: function() {
             return this.url;
         },
-    
+
         onProcessing: function() {
             return this.url;
         },
@@ -43,20 +43,20 @@
 
         this.username = fsConf.username;
         this.password = fsConf.password;
-        this.url = fsConf.restURL.protocol + '//' + fsConf.restURL.hostname + ':' + 
+        this.url = fsConf.restURL.protocol + '//' + fsConf.restURL.hostname + ':' +
             fsConf.restURL.port + fsConf.restURL.path + '/fileContents' +
             fsConf.irodsHome + "/" + fsConf.landingCollection;
     }
-    
+
     IrodsRestStrategy.prototype = {
-        
+
         /**
          * @method
          * @name getUrl
          *
          */
         getUrl: function() {
-            return this.url;    
+            return this.url;
         },
 
         /**
@@ -66,9 +66,9 @@
          * @return{url} the URL for the POST request
          */
         onProcessing: function(fileName) {
-           return this.url + "/" + fileName;
+            return this.url + "/" + fileName;
         },
-        
+
         /**
          * @method
          * @name onSending
@@ -77,7 +77,7 @@
          */
         onSending: function(file, xhr, formData) {
             xhr.setRequestHeader("Authorization", "Basic " + btoa(this.username + ":" + this.password));
-        },
+        }
 
     };
 
@@ -90,7 +90,7 @@
     });
 
     /**
-     * @class 
+     * @class
      * @name FileManager.Views.Dropzone
      * @description Backbone view for the Dropzone element
      */
@@ -105,7 +105,7 @@
             paramName: "uploadFile",
             maxFilesize: 2048, // max 2 GiB
             uploadMultiple: false,
-            method: "POST",
+            method: "POST"
             // withCredentials: true
         },
 
@@ -113,18 +113,18 @@
             this.template = JST['views/templates/filemanager-dropzone.ejs'];
             this.fileList = new FileManager.List();
             switch(options.fileSystem && options.fileSystem.type) {
-                case "irods-rest":
-                    this.fsStrategy = new IrodsRestStrategy(options.fileSystem);
-                    break;
-                default:
-                    this.fsStrategy = new LocalFileSystemStrategy(options.fileSystem);
+            case "irods-rest":
+                this.fsStrategy = new IrodsRestStrategy(options.fileSystem);
+                break;
+            default:
+                this.fsStrategy = new LocalFileSystemStrategy(options.fileSystem);
             }
             this.files = options.files;
             /*
             this.fileSystem = options.fileSystem;
             */
             this.dropzoneOpts.url = this.fsStrategy.getUrl();
-            
+
         },
 
         computeFileUploadUrl: function() {
@@ -132,12 +132,12 @@
 
             // set the upload URL based on the Distributed FileSystem adopted
             switch(fs.type) {
-                case "irods-rest":
-                    url = fs.restURL.protocol + '//' + fs.restURL.hostname + 
+            case "irods-rest":
+                url = fs.restURL.protocol + '//' + fs.restURL.hostname +
                         ':' + fs.restURL.port + fs.restURL.path + '/fileContents' + fs.irodsHome;
                 break;
-                default:
-                    url = null;                    
+            default:
+                url = null;
             }
             return url;
         },
@@ -146,8 +146,8 @@
             this.$el.html(this.template({
                 __:i18n,
                 fileNames: _.map(_.pluck(this.files, 'uri'), function(uri) {
-                    var uriFrags = uri.split('/');
-                    return uriFrags[uriFrags.length - 1];
+                    var uriFrags = uri && uri.split('/');
+                    return uriFrags && uriFrags[uriFrags.length - 1];
                 })
             }));
             this.$queryModal = this.$(".query-modal");  // the modal dialog HTML element
@@ -159,15 +159,15 @@
          * @method
          * @name initializeDropzone
          * @param {Array} - files: the list of files already uploaded on associated data
-         * @description initialize a Dropzone area creating the icons of files, if already uploaded/stored. 
-         *              Set event listeners and related functions 
+         * @description initialize a Dropzone area creating the icons of files, if already uploaded/stored.
+         *              Set event listeners and related functions
          */
         initializeDropzone: function(files) {
             var that = this;
             console.log("DROPZONE opts: " + this.dropzoneOpts);
             this.dropzone = new Dropzone(this.dropzoneDiv, this.dropzoneOpts);
 
-            /* 
+            /*
             if (files) {
                 var fileClones = _.cloneDeep(files);
                 _.each(fileClones, function(file) {
@@ -199,12 +199,12 @@
                 that.modal.show();
             });
 
-            //TODO: error handling on upload 
+            //TODO: error handling on upload
             this.dropzone.on("error", function() {});
         }
 
     });
-    
+
     /**
      * @class
      * @name FileManager.Views.Download
@@ -228,4 +228,3 @@
     });
 
 }(xtens,xtens.module("filemanager")));
-

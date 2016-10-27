@@ -75,26 +75,30 @@
             var contactInformation = _.clone(this.personalContactView.model.attributes);
             var that = this;
 
-            this.model.save({
-                contactInformation: contactInformation
-            }, {
-                success: function(biobank) {
-                    if (that.modal) {
-                        that.modal.hide();
-                    }
-                    var modal = new ModalDialog({
-                        title: i18n('ok'),
-                        body: i18n('biobank-correctly-stored-on-server')
-                    });
-                    that.$modal.append(modal.render().el);
-                    $('.modal-header').addClass('alert-success');
-                    modal.show();
+            this.personalContactView.model.save(null,{
+                success: function(contactInformation) {
+                    that.model.save({contactInformation:contactInformation.id}, {
+                        success:function (biobank) {
+                            if (that.modal) {
+                                that.modal.hide();
+                            }
+                            var modal = new ModalDialog({
+                                title: i18n('ok'),
+                                body: i18n('biobank-correctly-stored-on-server')
+                            });
+                            that.$modal.append(modal.render().el);
+                            $('.modal-header').addClass('alert-success');
+                            modal.show();
 
-                    setTimeout(function(){ modal.hide(); }, 1200);
-                    that.$('.biobank-modal').on('hidden.bs.modal', function (e) {
-                        modal.remove();
-                        xtens.router.navigate('biobanks', {trigger: true});
-                    });
+                            setTimeout(function(){ modal.hide(); }, 1200);
+                            that.$('.biobank-modal').on('hidden.bs.modal', function (e) {
+                                modal.remove();
+                                xtens.router.navigate('biobanks', {trigger: true});
+                            });
+                        },
+                        error:function (model, res) {
+                            xtens.error(res);
+                        }});
 
                 },
                 error: function(model, res) {
