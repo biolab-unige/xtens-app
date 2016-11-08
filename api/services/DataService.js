@@ -501,7 +501,7 @@ let DataService = BluebirdPromise.promisifyAll({
             dataPrivilege = processedArgs.dataTypePrivilege,
             queryObj = processedArgs.queryObj,
             forbiddenFields = processedArgs.forbiddenFields;
-        let count = 0;
+            
         return crudManager.queryStream(queryObj, stream => {
 
             stream.once('data', () => {
@@ -513,7 +513,6 @@ let DataService = BluebirdPromise.promisifyAll({
 
             stream.on('end', () => {
                 sails.log('Stream ended');
-                console.log(count);
                 stream.close();
             });
 
@@ -522,7 +521,6 @@ let DataService = BluebirdPromise.promisifyAll({
             });
 
             stream.on('data',chunk => {
-                count = count +1;
                 if(chunk.dataType || chunk.dataPrivilege){ return; }
 
                 if (!dataPrivilege || _.isEmpty(dataPrivilege) ) { return; }
