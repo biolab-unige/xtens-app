@@ -218,11 +218,11 @@ let DataService = BluebirdPromise.promisifyAll({
              let forbiddenFields = _.filter(flattenedFields, (field) => {return field.sensitive;});
              dataPrivilege = dataTypePrivilege;
 
-             return next(false,{queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: forbiddenFields});
+             return next(null ,{queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: forbiddenFields});
          })
          .catch(function (err) {
              sails.log(err);
-             next(err,false);
+             next(err, null);
          });
 
     },
