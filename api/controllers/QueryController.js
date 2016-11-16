@@ -5,7 +5,10 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
  /* globals _, sails, Data, DataType, DataService, DataTypeService, SubjectService, SampleService, QueryService, TokenService */
+ "use strict";
 
+ let JSONStream = require('JSONStream');
+ let crudManager = sails.config.xtens.crudManager;
  const xtensConf = global.sails.config.xtens;
  const VIEW_OVERVIEW = xtensConf.constants.DataTypePrivilegeLevels.VIEW_OVERVIEW;
 
@@ -13,7 +16,7 @@
     /*
     dataSearch: function(req, res) {
 
-        var queryArgs = req.param('queryArgs');
+        let queryArgs = req.param('queryArgs');
         async.waterfall([
             function(callback) {
                 DataService.advancedQuery(queryArgs, callback);
@@ -37,50 +40,44 @@
      * @description perfor an advanced and nested query on the Data stored within the repository
      */
      dataSearch: function(req, res) {
-         var queryArgs = req.param('queryArgs');
-         var data, dataType, dataPrivilege;
-         var idDataType = queryArgs.dataType;
+         let queryArgs = _.isString(req.body.queryArgs) ? JSON.parse(req.body.queryArgs) : req.body.queryArgs;
+         let isStream = _.isString(req.body.isStream) ? JSON.parse(req.body.isStream) : req.body.isStream;
+         let queryObj, dataType, dataPrivilege, forbiddenFields, data;
+         let idDataType = queryArgs.dataType;
          const operator = TokenService.getToken(req);
+         let idOperator = operator.id;
 
-         DataService.executeAdvancedQueryAsync(queryArgs)
+         return DataService.preprocessQueryParamsAsync(queryArgs, idOperator, idDataType)
 
-        .then(results => {
+         .then(processedArgs => {
+             sails.log(processedArgs);
+             if (isStream) {
+                 return DataService.executeAdvancedStreamQuery(processedArgs, operator, (err, stream) => {
+               // initiate streaming into the sails:
+                     stream.pipe(JSONStream.stringify(false)).pipe(res); //TODO
+                 })
+                 .then(data => {
+                     sails.log("Total rows processed:", data.processed, "Duration in milliseconds:", data.duration);
+                 })
+                 .catch(error => {
+                     sails.log("ERROR:", error.message || error);
+                     throw new Error(error);
+                 });
 
-            data = results.rows;
-            return DataType.findOne(idDataType).populate('children');
-        })
-        .then(result => {
-            dataType = result;
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataType.id);
-        })
-        .then(dataTypePrivilege => {
-            if (_.isEmpty(data)) { return; }
-            dataPrivilege = dataTypePrivilege;
-            //if operator has not privilege on dataType return empty data
-            //else if operator has not at least Details privilege level delete metadata object
-            if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege) ){ return {}; }
-            else if( dataTypePrivilege.privilegeLevel === VIEW_OVERVIEW) {
-                for (var datum of data) { datum['metadata'] = {}; }
-                return data;
-            }
-                //populate type attributes of data and filter Out Sensitive Info
-            for (datum of data) { datum['type'] = dataType.id; }
-            return DataService.filterOutSensitiveInfo(data, operator.canAccessSensitiveData);
-        })
-        .then(results => {
+             }
+             else {
+                 return DataService.executeAdvancedQuery(processedArgs, operator, (err, results) => {
+                     if(err){
+                         return res.serverError(err.message);
+                     }
+                     res.json(results);
+                 });
+             }
 
-            if(results && !_.isArray(results)){
-                data[0] = results;
-            }
-            else if (results){
-                data = results;
-            }
-            res.json({data: data, dataType: dataType, dataTypePrivilege : dataPrivilege });
-
-        })
-        .catch(error => {
-            res.serverError(error.message);
-        });
+         }).catch(error => {
+             sails.log(error);
+             res.serverError(error.message);
+         });
      }
 
  };

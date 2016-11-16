@@ -35,6 +35,9 @@ var jsFilesToInject = [
     // are brought in here
     'js/dependencies/sail.io.js',
     'dependencies/**/jquery.js',
+    'dependencies/**/es6-promise.js',
+    'dependencies/**/fetch.js',
+    'dependencies/http/http.js',
     // 'dependencies/**/underscore.js',
     'dependencies/bootstrap/**/modal.js',
     'dependencies/bootstrap/**/tooltip.js',

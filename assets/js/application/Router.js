@@ -670,7 +670,6 @@
 
         queryBuilder: function(queryString) {
             var params = queryString ? JSON.parse(queryString) : undefined;
-            console.log(params);
             var privileges = new DataTypePrivileges.List();
             var operator = new Operator.List();
             var dataTypes = new DataType.List();
