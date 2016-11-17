@@ -3,3 +3,9 @@ node_js:
   - "node"
   - "4"
   - "iojs"
+install:
+  - npm install
+# safelist
+branches:
+  only:
+  - master
