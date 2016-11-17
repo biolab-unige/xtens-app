@@ -1,8 +1,8 @@
 language: node_js
 node_js:
-  - "node"
-  - "4"
-  - "iojs"
+  - node
+  - 4
+  - iojs
 install:
   - npm install
 # safelist
