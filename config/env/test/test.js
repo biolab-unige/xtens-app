@@ -55,6 +55,26 @@
          }
      },
 
+     fileSystemConnections: {
+
+         'default': 'irodsRestTest',
+
+         irodsRestTest: {
+             type: 'irods-rest',
+             restURL: {
+                 protocol:'http:',
+                 hostname: 'localhost',
+                 port: 8080,
+                 path: '/irods-rest/rest'
+             },
+             irodsHome: '/tempZone/home/rods',
+             repoCollection: 'irods-repo',
+             landingCollection: 'landing',
+             username: 'username',
+             password: 'password'
+         }
+
+     },
   /***************************************************************************
    * Set the port in the production environment to 80                        *
    ***************************************************************************/
