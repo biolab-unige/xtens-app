@@ -20,7 +20,9 @@
  */
 
 module.exports.connections = {
-  
+    test: {
+        adapter: 'sails-memory'
+    }
     // More adapters:
     // https://github.com/balderdashy/sails
 
