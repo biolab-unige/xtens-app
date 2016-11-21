@@ -18,7 +18,7 @@ module.exports = function persistence(sails) {
         configure: function() {
             const connection = sails.config.connections[sails.config.models.connection];
             const adapter = connection.adapter;
-            this.fileSystemConnections =  sails.config.xtens.fileSystemConnections;
+            this.fileSystemConnections =  sails.config.fileSystemConnections;
             const FileSystemManager = require('xtens-fs').FileSystemManager;
             // sails.log.debug(adapter);
             const databaseManager = require(dbConnectionMap.get(adapter));
