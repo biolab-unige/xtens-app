@@ -9,6 +9,8 @@
  * any private information to this file!
  *
  */
+ "use strict";
+ 
  let dbConnectionMap = new Map([
      ['sails-memory', 'xtens-waterline']
  ]);
@@ -27,7 +29,7 @@
          connection: 'test',
          migrate: 'drop'
      },
-     
+
      connections: {
          test: {
              adapter: 'sails-memory'

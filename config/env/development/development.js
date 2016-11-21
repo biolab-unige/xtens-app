@@ -9,20 +9,21 @@
  * any private information to this file!
  *
  */
+"use strict";
 
- let dbConnectionMap = new Map([
+let dbConnectionMap = new Map([
      ['sails-postgresql', 'xtens-pg']
- ]);
- let IrodsRestStrategy = require('xtens-fs').IrodsRestStrategy;
- let FileSystemManager = require('xtens-fs').FileSystemManager;
+]);
+let IrodsRestStrategy = require('xtens-fs').IrodsRestStrategy;
+let FileSystemManager = require('xtens-fs').FileSystemManager;
 
- let databaseConnections = require('../../local.js').connections;
- let connName = require('../../models.js').models.connection;
+let databaseConnections = require('../../local.js').connections;
+let connName = require('../../models.js').models.connection;
 
- let databaseManager = require(dbConnectionMap.get(databaseConnections[connName].adapter));
- let fileSystemConnections = require('../../local.js').fileSystemConnections;
+let databaseManager = require(dbConnectionMap.get(databaseConnections[connName].adapter));
+let fileSystemConnections = require('../../local.js').fileSystemConnections;
 
- module.exports = {
+module.exports = {
 
   /***************************************************************************
    * Set the default database connection for models in the development       *
@@ -34,25 +35,25 @@
     //      migrate: 'safe'
     //  },
 
-     blueprints: {
-         action: false,
-         rest: true,
-         shortcuts: true
-     },
+    blueprints: {
+        action: false,
+        rest: true,
+        shortcuts: true
+    },
 
     /**
      *  @description XTENS configuration parameters
      */
-     xtens: {
+    xtens: {
 
-         fileSystemManager: new FileSystemManager(fileSystemConnections[fileSystemConnections.default]),
+        fileSystemManager: new FileSystemManager(fileSystemConnections[fileSystemConnections.default]),
 
-         fileSystemConnection: fileSystemConnections[fileSystemConnections.default],
+        fileSystemConnection: fileSystemConnections[fileSystemConnections.default],
 
-         databaseManager: databaseManager,
+        databaseManager: databaseManager,
 
-         crudManager: new databaseManager.CrudManager(null, databaseConnections[connName], fileSystemConnections[fileSystemConnections.default]),
+        crudManager: new databaseManager.CrudManager(null, databaseConnections[connName], fileSystemConnections[fileSystemConnections.default]),
 
-         queryBuilder: new databaseManager.QueryBuilder()
-     }
- };
+        queryBuilder: new databaseManager.QueryBuilder()
+    }
+};

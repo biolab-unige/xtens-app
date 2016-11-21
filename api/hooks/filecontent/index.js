@@ -3,8 +3,6 @@
 /* globals _, sails, Data, DataFile, DataService, DataTypeService, SubjectService, SampleService, QueryService, TokenService, MigrateService, GeneratedDataService */
 "use strict";
 
-
-
 // lib/hooks/myhook.js
 module.exports = function filecontent(sails){
     // private methods and variables

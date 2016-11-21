@@ -9,6 +9,8 @@
  * any private information to this file!
  *
  */
+ "use strict";
+ 
  let dbConnectionMap = new Map([
      ['sails-postgresql', 'xtens-pg']
  ]);

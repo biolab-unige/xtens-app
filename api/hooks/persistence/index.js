@@ -1,3 +1,4 @@
+"use strict";
 const dbConnectionMap = new Map([
     ['sails-postgresql', 'xtens-pg'],
     ['sails-memory', 'xtens-waterline']
