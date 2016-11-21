@@ -569,50 +569,50 @@ describe('DataService', function() {
 
     });
 
-    describe('#executeAdvancedStreamQuery', function() {
-
-        var queryStub, operatorPayload;
-        var queryStatement = "WITH s AS (SELECT id, code, sex, personal_info FROM subject), pd AS (SELECT id, given_name, surname, birth_date FROM personal_details) SELECT DISTINCT d.id, s.code, s.sex, pd.given_name, pd.surname, pd.birth_date, d.metadata FROM data d LEFT JOIN s ON s.id = d.parent_subject LEFT JOIN pd ON pd.id = s.personal_info WHERE d.type = $1;";
-        var recordFound =[{
-            "id":1,
-            "type":3,
-            "date": "2012-12-28",
-            "metadata": {
-                "name":{"value":"Aldebaran","group":"Generic Info"},
-                "constellation":{"value":"orion","group":"Generic Info"},
-                "classification":{"value":"giant","group":"Generic Info"},
-                "designation":{"values":["87 Tauri","Alpha Tauri","SAO 94027","Borgil(?)"],"group":"Generic Info","loop":"Other Designations"},
-                "mass":{"value":1.7,"unit":"M☉","group":"Physical Details"},
-                "radius":{"value":44.2,"unit":"R☉","group":"Physical Details"},
-                "luminosity":{"value":518,"unit":"L☉","group":"Physical Details"},
-                "temperature":{"value":3910,"unit":"K","group":"Physical Details"}
-            },
-            "tags": ["test","a test"],
-            "notes": "just a test"
-        }];
-
-        it("should return a Readable Stream and should end", function(done) {
-            var expectedData = _.cloneDeep(fixtures.data[0]);
-            var dataType = _.cloneDeep(fixtures.datatype[2]);
-            var dataPrivilege = _.cloneDeep(fixtures.datatypeprivileges[2]);
-            var param = [dataType.id];
-            var queryObj = { statement: queryStatement, parameters: param};
-            var processedArgs = {queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: []};
-
-            DataService.executeAdvancedStreamQuery(processedArgs, operatorPayload, (err, stream) =>{
-                if (err) {
-                    console.log(err);
-                    done(err);
-                    return;
-                }
-                assert.isStream(stream);
-                expect(stream).to.be.a.ReadableStream;
-                expect(stream).to.end;
-                done();
-                return;
-            });
-        });
-
-    });
+    // describe('#executeAdvancedStreamQuery', function() {
+    //
+    //     var queryStub, operatorPayload;
+    //     var queryStatement = "WITH s AS (SELECT id, code, sex, personal_info FROM subject), pd AS (SELECT id, given_name, surname, birth_date FROM personal_details) SELECT DISTINCT d.id, s.code, s.sex, pd.given_name, pd.surname, pd.birth_date, d.metadata FROM data d LEFT JOIN s ON s.id = d.parent_subject LEFT JOIN pd ON pd.id = s.personal_info WHERE d.type = $1;";
+    //     var recordFound =[{
+    //         "id":1,
+    //         "type":3,
+    //         "date": "2012-12-28",
+    //         "metadata": {
+    //             "name":{"value":"Aldebaran","group":"Generic Info"},
+    //             "constellation":{"value":"orion","group":"Generic Info"},
+    //             "classification":{"value":"giant","group":"Generic Info"},
+    //             "designation":{"values":["87 Tauri","Alpha Tauri","SAO 94027","Borgil(?)"],"group":"Generic Info","loop":"Other Designations"},
+    //             "mass":{"value":1.7,"unit":"M☉","group":"Physical Details"},
+    //             "radius":{"value":44.2,"unit":"R☉","group":"Physical Details"},
+    //             "luminosity":{"value":518,"unit":"L☉","group":"Physical Details"},
+    //             "temperature":{"value":3910,"unit":"K","group":"Physical Details"}
+    //         },
+    //         "tags": ["test","a test"],
+    //         "notes": "just a test"
+    //     }];
+    //
+    //     it("should return a Readable Stream and should end", function(done) {
+    //         var expectedData = _.cloneDeep(fixtures.data[0]);
+    //         var dataType = _.cloneDeep(fixtures.datatype[2]);
+    //         var dataPrivilege = _.cloneDeep(fixtures.datatypeprivileges[2]);
+    //         var param = [dataType.id];
+    //         var queryObj = { statement: queryStatement, parameters: param};
+    //         var processedArgs = {queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: []};
+    //
+    //         DataService.executeAdvancedStreamQuery(processedArgs, operatorPayload, (err, stream) =>{
+    //             if (err) {
+    //                 console.log(err);
+    //                 done(err);
+    //                 return;
+    //             }
+    //             assert.isStream(stream);
+    //             expect(stream).to.be.a.ReadableStream;
+    //             expect(stream).to.end;
+    //             done();
+    //             return;
+    //         });
+    //     });
+    //
+    // });
 
 });

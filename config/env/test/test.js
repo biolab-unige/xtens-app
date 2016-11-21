@@ -1,5 +1,5 @@
 /**
-* Production environment settings
+* Test environment settings
  *
  * This file can include shared settings for a production environment,
  * such as API keys or remote database passwords.  If you're using
@@ -10,17 +10,11 @@
  *
  */
  let dbConnectionMap = new Map([
-     ['sails-postgresql', 'xtens-pg']
+     ['sails-memory', 'xtens-waterline']
  ]);
  let IrodsRestStrategy = require('xtens-fs').IrodsRestStrategy;
  let FileSystemManager = require('xtens-fs').FileSystemManager;
-
- let databaseConnections = require('../../local.js').connections;
- let connName = require('../../models.js').models.connection;
-
- let databaseManager = require(dbConnectionMap.get(databaseConnections[connName].adapter));
- let fileSystemConnections = require('../../local.js').fileSystemConnections;
-
+ let databaseManager = require(dbConnectionMap.get('sails-memory'));
 
  module.exports = {
 
@@ -29,10 +23,16 @@
    * environment (see config/connections.js and config/models.js )           *
    ***************************************************************************/
 
-    //  models: {
-    //      connection: 'connection',
-    //      migrate: 'safe'
-    //  },
+     models: {
+         connection: 'test',
+         migrate: 'drop'
+     },
+     
+     connections: {
+         test: {
+             adapter: 'sails-memory'
+         }
+     },
 
   /***************************************************************************
    * Set the port in the production environment to 80                        *
@@ -59,15 +59,16 @@
       */
      xtens: {
 
-         fileSystemManager: new FileSystemManager(fileSystemConnections[fileSystemConnections.default]),
+         fileSystemManager: new FileSystemManager({}),
 
-         fileSystemConnection: fileSystemConnections[fileSystemConnections.default],
+         fileSystemConnection: {},
 
          databaseManager: databaseManager,
 
-         crudManager: new databaseManager.CrudManager(null, databaseConnections[connName], fileSystemConnections[fileSystemConnections.default]),
+         crudManager: new databaseManager.CrudManager(null, databaseManager, {}),
 
          queryBuilder: new databaseManager.QueryBuilder()
+
      }
 
  };

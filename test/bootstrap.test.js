@@ -8,19 +8,10 @@ var sails;
 before(function(done) {
     console.log("bootstrap.test.js - before function started!");
     Sails.lift({
-    /*
-    log: {
-        level: 'debug'
-    }, */
-        models: {
-            connection: 'test',
-            migrate: 'drop'
-        },
-        hooks: {grunt: false}
-        
-    }, function(err, res) {
 
-        PassportService.loadStrategies();
+        hooks: {grunt: false}
+
+    }, function(err, res) {
 
         if (err) {
             console.log("error lifting sails");

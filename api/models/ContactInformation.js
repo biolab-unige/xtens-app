@@ -14,7 +14,7 @@ module.exports = {
             type: 'string',
             required: true,
             max: 64,
-            alpha: true,
+            // alpha: true,
             columnName: 'given_name'
         },
         // MIABIS-07B
@@ -22,7 +22,7 @@ module.exports = {
             type: 'string',
             required: true,
             max: 64,
-            alpha: true,
+            // alpha: true,
             columnName: 'surname'
         },
         // MIABIS-07C

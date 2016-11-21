@@ -463,7 +463,7 @@ let DataService = BluebirdPromise.promisifyAll({
                 return next(err,null);
             }
             data = results.rows;
-            console.log(data);
+
           //if operator has not privilege on dataType return empty data
             if (!dataPrivilege || _.isEmpty(dataPrivilege) ){ data = []; }
 

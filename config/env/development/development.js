@@ -10,19 +10,49 @@
  *
  */
 
-module.exports = {
+ let dbConnectionMap = new Map([
+     ['sails-postgresql', 'xtens-pg']
+ ]);
+ let IrodsRestStrategy = require('xtens-fs').IrodsRestStrategy;
+ let FileSystemManager = require('xtens-fs').FileSystemManager;
+
+ let databaseConnections = require('../../local.js').connections;
+ let connName = require('../../models.js').models.connection;
+
+ let databaseManager = require(dbConnectionMap.get(databaseConnections[connName].adapter));
+ let fileSystemConnections = require('../../local.js').fileSystemConnections;
+
+ module.exports = {
 
   /***************************************************************************
    * Set the default database connection for models in the development       *
    * environment (see config/connections.js and config/models.js )           *
    ***************************************************************************/
 
-  // models: {
-  //   connection: 'someMongodbServer'
-  // }
-    blueprints: {
-        action: false,
-        rest: true,
-        shortcuts: true
-    }
-};
+    //  models: {
+    //      connection: 'pgigg',
+    //      migrate: 'safe'
+    //  },
+
+     blueprints: {
+         action: false,
+         rest: true,
+         shortcuts: true
+     },
+
+    /**
+     *  @description XTENS configuration parameters
+     */
+     xtens: {
+
+         fileSystemManager: new FileSystemManager(fileSystemConnections[fileSystemConnections.default]),
+
+         fileSystemConnection: fileSystemConnections[fileSystemConnections.default],
+
+         databaseManager: databaseManager,
+
+         crudManager: new databaseManager.CrudManager(null, databaseConnections[connName], fileSystemConnections[fileSystemConnections.default]),
+
+         queryBuilder: new databaseManager.QueryBuilder()
+     }
+ };

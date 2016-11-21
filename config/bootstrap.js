@@ -15,13 +15,12 @@
 var BluebirdPromise = require("bluebird");
 
 module.exports.bootstrap = function(cb) {
-
     // loading passport strategies (local, bearer, ...)
+    PassportService.loadStrategies();
 
     // create default operators if no operator is available
     if (sails.config.models.connection !== 'test') {
         sails.on('lifted', function() {
-            PassportService.loadStrategies();
         //     let Barrels = require('barrels');
         //     let barrels = new Barrels();
         //
