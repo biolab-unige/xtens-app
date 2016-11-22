@@ -83,30 +83,30 @@ describe('QueryController', function() {
             return;
         });
 
-        // it('Should return OK 200, with a chunked Readable Stream', function(done) {
-        //
-        //     request(sails.hooks.http.app)
-        //     .post('/query/dataSearch')
-        //     .set('Authorization', `Bearer ${token}`)
-        //     .set('Content-type', 'application/x-www-form-urlencoded; charset=UTF-8')
-        //     .send({
-        //         "queryArgs":{
-        //             "wantsSubject":false,
-        //             "dataType":3,
-        //             "model":"Data",
-        //             "content":[]
-        //         },
-        //         "isStream":true
-        //     })
-        //     .expect(200)
-        //     .end(function(err,res) {
-        //         if(err){done(err); return;}
-        //
-        //         expect(res.headers['transfer-encoding']).to.eql("chunked");
-        //         done();
-        //     });
-        //     return;
-        // });
+        it('Should return OK 200, with a chunked Readable Stream', function(done) {
+
+            request(sails.hooks.http.app)
+            .post('/query/dataSearch')
+            .set('Authorization', `Bearer ${token}`)
+            .set('Content-type', 'application/x-www-form-urlencoded; charset=UTF-8')
+            .send({
+                "queryArgs":{
+                    "wantsSubject":false,
+                    "dataType":3,
+                    "model":"Data",
+                    "content":[]
+                },
+                "isStream":true
+            })
+            .expect(200)
+            .end(function(err,res) {
+                console.log(err,res.headers);
+                if(err){done(err); return;}
+                expect(res.headers['transfer-encoding']).to.eql("chunked");
+                done();
+            });
+            return;
+        });
 
     });
 

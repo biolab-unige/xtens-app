@@ -41,7 +41,7 @@
 
 config/local.js
 coverage/*
-
+logs/xtens.log
 
 
 

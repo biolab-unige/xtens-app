@@ -55,14 +55,14 @@
                  return DataService.executeAdvancedStreamQuery(processedArgs, operator, (err, stream) => {
                // initiate streaming into the sails:
                      stream.pipe(JSONStream.stringify(false)).pipe(res); //TODO
-                 })
-                 .then(data => {
-                     sails.log("Total rows processed:", data.processed, "Duration in milliseconds:", data.duration);
-                 })
-                 .catch(error => {
-                     sails.log("ERROR:", error.message || error);
-                     throw new Error(error);
                  });
+                //  .then(data => {
+                //      sails.log("Total rows processed:", data.processed, "Duration in milliseconds:", data.duration);
+                //  })
+                //  .catch(error => {
+                //      sails.log("ERROR:", error.message || error);
+                //      throw new Error(error);
+                //  });
 
              }
              else {
