@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/biolab-unige/xtens-app.svg?branch=master)](https://travis-ci.org/biolab-unige/xtens-app)
+
 # XTENS 2
 
 a digital repository for heterogeneous data in life science. 
