@@ -17,10 +17,11 @@ install:
 branches:
   only:
   - master
+before_script:
+  - mkdir logs
 script:
-    mkdir logs
-    nv=$(node -v)
-    if [[ $nv == v4* ]] ;
+  - nv=$(node -v)
+  - if [[ $nv == v4* ]] ;
     then
         npm run-script test:v4-travis;
     else
