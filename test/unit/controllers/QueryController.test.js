@@ -4,8 +4,13 @@
 "use strict";
 
 const chai = require("chai");
+const chaiAsPromised = require("chai-as-promised");
+const chaiStream = require('chai-stream');
+chai.use(chaiAsPromised);
+chai.use(chaiStream);
 const request = require('supertest');
 const loginHelper = require('./loginHelper');
+const fs = require('fs');
 const expect = chai.expect, assert = chai.assert, sinon = require('sinon');
 
 describe('QueryController', function() {
@@ -20,8 +25,9 @@ describe('QueryController', function() {
     });
 
     describe('POST /query', function() {
-        var queryStub,
-            recordFound =[{
+
+        var queryStub, queryStreamStub,
+            expectedData = [{
                 "id":1,
                 "type":3,
                 "date": "2012-12-28",
@@ -38,23 +44,32 @@ describe('QueryController', function() {
                 "tags": ["test","a test"],
                 "notes": "just a test"
             }];
+
         beforeEach(function() {
             var dataType = _.cloneDeep(fixtures.datatype[2]);
             var dataPrivilege = _.cloneDeep(fixtures.datatypeprivileges[2]);
             var queryObj = { statement: "WITH s AS (SELECT id, code, sex, personal_info FROM subject) SELECT DISTINCT d.id, s.code, s.sex, d.metadata FROM data d LEFT JOIN s ON s.id = d.parent_subject WHERE d.type = $1;", parameters: [dataType.id]};
-            console.log(sails.config.xtens.crudManager.query);
+
             queryStub = sinon.stub(sails.config.xtens.crudManager, "query", function(query, next) {
-                console.log(query);
+
                 if (query.statement === queryObj.statement && _.isArray(query.parameters)) {
-                    next(null, {rows:recordFound});
+                    next(null, {rows:expectedData});
                 }
                 else {
                     next(new Error("wrong or malformed query argumenent"));
                 }
             });
+
+            queryStreamStub = sinon.stub(sails.config.xtens.crudManager, "queryStream", function(query, next) {
+
+                let stream = fs.createReadStream('./test/resources/data.json', {encoding: 'utf8'});
+                return next(stream,null);
+
+            });
         });
         afterEach(function() {
             sails.config.xtens.crudManager.query.restore();
+            sails.config.xtens.crudManager.queryStream.restore();
         });
 
         it('Should return OK 200, with a json response', function(done) {
@@ -77,13 +92,13 @@ describe('QueryController', function() {
                 // console.log(err,res);
                 if(err){done(err); return;}
                 expect(res.headers['content-type']).to.eql('application/json; charset=utf-8');
-                expect(recordFound).to.eql(res.body.data);
+                expect(res.body.data).to.eql(expectedData);
                 done();
             });
             return;
         });
 
-        it('Should return OK 200, with a chunked Readable Stream', function(done) {
+        it('Should return OK 200, with a Readable Stream and the rigth data', function(done) {
 
             request(sails.hooks.http.app)
             .post('/query/dataSearch')
@@ -100,9 +115,13 @@ describe('QueryController', function() {
             })
             .expect(200)
             .end(function(err,res) {
-                console.log(err,res.headers);
                 if(err){done(err); return;}
-                expect(res.headers['transfer-encoding']).to.eql("chunked");
+
+                let temp = JSON.parse(res.text);
+                let dataResult = JSON.parse(temp);
+
+                expect(res).to.be.a.ReadableStream;
+                expect(dataResult).to.eql(expectedData);
                 done();
             });
             return;
