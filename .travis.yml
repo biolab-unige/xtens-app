@@ -18,6 +18,7 @@ branches:
   only:
   - master
 script:
+    mkdir logs
     nv=$(node -v)
     if [[ $nv == v4* ]] ;
     then
