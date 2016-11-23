@@ -40,12 +40,11 @@
      * @description perfor an advanced and nested query on the Data stored within the repository
      */
      dataSearch: function(req, res) {
-         let queryArgs = _.isString(req.body.queryArgs) ? JSON.parse(req.body.queryArgs) : req.body.queryArgs;
-         let isStream = _.isString(req.body.isStream) ? JSON.parse(req.body.isStream) : req.body.isStream;
-         let queryObj, dataType, dataPrivilege, forbiddenFields, data;
-         let idDataType = queryArgs.dataType;
-         const operator = TokenService.getToken(req);
-         let idOperator = operator.id;
+         let { body : { queryArgs, isStream }} = req;
+         const operator = TokenService.getToken(req), idOperator = operator.id, idDataType = queryArgs.dataType;
+         queryArgs = _.isString(queryArgs) ? JSON.parse(queryArgs) : queryArgs;
+         isStream = _.isString(isStream) ? JSON.parse(isStream) : isStream;
+         // let queryObj, dataType, dataPrivilege, forbiddenFields, data;
 
          return DataService.preprocessQueryParamsAsync(queryArgs, idOperator, idDataType)
 
@@ -53,18 +52,11 @@
              sails.log(processedArgs);
              if (isStream) {
                  return DataService.executeAdvancedStreamQuery(processedArgs, operator, (err, stream) => {
-               // initiate streaming into the sails:
+                     // initiate streaming into the sails:
                      stream.pipe(JSONStream.stringify(false)).pipe(res); //TODO
                  });
-                //  .then(data => {
-                //      sails.log("Total rows processed:", data.processed, "Duration in milliseconds:", data.duration);
-                //  })
-                //  .catch(error => {
-                //      sails.log("ERROR:", error.message || error);
-                //      throw new Error(error);
-                //  });
-
              }
+
              else {
                  return DataService.executeAdvancedQuery(processedArgs, operator, (err, results) => {
                      if(err){
@@ -74,8 +66,10 @@
                  });
              }
 
-         }).catch(error => {
-             sails.log(error);
+         })
+
+         .catch(error => {
+             sails.log.error(error);
              res.serverError(error.message);
          });
      }

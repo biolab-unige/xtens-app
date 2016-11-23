@@ -100,30 +100,27 @@ let DataService = BluebirdPromise.promisifyAll({
      * @return{Object} fieldValidatorSchema - the JOI validation schema for the field
      */
     buildMetadataFieldValidationSchema: function(metadataField) {
-        let fieldValidatorSchema = Joi.object();
-
-        let value, unit, group;
+        let fieldValidatorSchema = Joi.object(), value, unit, group;
 
         switch(metadataField.fieldType) {
-        case FieldTypes.INTEGER:
-            value = Joi.number().integer();
-            break;
-        case FieldTypes.FLOAT:
-            value = Joi.number();
-            break;
-        case FieldTypes.BOOLEAN:
-            value = Joi.boolean().default(false);
-            break;
-        case FieldTypes.DATE:
-            value = Joi.string().isoDate();
-            break;
-            // default is TEXT
-        default:
-            value = Joi.string();
-            if (metadataField.caseInsensitive && !metadataField.isList) {
-                value = value.uppercase();
-            }
-
+            case FieldTypes.INTEGER:
+                value = Joi.number().integer();
+                break;
+            case FieldTypes.FLOAT:
+                value = Joi.number();
+                break;
+            case FieldTypes.BOOLEAN:
+                value = Joi.boolean().default(false);
+                break;
+            case FieldTypes.DATE:
+                value = Joi.string().isoDate();
+                break;
+                // default is TEXT
+            default:
+                value = Joi.string();
+                if (metadataField.caseInsensitive && !metadataField.isList) {
+                    value = value.uppercase();
+                }
         }
 
         if (metadataField.required) {
@@ -133,8 +130,6 @@ let DataService = BluebirdPromise.promisifyAll({
         else {      // allow "null" value if value is not required
             value = value.allow(null);
         }
-
-
 
         if (metadataField.customValue) {
             value = value.default(metadataField.customValue);
@@ -243,17 +238,17 @@ let DataService = BluebirdPromise.promisifyAll({
     queryAndPopulateItemsById: function(foundRows, model, next) {
         let ids = _.pluck(foundRows, 'id');
         switch(model) {
-        case DataTypeClasses.SUBJECT:
-            sails.log("calling Subject.find");
-            Subject.find({id: ids}).exec(next);
-            break;
-        case DataTypeClasses.SAMPLE:
-            sails.log("calling Sample.find");
-            Sample.find({id: ids}).exec(next);
-            break;
-        default:
-            sails.log("calling Data.find");
-            Data.find({id: ids}).exec(next);
+            case DataTypeClasses.SUBJECT:
+                sails.log("calling Subject.find");
+                Subject.find({id: ids}).exec(next);
+                break;
+            case DataTypeClasses.SAMPLE:
+                sails.log("calling Sample.find");
+                Sample.find({id: ids}).exec(next);
+                break;
+            default:
+                sails.log("calling Data.find");
+                Data.find({id: ids}).exec(next);
         }
     },
 
@@ -406,8 +401,8 @@ let DataService = BluebirdPromise.promisifyAll({
                 return data;
             }
         })
-        .catch((err) => {
-            sails.log(err);
+        .catch(err => {
+            sails.log.error(err);
             return err;
         });
     },
@@ -420,25 +415,29 @@ let DataService = BluebirdPromise.promisifyAll({
      */
     hasDataSensitive: function(id, modelName) {
 
-        let hasDataSensitive;
+        // let hasDataSensitive;
 
-        return global[modelName].findOne({id : id}).populateAll().then((datum) => {
+        return global[modelName].findOne({id : id}).populateAll()
+        .then(datum => {
             //if (!datum){ return BluebirdPromise.resolve(undefined);}
-            sails.log("DataService hasDataSensitive - called for model: "+  datum['type'].model);
+
+            sails.log("DataService hasDataSensitive - called for model: " +  datum.type.model);
             //retrieve metadata fields sensitive
-            let flattenedFields = DataTypeService.getFlattenedFields(datum['type'], false);
-            let forbiddenFields = _.filter(flattenedFields, (field) => { return field.sensitive; });
+            const flattenedFields = DataTypeService.getFlattenedFields(datum.type, false);
+            const forbiddenFields = _.filter(flattenedFields, field => { return field.sensitive; });
 
-            forbiddenFields.length > 0 ? hasDataSensitive = true : hasDataSensitive = false;
+            const hasDataSensitive = forbiddenFields.length > 0;
 
-            let json = {
+            //forbiddenFields.length > 0 ? hasDataSensitive = true : hasDataSensitive = false;
+
+            const json = {
                 hasDataSensitive : hasDataSensitive,
                 data : datum
             };
             return json;
         })
-        .catch((err) => {
-            sails.log(err);
+        .catch(err => {
+            sails.log.error(err);
             return err;
         });
 
@@ -451,53 +450,53 @@ let DataService = BluebirdPromise.promisifyAll({
     * @return{Promise} promise with argument a list of retrieved items matching the query
     */
     executeAdvancedQuery: function(processedArgs, operator, next) {
-        let dataType = processedArgs.dataType,
+        const dataType = processedArgs.dataType,
             dataPrivilege = processedArgs.dataTypePrivilege,
             queryObj = processedArgs.queryObj,
-            forbiddenFields = processedArgs.forbiddenFields,
-            data;
+            forbiddenFields = processedArgs.forbiddenFields;
+        let data;
 
         crudManager.query(queryObj, (err, results) => {
-            if (err){
+            if (err) {
                 sails.log(err);
                 return next(err,null);
             }
             data = results.rows;
 
-          //if operator has not privilege on dataType return empty data
+            //if operator has not privilege on dataType return empty data
             if (!dataPrivilege || _.isEmpty(dataPrivilege) ){ data = []; }
 
           //else if operator has not at least Details privilege level delete metadata object
             else if( dataPrivilege.privilegeLevel === VIEW_OVERVIEW) {
-                for (var datum of data) { datum['metadata'] = {}; }
+                for (const datum of data) { datum.metadata = {}; }
                 return data;
             }
             //else if operator can not access to Sensitive Data and datatype has Sensitive data, remove them.
             else if( forbiddenFields.length > 0 && !operator.canAccessSensitiveData){
-                _.each(forbiddenFields, (forbField) => {
-                    _.each(data, (datum) => {
-                        if(datum.metadata[forbField.formattedName]){
-                 //  sails.log("Deleted field: " + chunk.metadata[forbField.formattedName]);
-                            delete datum.metadata[forbField.formattedName];
-                        }
-                    });
-                });
+
+                for (const field of forbiddenFields) {
+                    for (const datum of data) {
+                        delete datum.metadata[field.formattedName];
+                    }
+                }
             }
 
-            let json = {data: data, dataType: dataType, dataTypePrivilege : dataPrivilege };
+            const json = {data: data, dataType: dataType, dataTypePrivilege : dataPrivilege };
 
-            return next(null,json);
+            return next(null, json);
 
         });
     },
+
     /**
-     * @name queryStream
+     * @method
+     * @name executeAdvancedStreamQuery
      * @description Return a stream of data
      * @param {object} - contains all required params to perfom the db query
      * @return {Promise} -  a stream of data containing all rows satisfating the query
      */
     executeAdvancedStreamQuery: function(processedArgs, operator, next) {
-        let dataType = processedArgs.dataType,
+        const dataType = processedArgs.dataType,
             dataPrivilege = processedArgs.dataTypePrivilege,
             queryObj = processedArgs.queryObj,
             forbiddenFields = processedArgs.forbiddenFields;
@@ -516,27 +515,25 @@ let DataService = BluebirdPromise.promisifyAll({
                 stream.close();
             });
 
-            stream.on('error', (err) => {
+            stream.on('error', err => {
                 sails.log('Error Stream: ', err.toString());
             });
 
-            stream.on('data',chunk => {
-                if(chunk.dataType || chunk.dataPrivilege){ return; }
+            stream.on('data', chunk => {
+                if(chunk.dataType || chunk.dataPrivilege) { return; }
 
+                //if operator has not privilege on dataType return empty data
                 if (!dataPrivilege || _.isEmpty(dataPrivilege) ) { return; }
 
                 else if( dataPrivilege.privilegeLevel === VIEW_OVERVIEW) { chunk.metadata = {}; }
 
-              else if( forbiddenFields.length > 0 && !operator.canAccessSensitiveData){
-                  _.each(forbiddenFields, (forbField) => {
-                      if(chunk.metadata[forbField.formattedName]){
-                     //  sails.log("Deleted field: " + chunk.metadata[forbField.formattedName]);
-                          delete chunk.metadata[forbField.formattedName];
-                      }
-                  });
-              }
-
+                else if( forbiddenFields.length > 0 && !operator.canAccessSensitiveData){
+                    for (const field of forbiddenFields) {
+                        delete chunk.metadata[field.formattedName];
+                    }
+                }
             });
+
             return next(null, stream);
         });
 
