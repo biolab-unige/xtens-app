@@ -39,7 +39,7 @@ module.exports = {
 
     "plugins": ["backbone"],
     "rules": {
-        "indent": ["error",4],
+        "indent": ["error",4, { "SwitchCase": 1 }],
         "linebreak-style": [
             "error",
             "unix"
@@ -49,8 +49,8 @@ module.exports = {
             "warn",
             "always"
         ],
-        "no-console": [0],
-        "no-unused-vars": [0],
+        "no-console": "warn",
+        "no-unused-vars": "warn",
         "backbone/model-defaults": [0],
         "backbone/no-view-model-attributes": [0],
         "backbone/no-native-jquery": [0],
