@@ -14,9 +14,10 @@ node_js:
 install:
   - npm install
   - npm install sails
-# safelist
 branches:
   only:
   - master
-after_success: 
-  - coveralls
+script:
+  - npm run-script test-on-travis
+after_success:
+  - npm run-script upload-to-coveralls
