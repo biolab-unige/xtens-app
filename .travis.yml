@@ -18,6 +18,12 @@ branches:
   only:
   - master
 script:
-  - npm run-script test-on-travis
+    nv=$(node -v)
+    if [[ $nv == v4* ]] ;
+    then
+        npm run-script test:v4-travis;
+    else
+        npm run-script test:v6-travis;
+    fi
 after_success:
   - npm run-script upload-to-coveralls
