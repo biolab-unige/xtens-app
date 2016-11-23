@@ -50,7 +50,8 @@
     "start": "node app.js",
     "debug": "node debug app.js",
     "test": "PORT=9999 NODE_ENV=test ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -R spec --recursive",
-    "test-on-travis": "PORT=9999 NODE_ENV=test ./node_modules/.bin/istanbul cover --report lcovonly ./node_modules/.bin/_mocha -- -R spec --recursive",
+    "test:v4-travis": "PORT=9999 NODE_ENV=test node --harmony_destructuring ./node_modules/.bin/istanbul cover --report lcovonly ./node_modules/.bin/_mocha -- -R spec --recursive",
+    "test:v6-travis": "PORT=9999 NODE_ENV=test ./node_modules/.bin/istanbul cover --report lcovonly ./node_modules/.bin/_mocha -- -R spec --recursive",
     "upload-to-coveralls": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "main": "app.js",
@@ -69,6 +70,8 @@
     "chai-stream": "git+https://github.com/gicaz/chai-stream.git",
     "connect-livereload": "~0.4.0",
     "coveralls": "^2.11.15",
+    "eslint": "^3.10.2",
+    "eslint-plugin-backbone": "^2.0.2",
     "express": "~4.9.1",
     "grunt-bower-task": "^0.4.0",
     "grunt-contrib-connect": "~0.8.0",
