@@ -3,7 +3,7 @@
     "id": 1,
     "data":2
   },
-  { "uri": "/tempZone/home/rods/xtens-repo/aCGH - Raw/9079/examples.desktop",
+  { "uri": "test/resources/file.test.txt",
     "details": null,
     "id": 2,
     "data":2
