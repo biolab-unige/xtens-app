@@ -41,10 +41,10 @@
      */
      dataSearch: function(req, res) {
          let { body : { queryArgs, isStream }} = req;
-         const operator = TokenService.getToken(req), idOperator = operator.id, idDataType = queryArgs.dataType;
+         const operator = TokenService.getToken(req), idOperator = operator.id;
          queryArgs = _.isString(queryArgs) ? JSON.parse(queryArgs) : queryArgs;
          isStream = _.isString(isStream) ? JSON.parse(isStream) : isStream;
-         // let queryObj, dataType, dataPrivilege, forbiddenFields, data;
+         const idDataType = queryArgs.dataType;
 
          return DataService.preprocessQueryParamsAsync(queryArgs, idOperator, idDataType)
 
