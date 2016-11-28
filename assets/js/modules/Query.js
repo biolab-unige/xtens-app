@@ -25,10 +25,10 @@
     function QueryViewFactory() {
         this.createModelQueryView = function(dataTypeModel, specializedFieldsObj) {
             switch(dataTypeModel) {
-            case DataTypeClasses.SUBJECT:
-                return new Query.Views.Subject({ model: new Query.SubjectModel(specializedFieldsObj) });
-            case DataTypeClasses.SAMPLE:
-                return new Query.Views.Sample({ model: new Query.SampleModel(specializedFieldsObj) , biobanks: arguments[2]});
+                case DataTypeClasses.SUBJECT:
+                    return new Query.Views.Subject({ model: new Query.SubjectModel(specializedFieldsObj) });
+                case DataTypeClasses.SAMPLE:
+                    return new Query.Views.Sample({ model: new Query.SampleModel(specializedFieldsObj) , biobanks: arguments[2]});
             }
         };
     }
@@ -230,7 +230,9 @@
                     { id: '>', text: '>' }, { id: '<>', text: '≠' }];
             }
             else if (fieldType === FieldTypes.TEXT) {
-                data = [{ id: '=', text: '=' }, { id: '<>', text: '≠' }];
+                data = [{ id: '=', text: '=' }, { id: '<>', text: '≠' },
+                        { id: 'LIKE', text: 'LIKE'}, {id: 'NOT LIKE', text: 'NOT LIKE'},
+                        { id: 'ILIKE', text: 'ILIKE'}, {id: 'NOT ILIKE', text: 'NOT ILIKE'}];
             }
             else {
                 data = [{ id: '=', text: '=' }, { id: '<>', text: '≠' }];
@@ -352,7 +354,8 @@
                 observe: 'surnameComparator',
                 initialize: function($el) {
                     $el.select2({
-                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }]
+                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' },
+                                { id: 'LIKE', text: 'LIKE'}, { id: 'NOT LIKE', text: 'NOT LIKE'}]
                     });
                 }
             },
@@ -363,7 +366,8 @@
                 observe: 'givenNameComparator',
                 initialize: function($el) {
                     $el.select2({
-                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }]
+                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' },
+                                { id: 'LIKE', text: 'LIKE'}, { id: 'NOT LIKE', text: 'NOT LIKE'}]
                     });
                 }
             },
@@ -374,7 +378,9 @@
                 observe: 'birthDateComparator',
                 initialize: function($el) {
                     $el.select2({
-                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' }]
+                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' },
+                                { id: '<=', text: '≤' }, { id: '>=', text: '≥' },
+                                { id: '<', text: '<'}, {id: '>', text: '>'}]
                     });
                 }
             },
@@ -382,6 +388,11 @@
                 observe: 'birthDate'
             }
 
+        },
+
+        events: {
+            'input [name="surname"]': 'upper',
+            'input [name="given-name"]': 'upper'
         },
 
         initialize: function(options) {
@@ -393,6 +404,10 @@
             // this.$el.addClass("query-row");
             this.stickit();
             return this;
+        },
+
+        upper: function(ev) {
+            ev.target.value = ev.target.value.toUpperCase();
         }
 
     });
@@ -755,7 +770,7 @@
             this.selectedDataType = this.dataTypes.get(idDataType);
             this.selectedPrivilege = this.dataTypePrivileges.findWhere({'dataType' : idDataType});
             this.model.set("model", this.selectedDataType.get("model"));
-            if (this.model.get("model") === DataTypeClasses.SUBJECT && xtens.session.get('canAccessPersonalData')) {      //TODO add policy to filter those not allowed to see personal info
+            if (this.model.get("model") === DataTypeClasses.SUBJECT && xtens.session.get('canAccessPersonalData')) {
                 personalInfoQueryView = new Query.Views.PersonalInfo({
                     model: new Query.PersonalInfoModel(_.findWhere(queryContent, {personalDetails: true}))
                 });
