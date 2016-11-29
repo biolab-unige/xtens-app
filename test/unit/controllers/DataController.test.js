@@ -53,7 +53,7 @@ describe('DataController', function() {
             .expect(201)
             .end(function(err, res) {
                 if (err) {
-                    console.log(err);
+                    sails.log.console.error(err);
                     done(err);
                 }
                 var l = res.header.location;
@@ -124,7 +124,7 @@ describe('DataController', function() {
 
     describe('GET /data', function() {
 
-        it('Should return OK 200', function (done) {
+        it('Should return OK 200 and expected n° of data', function (done) {
             request(sails.hooks.http.app)
             .get('/data')
             .set('Authorization', `Bearer ${tokenDataSens}`)
@@ -142,6 +142,24 @@ describe('DataController', function() {
             });
         });
 
+        it('Should return OK 200 and the expected datum', function (done) {
+            request(sails.hooks.http.app)
+            .get('/data/1')
+            .set('Authorization', `Bearer ${tokenDataSens}`)
+            .expect(200)
+            .end(function(err, res) {
+                expect(res.body.id).to.eql(1);
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                    return;
+                }
+
+                done();
+                return;
+            });
+        });
+
     });
 
     describe('DELETE /data', function() {
@@ -151,11 +169,17 @@ describe('DataController', function() {
             .delete('/data/3')
             .set('Authorization', `Bearer ${tokenDataSens}`)
             .send()
-            .expect(200, {
-                deleted: 1
+            .expect(200)
+            .end(function(err, res) {
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                    return;
+                }
+                expect(res.body.deleted).to.eql(1);
+                done();
+                return;
             });
-            done();
-            return;
         });
 
         it('Should return 200 OK with 0 deleted items if resource does not exist', function (done) {
@@ -163,11 +187,17 @@ describe('DataController', function() {
             .delete('/data/3')
             .set('Authorization', `Bearer ${tokenDataSens}`)
             .send()
-            .expect(200, {
-                deleted: 0
+            .expect(200)
+            .end(function(err, res) {
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                    return;
+                }
+                expect(res.body.deleted).to.eql(0);
+                done();
+                return;
             });
-            done();
-            return;
         });
     });
 

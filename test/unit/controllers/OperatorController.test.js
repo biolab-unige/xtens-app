@@ -30,7 +30,7 @@ describe('OperatorController', function() {
                 'user': demouser.id,
                 'protocol': 'local'});
 
-            console.log(demouser);
+            // console.log(demouser);
 
             request(sails.hooks.http.app)
             .patch('/operator')
@@ -40,12 +40,20 @@ describe('OperatorController', function() {
                 newPass: "NewPassword",
                 cnewPass: "NewPassword"
             })
-            .expect(204);
-            done();
-            return;
+            .expect(204)
+            .end(function(err, res) {
+                expect(res.body).to.be.empty;
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                    return;
+                }
+                done();
+                return;
+            });
         });
         it('Should return 400 bad Request, Old Password and New Password can not match', function(done) {
-
+            const expectedMessage = 'New Password and Old Password cannot be the same';
             const demouser = fixtures.operator[2];
             const passport = _.find(fixtures.passport, {
                 'user': demouser.id,
@@ -59,13 +67,24 @@ describe('OperatorController', function() {
               newPass: passport.password,
               cnewPass: passport.password
           })
-          .expect(400);
-            done();
-            return;
+          .expect(400)
+          .end(function(err, res) {
+              expect(res).to.be.error;
+              expect(res.body.error.message).to.eql(expectedMessage);
+
+              if (err) {
+                  sails.log.console.error(err);
+                  done(err);
+                  return;
+              }
+              done();
+              return;
+          });
         });
 
         it('Should return 400 bad Request, Old Password  Wrong', function(done) {
 
+            const expectedMessage = 'Old Password does not match';
             const demouser = fixtures.operator[2];
 
             request(sails.hooks.http.app)
@@ -76,13 +95,25 @@ describe('OperatorController', function() {
               newPass: "NewPassword",
               cnewPass: "NewPassword"
           })
-          .expect(400);
-            done();
-            return;
+          .expect(400)
+          .end(function(err, res) {
+              // console.log(res.body);
+              expect(res).to.be.error;
+              expect(res.body.error.message).to.eql(expectedMessage);
+
+              if (err) {
+                  sails.log.console.error(err);
+                  done(err);
+                  return;
+              }
+              done();
+              return;
+          });
         });
 
         it('Should return 400 bad Request, New Password and Confirm Confirm New Password do not match', function(done) {
 
+            const expectedMessage = 'New Passwords do not match';
             const demouser = fixtures.operator[2];
             const passport = _.find(fixtures.passport, {
                 'user': demouser.id,
@@ -96,9 +127,19 @@ describe('OperatorController', function() {
             newPass: "NewPassword",
             cnewPass: "OtherNewPassword"
         })
-        .expect(400);
+        .expect(400).end(function(err, res) {
+            // console.log(res.body);
+            expect(res).to.be.error;
+            expect(res.body.error.message).to.eql(expectedMessage);
+
+            if (err) {
+                sails.log.console.error(err);
+                done(err);
+                return;
+            }
             done();
             return;
+        });
         });
     });
 });

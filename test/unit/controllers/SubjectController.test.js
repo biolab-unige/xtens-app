@@ -45,16 +45,19 @@ describe('SubjectController', function() {
                 },
                 notes: "New subject"
             })
-            .expect(function(res) {
-                const l = res.header.location;
-                const loc = l.split('/');
-                const location = `/${loc[3]}/${loc[4]}`;
+            .expect(201)
+            .end(function(err, res) {
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                }
+                var l = res.header.location;
+                var loc = l.split('/');
+                var location = '/' + loc[3]+ '/' + loc[4];
                 expect(location).to.equals('/subject/4');
-            })
-            .expect(201);
-            done();
-            return;
-
+                done();
+                return;
+            });
 
         });
 
@@ -111,13 +114,17 @@ describe('SubjectController', function() {
                 },
                 notes: "New subject Updated"
             })
-            .expect(function(res) {
-                //console.log(res.body[0].notes);
+            .expect(200)
+            .end(function(err, res) {
+                console.log(res.body[0].notes);
                 expect(res.body[0].notes).to.equals(note);
-            })
-            .expect(200);
-            done();
-            return;
+                if (err) {
+                    done(err);
+                    return;
+                }
+                done();
+                return;
+            });
             //}).catch(function(err){console.log(err);});
         });
 
@@ -142,19 +149,44 @@ describe('SubjectController', function() {
     });
 
     describe('GET /subject', function() {
-        it('Should return OK 200', function(done) {
+        it('Should return OK 200 and expected n° of subjects', function(done) {
 
             request(sails.hooks.http.app)
             .get('/subject')
             .set('Authorization', `Bearer ${token}`)
             //.send({id:1})
-            .expect(function(res) {
-                sails.log.info(res.body);
+            .expect(200)
+            .end(function(err, res) {
                 expect(res.body).to.have.length(fixtures.subject.length + 1);
-            })
-            .expect(200);
-            done();
-            return;
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                    return;
+                }
+                done();
+                return;
+            });
+
+        });
+        it('Should return OK 200 and the expected subject', function(done) {
+
+            request(sails.hooks.http.app)
+            .get('/subject/2')
+            .set('Authorization', `Bearer ${token}`)
+            //.send({id:1})
+            .expect(200)
+            .end(function(err, res) {
+
+                expect(res.body.id).to.eql(2);
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                    return;
+                }
+
+                done();
+                return;
+            });
 
         });
         //
@@ -176,13 +208,17 @@ describe('SubjectController', function() {
             request(sails.hooks.http.app)
             .delete('/subject/2')
             .set('Authorization', `Bearer ${token}`)
-            .expect(function(res) {
-                console.log('N° Subject deleted: ' + res.body.deleted);
-                expect(res.body.deleted).to.equals(1);
-            })
-            .expect(200);
-            done();
-            return;
+            .expect(200)
+            .end(function(err, res) {
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                    return;
+                }
+                expect(res.body.deleted).to.eql(1);
+                done();
+                return;
+            });
         });
 
         it('Should return OK 200, with array lenght to 0', function (done) {
@@ -190,15 +226,19 @@ describe('SubjectController', function() {
             request(sails.hooks.http.app)
             .delete('/subject/5')
             .set('Authorization',`Bearer ${token}`)
-            .expect(function(res) {
-                console.log('N° Subject deleted: ' + res.body.deleted);
-                expect(res.body.deleted).to.equals(0);
-            })
-            .expect(200);
-            done();
-            return;
+            .expect(200)
+            .end(function(err, res) {
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                    return;
+                }
+                expect(res.body.deleted).to.eql(0);
+                done();
+                return;
+            });
+
+
         });
-
-
     });
 });

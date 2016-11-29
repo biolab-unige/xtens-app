@@ -37,15 +37,19 @@ describe('SampleController', function() {
                 donor: 11,
                 metadata: {}
             })
-            .expect(function(res) {
-                const l = res.header.location;
-                const loc = l.split('/');
-                const location = `/${loc[3]}/${loc[4]}`;
+            .expect(201)
+            .end(function(err, res) {
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                }
+                var l = res.header.location;
+                var loc = l.split('/');
+                var location = '/' + loc[3]+ '/' + loc[4];
                 expect(location).to.equals('/sample/2');
-            })
-            .expect(201);
-            done();
-            return;
+                done();
+                return;
+            });
 
 
         });
@@ -83,15 +87,18 @@ describe('SampleController', function() {
                 biobankCode: "081852",
                 donor: 11,
                 metadata: {}
-            })
-            .expect(function(res) {
-                //console.log(res.body[0].notes);
+            }).expect(200)
+            .end(function(err, res) {
+                console.log(res.body[0].biobank);
                 expect(res.body[0].biobank).to.equals(biobank);
-            })
-            .expect(200);
-            done();
-            return;
-            //}).catch(function(err){console.log(err);});
+                if (err) {
+                    done(err);
+                    return;
+                }
+                done();
+                return;
+            });
+
         });
 
         it('Should return 400, Wrong Model', function(done) {
@@ -110,22 +117,45 @@ describe('SampleController', function() {
             done();
             return;
         });
-
     });
     //
     describe('GET /sample', function() {
-        it('Should return OK 200', function(done) {
+        it('Should return OK 200 and expected n° of samples', function(done) {
 
             request(sails.hooks.http.app)
             .get('/sample')
             .set('Authorization', `Bearer ${token}`)
-            .expect(function(res) {
-                sails.log(`Response lenght: ${res.body && res.body.length}`);
+            .expect(200)
+            .end(function(err, res) {
                 expect(res.body).to.have.length(fixtures.sample.length + 1);
-            })
-            .expect(200);
-            done();
-            return;
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                    return;
+                }
+                done();
+                return;
+            });
+        });
+
+        it('Should return OK 200 and the expected sample', function(done) {
+
+            request(sails.hooks.http.app)
+            .get('/sample/1')
+            .set('Authorization', `Bearer ${token}`)
+            .expect(200)
+            .end(function(err, res) {
+
+                expect(res.body.id).to.eql(1);
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                    return;
+                }
+
+                done();
+                return;
+            });
 
         });
         //   //
@@ -149,27 +179,34 @@ describe('SampleController', function() {
             request(sails.hooks.http.app)
             .delete('/sample/2')
             .set('Authorization', `Bearer ${token}`)
-            .expect(function(res) {
-                sails.log('N° Sample deleted: ' + res.body.deleted);
-                expect(res.body.deleted).to.equals(1);
-            })
-            .expect(200);
-            done();
-            return;
+            .expect(200)
+            .end(function(err, res) {
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                    return;
+                }
+                expect(res.body.deleted).to.eql(1);
+                done();
+                return;
+            });
         });
 
         it('Should return OK 200, with array lenght to 0', function (done) {
             request(sails.hooks.http.app)
             .delete('/sample/5')
             .set('Authorization',`Bearer ${token}`)
-
-            .expect(function(res) {
-                sails.log('N° Sample deleted: ' + res.body.deleted);
-                expect(res.body.deleted).to.equals(0);
-            })
-            .expect(200);
-            done();
-            return;
+            .expect(200)
+            .end(function(err, res) {
+                if (err) {
+                    sails.log.console.error(err);
+                    done(err);
+                    return;
+                }
+                expect(res.body.deleted).to.eql(0);
+                done();
+                return;
+            });
         });
 
 
