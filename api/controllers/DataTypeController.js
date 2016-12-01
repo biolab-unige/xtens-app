@@ -40,7 +40,7 @@
 
          query.then(function(dataTypes) {
              DataTypeService.filterDataTypes(operator.id, dataTypes).then(function (dataTypesFiltered) {
-                 console.log(dataTypesFiltered);
+                 sails.log(dataTypesFiltered);
                  return res.json(dataTypesFiltered);
 
              });
@@ -79,12 +79,12 @@
                 return DataType.findOne(idDataType).populate('parents');
             }) */
             .then(function(dataType) {
-                console.log(dataType);
+                sails.log(dataType);
                 res.set('Location', req.baseUrl + req.url + '/'  + dataType.id);
                 return res.json(201, dataType);
             })
             .catch(function(error) {
-                console.log(error.message);
+                sails.log(error.message);
                 return co.error(error);
             });
          }
@@ -112,7 +112,7 @@
                 return DataType.findOne(idDataType).populate('parents');
             }) */
             .then(function(dataType) {
-                console.log(dataType);
+                sails.log(dataType);
                 return res.json(dataType);
             })
             .catch(function(error) {
@@ -164,7 +164,7 @@
         })
 
         .catch(function(err) {
-            console.log(err);
+            sails.log(err);
             return co.error(err);
         });
 
@@ -179,7 +179,7 @@
              DataTypeService.getChildrenRecursive(roots);
          })
         .then(function(results) {
-            console.log(results);
+            sails.log(results);
             res.json(results);
         })
         .catch(function(error) {
@@ -204,8 +204,8 @@
         .then(function(result) {
             const id = result.id;
             const template = result.model;
-            // This query returns the parent-child associations among the datatypes
 
+            // This query returns the parent-child associations among the datatypes
             function dataTypeTreeCb (err, resp) {
 
                 var links= [],loops = [];

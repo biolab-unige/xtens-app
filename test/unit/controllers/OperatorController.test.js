@@ -9,17 +9,82 @@ const request = require('supertest');
 const loginHelper = require('./loginHelper');
 
 describe('OperatorController', function() {
-    let token;
+    let tokenS, tokenSA;
 
     before(function(done) {
-        loginHelper.loginStandardUser(request, function (bearerToken) {
-            token = bearerToken;
-            sails.log.debug(`Got token: ${token}`);
-            done();
-            return;
+        loginHelper.loginSuperAdmin(request, function (bearerToken) {
+            tokenSA = bearerToken;
+            sails.log.debug(`Got token: ${tokenSA}`);
+
+
+            loginHelper.loginStandardUser(request, function (bearerToken) {
+                tokenS = bearerToken;
+                sails.log.debug(`Got token: ${tokenS}`);
+                done();
+                return;
+            });
         });
     });
 
+    describe('POST /operator', function() {
+        it('Should return OK 201', function(done) {
+            let expectedOperator = {
+                firstName: 'new Operator',
+                lastName: 'Operator',
+                sex: 'M',
+                email: 'operator@domain.com',
+                login: 'newoperator'
+            };
+            request(sails.hooks.http.app)
+            .post('/operator')
+            .set('Authorization', `Bearer ${tokenSA}`)
+            .send({
+                firstName: 'new Operator',
+                lastName: 'Operator',
+                birthDate: '1900-01-01',
+                sex: 'M',
+                email: 'operator@domain.com',
+                login: 'newoperator',
+                password: 'pswdoperator'
+            })
+            .expect(201)
+            .end(function(err, res) {
+                if (err) {
+                    sails.log.error(expectedOperator);
+                    done(err);
+                    return;
+
+                }
+                let resOperator = res.body;
+                expect(resOperator.firstName).to.eql(expectedOperator.firstName);
+                expect(resOperator.lastName).to.eql(expectedOperator.lastName);
+                expect(resOperator.sex).to.eql(expectedOperator.sex);
+                expect(resOperator.email).to.eql(expectedOperator.email);
+                expect(resOperator.login).to.eql(expectedOperator.login);
+                done();
+                return;
+            });
+
+        });
+
+        // it('Should return 400, Wrong Model', function(done) {
+        //
+        //     request(sails.hooks.http.app)
+        //     .post('/operator')
+        //     .set('Authorization', `Bearer ${tokenSA}`)
+        //     .send({
+        //         type: 3,
+        //         metadata: {},
+        //         date: "2015-12-06",
+        //         tags: [],
+        //         notes: "New operator"
+        //     })
+        //     .expect(400);
+        //     done();
+        //     return;
+        //
+        // });
+    });
 
     describe('PATCH /operator', function() {
 
@@ -30,11 +95,11 @@ describe('OperatorController', function() {
                 'user': demouser.id,
                 'protocol': 'local'});
 
-            // console.log(demouser);
+            console.log(demouser,passport);
 
             request(sails.hooks.http.app)
             .patch('/operator')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${tokenS}`)
             .send({
                 oldPass: passport.password,
                 newPass: "NewPassword",
@@ -61,7 +126,7 @@ describe('OperatorController', function() {
 
             request(sails.hooks.http.app)
           .patch('/operator')
-          .set('Authorization', `Bearer ${token}`)
+          .set('Authorization', `Bearer ${tokenS}`)
           .send({
               oldPass: passport.password,
               newPass: passport.password,
@@ -89,7 +154,7 @@ describe('OperatorController', function() {
 
             request(sails.hooks.http.app)
           .patch('/operator')
-          .set('Authorization', `Bearer ${token}`)
+          .set('Authorization', `Bearer ${tokenS}`)
           .send({
               oldPass: "WrongOldPass",
               newPass: "NewPassword",
@@ -121,7 +186,7 @@ describe('OperatorController', function() {
 
             request(sails.hooks.http.app)
         .patch('/operator')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Authorization', `Bearer ${tokenS}`)
         .send({
             oldPass: passport.password,
             newPass: "NewPassword",

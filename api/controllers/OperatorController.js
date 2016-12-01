@@ -6,7 +6,7 @@
 */
 
 /* jshint node: true */
-/* globals _, sails, Subject, Sample, Data, DataType, SubjectService, BiobankService, SampleService, TokenService, QueryService, DataService, PassportService */
+/* globals _, sails, TokenService,  PassportService */
 'use strict';
 
 const ControllerOut = require('xtens-utils').ControllerOut;
@@ -20,7 +20,7 @@ var OperatorController = {
 
     create: function(req, res) {
         const co = new ControllerOut(res);
-        console.log(req.allParams());
+        sails.log(req.allParams());
         return createUser(req.allParams())
 
         .then(function(operator) {
@@ -28,11 +28,11 @@ var OperatorController = {
             // set a password field (for Backbone)
             operator.password = true;
 
-            console.log(operator);
-            return res.json(200, operator);
+            sails.log(operator);
+            return res.json(201, operator);
 
         }).catch(function(error) {
-            console.log(error.message);
+            sails.log(error.message);
             return co.error(error);
         });
 
@@ -56,7 +56,7 @@ var OperatorController = {
                 return res.json(204, null);
 
             }).catch(function(error) {
-                console.log(error.message);
+                sails.log(error.message);
                 return co.error(error);
             });
         } else {

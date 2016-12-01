@@ -47,7 +47,8 @@ module.exports.policies = {
 
     DataTypeController: {
         '*':  ['bearerAuth', 'isAdmin'],
-        find: 'bearerAuth'
+        find: 'bearerAuth',
+        'edit':  ['bearerAuth', 'isAdmin']
     },
 
     BiobankController: {
