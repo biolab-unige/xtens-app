@@ -33,7 +33,7 @@
     XtensConstants.SexOptions = {
         MALE: 'M',
         FEMALE: 'F',
-        UNKNOWN: 'N.D.' /*,
+        UNKNOWN: 'N.A.' /*,
         UNDIFFERENTIATED: 'UNDIFFERENTIATED' */
     };
 
