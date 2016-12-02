@@ -63,9 +63,9 @@ var OperatorController = {
             return res.json(400, 'Operator not Found');
         }
 
-    },
+    }
 
-    addGroupToOperator: function(req, res, next) {
+    // addGroupToOperator: function(req, res, next) {
 
         /* Operator.findOne(req.param('operator_id')).populate('groups').exec(function(err,bean){
         if(err) return next(err);
@@ -76,7 +76,7 @@ var OperatorController = {
         res.redirect('/operator');
         });
         });*/
-    }
+};
 
 
     /*removeGroupFromOperator: function(req,res,next){
@@ -117,6 +117,6 @@ var OperatorController = {
     todo: 'like() is not implemented yet!'
     });
     }*/
-};
+// };
 
 module.exports = OperatorController;

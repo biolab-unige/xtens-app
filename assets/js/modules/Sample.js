@@ -4,6 +4,7 @@
  */
 (function(xtens, Sample) {
     var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames;
+    var Constants = xtens.module("xtensconstants").Constants;
     var i18n = xtens.module("i18n").en;
     var DataType = xtens.module("datatype");
     var DataTypeModel = xtens.module("datatype").Model;
@@ -398,7 +399,8 @@
             this.$el.html(this.template({
                 __: i18n,
                 data: this.model,
-                fields: fields
+                fields: fields,
+                PATH_SEPARATOR: Constants.PATH_SEPARATOR || '/'
             }));
 
             if (MISSING_VALUE_ALERT) {

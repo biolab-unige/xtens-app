@@ -42,19 +42,19 @@
     function getFieldValue($el, ev, options) {
         switch (options.view.component.fieldType) {
 
-        case FieldTypes.INTEGER:
-            return parseInt($el.val());
+            case FieldTypes.INTEGER:
+                return parseInt($el.val());
 
-        case FieldTypes.FLOAT:
-            return parseFloat($el.val());
+            case FieldTypes.FLOAT:
+                return parseFloat($el.val());
 
             // return the date string in ISO format
-        case FieldTypes.DATE:
-            var dateArray = $el.val().split("/");
-            return dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0];
+            case FieldTypes.DATE:
+                var dateArray = $el.val().split("/");
+                return dateArray[2] + '-'+ dateArray[1] + '-' + dateArray[0];
 
-        default:
-            return $el.val();
+            default:
+                return $el.val();
 
         }
     }
@@ -547,15 +547,15 @@
                 this.$fieldValue.prop('required', true);
             }
             switch (this.component.fieldType) {
-            case FieldTypes.INTEGER:
-                this.$fieldValue.attr("data-parsley-type", "integer");
-                break;
-            case FieldTypes.FLOAT:
-                this.$fieldValue.attr("data-parsley-type", "number");
-                break;
-            case FieldTypes.DATE:
-                this.initDatepicker();
-                break;
+                case FieldTypes.INTEGER:
+                    this.$fieldValue.attr("data-parsley-type", "integer");
+                    break;
+                case FieldTypes.FLOAT:
+                    this.$fieldValue.attr("data-parsley-type", "number");
+                    break;
+                case FieldTypes.DATE:
+                    this.initDatepicker();
+                    break;
             }
             if (this.component.hasRange) {
                 this.$fieldValue.attr("min", this.component.min);
