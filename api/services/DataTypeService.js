@@ -5,7 +5,7 @@
  */
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, sails , Group, DataType, QueryService, Operator */
+/* globals _, sails , DataType, Operator */
 "use strict";
 let Joi = require("joi");
 let BluebirdPromise = require("bluebird");
@@ -133,25 +133,6 @@ let DataTypeService = {
 
     /**
      * @method
-     * @name getChildrenRecursive
-     * @description given a list (array) of DataType find recursively all the children data types
-     * @param{Array} parents - an array of DataType whose children are to be sought
-     * @return{Array} an array of children data types
-     */
-
-    getChildrenRecursive: function(parents) {
-        parents.forEach( (parent, index) => {
-            DataType.find({parent: parent.id}).populate('children').then(function(children) {
-                parent.children = children;
-                DataTypeService.getChildrenRecursive(children);
-            }).catch(function(err) {
-                if (err) console.log(err);
-            });
-        });
-    },
-
-    /**
-     * @method
      * @name get
      * @return {Array} - list of found DataType entities
      */
@@ -164,92 +145,6 @@ let DataTypeService = {
         }
         DataType.find(criteriaObj).populateAll().exec(next); // do we need populateAll here?
     },
-
-    /**
-     * @deprecated
-     * @method
-     * @name getByOperator
-     * @param idOperator
-     * @param next - a callback
-     * @return {Array} - list of found DataType entities
-     * @description find the list of allowed DataTypes for a specific Operator, through its Groups
-     * TODO move to xtens-transact
-     *
-
-getByOperator: function(idOperator, params, next) {
-let statement = ['SELECT d.id, d.name, d.schema FROM data_type d ',
-'INNER JOIN datatype_groups__group_datatypes dggd ON d.id = dggd.datatype_groups ',
-'INNER JOIN xtens_group g ON g.id = dggd."group_dataTypes" ',
-'INNER JOIN group_members__operator_groups gmog ON g.id = gmog.group_members ',
-'INNER JOIN operator o ON o.id = gmog.operator_groups '].join("");
-let whereClause = 'WHERE o.id = $1 AND d.model = $2';
-let vals = [idOperator, params.model];
-
-if (params.idDataType) {
-statement = [statement, 'INNER JOIN datatype_children__datatype_parents dcdp ON dcdp.datatype_parents = d.id ',
-'INNER JOIN data_type dp ON dp.id = dcdp.datatype_children '].join();
-whereClause = whereClause + ' AND dp.id = $3';
-vals.push(params.idDataType);
-}
-else if (params.idDataTypes) {
-let idDataTypes = params.idDataTypes.split(',').map(function(val) {return _.parseInt(val);});
-let fragments = [];
-for (let i=0; i<idDataTypes.length; i++) {
-fragments.push('$' + (vals.length + i + 1));
-}
-whereClause += ' AND d.id IN (' + fragments.join(",") + ')';
-vals.push(idDataTypes);
-vals = _.flatten(vals);
-}
-
-DataType.query({
-    // name: 'findDataTypeByOperator',
-text: [statement, whereClause, ';'].join(""),
-values: vals
-}, function(err, result) {
-if (err) {
-next(err);
-}
-else {
-next(null, result.rows);
-}
-});
-}, */
-
-
-    /**
-     * @deprecated
-     * @method
-     * @name getByOperatorAndParentDataType
-     * @param idOperator
-     * @param params {Object} contains the model name and the parent DataType ID
-     * @param next - a callback
-     * @return {Array} - list of found DataType entities
-     * @description find the list of allowed DataTypes for a specific Operator, through its Groups
-     * TODO move to xtens-transact
-     *
-
-getByOperatorAndParentDataType: function(idOperator, params, next) {
-DataType.query({
-name: 'findDataTypeByOperator',
-text: ['SELECT d.id, d.name, d.schema FROM data_type d ',
-'INNER JOIN datatype_groups__group_datatypes dggd ON d.id = dggd.datatype_groups ',
-'INNER JOIN xtens_group g ON g.id = dggd."group_dataTypes" ',
-'INNER JOIN group_members__operator_groups gmog ON g.id = gmog.group_members ',
-'INNER JOIN operator o ON o.id = gmog.operator_groups ',
-'INNER JOIN datatype_children__datatype_parents dcdp ON d.id = dcdp.datatype_parents ',
-'WHERE o.id = $1 AND d.model = $2 AND dcdp.datatype_children = $3;'
-].join(""),
-values: [idOperator, params.model, params.idDataType]
-}, function(err, result) {
-if (err) {
-next(err);
-}
-else {
-next(null, result.rows);
-}
-});
-},*/
 
     /**
      * @method
@@ -306,15 +201,15 @@ next(null, result.rows);
 
         // extract and store all metadata fields
         .then(function(foundType) {
-            console.log("DataTypeService.putMetadataFieldsIntoEAV - found type" + foundType);
+            sails.log("DataTypeService.putMetadataFieldsIntoEAV - found type" + foundType);
             let fields = DataTypeService.getFlattenedFields(foundType, false);
             return crudManager.putMetadataFieldsIntoEAV(foundType.id, fields, true);
         })
         .then(function(inserted) {
-            console.log("new EavAttributes inserted: " + inserted);
+            sails.log("new EavAttributes inserted: ", inserted);
         })
         .catch(function(err) {
-            console.log("DataTypeService.putMetadataFieldsIntoEAV - error caught");
+            sails.log("DataTypeService.putMetadataFieldsIntoEAV - error caught: ", err);
         });
 
     },
@@ -326,7 +221,7 @@ next(null, result.rows);
      * @param{function} next
      */
     getDataTypePrivileges: function(privilegesId, next) {
-        console.log("DataTypeService.getDataTypePrivileges - privilegesId: " + privilegesId);
+        sails.log("DataTypeService.getDataTypePrivileges - privilegesId: " + privilegesId);
         if (!privilegesId) {
             return next();
         }
@@ -344,13 +239,14 @@ next(null, result.rows);
      *              an existing DataTypePrivileges entity
      */
     getDataTypeToEditPrivileges: function(privilegesId) {
+        sails.log("getDataTypeToEditPrivileges on privilege: ", privilegesId);
         if (privilegesId) {
-            return sails.models.datatypeprivileges.findOne({
+            return global.sails.models.datatypeprivileges.findOne({
                 select: ['dataType'], where: {id: privilegesId}
             })
 
             .then(function(privileges) {
-                console.log(privileges);
+                sails.log(privileges);
                 return DataType.findOne({id: privileges.dataType});
             });
         }
@@ -369,13 +265,14 @@ next(null, result.rows);
      *              a new DataTypePrivileges entity
      */
     getDataTypesToCreateNewPrivileges: function(groupId, privilegesId) {
+        sails.log("getDataTypePrivilegeLevel on groupId: " + groupId + ". privilegesId: " + privilegesId);
         if (!privilegesId) {
-            return sails.models.datatypeprivileges.find({
+            return global.sails.models.datatypeprivileges.find({
                 select: ['dataType'], where: {group: groupId}
             })
 
             .then(function(privileges) {
-                console.log(privileges);
+                sails.log(privileges);
 
                 let whereObj = _.isEmpty(privileges) ? {} : {
                     id: {'!': _.pluck(privileges, 'dataType')}
@@ -400,12 +297,12 @@ next(null, result.rows);
     getDataTypePrivilegeLevel: function(operatorId, dataTypesId) {
         let groupId;
         if ( typeof dataTypesId !== 'undefined' && dataTypesId !== null ) {
-            console.log("getDataTypePrivilegeLevel on Datatype: " + dataTypesId + ". Operator: " + operatorId);
+            sails.log("getDataTypePrivilegeLevel on Datatype: " + dataTypesId + ". Operator: " + operatorId);
 
             return Operator.findOne( {id : operatorId} ).populate('groups').then(operator => {
                 groupId = _.pluck(operator.groups,'id');
 
-                return sails.models.datatypeprivileges.find({ where: {group: groupId, dataType: dataTypesId} });
+                return global.sails.models.datatypeprivileges.find({ where: {group: groupId, dataType: dataTypesId} });
             })
             .then(dataTypePrivileges => {
                 if (!dataTypePrivileges){
@@ -439,7 +336,7 @@ next(null, result.rows);
 
                 groupId = _.pluck(operator.groups,'id');
 
-                return sails.models.datatypeprivileges.find({ where: {group: groupId} });
+                return global.sails.models.datatypeprivileges.find({ where: {group: groupId} });
             })
             .then(dataTypePrivileges => {
                 if (!dataTypePrivileges){
@@ -480,7 +377,7 @@ next(null, result.rows);
 
             if (id) criteria.id = id;
 
-            console.log(criteria);
+            sails.log(criteria);
             return DataType.findOne(criteria).populate('parents');
         }
     }

@@ -40,14 +40,14 @@ let DataTypePrivilegesController = {
         })
 
         .catch(function(err) {
-            console.log("DataTypePrivilegesController.create - got some error while creating new data type privileges");
+            sails.log("DataTypePrivilegesController.create - got some error while creating new data type privileges");
             return co.error(err);
         });
 
     },
 
     /**
-     * GET /dataTypePrivileges/:id 
+     * GET /dataTypePrivileges/:id
      * @method
      * @name findOne
      * @description - retrieve an existing dataTypePrivilege
@@ -105,9 +105,7 @@ let DataTypePrivilegesController = {
             id: Joi.number().integer().positive().required(),
             group: Joi.number().integer().positive().required(),
             dataType: Joi.number().integer().positive().required(),
-            privilegeLevel: Joi.string().valid(_.values(DataTypePrivilegeLevels)),
-            createdAt: Joi.date().required(),
-            updatedAt: Joi.date().required()
+            privilegeLevel: Joi.string().valid(_.values(DataTypePrivilegeLevels))
         };
         let payload = req.body;
         Joi.validateAsync(req.body, validationSchema)
@@ -121,7 +119,7 @@ let DataTypePrivilegesController = {
         })
 
         .catch(function(err) {
-            console.log("DataTypePrivilegesController.update - got some error while updating existing data type privileges");
+            sails.log("DataTypePrivilegesController.update - got some error while updating existing data type privileges");
             return co.error(err);
         });
 
@@ -131,7 +129,7 @@ let DataTypePrivilegesController = {
      * DELETE /dataTypePrivileges/:id
      * @method
      * @name destroy
-     * @description      
+     * @description
      */
     destroy: function(req, res) {
         let co = new ControllerOut(res);
@@ -158,25 +156,22 @@ let DataTypePrivilegesController = {
         let params = req.allParams();
         let getDataTypePrivileges = BluebirdPromise.promisify(DataTypeService.getDataTypePrivileges);
 
-
         return BluebirdPromise.props({
             group: Group.findOne({id: params.groupId}),
-
             // retrieve all dataTypes not yet authorized for this group
             dataTypes: DataTypeService.getDataTypesToCreateNewPrivileges(params.groupId, params.id),
-            
             dataType: DataTypeService.getDataTypeToEditPrivileges(params.id),
-
-            dataTypePrivileges: getDataTypePrivileges(params.id) 
+            dataTypePrivileges: getDataTypePrivileges(params.id)
         })
 
 
         .then(function(result) {
+            sails.log(result);
             return res.json(result);
         })
 
         .catch(function(err) {
-            console.log(err);
+            sails.log(err);
             return co.error(err);
         });
 
