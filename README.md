@@ -31,6 +31,7 @@ Go into the xtens-app directory:
 Install the npm (node.js) packages:
 
         npm install
+        npm install sails
 
 Install bower packages:
 
