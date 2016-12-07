@@ -99,7 +99,7 @@ let DataService = BluebirdPromise.promisifyAll({
      * @return{Object} fieldValidatorSchema - the JOI validation schema for the field
      */
     buildMetadataFieldValidationSchema: function(metadataField) {
-        let fieldValidatorSchema = Joi.object(), value, unit, group;
+        let fieldValidatorSchema = Joi.object(), value, group;
 
         switch(metadataField.fieldType) {
             case FieldTypes.INTEGER:
@@ -403,6 +403,39 @@ let DataService = BluebirdPromise.promisifyAll({
             return next(null, stream);
         });
 
+    },
+
+    /**
+     * @method
+     * @name filterListByPrivileges
+     * @description filters the metadata of a list of data entities on the basis of the user privileges
+     * @param{Array} data - the array to be filtered
+     * @param{Array} dataTypesId -
+     * @param{Array/Object} privileges
+     * @param{boolean} canAccessSensitiveData
+     * @return {Promise} - a Bluebird promise returning an Array with the filtered data
+     */
+    filterListByPrivileges: function(data, dataTypesId, privileges, canAccessSensitiveData) {
+        const arrPrivileges = _.isArray(privileges) ? privileges : [privileges];
+            //filter Out Metadata if operator has not at least a privilege on Data or exists at least a VIEW_OVERVIEW privilege level
+        if (!arrPrivileges || _.isEmpty(arrPrivileges) ){
+            return [];
+        }
+        else if( arrPrivileges.length < dataTypesId.length ||
+              (arrPrivileges.length === dataTypesId.length && _.find(arrPrivileges, { privilegeLevel: VIEW_OVERVIEW }))) {
+
+            // check for each datum if operator has the privilege to view details. If not metadata object is cleaned
+            let index = 0, arrDtPrivId = arrPrivileges.map(el => { return el.dataType; });
+            for ( let i = data.length - 1; i >= 0; i-- ) {
+                let idDataType = _.isObject(data[i].type) ? data[i].type.id : data[i].type;
+                index = arrDtPrivId.indexOf(idDataType);
+                if( index < 0 ){ data.splice(i,1); }
+                else if (arrPrivileges[index].privilegeLevel === VIEW_OVERVIEW) { data[i].metadata = {}; }
+            }
+        }
+        if( canAccessSensitiveData ){ return data; }
+            //filter Out Sensitive Info if operator can not access to Sensitive Data
+        return DataService.filterOutSensitiveInfo(data, canAccessSensitiveData);
     },
 
     /**

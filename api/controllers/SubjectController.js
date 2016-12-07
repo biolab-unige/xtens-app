@@ -120,7 +120,7 @@ module.exports = {
     find: function(req, res) {
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
-        let subjects = [], arrPrivileges = [], dataTypesId;
+        let subjects = [], dataTypesId;
         let query = Subject.find(QueryService.parseSelect(req))
         .where(QueryService.parseCriteria(req))
         .limit(QueryService.parseLimit(req))
@@ -146,27 +146,7 @@ module.exports = {
 
         }).then(privileges => {
 
-            _.isArray(privileges) ? arrPrivileges = privileges : arrPrivileges[0] = privileges;
-            //filter Out Metadata if operator has not at least a privilege on Data or exists at least a VIEW_OVERVIEW privilege level
-            if (!arrPrivileges || _.isEmpty(arrPrivileges) ) {
-                return [];
-            }
-            else if( arrPrivileges.length < dataTypesId.length ||
-                  (arrPrivileges.length === dataTypesId.length && _.find(arrPrivileges, { privilegeLevel: VIEW_OVERVIEW }))) {
-
-                  // check for each datum if operator has the privilege to view details. If not metadata object is cleaned
-                let index = 0, arrDtPrivId = arrPrivileges.map(e => { return e.dataType; });
-                for ( let i = subjects.length - 1; i >= 0; i-- ) {
-                    const idDataType = _.isObject(subjects[i].type) ? subjects[i].type.id : subjects[i].type;
-                    index = arrDtPrivId.indexOf(idDataType);
-                    if( index < 0 ){ subjects.splice(i, 1); }
-                    else if (arrPrivileges[index].privilegeLevel === VIEW_OVERVIEW) { subjects[i].metadata = {}; }
-                }
-            }
-            if( operator.canAccessSensitiveData ) { return subjects; }
-
-                  //filter Out Sensitive Info if operator can not access to Sensitive Data
-            return DataService.filterOutSensitiveInfo(subjects, operator.canAccessSensitiveData);
+            return DataService.filterListByPrivileges(subjects, dataTypesId, privileges, operator.canAccessSensitiveData);
 
         }).then(data => {
             return res.json(data);

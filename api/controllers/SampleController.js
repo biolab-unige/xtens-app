@@ -140,26 +140,8 @@ module.exports = {
 
         }).then(privileges => {
 
-            _.isArray(privileges) ? arrPrivileges = privileges : arrPrivileges[0] = privileges;
-                //filter Out Metadata if operator has not at least a privilege on Data or exists at least a VIEW_OVERVIEW privilege level
-            if (!arrPrivileges || _.isEmpty(arrPrivileges) ){
-                return [];
-            }
-            else if( arrPrivileges.length < dataTypesId.length ||
-                  (arrPrivileges.length === dataTypesId.length && _.find(arrPrivileges, { privilegeLevel: VIEW_OVERVIEW }))) {
+            return DataService.filterListByPrivileges(samples, dataTypesId, privileges, operator.canAccessSensitiveData);
 
-                  // check for each datum if operator has the privilege to view details. If not metadata object is cleaned
-                let index = 0, arrDtPrivId = arrPrivileges.map(function(e) { return e.dataType; });
-                for ( let i = samples.length - 1; i >= 0; i-- ) {
-                    let idDataType = _.isObject(samples[i].type) ? samples[i].type.id : samples[i].type;
-                    index = arrDtPrivId.indexOf(idDataType);
-                    if( index < 0 ){ samples.splice(i,1); }
-                    else if (arrPrivileges[index].privilegeLevel === VIEW_OVERVIEW) { samples[i].metadata = {}; }
-                }
-            }
-            if( operator.canAccessSensitiveData ){ return samples; }
-                //filter Out Sensitive Info if operator can not access to Sensitive Data
-            return DataService.filterOutSensitiveInfo(samples, operator.canAccessSensitiveData);
         })
         .then(data => {
             return res.json(data);
