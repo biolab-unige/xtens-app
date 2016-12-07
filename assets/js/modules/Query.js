@@ -940,7 +940,7 @@
          */
         sendQuery: function() {
             var that = this;
-            var isStream = true;
+            var isStream = xtens.infoBrowser[0] === "Chrome" && xtens.infoBrowser[1] >= 54 ? true : false;
             // extend queryArgs with flags to retrieve subject and personal informations and if retrieve data in stream mode
             var queryArgs = _.extend({
                 wantsSubject: true,

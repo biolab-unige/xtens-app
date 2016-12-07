@@ -1,6 +1,6 @@
 /**
  *  Backbone module according to the pattern detailed here:
- *  http://bocoup.com/weblog/organizing-your-backbone-js-application-with-modules/ 
+ *  http://bocoup.com/weblog/organizing-your-backbone-js-application-with-modules/
  */
 
 var xtens = {
@@ -23,13 +23,29 @@ var xtens = {
 
     }(),
 
-    app: _.extend({}, Backbone.Events)
+    app: _.extend({}, Backbone.Events),
+
+    infoBrowser: (function() {
+        var ua= navigator.userAgent, tem,
+            M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+        if(/trident/i.test(M[1])){
+            tem=  /\brv[ :]+(\d+)/g.exec(ua) || [];
+            return 'IE '+(tem[1] || '');
+        }
+        if(M[1]=== 'Chrome'){
+            tem= ua.match(/\b(OPR|Edge)\/(\d+)/);
+            if(tem!= null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+        }
+        M= M[2] ? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+        if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
+        return M;
+    })()
 
 };
 
-// Using the jQuery ready event is excellent for ensuring all 
-// // code has been downloaded and evaluated and is ready to be 
-// // initialized. Treat this as your single entry point into the 
+// Using the jQuery ready event is excellent for ensuring all
+// // code has been downloaded and evaluated and is ready to be
+// // initialized. Treat this as your single entry point into the
 // // application
 jQuery(function($) {
     // create Session object
@@ -48,10 +64,10 @@ jQuery(function($) {
 
     // remove the access token from sessionStorage (to avoid XSS risks)
     window.sessionStorage.removeItem("userSession");
-    
+
     // set session model with retrieved data
     xtens.session.set(userSession);
-    
+
     // if the page is refreshed store the user session object (login, accessToken, ...) on the sessionStorage
     window.addEventListener("beforeunload", function(event) {
         console.log("window.onBeforeunload fired!");
