@@ -3,6 +3,7 @@
 * @author Massimiliano Izzo
 * @author Valentina Tedone
 */
+
 var MAX = sails.config.xtens.constants.TEST_MAX;
 var MIN = sails.config.xtens.constants.TEST_MIN;
 var FieldTypes = sails.config.xtens.constants.FieldTypes;
@@ -73,21 +74,21 @@ var PopulateService = {
             }
 
             switch(field.fieldType){
-            case FieldTypes.TEXT:
-                metadata[field.name] = PopulateService.generateTextField(field);
-                break;
-            case FieldTypes.FLOAT:
-                metadata[field.name] = PopulateService.generateFloatField(field);
-                break;
-            case FieldTypes.INTEGER:
-                metadata[field.name] = PopulateService.generateIntegerField(field);
-                break;
-            case FieldTypes.BOOLEAN:
-                metadata[field.name] = PopulateService.generateBooleanField();
-                break;
-            case FieldTypes.DATE:
-                metadata[field.name] = PopulateService.generateDateField();
-                break;
+                case FieldTypes.TEXT:
+                    metadata[field.name] = PopulateService.generateTextField(field);
+                    break;
+                case FieldTypes.FLOAT:
+                    metadata[field.name] = PopulateService.generateFloatField(field);
+                    break;
+                case FieldTypes.INTEGER:
+                    metadata[field.name] = PopulateService.generateIntegerField(field);
+                    break;
+                case FieldTypes.BOOLEAN:
+                    metadata[field.name] = PopulateService.generateBooleanField();
+                    break;
+                case FieldTypes.DATE:
+                    metadata[field.name] = PopulateService.generateDateField();
+                    break;
             }
 
         });
@@ -222,20 +223,20 @@ var PopulateService = {
             data = PopulateService.generateData(dataType);
             switch(dataType.model) {
 
-            case DataTypeClasses.SUBJECT:
-                var sexList = Object.keys(SexList);
-                var len = sexList.length;
-                var indexSex = Math.floor(Math.random()*len);
-                var randomSex = sexList[indexSex];
-                data.code = guid();
-                data.sex = SexList[randomSex];
-                break;
-            case DataTypeClasses.SAMPLE:
-                data.biobankCode = guid();
-                data.biobank = 1;
-                break;
-            case DataTypeClasses.DATA:
-                break;
+                case DataTypeClasses.SUBJECT:
+                    var sexList = Object.keys(SexList);
+                    var len = sexList.length;
+                    var indexSex = Math.floor(Math.random()*len);
+                    var randomSex = sexList[indexSex];
+                    data.code = guid();
+                    data.sex = SexList[randomSex];
+                    break;
+                case DataTypeClasses.SAMPLE:
+                    data.biobankCode = guid();
+                    data.biobank = 1;
+                    break;
+                case DataTypeClasses.DATA:
+                    break;
             }
 
             var modelName = dataType.model;
@@ -389,60 +390,60 @@ var PopulateService = {
 
             switch(fieldName){
 
-            case 'chromosome':
-            case 'ref':
-                metadata[fieldName] = PopulateService.generateTextField(field);
-                break;
+                case 'chromosome':
+                case 'ref':
+                    metadata[fieldName] = PopulateService.generateTextField(field);
+                    break;
 
-            case 'pos':
-            case 'qual':
-            case 'dp':
-            case 'ns':
-                metadata[fieldName] = PopulateService.generateIntegerField(field);
-                break;
+                case 'pos':
+                case 'qual':
+                case 'dp':
+                case 'ns':
+                    metadata[fieldName] = PopulateService.generateIntegerField(field);
+                    break;
 
-            case 'id':
-                metadata[fieldName] = {"value":guid()};
-                break;
+                case 'id':
+                    metadata[fieldName] = {"value":guid()};
+                    break;
 
-            case 'alt':
-                var index;
-                var values = [];
-                var len = field.possibleValues.length;
-                var numValues = Math.floor(getRandomArbitrary(0,len));
-                for (var i = 0;i < numValues+1;i++){
-                    index = Math.floor(getRandomArbitrary(0,len));
-                    values[i]=field.possibleValues[index];
-                }
-                metadata[fieldName] = {"values":values};
-                break;
+                case 'alt':
+                    var index;
+                    var values = [];
+                    var len = field.possibleValues.length;
+                    var numValues = Math.floor(getRandomArbitrary(0,len));
+                    for (var i = 0;i < numValues+1;i++){
+                        index = Math.floor(getRandomArbitrary(0,len));
+                        values[i]=field.possibleValues[index];
+                    }
+                    metadata[fieldName] = {"values":values};
+                    break;
 
-            case 'filter':
-                if (metadata.qual.value > 10) {
-                    metadata[fieldName] = {"value":'pass'};
-                }
-                else {
-                    var list = field.possibleValues;
-                    var pos = list.indexOf('pass');
-                    pos > -1 && list.splice( pos, 1 );
-                    var lent = list.length;
-                    var value = list[Math.floor(getRandomArbitrary(0,lent))];
-                    metadata[fieldName] = {"value":value};
-                }
-                break;
+                case 'filter':
+                    if (metadata.qual.value > 10) {
+                        metadata[fieldName] = {"value":'pass'};
+                    }
+                    else {
+                        var list = field.possibleValues;
+                        var pos = list.indexOf('pass');
+                        pos > -1 && list.splice( pos, 1 );
+                        var lent = list.length;
+                        var value = list[Math.floor(getRandomArbitrary(0,lent))];
+                        metadata[fieldName] = {"value":value};
+                    }
+                    break;
 
-            case 'af':
-                metadata[fieldName] = {"value":getRandomArbitrary(0,1).toFixed(3)};
-                break;
+                case 'af':
+                    metadata[fieldName] = {"value":getRandomArbitrary(0,1).toFixed(3)};
+                    break;
 
-            case 'validated':
-            case 'somatic':
-                metadata[fieldName] = PopulateService.generateBooleanField(field);
-                break;
+                case 'validated':
+                case 'somatic':
+                    metadata[fieldName] = PopulateService.generateBooleanField(field);
+                    break;
 
-            case 'acquisition_date':
-                metadata[fieldName] = {"value" : new Date()};
-                break;
+                case 'acquisition_date':
+                    metadata[fieldName] = {"value" : new Date()};
+                    break;
 
             }
 
@@ -478,35 +479,35 @@ var PopulateService = {
 
             switch(fieldName) {
 
-            case 'gene_name':
-            case 'gene_id':
-                var file = fs.readFileSync(fileGene, "utf-8");
-                file = file.toString();
+                case 'gene_name':
+                case 'gene_id':
+                    var file = fs.readFileSync(fileGene, "utf-8");
+                    file = file.toString();
 
-                var len = file.split('\n').length;
-                var randomIndex = Math.floor(getRandomArbitrary(0, len-1));
-                var geneInfo = file.split('\n')[randomIndex].split(',');
+                    var len = file.split('\n').length;
+                    var randomIndex = Math.floor(getRandomArbitrary(0, len-1));
+                    var geneInfo = file.split('\n')[randomIndex].split(',');
 
-                metadata.gene_name = {"value": geneInfo[3]};
-                metadata.gene_id = {"value": geneInfo[4]};
+                    metadata.gene_name = {"value": geneInfo[3]};
+                    metadata.gene_id = {"value": geneInfo[4]};
 
-                break;
+                    break;
 
-            case 'deleteriousness':
-                metadata[fieldName] = {"value":pseudoRandom()};
-                break;
+                case 'deleteriousness':
+                    metadata[fieldName] = {"value":pseudoRandom()};
+                    break;
 
-            case 'quality_prediction':
-                if (metadata.deleteriousness.value < 0.9) {
-                    metadata.quality_prediction = {"value":"Benign"};
-                }
-                else if(metadata.deleteriousness.value >= 0.9 && metadata.deleteriousness.value < 0.99) {
-                    metadata.quality_prediction = {"value":"Possibly Damaging"};
-                }
+                case 'quality_prediction':
+                    if (metadata.deleteriousness.value < 0.9) {
+                        metadata.quality_prediction = {"value":"Benign"};
+                    }
+                    else if(metadata.deleteriousness.value >= 0.9 && metadata.deleteriousness.value < 0.99) {
+                        metadata.quality_prediction = {"value":"Possibly Damaging"};
+                    }
                     else if(metadata.deleteriousness.value >= 0.99) {
                         metadata.quality_prediction = {"value":"Probably damaging"};
                     }
-                break;
+                    break;
 
             }
 

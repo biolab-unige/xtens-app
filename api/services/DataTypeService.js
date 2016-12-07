@@ -360,7 +360,7 @@ let DataTypeService = {
         else {
             return BluebirdPromise.resolve(undefined);
         }
-    },
+    }
 
     /**
      * @method
@@ -368,19 +368,19 @@ let DataTypeService = {
      * @description find a Datatype if ID is provided
      * @return {Object} - the found DataType
      */
-    getOne: function(id) {
-        if (!id) {
-            return BluebirdPromise.resolve(null);
-        }
-        else {
-            let criteria = {};
-
-            if (id) criteria.id = id;
-
-            sails.log(criteria);
-            return DataType.findOne(criteria).populate('parents');
-        }
-    }
+    // getOne: function(id) {
+    //     if (!id) {
+    //         return BluebirdPromise.resolve(null);
+    //     }
+    //     else {
+    //         let criteria = {};
+    //
+    //         if (id) criteria.id = id;
+    //
+    //         sails.log(criteria);
+    //         return DataType.findOne(criteria).populate('parents');
+    //     }
+    // }
 
 
 };

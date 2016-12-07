@@ -2,12 +2,11 @@
  *  @author Massimiliano Izzo
  */
 /* jshint node: true */
-/* globals _, sails, async, Data, DataFile, Sample, Subject, DataType, DataTypeService, SubjectService, SampleService, QueryService, TokenService */
+/* globals _, sails, Data, DataType, DataTypeService*/
 "use strict";
 
-let http = require('http');
 let BluebirdPromise = require('bluebird');
-let JSONStream = require('JSONStream');
+
 let DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
 let FieldTypes = sails.config.xtens.constants.FieldTypes;
 let fileSystemManager = sails.config.xtens.fileSystemManager;
@@ -222,139 +221,6 @@ let DataService = BluebirdPromise.promisifyAll({
 
     },
 
-
-    /**
-     * @method
-     * @name queryAndPopulateItemsById
-     * @description given a list of items it retrieves them from the databases and
-     *              (optionally) populates the existing associations
-     * @param {Array} foundRows - an array of items. Each item must contain at least an identifier (id)
-     *                for retrieval
-     * @param {enum} model - (e.g. Subject, Sample or Generic)
-     * @param {function} next - a callabck
-     * @return {Array} the list of found and populated objects
-     */
-
-    queryAndPopulateItemsById: function(foundRows, model, next) {
-        let ids = _.pluck(foundRows, 'id');
-        switch(model) {
-            case DataTypeClasses.SUBJECT:
-                sails.log("calling Subject.find");
-                Subject.find({id: ids}).exec(next);
-                break;
-            case DataTypeClasses.SAMPLE:
-                sails.log("calling Sample.find");
-                Sample.find({id: ids}).exec(next);
-                break;
-            default:
-                sails.log("calling Data.find");
-                Data.find({id: ids}).exec(next);
-        }
-    },
-
-    /**
-     * @method
-     * @name moveFiles
-     */
-    moveFiles:function(files, id, dataTypeName, next) {
-        async.each(files,function(file, callback){
-            fileSystemManager.storeFile(file, id, dataTypeName, callback);
-        }, function(err) {
-            if (err) {
-                sails.log("moving to next(error)");
-                next(err);
-            } else {
-                sails.log("DataService.moveFiles - moving to next()");
-                next();
-            }
-        });
-    },
-
-    /**
-     * @method
-     * @name saveFileEntities
-     */
-    saveFileEntities: function(files, next) {
-
-        async.each(files, function(file, callback) {
-            DataFile.create(file).exec(callback);
-        }, function(err) {
-            if (err) {
-                next(err);
-            }
-            next();
-        });
-
-    },
-
-    /**
-     * @name storeMetadataIntoEAV
-     * @description insert in the EAV catalogue a certain number of Data (Subject or Sample) instances
-     * @param {Integer/Array} - an integer or an array of identifiers
-     * @param {modelName} - an optional name determining on which table run the query
-     * @return {Promise} -  a Bluebird Promise
-     */
-    storeMetadataIntoEAV: function(ids, modelName) {
-        sails.log.info(`ids are: ${ids}`);
-        sails.log.info(`Is ids an array? ${_.isArray(ids) ? 'YES' : 'NO'}`);
-        modelName = modelName || DATA;
-        return global[modelName].find({id: ids}).then(function(foundData) {
-            sails.log.info(foundData);
-            sails.log("DataService.storeMetadataIntoEAV - EAV value table map is: " + sails.config.xtens.constants.EavValueTableMap);
-            return BluebirdPromise.map(foundData, function(datum) {
-                return crudManager.putMetadataValuesIntoEAV(datum, sails.config.xtens.constants.EavValueTableMap);
-            }, {concurrency: 100});
-        })
-
-        .then(function(inserted) {
-            sails.log("DataService.storeMetadataIntoEAV - new rows inserted: " + inserted.length);
-        })
-
-        .catch(function(error) {
-            sails.log.error(error);
-            sails.log.error("DataService.storeMetadataIntoEAV - error caught");
-        });
-
-    },
-
-    /**
-     * TODO
-     * @method
-     * @name storeEAVAll
-     * @description populates the whole metadata catalogue
-     * @
-     */
-    storeEAVAll: function(limit) {
-        let offset = 0;
-        limit = limit || 100000;
-
-        let modelName = arguments.length < 2 ? 'data' :
-            (arguments[1].toLowerCase() === 'subject' || arguments[1].toLowerCase() === 'sample') ? arguments[1].toLowerCase() : 'data';
-        sails.log("modelName: " + modelName);
-
-        let query = BluebirdPromise.promisify(Data.query, Data);
-
-        return query("SELECT count(*) FROM " + modelName +  ";")
-
-        .then(function(res) {
-            let count = res.rows[0].count;
-            sails.log("total count is: " + count);
-            let iterations = Math.ceil(count/limit);
-            sails.log("iterations: " + iterations);
-            return BluebirdPromise.map(new Array(iterations), function() {
-                sails.log("offset: " + offset);
-                sails.log("limit: " + limit);
-                return query("SELECT id FROM " + modelName + " LIMIT $1 OFFSET $2", [limit,offset]).then(function(result) {
-                    offset += limit;
-                    let ids = _.pluck(result.rows, 'id');
-                    // sails.log(ids);
-                    return DataService.storeMetadataIntoEAV(ids);
-                    // return;
-                });
-            }, {concurrency: 1});
-        });
-    },
-
     /**
      * @name filterOutSensitiveInfo
      * @description Filter data
@@ -537,8 +403,76 @@ let DataService = BluebirdPromise.promisifyAll({
             return next(null, stream);
         });
 
-    }
+    },
 
+    /**
+     * @name storeMetadataIntoEAV
+     * @description insert in the EAV catalogue a certain number of Data (Subject or Sample) instances
+     * @param {Integer/Array} - an integer or an array of identifiers
+     * @param {modelName} - an optional name determining on which table run the query
+     * @return {Promise} -  a Bluebird Promise
+     */
+    storeMetadataIntoEAV: /*istanbul ignore next*/ function(ids, modelName) {
+      /*istanbul ignore next*/
+        sails.log.info(`ids are: ${ids}`);
+        sails.log.info(`Is ids an array? ${_.isArray(ids) ? 'YES' : 'NO'}`);
+        modelName = modelName || DATA;
+        return global[modelName].find({id: ids}).then(function(foundData) {
+            sails.log.info(foundData);
+            sails.log("DataService.storeMetadataIntoEAV - EAV value table map is: " + sails.config.xtens.constants.EavValueTableMap);
+            return BluebirdPromise.map(foundData, function(datum) {
+                return crudManager.putMetadataValuesIntoEAV(datum, sails.config.xtens.constants.EavValueTableMap);
+            }, {concurrency: 100});
+        })
+
+        .then(function(inserted) {
+            sails.log("DataService.storeMetadataIntoEAV - new rows inserted: " + inserted.length);
+        })
+
+        .catch(function(error) {
+            sails.log.error(error);
+            sails.log.error("DataService.storeMetadataIntoEAV - error caught");
+        });
+
+    },
+
+    /**
+     * TODO
+     * @method
+     * @name storeEAVAll
+     * @description populates the whole metadata catalogue
+     * @
+     */
+    storeEAVAll: /*istanbul ignore next*/ function(limit) {
+        let offset = 0;
+        limit = limit || 100000;
+
+        let modelName = arguments.length < 2 ? 'data' :
+            (arguments[1].toLowerCase() === 'subject' || arguments[1].toLowerCase() === 'sample') ? arguments[1].toLowerCase() : 'data';
+        sails.log("modelName: " + modelName);
+
+        let query = BluebirdPromise.promisify(Data.query, Data);
+
+        return query("SELECT count(*) FROM " + modelName +  ";")
+
+        .then(function(res) {
+            let count = res.rows[0].count;
+            sails.log("total count is: " + count);
+            let iterations = Math.ceil(count/limit);
+            sails.log("iterations: " + iterations);
+            return BluebirdPromise.map(new Array(iterations), function() {
+                sails.log("offset: " + offset);
+                sails.log("limit: " + limit);
+                return query("SELECT id FROM " + modelName + " LIMIT $1 OFFSET $2", [limit,offset]).then(function(result) {
+                    offset += limit;
+                    let ids = _.pluck(result.rows, 'id');
+                    // sails.log(ids);
+                    return DataService.storeMetadataIntoEAV(ids);
+                    // return;
+                });
+            }, {concurrency: 1});
+        });
+    }
 
 });
 

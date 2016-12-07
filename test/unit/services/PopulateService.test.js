@@ -3,7 +3,7 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 
 describe('PopulateService', function() {
-    
+
     describe('#generateData', function() {
 
         before(function() {
@@ -13,7 +13,7 @@ describe('PopulateService', function() {
 
 
         it('should create a new data with all the metadata fields',function(){
-            
+
             var data = PopulateService.generateData(this.type);
             expect(data).to.have.property('type');
             expect(data).to.have.property('metadata');
@@ -23,16 +23,16 @@ describe('PopulateService', function() {
                 expect(data.metadata[name]).to.exist;
                 expect(data.metadata[name]).to.have.property('value');
             });
-            
+
         });
 
     });
 
     describe('generateFloatField', function() {
-        
+
         it('should create a metadata field with a float value', function(){
             var floatField = fixtures.datatype[2].schema.body[1].content[0];
-            
+
             var min = floatField.min || sails.config.xtens.constants.TEST_MIN;
             var max = floatField.max || sails.config.xtens.constants.TEST_MAX;
 
@@ -51,23 +51,23 @@ describe('PopulateService', function() {
     });
 
     describe('generateTextField', function() {
-        
+
         it('should create a metadata field with a text value', function(){
             var textField = fixtures.datatype[2].schema.body[0].content[1];
 
             var field = PopulateService.generateTextField(textField);
             expect(field.value).to.be.a('string');
             expect(textField.possibleValues).to.include.members([field.value]);
-           
+
         });
 
     });
 
     describe('generateIntegerField', function() {
-        
+
         it('should create a metadata field with a integer value', function(){
             var integerField = fixtures.datatype[2].schema.body[1].content[2];
-            
+
             var min = integerField.min || sails.config.xtens.constants.TEST_MIN;
             var max = integerField.max || sails.config.xtens.constants.TEST_MAX;
 
@@ -85,11 +85,11 @@ describe('PopulateService', function() {
 
     });
 
-     describe('generateBooleanField', function() {
-        
+    describe('generateBooleanField', function() {
+
         it('should create a metadata field with a boolean value', function(){
             var booleanField = fixtures.datatype[2].schema.body[1].content[4];
-            
+
             var field = PopulateService.generateBooleanField(booleanField);
             expect(field.value).to.be.a('boolean');
 
@@ -99,9 +99,9 @@ describe('PopulateService', function() {
     });
 
     describe('generateDateField',function() {
-    
+
         it('should create a metadata field with a date value', function(){
-        
+
             var dateField = fixtures.datatype[1].schema.body[0].content[3];
 
             var field = PopulateService.generateDateField(dateField);
@@ -111,7 +111,7 @@ describe('PopulateService', function() {
         it ('should create a correct date providing the start date',function(){
 
             var date = "2014-01-26";
-        
+
             var dateField = fixtures.datatype[1].schema.body[0].content[3];
 
             var field = PopulateService.generateDateField(dateField,date);
@@ -121,11 +121,11 @@ describe('PopulateService', function() {
     });
 
     describe('generateVariantData',function() {
-    
+
         it('should create a Variant Data', function(){
-        
+
             var variantFields = fixtures.datatype[3];
-             var fields = {};
+            var fields = {};
 
             fields.fields = DataTypeService.getFlattenedFields(variantFields, false);
             fields.id = variantFields.id;
@@ -135,13 +135,13 @@ describe('PopulateService', function() {
 
             expect(variant).to.be.a('object');
             expect(variant.metadata.chromosome.value).to.be.a('string');
-            expect(Object.keys(variant.metadata).length).to.equals(13);            
-            
+            expect(Object.keys(variant.metadata).length).to.equals(13);
+
         });
     });
 
     describe('generateVariantAnnotationData',function(){
-    
+
         it('should create a Variant Annotation Data', function(){
 
             var annotationFields = fixtures.datatype[4];
@@ -149,15 +149,15 @@ describe('PopulateService', function() {
 
             fields.fields = DataTypeService.getFlattenedFields(annotationFields);
             fields.id = annotationFields.id;
-            
+
             // generateVariantData using formattedNames (second param set to TRUE)
             var annotation = PopulateService.generateVariantAnnotationData(fields, true);
 
             expect(annotation).to.be.a('object');
             expect(annotation.metadata.gene_id.value).to.be.a('string');
-        
+
         });
-    
+
     });
 
     describe('generateSubjectSampleData',function() {
@@ -180,7 +180,7 @@ describe('PopulateService', function() {
             Subject.create.restore();
             PopulateService.generateSubjectChildren.restore();
         });
-    
+
         it('should call Subject.create method',function(){
             var _this = this;
             var dataType = fixtures.datatype[0];
@@ -194,13 +194,13 @@ describe('PopulateService', function() {
             .catch(function(err) {
                 assert.fail();
             });
-        
+
         });
-    
-    
+
+
     });
 
-   
+
 
 
 

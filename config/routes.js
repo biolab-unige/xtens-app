@@ -53,14 +53,14 @@ module.exports.routes = {
     // DataType Controller
     'GET /dataType/edit': {controller: 'dataType', action: 'edit'},
     'POST /graph':{controller:'dataType',action:'buildGraph'},
-    'GET /graph/buildHierarchy':{controller:'dataType',action:'buildHierarchy'},
+    // 'GET /graph/buildHierarchy':{controller:'dataType',action:'buildHierarchy'},
 
     // DataTypePrivileges Controller
     'GET /dataTypePrivileges/edit': {controller: 'dataTypePrivileges', action: 'edit'},
 
     // Group Controller
-    '/groupOperator/associate':{controller:'group', action:'addOperator'},
-    '/groupOperator/dissociate':{controller:'group', action:'removeOperator'},
+    // '/groupOperator/associate':{controller:'group', action:'addOperator'},
+    // '/groupOperator/dissociate':{controller:'group', action:'removeOperator'},
     '/groupDatatype/associate':{controller:'group', action:'addDatatype'},
     '/groupDatatype/dissociate':{controller:'group',action:'removeDatatype'},
 

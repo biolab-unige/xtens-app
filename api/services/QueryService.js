@@ -117,25 +117,6 @@ let QueryService = {
          }
     },
 
-    dataSearch: function(queryParams) {
-        let queryBuilder = sails.config.xtens.queryBuilder;
-        let query = queryBuilder.compose(queryParams);
-        console.log(query.statement);
-        console.log(query.parameters);
-        // Using prepared statements as an additional protection against SQL injection
-        Data.query({
-            text: query.statement,
-            values: query.parameters
-        }, function(err, result) {
-            if (err) {
-                console.log(err);
-            }
-            else {
-                console.log(result.rows);
-            }
-        });
-    },
-
     /**
      * Given a Waterline query and an express request, populate
      * the appropriate/specified association attributes and

@@ -171,23 +171,6 @@
      },
 
     /**
-     * @deprecated
-     */
-     buildHierarchy: function(req, res) {
-         const co = new ControllerOut(res);
-         DataType.find({ parent: null}).populate('children').then(function(roots) {
-             DataTypeService.getChildrenRecursive(roots);
-         })
-        .then(function(results) {
-            sails.log(results);
-            res.json(results);
-        })
-        .catch(function(error) {
-            if (error) return co.error(error);
-        });
-     },
-
-    /**
      * @method
      * @name buildGraph
      * @description generate and visualize the datatype graph given a root datatype.

@@ -105,13 +105,6 @@ let SubjectService = BluebirdPromise.promisifyAll({
 
     /**
      * @method
-     * @name anonymize
-     * TODO
-     */
-    anonymize: function() {},
-
-    /**
-     * @method
      * @name getOne
      * @description find a Subject if ID is provided
      * @return {Object} - the found Subject

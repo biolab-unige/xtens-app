@@ -13,17 +13,6 @@ describe('DataTypePrivilege', function() {
 
     let tokenSA, tokenS;
 
-    const metadata = {
-        "name":{"value":"Antares", "group": "Generic Info" },
-        "constellation":{"value":"scorpius", "group":"Generic Info"},
-        "classification":{"value":"supergiant", "group":"Generic Info"},
-        "designation":{"values":["α Scorpii, Cor Scorpii", "21 Sco"],"group":"Generic Info","loop":"Other Designations"},
-        "mass":{"value": 12.4,"unit":"M☉","group":"Physical Details"},
-        "radius":{"value": 883,"unit":"R☉","group":"Physical Details"},
-        "luminosity":{"value": 57500,"unit":"L☉","group":"Physical Details"},
-        "temperature":{"value": 3400,"unit":"K","group":"Physical Details"}
-    };
-
     before(function(done) {
         loginHelper.loginSuperAdmin(request, function (bearerToken) {
             tokenSA = bearerToken;
@@ -91,7 +80,6 @@ describe('DataTypePrivilege', function() {
 
     describe('PUT /dataTypePrivileges', function() {
         it('Should return OK 200, notes Updated', function (done) {
-            const note = "New Data Updated";
 
             request(sails.hooks.http.app)
             .put('/dataTypePrivileges/16')

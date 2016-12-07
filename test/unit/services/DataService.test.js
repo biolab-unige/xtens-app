@@ -165,44 +165,6 @@ describe('DataService', function() {
 
     });
 
-    describe("#queryAndPopulateItemsById", function() {
-
-        var dataSpy, subjectSpy, sampleSpy;
-
-        beforeEach(function() {
-            this.dataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
-            dataSpy = sinon.spy(Data, "find");
-            sampleSpy = sinon.spy(Sample, "find");
-            subjectSpy = sinon.spy(Subject, "find");
-        });
-
-        afterEach(function() {
-            Data.find.restore();
-            Subject.find.restore();
-            Sample.find.restore();
-        });
-
-        it("#should fire a the proper Model.find call depending on the classTemplate", function() {
-            var subjParam = [{id: 0}];
-            DataService.queryAndPopulateItemsById(subjParam, this.dataTypeClasses.SUBJECT, callback);
-            expect(subjectSpy.called).to.be.true;
-        });
-
-        it("#should fire a the proper Model.find call depending on the classTemplate", function() {
-            var sampleParam = [{id: 1}];
-            DataService.queryAndPopulateItemsById(sampleParam, this.dataTypeClasses.SAMPLE, callback);
-            expect(sampleSpy.called).to.be.true;
-        });
-
-        it("#should fire a the proper Model.find call depending on the classTemplate", function() {
-            var dataParam = [{id: 3}];
-            DataService.queryAndPopulateItemsById(dataParam, this.dataTypeClasses.GENERIC, callback);
-            expect(dataSpy.called).to.be.true;
-        });
-
-
-    });
-
     describe("#advancedQuery", function() {
 
         var composeStub, queryStub;
