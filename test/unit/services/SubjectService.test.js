@@ -24,7 +24,21 @@ describe('SubjectService', function() {
     };
 
     describe('#getOne', function() {
-        // TODO
+        it('should return the right subject', function() {
+            var expectedSubject = _.cloneDeep(fixtures.subject[0]);
+            var id = expectedSubject.id;
+            var code = expectedSubject.code;
+            SubjectService.getOne(id,code, function(err,res){
+                expect(res.id).to.eql(expectedSubject.id);
+                expect(res.code).to.eql(expectedSubject.code);
+                expect(res.sex).to.eql(expectedSubject.sex);
+                expect(res.personalInfo.givenName).to.eql(expectedSubject.personalInfo.givenName);
+                expect(res.personalInfo.surname).to.eql(expectedSubject.personalInfo.surname);
+                expect(res.personalInfo.birthDate).to.eql(expectedSubject.personalInfo.birthDate);
+                expect(res.metadata).to.eql(expectedSubject.metadata);
+
+            });
+        });
     });
 
     describe('#simplify', function() {

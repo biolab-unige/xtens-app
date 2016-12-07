@@ -10,7 +10,7 @@
  *
  */
  "use strict";
- 
+
  let dbConnectionMap = new Map([
      ['sails-postgresql', 'xtens-pg']
  ]);
@@ -23,6 +23,10 @@
  let databaseManager = require(dbConnectionMap.get(databaseConnections[connName].adapter));
  let fileSystemConnections = require('../../local.js').fileSystemConnections;
 
+// ES6 Map for customised data management
+ let customisedDataMap = new Map();
+ customisedDataMap.set('CGH', '../migrate-utils/createCGH.js');
+ customisedDataMap.set('CBINFO', '../migrate-utils/updateCBInfo.js');
 
  module.exports = {
 

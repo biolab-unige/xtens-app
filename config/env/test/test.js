@@ -37,6 +37,11 @@
      }
 
  };
+
+// ES6 Map for customised data management
+ let customisedDataMap = new Map();
+ customisedDataMap.set('TEST', 'test/resources/testScript.js');
+
  module.exports = {
 
   /***************************************************************************
@@ -108,7 +113,9 @@
 
          crudManager: new databaseManager.CrudManager(null, databaseManager, fileSystemConnections[fileSystemConnections.default]),
 
-         queryBuilder: new databaseManager.QueryBuilder()
+         queryBuilder: new databaseManager.QueryBuilder(),
+
+         customisedDataMap: customisedDataMap
 
      }
 

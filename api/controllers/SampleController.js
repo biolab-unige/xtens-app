@@ -5,7 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 /* jshint node: true */
-/* globals _, sails, Subject, Sample, Data, DataType, SubjectService, BiobankService, SampleService, TokenService, QueryService, DataService, DataTypeService */
+/* globals _, sails, Sample, DataType, SubjectService, BiobankService, SampleService, TokenService, QueryService, DataService, DataTypeService */
 "use strict";
 
 const BluebirdPromise = require('bluebird');
@@ -16,7 +16,6 @@ const PrivilegesError = require('xtens-utils').Errors.PrivilegesError;
 const NonexistentResourceError = require('xtens-utils').Errors.NonexistentResourceError;
 const xtensConf = global.sails.config.xtens;
 const SAMPLE = xtensConf.constants.DataTypeClasses.SAMPLE;
-const DATA = xtensConf.constants.DataTypeClasses.DATA;
 const VIEW_OVERVIEW = xtensConf.constants.DataTypePrivilegeLevels.VIEW_OVERVIEW;
 const EDIT = xtensConf.constants.DataTypePrivilegeLevels.EDIT;
 

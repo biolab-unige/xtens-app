@@ -1,0 +1,24 @@
+[
+  {
+    "contactInformation": 1,
+    "acronym": "BIO-BANK",
+    "name": "Biobank Name One",
+    "url": null,
+    "country": "IT",
+    "description": "Biobank descriptiom",
+    "id": 1,
+    "biobankID": "BIO-BANK-ID-1",
+    "juristicPerson": "Hospital"
+  },
+  {
+    "contactInformation": 2,
+    "acronym": "BIO-BANK",
+    "name": "Biobank Name Two",
+    "url": null,
+    "country": "IT",
+    "description": "Biobank description",
+    "id": 2,
+    "biobankID": "BIO-BANK-ID-2",
+    "juristicPerson": "Hospital"
+  }
+]

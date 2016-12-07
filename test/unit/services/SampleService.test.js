@@ -56,17 +56,31 @@ describe('SampleService', function() {
 
 
     });
-
-    it("should replace the populated properties (e.g. type, donor, parentSample...) with their id (i.e. type -> type.id)", function() {
-        var typeId = populatedSample.type.id;
-        var donorId = populatedSample.donor.id;
-        var biobankId = populatedSample.biobank;
-        var parentSampleId = populatedSample.parentSample;
-        SampleService.simplify(populatedSample);
-        expect(populatedSample.type).to.equals(typeId);
-        expect(populatedSample.donor).to.equals(donorId);
-        expect(populatedSample.biobank).to.equals(biobankId);
-        expect(populatedSample.parentSample).to.equals(parentSampleId);
+    describe('#simplify', function() {
+        it("should replace the populated properties (e.g. type, donor, parentSample...) with their id (i.e. type -> type.id)", function() {
+            var typeId = populatedSample.type.id;
+            var donorId = populatedSample.donor.id;
+            var biobankId = populatedSample.biobank;
+            var parentSampleId = populatedSample.parentSample;
+            SampleService.simplify(populatedSample);
+            expect(populatedSample.type).to.equals(typeId);
+            expect(populatedSample.donor).to.equals(donorId);
+            expect(populatedSample.biobank).to.equals(biobankId);
+            expect(populatedSample.parentSample).to.equals(parentSampleId);
+        });
     });
 
+    describe('#getOne', function() {
+        it('should return the right sample', function(done) {
+            var expectedSample = _.cloneDeep(fixtures.sample[0]);
+            var id = expectedSample.id;
+            var code = expectedSample.code;
+            SampleService.getOne(id, function(err,res){
+                expect(res.id).to.eql(expectedSample.id);
+                expect(res.biobankCode).to.eql(expectedSample.biobankCode);
+                expect(res.metadata).to.eql(expectedSample.metadata);
+                done();
+            });
+        });
+    });
 });

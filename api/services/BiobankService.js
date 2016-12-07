@@ -4,11 +4,11 @@
 var BluebirdPromise = require('bluebird');
 
 var BiobankService = BluebirdPromise.promisifyAll({
-    
+
     /**
      * @description find a list of Biobanks
      * @return {Array} - list of found Biobanks
-     */   
+     */
     get: function(params, next) {
         var criteriaObj = {};
         if (params.idBiobanks) {
