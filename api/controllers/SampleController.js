@@ -18,6 +18,7 @@ const xtensConf = global.sails.config.xtens;
 const SAMPLE = xtensConf.constants.DataTypeClasses.SAMPLE;
 const VIEW_OVERVIEW = xtensConf.constants.DataTypePrivilegeLevels.VIEW_OVERVIEW;
 const EDIT = xtensConf.constants.DataTypePrivilegeLevels.EDIT;
+const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 
 module.exports = {
 
@@ -77,7 +78,7 @@ module.exports = {
         const operator = TokenService.getToken(req);
         let sample;
         let query = Sample.findOne(id);
-        query = QueryService.populateRequest(query, req);
+        query = actionUtil.populateRequest(query, req);
 
         query.then(result => {
             if (!result) {
@@ -118,14 +119,8 @@ module.exports = {
     find: function(req, res) {
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
-        let samples = [], arrPrivileges = [], dataTypesId;
-        let query = Sample.find()
-        .where(QueryService.parseCriteria(req))
-        .limit(QueryService.parseLimit(req))
-        .skip(QueryService.parseSkip(req))
-        .sort(QueryService.parseSort(req));
-
-        query = QueryService.populateRequest(query, req);
+        let samples = [], dataTypesId;
+        const query = QueryService.composeFind(req);
 
         query.then(function(results) {
             if (!results || _.isEmpty(results)) {

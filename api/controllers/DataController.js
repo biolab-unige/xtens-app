@@ -18,6 +18,7 @@ const crudManager = sails.hooks.persistence.crudManager;
 const DATA = xtensConf.constants.DataTypeClasses.DATA;
 const VIEW_OVERVIEW = xtensConf.constants.DataTypePrivilegeLevels.VIEW_OVERVIEW;
 const EDIT = xtensConf.constants.DataTypePrivilegeLevels.EDIT;
+const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 
 module.exports = {
 
@@ -83,7 +84,7 @@ module.exports = {
         let data;
         let query = Data.findOne(id);
 
-        query = QueryService.populateRequest(query, req);
+        query = actionUtil.populateRequest(query, req);
 
         query.then(function(result) {
             if (!result) {
@@ -124,14 +125,8 @@ module.exports = {
     find: function(req, res) {
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
-        let data = [], arrPrivileges = [], dataTypesId;
-        let query = Data.find()
-            .where(QueryService.parseCriteria(req))
-            .limit(QueryService.parseLimit(req))
-            .skip(QueryService.parseSkip(req))
-            .sort(QueryService.parseSort(req));
-
-        query = QueryService.populateRequest(query, req);
+        let data = [], dataTypesId;
+        const query = QueryService.composeFind(req);
 
         query.then(results => {
             if (!results || _.isEmpty(results)) {

@@ -19,6 +19,7 @@ const SUBJECT = xtensConf.constants.DataTypeClasses.SUBJECT;
 const DATA = xtensConf.constants.DataTypeClasses.DATA;
 const VIEW_OVERVIEW = xtensConf.constants.DataTypePrivilegeLevels.VIEW_OVERVIEW;
 const EDIT = xtensConf.constants.DataTypePrivilegeLevels.EDIT;
+const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 module.exports = {
 
     /**
@@ -75,7 +76,7 @@ module.exports = {
         const operator = TokenService.getToken(req);
         let query = Subject.findOne(id);
         let subject;
-        query = QueryService.populateRequest(query, req, { blacklist: ['personalInfo'] });
+        query = actionUtil.populateRequest(query, req, { blacklist:  ['personalInfo']});
 
         if (operator.canAccessPersonalData) {
             query.populate('personalInfo');
@@ -121,14 +122,8 @@ module.exports = {
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
         let subjects = [], dataTypesId;
-        let query = Subject.find(QueryService.parseSelect(req))
-        .where(QueryService.parseCriteria(req))
-        .limit(QueryService.parseLimit(req))
-        .skip(QueryService.parseSkip(req))
-        .sort(QueryService.parseSort(req));
 
-        query = QueryService.populateRequest(query, req, { blacklist: ['personalInfo'] });
-
+        const query = QueryService.composeFind(req, { blacklist: ['personalInfo'] });
         if (operator.canAccessPersonalData) {
             query.populate('personalInfo');
         }
@@ -139,7 +134,7 @@ module.exports = {
             }
             subjects = results;
 
-          //retrieve dataType id
+            //retrieve dataType id
             dataTypesId = _.isObject(subjects[0].type) ? _.uniq(_.pluck(_.pluck(subjects, 'type'), 'id')) : _.uniq(_.pluck(subjects, 'type'));
 
             return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId);

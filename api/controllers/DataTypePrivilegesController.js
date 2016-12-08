@@ -8,10 +8,12 @@
 /* jshint node: true */
 /* globals _, Group, DataType, DataTypeService, QueryService */
 "use strict";
-let ControllerOut = require("xtens-utils").ControllerOut;
-let BluebirdPromise = require("bluebird");
-let Joi = BluebirdPromise.promisifyAll(require('joi'));
+const ControllerOut = require("xtens-utils").ControllerOut;
+const BluebirdPromise = require("bluebird");
+const Joi = BluebirdPromise.promisifyAll(require('joi'));
 const DataTypePrivilegeLevels = global.sails.config.xtens.constants.DataTypePrivilegeLevels;
+const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
+
 
 let DataTypePrivilegesController = {
 
@@ -27,7 +29,6 @@ let DataTypePrivilegesController = {
             dataType: Joi.number().integer().positive().required(),
             privilegeLevel: Joi.string().valid(_.values(DataTypePrivilegeLevels))
         };
-        let payload = req.body;
         Joi.validateAsync(req.body, validationSchema)
 
         .then(function(validatedBody) {
@@ -40,7 +41,7 @@ let DataTypePrivilegesController = {
         })
 
         .catch(function(err) {
-            sails.log("DataTypePrivilegesController.create - got some error while creating new data type privileges");
+            sails.log.error("DataTypePrivilegesController.create - got some error while creating new data type privileges");
             return co.error(err);
         });
 
@@ -58,7 +59,7 @@ let DataTypePrivilegesController = {
 
         let query = global.sails.models.datatypeprivileges.findOne(id);
 
-        query = QueryService.populateRequest(query, req);
+        query = actionUtil.populateRequest(query, req);
 
         query.then(function(result) {
             return res.json(result);
@@ -77,15 +78,16 @@ let DataTypePrivilegesController = {
      * @name find
      */
     find: function(req, res) {
-        let co = new ControllerOut(res);
+        const co = new ControllerOut(res);
+        const query = QueryService.composeFind(req);
+        /*
         let query = global.sails.models.datatypeprivileges.find()
         .where(QueryService.parseCriteria(req))
         .limit(QueryService.parseLimit(req))
         .skip(QueryService.parseSkip(req))
         .sort(QueryService.parseSort(req));
-
         query = QueryService.populateRequest(query, req);
-
+        */
         query.then(function(data) {
             res.json(data);
         })
