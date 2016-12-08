@@ -20,13 +20,41 @@ const QueryService = {
      */
     composeFind: function(req, populateOpts) {
         const Model = actionUtil.parseModel(req);
-        let query = Model.find(QueryService.parseSelect(req))
+        const queryFind = Model.find(QueryService.parseSelect(req))
             .where(actionUtil.parseCriteria(req))
             .limit(actionUtil.parseLimit(req))
             .skip(actionUtil.parseSkip(req))
             .sort(actionUtil.parseSort(req));
 
-        return actionUtil.populateRequest(query, req, populateOpts);
+        return actionUtil.populateRequest(queryFind, req, populateOpts);
+    },
+
+    /**
+     * @method
+     * @name composeHeaderInfo
+     * @param{Request} req
+     * @return{Promise/Object} all the info to be shipped as response header
+     */
+    composeHeaderInfo: function(req) {
+        const Model = actionUtil.parseModel(req);
+        return Model.count().where(actionUtil.parseCriteria(req))
+
+        .then(count => {
+            const pageSize = actionUtil.parseLimit(req), skip = actionUtil.parseSkip(req),
+                numPages = Math.ceil(count/pageSize),
+                currPage = Math.ceil(skip/pageSize);
+
+            return {
+                count: count,
+                pageSize: pageSize,
+                numPages: numPages,
+                currPage: currPage,
+                next: '',
+                previous: '',
+                first: '',
+                last: ''
+            };
+        });
     },
 
     /**
@@ -36,6 +64,9 @@ const QueryService = {
      */
     parseSelect: function(req) {
         let select = req.param('select');
+        if (!select) {
+            return null;
+        }
         try {
             select = JSON.parse(select);
             if (_.isEmpty(select)) {
@@ -48,7 +79,7 @@ const QueryService = {
             };
         }
         catch(err) {
-            sails.log.error(err.message);
+            sails.log.error(err);
             return null;
         }
     },

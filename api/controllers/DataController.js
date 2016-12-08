@@ -141,14 +141,26 @@ module.exports = {
 
         }).then(privileges => {
 
-            return DataService.filterListByPrivileges(data, dataTypesId, privileges, operator.canAccessSensitiveData);
+            return BluebirdPromise.all([
+                DataService.filterListByPrivileges(data, dataTypesId, privileges, operator.canAccessSensitiveData),
+                QueryService.composeHeaderInfo(req)
+            ]);
 
         })
-        .then(data => {
+        .spread((data, headerInfo) => {
+            res.set('Access-Control-Expose-Headers', [
+                'X-Total-Count', 'X-Page-Size', 'X-Total-Pages', 'X-Current-Page'
+            ]);
+            res.set({
+                'X-Total-Count': headerInfo.count,
+                'X-Page-Size': headerInfo.pageSize,
+                'X-Total-Pages': headerInfo.numPages,
+                'X-Current-Page': headerInfo.currPage
+            });
             return res.json(data);
         })
         .catch(function(err) {
-            sails.log.error(err.message);
+            sails.log.error(err);
             return co.error(err);
         });
     },
@@ -201,7 +213,7 @@ module.exports = {
             return res.json(result);
         })
         .catch(function(error) {
-            sails.log.error(error.message);
+            sails.log.error(error);
             return co.error(error);
         });
     },

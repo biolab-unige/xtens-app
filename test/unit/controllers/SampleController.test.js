@@ -40,7 +40,7 @@ describe('SampleController', function() {
             .expect(201)
             .end(function(err, res) {
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                 }
                 var l = res.header.location;
@@ -89,7 +89,7 @@ describe('SampleController', function() {
                 metadata: {}
             }).expect(200)
             .end(function(err, res) {
-                console.log(res.body[0].biobank);
+                sails.log(res.body[0].biobank);
                 expect(res.body[0].biobank).to.equals(biobank);
                 if (err) {
                     done(err);
@@ -129,7 +129,7 @@ describe('SampleController', function() {
             .end(function(err, res) {
                 expect(res.body).to.have.length(fixtures.sample.length + 1);
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -148,7 +148,7 @@ describe('SampleController', function() {
 
                 expect(res.body.id).to.eql(1);
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -182,7 +182,7 @@ describe('SampleController', function() {
             .expect(200)
             .end(function(err, res) {
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -199,7 +199,7 @@ describe('SampleController', function() {
             .expect(200)
             .end(function(err, res) {
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
