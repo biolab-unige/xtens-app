@@ -6,6 +6,7 @@
 const expect = require("chai").expect;
 const request = require('supertest');
 const loginHelper = require('./loginHelper');
+const sinon = require('sinon');
 
 describe('DataController', function() {
 
@@ -340,5 +341,136 @@ describe('DataController', function() {
                     return;
                 });
         });
+
+    });
+
+    describe('POST /graph', function() {
+
+        let queryStub;
+        const dataTypeTree = [
+            {
+                "parentid": 1,
+                "parentname": "Patient",
+                "parenttemplate": "Subject",
+                "childid": 3,
+                "childname": "Star",
+                "childtemplate": "Data",
+                "path": [ 3, 1 ],
+                "cycle": false,
+                "depth": 1 },
+            {
+                "parentid": 1,
+                "parentname": "Patient",
+                "parenttemplate": "Subject",
+                "childid": 2,
+                "childname": "Tissue",
+                "childtemplate": "Sample",
+                "path": [ 2, 1 ],
+                "cycle": false,
+                "depth": 1 },
+            {
+                "parentid": 1,
+                "parentname": "Star",
+                "parenttemplate": "Data",
+                "childid": 4,
+                "childname": "Variant",
+                "childtemplate": "Data",
+                "path": [ 3, 1, 4 ],
+                "cycle": false,
+                "depth": 2 },
+            {
+                "parentid": 1,
+                "parentname": "Tissue",
+                "parenttemplate": "Sample",
+                "childid": 5,
+                "childname": "Variant Annotation",
+                "childtemplate": "Data",
+                "path": [ 2, 1, 5 ],
+                "cycle": false,
+                "depth": 2 },
+            {
+                "parentid": 1,
+                "parentname": "Variant Annotation",
+                "parenttemplate": "Data",
+                "childid": 5,
+                "childname": "Variant Annotation",
+                "childtemplate": "Data",
+                "path": [ 5, 2, 1, 5 ],
+                "cycle": true,
+                "depth": 3 }
+        ];
+        const expectedRes = {
+            links: [
+                {
+                    source: 'Patient',
+                    target: 'Star',
+                    depth: 1,
+                    source_template: 'Subject',
+                    target_template: 'Data',
+                    cycle: false },
+                {
+                    source: 'Patient',
+                    target: 'Tissue',
+                    depth: 1,
+                    source_template: 'Subject',
+                    target_template: 'Sample',
+                    cycle: false },
+                {
+                    source: 'Star',
+                    target: 'Variant',
+                    depth: 2,
+                    source_template: 'Data',
+                    target_template: 'Data',
+                    cycle: false },
+                {
+                    source: 'Tissue',
+                    target: 'Variant Annotation',
+                    depth: 2,
+                    source_template: 'Sample',
+                    target_template: 'Data',
+                    cycle: false } ],
+            loops: [
+                {
+                    source: 'Variant Annotation',
+                    target: 'Variant Annotation',
+                    depth: 3,
+                    source_template: 'Data',
+                    target_template: 'Data',
+                    cycle: true }
+            ]
+        };
+
+        beforeEach(function() {
+
+            let rootDataType = _.cloneDeep(fixtures.datatype[0]);
+            let id = rootDataType.id;
+
+            queryStub = sinon.stub(sails.config.xtens.databaseManager.recursiveQueries, "fetchDataTypeTree", function(id, next) {
+                next(null, {rows:dataTypeTree});
+            });
+        });
+
+        afterEach(function() {
+            sails.config.xtens.databaseManager.recursiveQueries.fetchDataTypeTree.restore();
+        });
+
+        it('Should return OK 200, with the expected graph structure', function(done) {
+
+            request(sails.hooks.http.app)
+            .post('/graph')
+            .set('Authorization', `Bearer ${tokenA}`)
+            .send({
+                "idDataType":"Patient"
+            })
+            .expect(200)
+            .end(function(err,res) {
+                if(err){done(err); return;}
+
+                expect(res.body).to.eql(expectedRes);
+                done();
+            });
+            return;
+        });
+
     });
 });

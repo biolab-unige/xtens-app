@@ -82,7 +82,6 @@
     "matchdep": "~0.3.0",
     "mocha": "^2.3.0",
     "mocha-lcov-reporter": "^1.2.0",
-    "nodewebkit": "^0.11.0",
     "sails-memory": "^0.10.3",
     "select2": "~3.5.1-browserify-fix",
     "sinon": "^1.10.3",
