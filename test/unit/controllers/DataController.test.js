@@ -53,7 +53,7 @@ describe('DataController', function() {
             .expect(201)
             .end(function(err, res) {
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                 }
                 var l = res.header.location;
@@ -133,7 +133,7 @@ describe('DataController', function() {
             .end(function(err, res) {
                 expect(res.body).to.have.length(fixtures.data.length + 1);
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -150,7 +150,7 @@ describe('DataController', function() {
             .end(function(err, res) {
                 expect(res.body.id).to.eql(1);
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -172,7 +172,7 @@ describe('DataController', function() {
             .expect(200)
             .end(function(err, res) {
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -190,7 +190,7 @@ describe('DataController', function() {
             .expect(200)
             .end(function(err, res) {
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -218,7 +218,7 @@ describe('DataController', function() {
                     expect(res.body.parentSample).to.equal(null);
                     expect(res.body.parentData).to.equal(null);
                     if (err) {
-                        sails.log.console.error(err);
+                        sails.log.error(err);
                         done(err);
                         return;
                     }
@@ -238,7 +238,7 @@ describe('DataController', function() {
                     console.log("Res edit: "+JSON.stringify(res.body));
                     expect(res.body.error.message).to.be.equal("Authenticated user is not allowed to edit sensitive data");
                     if (err) {
-                        sails.log.console.error(err);
+                        sails.log.error(err);
                         done(err);
                         return;
                     }

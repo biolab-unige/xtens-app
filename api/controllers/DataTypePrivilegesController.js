@@ -105,7 +105,9 @@ let DataTypePrivilegesController = {
             id: Joi.number().integer().positive().required(),
             group: Joi.number().integer().positive().required(),
             dataType: Joi.number().integer().positive().required(),
-            privilegeLevel: Joi.string().valid(_.values(DataTypePrivilegeLevels))
+            privilegeLevel: Joi.string().valid(_.values(DataTypePrivilegeLevels)),
+            createdAt: Joi.date(),
+            updatedAt: Joi.date()
         };
         let payload = req.body;
         Joi.validateAsync(req.body, validationSchema)

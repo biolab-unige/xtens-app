@@ -113,7 +113,7 @@ describe('DataTypeService', function() {
             var _this = this;
 
             return DataTypeService.putMetadataFieldsIntoEAV(this.dataType).then(function(res) {
-                console.log('testing after promise fulfilled');
+                sails.log('testing after promise fulfilled');
                 expect(_this.transactionalPutMetadataFieldsIntoEAV.calledOnce).to.be.true;
             });
 
@@ -127,7 +127,7 @@ describe('DataTypeService', function() {
             DataTypeService.getDataTypePrivilegeLevel(1, 1).then(function(result) {
 
 
-                console.log("DataType Privilege Level: " + JSON.stringify(result));
+                sails.log("DataType Privilege Level: " + JSON.stringify(result));
 
                 expect(result.privilegeLevel).to.be.equal("edit");
                 done();
@@ -140,7 +140,7 @@ describe('DataTypeService', function() {
 
             DataTypeService.getDataTypePrivilegeLevel(1,undefined).then(function(result) {
 
-                console.log("DataType Privilege Level: " + JSON.stringify(result));
+                sails.log("DataType Privilege Level: " + JSON.stringify(result));
 
                 expect(result).to.be.undefined;
                 done();
@@ -151,9 +151,9 @@ describe('DataTypeService', function() {
 
         it("should return an empty array", function(done) {
 
-            DataTypeService.getDataTypePrivilegeLevel(1,5).then(function(result) {
+            DataTypeService.getDataTypePrivilegeLevel(7,5).then(function(result) {
 
-                console.log("DataType Privilege Level: " + JSON.stringify(result));
+                sails.log("DataType Privilege Level: " + JSON.stringify(result));
 
                 expect(result).to.be.empty;
                 done();

@@ -310,17 +310,16 @@ module.exports = {
         })
             .then(results => {
                 payload = results;
+                //if operator has not the privilege to EDIT datatype, then return forbidden
+                if (_.isEmpty(results.dataTypes)){
+                    throw new PrivilegesError(`Authenticated user does not have EDIT privileges on any data type`);
+                }
 
                 if(results.data){
-                    const idDataTypes = _.isObject(results.data.type) ? results.data.type.id : results.data.type;
+                    // const idDataTypes = _.isObject(results.data.type) ? results.data.type.id : results.data.type;
                     return DataService.hasDataSensitive(results.data.id, DATA);
                 }
-                else {
-                      //if operator has not the privilege to EDIT datatype, then return forbidden
-                    if (_.isEmpty(results.dataTypes)){
-                        throw new PrivilegesError(`Authenticated user does not have EDIT privileges on any data type`);
-                    }
-                }
+
             })
             .then(function(sensitiveRes) {
 

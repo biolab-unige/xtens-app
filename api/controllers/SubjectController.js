@@ -306,28 +306,27 @@ module.exports = {
             payload = results;
             // sails.log.info(payload);
 
-            if (results.subject) {
-                const idDataTypes = _.isObject(results.subject.type) ? results.subject.type.id : results.subject.type;
-                return DataService.hasDataSensitive(results.subject.id, SUBJECT);
+            //if operator has not the privilege to EDIT datatype, then return forbidden
+            if (_.isEmpty(results.dataTypes)) {
+                throw new PrivilegesError(`Authenticated user does not have EDIT privileges on any data type`);
             }
-            else {
-              //if operator has not the privilege to EDIT datatype, then return forbidden
-                if (_.isEmpty(results.dataTypes)) {
-                    throw new PrivilegesError(`Authenticated user does not have EDIT privileges on any data type`);
-                }
+
+            if (results.subject) {
+                // const idDataTypes = _.isObject(results.subject.type) ? results.subject.type.id : results.subject.type;
+                return DataService.hasDataSensitive(results.subject.id, SUBJECT);
             }
 
         })
         .then(sensitiveRes => {
 
             // sails.log.info(sensitiveRes);
-            // if operator has not access to Sensitive Data and dataType has sensitive data, then return forbidden
-            if (sensitiveRes && ((sensitiveRes.hasDataSensitive && !operator.canAccessSensitiveData))) {
-                throw new PrivilegesError("Authenticated user is not allowed to edit sensitive data");
-            }
             // operator has not the privilege to EDIT datatype, then throw Privileges Error
             if (payload.subject && (_.isEmpty(payload.dataTypes) || !_.find(payload.dataTypes, {id : payload.subject.type.id}))) {
                 throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type`);
+            }
+            // if operator has not access to Sensitive Data and dataType has sensitive data, then return forbidden
+            if (sensitiveRes && ((sensitiveRes.hasDataSensitive && !operator.canAccessSensitiveData))) {
+                throw new PrivilegesError("Authenticated user is not allowed to edit sensitive data");
             }
             return res.json(payload);
 

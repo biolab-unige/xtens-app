@@ -109,7 +109,7 @@ describe('OperatorController', function() {
             .end(function(err, res) {
                 expect(res.body).to.be.empty;
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -138,7 +138,7 @@ describe('OperatorController', function() {
               expect(res.body.error.message).to.eql(expectedMessage);
 
               if (err) {
-                  sails.log.console.error(err);
+                  sails.log.error(err);
                   done(err);
                   return;
               }
@@ -167,7 +167,7 @@ describe('OperatorController', function() {
               expect(res.body.error.message).to.eql(expectedMessage);
 
               if (err) {
-                  sails.log.console.error(err);
+                  sails.log.error(err);
                   done(err);
                   return;
               }
@@ -198,7 +198,7 @@ describe('OperatorController', function() {
             expect(res.body.error.message).to.eql(expectedMessage);
 
             if (err) {
-                sails.log.console.error(err);
+                sails.log.error(err);
                 done(err);
                 return;
             }

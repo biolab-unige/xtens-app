@@ -47,7 +47,7 @@ describe('DataTypePrivilege', function() {
                 let l = res.header.location;
                 let loc = l.split('/');
                 let location = '/' + loc[3]+ '/' + loc[4];
-                expect(location).to.equals('/dataTypePrivileges/16');
+                expect(location).to.equals('/dataTypePrivileges/21');
                 done();
                 return;
             });
@@ -82,7 +82,7 @@ describe('DataTypePrivilege', function() {
         it('Should return OK 200, notes Updated', function (done) {
 
             request(sails.hooks.http.app)
-            .put('/dataTypePrivileges/16')
+            .put('/dataTypePrivileges/21')
             .set('Authorization', `Bearer ${tokenSA}`)
             .send({
                 "id": 16,
@@ -107,7 +107,7 @@ describe('DataTypePrivilege', function() {
             let expectedErrorMessage = 'child "privilegeLevel" fails because ["privilegeLevel" must be one of [view_overview, view_details, download, edit]]';
 
             request(sails.hooks.http.app)
-            .put('/dataTypePrivileges/16')
+            .put('/dataTypePrivileges/21')
             .set('Authorization', `Bearer ${tokenSA}`)
             .send({
                 "id": 16,
@@ -140,7 +140,7 @@ describe('DataTypePrivilege', function() {
             .end(function(err, res) {
                 expect(res.body).to.have.length(fixtures.datatypeprivileges.length + 1);
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -157,7 +157,7 @@ describe('DataTypePrivilege', function() {
             .end(function(err, res) {
                 expect(res.body.id).to.eql(1);
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -173,13 +173,13 @@ describe('DataTypePrivilege', function() {
 
         it('Should return 200 OK with 1 deleted item if resource exists', function (done) {
             request(sails.hooks.http.app)
-            .delete('/dataTypePrivileges/16')
+            .delete('/dataTypePrivileges/21')
             .set('Authorization', `Bearer ${tokenSA}`)
             .send()
             .expect(200)
             .end(function(err, res) {
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -191,13 +191,13 @@ describe('DataTypePrivilege', function() {
 
         it('Should return 200 OK with 0 deleted items if resource does not exist', function (done) {
             request(sails.hooks.http.app)
-            .delete('/dataTypePrivileges/16')
+            .delete('/dataTypePrivileges/21')
             .set('Authorization', `Bearer ${tokenSA}`)
             .send()
             .expect(200)
             .end(function(err, res) {
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -261,7 +261,7 @@ describe('DataTypePrivilege', function() {
                     expect(res.body.dataTypePrivileges).to.exist;
                     expect(res.body.dataTypePrivileges.id).to.eql(expectedDataTypesPrivilege.id);
                     if (err) {
-                        sails.log.console.error(err);
+                        sails.log.error(err);
                         done(err);
                         return;
                     }
@@ -279,7 +279,7 @@ describe('DataTypePrivilege', function() {
                 .expect(403)
                 .end(function(err, res) {
                     if (err) {
-                        sails.log.console.error(err);
+                        sails.log.error(err);
                         done(err);
                         return;
                     }

@@ -157,7 +157,7 @@ describe('DataController', function() {
             .expect(400)
             .end(function(err, res) {
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                 }
                 expect(res).to.be.error;
@@ -173,7 +173,7 @@ describe('DataController', function() {
             const name = "update DataType";
 
             request(sails.hooks.http.app)
-            .put('/dataType/6')
+            .put('/dataType/7')
             .set('Authorization', `Bearer ${tokenA}`)
             .send({
                 "parents": [1],
@@ -225,7 +225,7 @@ describe('DataController', function() {
             .end(function(err, res) {
                 expect(res.body).to.have.length(fixtures.datatype.length);
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -242,7 +242,7 @@ describe('DataController', function() {
             .end(function(err, res) {
                 expect(res.body.id).to.eql(1);
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -258,13 +258,13 @@ describe('DataController', function() {
 
         it('Should return 200 OK with 1 deleted item if resource exists', function (done) {
             request(sails.hooks.http.app)
-            .delete('/dataType/6')
+            .delete('/dataType/7')
             .set('Authorization', `Bearer ${tokenA}`)
             .send()
             .expect(200)
             .end(function(err, res) {
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -285,7 +285,7 @@ describe('DataController', function() {
             .end(function(err, res) {
                 // console.log(err,res);
                 if (err) {
-                    sails.log.console.error(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -313,7 +313,7 @@ describe('DataController', function() {
                     expect(res.body.dataTypes).to.exist;
                     expect(res.body.dataTypes.length).to.eql(expectedDataTypes.length);
                     if (err) {
-                        sails.log.console.error(err);
+                        sails.log.error(err);
                         done(err);
                         return;
                     }
@@ -333,7 +333,7 @@ describe('DataController', function() {
                     expect(res.body.params).to.not.exist;
                     expect(res.body.dataTypes).to.not.exist;
                     if (err) {
-                        sails.log.console.error(err);
+                        sails.log.error(err);
                         done(err);
                         return;
                     }
@@ -346,7 +346,7 @@ describe('DataController', function() {
 
     describe('POST /graph', function() {
 
-        let queryStub;
+        let fetchDataTypeTreeStub;
         const dataTypeTree = [
             {
                 "parentid": 1,
@@ -445,7 +445,7 @@ describe('DataController', function() {
             let rootDataType = _.cloneDeep(fixtures.datatype[0]);
             let id = rootDataType.id;
 
-            queryStub = sinon.stub(sails.config.xtens.databaseManager.recursiveQueries, "fetchDataTypeTree", function(id, next) {
+            fetchDataTypeTreeStub = sinon.stub(sails.config.xtens.databaseManager.recursiveQueries, "fetchDataTypeTree", function(id, next) {
                 next(null, {rows:dataTypeTree});
             });
         });

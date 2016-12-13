@@ -239,8 +239,6 @@ describe('DataService', function() {
 
             var data = _.cloneDeep(fixtures.data[0]);
 
-            // console.log("Data: " + JSON.stringify(data));
-
             var result = DataService.hasDataSensitive(data.id, "Data");
 
             expect(result).to.eventually.have.deep.property('hasDataSensitive', true);
@@ -251,8 +249,6 @@ describe('DataService', function() {
         it("should return an object with false result of investigation", function(done) {
 
             var data = _.cloneDeep(fixtures.subject[1]);
-
-            // console.log("Data: " + JSON.stringify(data));
 
             var result = DataService.hasDataSensitive(data.id, "Subject");
 
@@ -279,17 +275,12 @@ describe('DataService', function() {
                 "id": 2
             };
 
-
-            // console.log("Data Star METADATA: " + JSON.stringify(data));
-
             var result = DataService.filterOutSensitiveInfo(data, false);
 
             delete data[0].metadata['name'];
             delete data[1].metadata['gene_id'];
             delete data[1].metadata['quality_prediction'];
             var expectedData = data;
-
-            // console.log("EXPECTED Metadata Star: " + JSON.stringify(expectedData));
 
             expect(result).to.eventually.equal(expectedData);
             done();
@@ -310,9 +301,6 @@ describe('DataService', function() {
                 },
                 "id": 2
             };
-
-            // console.log("Data Star METADATA: " + JSON.stringify(data));
-
 
             var result = DataService.filterOutSensitiveInfo(data, true);
 
@@ -391,7 +379,7 @@ describe('DataService', function() {
                 done();
                 return;
             }).catch(function (err) {
-                console.log(err);
+                sails.log.error(err);
                 done(err);
             });
         });
@@ -455,7 +443,7 @@ describe('DataService', function() {
 
             DataService.executeAdvancedQuery(processedArgs, operatorPayload, (err, results) =>{
                 if (err) {
-                    console.log(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -496,7 +484,7 @@ describe('DataService', function() {
 
             DataService.executeAdvancedQuery(processedArgs, operatorPayload, (err, results) =>{
                 if (err) {
-                    console.log(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -541,7 +529,7 @@ describe('DataService', function() {
             queryObj = { statement: "WITH s AS (SELECT id, code, sex, personal_info FROM subject) SELECT DISTINCT d.id, s.code, s.sex, d.metadata FROM data d LEFT JOIN s ON s.id = d.parent_subject WHERE d.type = $1;", parameters: [dataType.id]};
 
             queryStreamStub = sinon.stub(sails.config.xtens.crudManager, "queryStream", function(query, next) {
-                console.log("STUUUB");
+
                 let stream = fs.createReadStream('./test/resources/data.json');
                 return next(stream,null);
 
@@ -560,9 +548,9 @@ describe('DataService', function() {
             var processedArgs = {queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: []};
 
             DataService.executeAdvancedStreamQuery(processedArgs, operatorPayload, (err, stream) =>{
-                console.log(err,stream);
+
                 if (err) {
-                    console.log(err);
+                    sails.log.error(err);
                     done(err);
                     return;
                 }

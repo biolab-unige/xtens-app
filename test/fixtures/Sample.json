@@ -4,9 +4,23 @@
         "biobank": 1,
         "type": 2,
         "biobankCode": "081852",
-        "donor": 12,
+        "donor": 2,
         "tags": null,
         "files": [],
+        "metadata": {
+            "arrival_code": {"value": "13-H-0099"},
+            "location": {"value": "eye socket"},
+            "diagnosis": {"value": "neuroblastoma"},
+            "sampling_date": {"value": "2014-11-07T00:00:00.000Z"}
+        }
+    },
+    {
+        "id": 2,
+        "biobank": 1,
+        "type": 6,
+        "biobankCode": "321646",
+        "donor": 3,
+        "tags": null,
         "metadata": {
             "arrival_code": {"value": "13-H-0099"},
             "location": {"value": "eye socket"},
