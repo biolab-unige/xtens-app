@@ -148,8 +148,8 @@ module.exports = {
             ]);
 
         })
-        .spread((data, headerInfo) => {
-            return DataService.prepareAndSendResponse(res, data, headerInfo);
+        .spread((payload, headerInfo) => {
+            return DataService.prepareAndSendResponse(res, payload, headerInfo);
         })
         .catch(function(err) {
             sails.log.error(err);

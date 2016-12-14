@@ -135,11 +135,14 @@ module.exports = {
 
         }).then(privileges => {
 
-            return DataService.filterListByPrivileges(samples, dataTypesId, privileges, operator.canAccessSensitiveData);
+            return BluebirdPromise.all([
+                DataService.filterListByPrivileges(samples, dataTypesId, privileges, operator.canAccessSensitiveData),
+                QueryService.composeHeaderInfo(req)
+            ]);
 
         })
-        .then(data => {
-            return res.json(data);
+        .spread((payload, headerInfo) => {
+            return DataService.prepareAndSendResponse(res, payload, headerInfo);
         })
         .catch(err => {
             sails.log.error(err);
