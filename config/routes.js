@@ -61,8 +61,8 @@ module.exports.routes = {
     // Group Controller
     // '/groupOperator/associate':{controller:'group', action:'addOperator'},
     // '/groupOperator/dissociate':{controller:'group', action:'removeOperator'},
-    '/groupDatatype/associate':{controller:'group', action:'addDatatype'},
-    '/groupDatatype/dissociate':{controller:'group',action:'removeDatatype'},
+    // '/groupDatatype/associate':{controller:'group', action:'addDatatype'},
+    // '/groupDatatype/dissociate':{controller:'group',action:'removeDatatype'},
 
     // Main Controller
     'POST /customisedData': {controller: 'main', action: 'executeCustomDataManagement'},
@@ -92,8 +92,8 @@ module.exports.routes = {
 
     // Subject Controller
     'GET /subject/edit': {controller: 'subject', action: 'edit'},
-    'POST /subjectGraph':{controller:'subject',action:'createGraph'}
-
+    'POST /subjectGraph':{controller:'subject',action:'createGraph'},
+    'POST /subjectGraphSimple':{controller:'subject',action:'createGraphSimple'}
 
 
 

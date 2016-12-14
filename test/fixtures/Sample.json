@@ -21,6 +21,7 @@
         "biobankCode": "321646",
         "donor": 3,
         "tags": null,
+        "parentSample": 1,
         "metadata": {
             "arrival_code": {"value": "13-H-0099"},
             "location": {"value": "eye socket"},

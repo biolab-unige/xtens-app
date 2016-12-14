@@ -57,4 +57,16 @@
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [4]
+},
+{
+    "sex": "N.A.",
+    "email": "none@none.com",
+    "login": "loginlogouttest",
+    "id": 6,
+    "firstName": "login user",
+    "lastName": "logout user",
+    "birthDate": "1970-01-01T00:00:00.000Z",
+    "createdAt": "2015-06-18T10:13:11.000Z",
+    "updatedAt": "2015-06-18T10:13:11.000Z",
+    "groups": [2]
 }]

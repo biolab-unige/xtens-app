@@ -17,7 +17,7 @@ let AuthController = {
      * @name callback
      * @param {Object} req
      * @param {Object} res
-     * @mutuated from 
+     * @mutuated from
      */
 
     login: function(req, res) {
@@ -27,6 +27,7 @@ let AuthController = {
 
         PassportService.callback(req, res, function (err, operator) {
             // If an error was thrown, return the JSON content of the error
+            /* istanbul ignore if */
             if (err) {
                 sails.log.verbose('Authentication error thrown');
                 sails.log.verbose(err);
@@ -40,41 +41,41 @@ let AuthController = {
             else {
                 // Upon successful login, send back user data and JWT token
                 // sails.services.logger.login(user, req);
-                
-                let payload = operator.formatForTokenPayload(); 
+
+                let payload = operator.formatForTokenPayload();
                 console.log("AuthController - successfully logged in");
                 return res.json(200, {
                     user: operator,
                     token: TokenService.issue(_.isObject(payload) ? JSON.stringify(payload) : payload)
                 });
-               
+
             }
         });
     },
-    
+
     /**
      * @method
      * @name logout
      * @param {Object} req
      * @param {Object} res
-     * @mutuated from 
+     * @mutuated from
      */
     logout: function(req, res) {
-        
+
         let protocol = req.param("protocol") || 'local';
-        let user = req.user;
+        let user = req.param("user");
 
         Passport.findOne({protocol: protocol, user: user.id})
 
         .then(function(passport) {
-            delete passport.accessToken;
-            return Passport.update(passport);
+            passport.accessToken = null;
+            return Passport.update({id:passport.id},passport);
         })
 
         .then(function(passport) {
             return res.ok("User successfully logged out.");
         })
-        
+
         .catch(function(err) {
             return res.serverError("Caught some error while disconnecting the user");
         });

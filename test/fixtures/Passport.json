@@ -57,4 +57,16 @@
     "createdAt": "2015-06-18T10:13:13.000Z",
     "updatedAt": "2015-06-18T10:13:13.000Z",
     "user": 5
+},
+{
+    "id": 6,
+    "protocol": "local",
+    "password": "testUser",
+    "provider": null,
+    "identifier": null,
+    "tokens": null,
+    "accessToken": "accessToken-sdkjnfdk",
+    "createdAt": "2015-06-18T10:13:13.000Z",
+    "updatedAt": "2015-06-18T10:13:13.000Z",
+    "user": 6
 }]

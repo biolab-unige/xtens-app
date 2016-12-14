@@ -178,7 +178,7 @@ describe('DataController', function() {
             .send({
                 "parents": [1],
                 "name": "update DataType",
-                "id":6,
+                "id":7,
                 "schema": schemaMetadata,
                 "model": "Data"
             })

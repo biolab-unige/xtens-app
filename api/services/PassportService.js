@@ -3,8 +3,8 @@
  * for more details see: https://github.com/tarlepp/angular-sailsjs-boilerplate/blob/master/backend/api/services/Passport.js
  */
 
-var path     = require('path'); 
-var url      = require('url'); 
+var path     = require('path');
+var url      = require('url');
 var PassportService = require('passport');
 var BluebirdPromise = require('bluebird');
 
@@ -107,7 +107,7 @@ PassportService.connect = function (req, query, profile, next) {
     }
 
     Passport.findOne({
-        provider   : profile.provider, 
+        provider   : profile.provider,
         identifier : query.identifier.toString()
     }, function (err, passport) {
         if (err) {
@@ -116,7 +116,7 @@ PassportService.connect = function (req, query, profile, next) {
 
         if (!req.user) {
             // Scenario: A new user is attempting to sign up using a third-party authentication provider.
-            // Action:   Create a new user and assign them a passport. (Apparently this is not allowed in our scenario 
+            // Action:   Create a new user and assign them a passport. (Apparently this is not allowed in our scenario
             if (!passport) {
 
                 return next("user not found");
@@ -203,9 +203,9 @@ PassportService.endpoint = function (req, res) {
     console.log("Service.Passport.endpoint() called");
     sails.log.verbose(__filename + ':' + __line + ' [Service.Passport.endpoint() called]');
 
-    var strategies = sails.config.passport, 
-    provider   = req.param('provider'), 
-    options    = {};
+    var strategies = sails.config.passport,
+        provider   = req.param('provider'),
+        options    = {};
 
     // If a provider doesn't exist for this endpoint, send the user back to the
     // login page
@@ -218,7 +218,7 @@ PassportService.endpoint = function (req, res) {
         options.scope = strategies[provider].scope;
     }
 
-    // Load authentication strategies 
+    // Load authentication strategies
     // (added by Massi: see https://github.com/tarlepp/angular-sailsjs-boilerplate/blob/master/backend/api/services/Passport.js )
     this.loadStrategies(req);
 
@@ -242,8 +242,8 @@ PassportService.callback = function (req, res, next) {
     console.log("Service.Passport.callback() called");
     sails.log.verbose(__filename + ':' + __line + ' [Service.Passport.callback() called]');
 
-    var provider = req.param('provider', 'local'), 
-    action   = req.param('action');
+    var provider = req.param('provider', 'local'),
+        action   = req.param('action');
 
     // Passport.js wasn't really built for local user registration, but it's nice
     // having it tied into everything else.
@@ -263,7 +263,7 @@ PassportService.callback = function (req, res, next) {
     } else {
         if (action === 'disconnect' && req.user) {
             this.disconnect(req, res, next) ;
-        } 
+        }
         else {
             // The provider will redirect the user to this URL after approval. Finish
             // the authentication process by attempting to obtain an access token. If
@@ -312,7 +312,7 @@ PassportService.loadStrategies = function () {
 
             // Let users override the username and passwordField from the options (commented out by Massi)
             // _.extend(options, strategies[key].options || {});
-            
+
             // disable sessions on local strategy (added by Massi)
             _.extend(options, {session: false});
 
@@ -323,9 +323,9 @@ PassportService.loadStrategies = function () {
                 that.use(new Strategy(options, that.protocols.local.login));
             }
         }
-        // Bearer strategy commented out (by Massi) - 
+        // Bearer strategy commented out (by Massi) -
         // see https://github.com/tarlepp/angular-sailsjs-boilerplate/blob/master/backend/api/services/Passport.js
-         
+
         else if (key === 'bearer') {
 
             if (strategies.bearer) {
@@ -333,10 +333,10 @@ PassportService.loadStrategies = function () {
                 that.use(new Strategy(that.protocols.bearer.authorize));
             }
 
-        } 
+        }
         else {
-            var protocol = strategies[key].protocol, 
-            callback = strategies[key].callback;
+            var protocol = strategies[key].protocol,
+                callback = strategies[key].callback;
 
             if (!callback) {
                 // modified by Massi
@@ -350,15 +350,15 @@ PassportService.loadStrategies = function () {
 
             switch (protocol) {
                 case 'oauth':
-                    case 'oauth2':
+                case 'oauth2':
                     options.callbackURL = url.resolve(baseUrl, callback);
-                break;
+                    break;
 
                 case 'openid':
                     options.returnURL = url.resolve(baseUrl, callback);
-                options.realm     = baseUrl;
-                options.profile   = true;
-                break;
+                    options.realm     = baseUrl;
+                    options.profile   = true;
+                    break;
             }
 
             // Merge the default options with any options defined in the config. All
@@ -378,9 +378,9 @@ PassportService.loadStrategies = function () {
  * @param  {Object} res
  */
 PassportService.disconnect = function (req, res, next) {
-    var user     = req.user, 
-    provider = req.param('provider', 'local'), 
-    query    = {};
+    var user     = req.user,
+        provider = req.param('provider', 'local'),
+        query    = {};
 
     query.user = user.id;
     query[provider === 'local' ? 'protocol' : 'provider'] = provider;
@@ -409,7 +409,7 @@ PassportService.serializeUser(function (user, next) {
         next({message: 'Invalid user.'}, null);
     } else {
         next(null, user.id);
-    }  
+    }
 });
 
 PassportService.deserializeUser(function (id, next) {

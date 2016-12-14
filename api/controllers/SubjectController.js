@@ -354,6 +354,7 @@ module.exports = {
 
             if (err){
                 console.log(err);
+                return co.error(err);
             }
 
             else {
@@ -374,7 +375,7 @@ module.exports = {
 
                 })
                 .then(function(link){
-                    console.log(link);
+                    // console.log(link);
                     links = link;
                     let json = {'links':links};
                     return res.json(json);
@@ -398,10 +399,11 @@ module.exports = {
      *
      */
     createGraphSimple: function(req,res){
+        console.log("createGraphSimple");
         let co = new ControllerOut(res);
         let fetchSubjectDataTreeSimple = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTreeSimple;
         let idSubject = req.param("idPatient");
-        console.log(idSubject);
+        console.log("idSubject",idSubject);
 
         function subjectTreeSimpleCb(err,resp) {
 

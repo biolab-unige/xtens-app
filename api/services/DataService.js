@@ -413,7 +413,6 @@ let DataService = BluebirdPromise.promisifyAll({
      * @return {Promise} -  a Bluebird Promise
      */
     storeMetadataIntoEAV: /*istanbul ignore next*/ function(ids, modelName) {
-      /*istanbul ignore next*/
         sails.log.info(`ids are: ${ids}`);
         sails.log.info(`Is ids an array? ${_.isArray(ids) ? 'YES' : 'NO'}`);
         modelName = modelName || DATA;

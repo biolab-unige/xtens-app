@@ -404,7 +404,10 @@ describe('DataService', function() {
                 "temperature":{"value":3910,"unit":"K","group":"Physical Details"}
             },
             "tags": ["test","a test"],
-            "notes": "just a test"
+            "notes": "just a test",
+            "parentSubject": 2,
+            "parentSample": null,
+            "parentData": null
         }];
 
           /**
@@ -471,7 +474,10 @@ describe('DataService', function() {
                     "temperature":{"value":3910,"unit":"K","group":"Physical Details"}
                 },
                 "tags": ["test","a test"],
-                "notes": "just a test"
+                "notes": "just a test",
+                "parentSubject": 2,
+                "parentSample": null,
+                "parentData": null
             }];
             var bearer = "Bearer "+ tokenNS;
             var req = {headers:{authorization : bearer}};
