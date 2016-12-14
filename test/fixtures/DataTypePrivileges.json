@@ -1,86 +1,86 @@
 [
-  {
-  "id": 1,
-  "dataType": 1,
-  "group": 1,
-  "privilegeLevel": "edit"
-},
-{
-"id": 2,
-"dataType": 2,
-"group": 1,
-"privilegeLevel": "edit"
-},
-{
-"id": 3,
-"dataType": 3,
-"group": 1,
-"privilegeLevel": "edit"
-},
-{
-"id": 4,
-"dataType": 4,
-"group": 1,
-"privilegeLevel": "edit"
-},
-{
-"id": 6,
-"dataType": 1,
-"group": 2,
-"privilegeLevel": "edit"
-},
-{
-"id": 7,
-"dataType": 2,
-"group": 2,
-"privilegeLevel": "edit"
-},
-{
-"id": 8,
-"dataType": 3,
-"group": 2,
-"privilegeLevel": "edit"
-},
-{
-"id": 9,
-"dataType": 4,
-"group": 2,
-"privilegeLevel": "edit"
-},
-{
-"id": 10,
-"dataType": 5,
-"group": 2,
-"privilegeLevel": "edit"
-},
-{
-"id": 11,
-"dataType": 1,
-"group": 3,
-"privilegeLevel": "edit"
-},
-{
-"id": 12,
-"dataType": 2,
-"group": 3,
-"privilegeLevel": "edit"
-},
-{
-"id": 13,
-"dataType": 3,
-"group": 3,
-"privilegeLevel": "edit"
-},
-{
-"id": 14,
-"dataType": 4,
-"group": 3,
-"privilegeLevel": "edit"
-},
-{
-"id": 15,
-"dataType": 5,
-"group": 3,
-"privilegeLevel": "edit"
-}
+    {
+        "id": 1,
+        "dataType": 1,
+        "group": 1,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 2,
+        "dataType": 2,
+        "group": 1,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 3,
+        "dataType": 3,
+        "group": 1,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 4,
+        "dataType": 4,
+        "group": 1,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 6,
+        "dataType": 1,
+        "group": 2,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 7,
+        "dataType": 2,
+        "group": 2,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 8,
+        "dataType": 3,
+        "group": 2,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 9,
+        "dataType": 4,
+        "group": 2,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 10,
+        "dataType": 5,
+        "group": 2,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 11,
+        "dataType": 1,
+        "group": 3,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 12,
+        "dataType": 2,
+        "group": 3,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 13,
+        "dataType": 3,
+        "group": 3,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 14,
+        "dataType": 4,
+        "group": 3,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 15,
+        "dataType": 5,
+        "group": 3,
+        "privilegeLevel": "edit"
+    }
 ]

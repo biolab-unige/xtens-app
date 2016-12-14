@@ -127,6 +127,7 @@ module.exports = {
         const operator = TokenService.getToken(req);
         let data = [], dataTypesId;
         const query = QueryService.composeFind(req);
+        sails.log.verbose(req.allParams());
 
         query.then(results => {
             if (!results || _.isEmpty(results)) {
@@ -148,16 +149,7 @@ module.exports = {
 
         })
         .spread((data, headerInfo) => {
-            res.set('Access-Control-Expose-Headers', [
-                'X-Total-Count', 'X-Page-Size', 'X-Total-Pages', 'X-Current-Page'
-            ]);
-            res.set({
-                'X-Total-Count': headerInfo.count,
-                'X-Page-Size': headerInfo.pageSize,
-                'X-Total-Pages': headerInfo.numPages,
-                'X-Current-Page': headerInfo.currPage
-            });
-            return res.json(data);
+            return DataService.prepareAndSendResponse(res, data, headerInfo);
         })
         .catch(function(err) {
             sails.log.error(err);

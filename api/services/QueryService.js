@@ -7,6 +7,7 @@
 "use strict";
 
 const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
+const querystring = require('querystring');
 
 const QueryService = {
 
@@ -37,22 +38,37 @@ const QueryService = {
      */
     composeHeaderInfo: function(req) {
         const Model = actionUtil.parseModel(req);
+        // sails.log.verbose('QueryService.composeHeaderInfo - Model is:');
+        // sails.log.verbose(Model);
         return Model.count().where(actionUtil.parseCriteria(req))
 
         .then(count => {
             const pageSize = actionUtil.parseLimit(req), skip = actionUtil.parseSkip(req),
                 numPages = Math.ceil(count/pageSize),
-                currPage = Math.ceil(skip/pageSize);
+                currPage = Math.ceil(skip/pageSize), params = req.allParams();
+            let queryNext, queryPrevious, queryLast, queryFirst;
+
+
+            if (currPage < numPages - 1) {
+                queryNext = querystring.stringify(Object.assign(params, { limit: pageSize, skip: pageSize + skip }));
+                queryLast = querystring.stringify(Object.assign(params, { limit: pageSize, skip: (numPages-1)*pageSize }));
+            }
+            if (currPage > 0) {
+                queryPrevious = querystring.stringify(Object.assign(params, { limit: pageSize, skip: skip - pageSize }));
+                queryFirst = querystring.stringify(Object.assign(params, { limit: pageSize, skip: undefined }));
+            }
 
             return {
                 count: count,
                 pageSize: pageSize,
                 numPages: numPages,
                 currPage: currPage,
-                next: '',
-                previous: '',
-                first: '',
-                last: ''
+                links: [
+                    { value: queryNext ? `${req.baseUrl}${req.path}?${queryNext}` : null, rel: 'next' },
+                    { value: queryPrevious ? `${req.baseUrl}${req.path}?${queryPrevious}` : null, rel: 'previous'},
+                    { value: queryFirst ? `${req.baseUrl}${req.path}?${queryFirst}` : null, rel: 'first' },
+                    { value: queryLast ? `${req.baseUrl}${req.path}?${queryLast}` : null, rel: 'last'}
+                ]
             };
         });
     },
