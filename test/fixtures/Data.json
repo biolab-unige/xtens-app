@@ -1,46 +1,391 @@
 [
-  {
-    "id":1,
-    "type":3,
-    "date": "2012-12-28",
-    "metadata": {
-        "name":{"value":"Aldebaran","group":"Generic Info"},
-        "constellation":{"value":"orion","group":"Generic Info"},
-        "classification":{"value":"giant","group":"Generic Info"},
-        "designation":{"values":["87 Tauri","Alpha Tauri","SAO 94027","Borgil(?)"],"group":"Generic Info","loop":"Other Designations"},
-        "mass":{"value":1.7,"unit":"M☉","group":"Physical Details"},
-        "radius":{"value":44.2,"unit":"R☉","group":"Physical Details"},
-        "luminosity":{"value":518,"unit":"L☉","group":"Physical Details"},
-        "temperature":{"value":3910,"unit":"K","group":"Physical Details"}
+    {
+        "id":1,
+        "type":3,
+        "date": "2012-12-28",
+        "metadata": {
+            "name":{"value":"Aldebaran","group":"Generic Info"},
+            "constellation":{"value":"taurus","group":"Generic Info"},
+            "classification":{"value":"giant","group":"Generic Info"},
+            "designation":{"values":["87 Tauri","Alpha Tauri","SAO 94027","Borgil(?)"],"group":"Generic Info","loop":"Other Designations"},
+            "mass":{"value":1.7,"unit":"M☉","group":"Physical Details"},
+            "radius":{"value":44.2,"unit":"R☉","group":"Physical Details"},
+            "luminosity":{"value":518,"unit":"L☉","group":"Physical Details"},
+            "temperature":{"value":3910,"unit":"K","group":"Physical Details"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
     },
-    "tags": ["test","a test"],
-    "notes": "just a test",
-    "parentSubject": 2,
-    "parentSample": null,
-    "parentData": null
-  },
-  {
-    "id":2,
-    "type":4,
-    "date": "2012-12-28",
-    "metadata": {
-      "chromosome":{"value":"1","group":"Vcf Info"},
-      "pos":{"value":"500","group":"Vcf Info"},
-      "ref":{"value":"a","group":"Vcf Info"},
-      "alt":{"value":"a","group":"Vcf Info"},
-      "qual":{"value":"5","group":"Vcf Info"},
-      "af":{"value":"1","group":"Vcf Info"},
-      "filter":{"value":"pass","group":"Vcf Info"},
-      "dp":{"value":"33","group":"Vcf Info"},
-      "validated":{"value":true,"group":"Vcf Info"},
-      "acquisition_date":{"value":null,"group":"Vcf Info"},
-      "ns":{"value":null,"group":"Vcf Info"},
-      "somatic":{"value":null,"group":"Vcf Info"}
+    {
+        "id":2,
+        "type":4,
+        "date": "2012-12-28",
+        "metadata": {
+            "chromosome":{"value":"1","group":"Vcf Info"},
+            "pos":{"value":500,"group":"Vcf Info"},
+            "ref":{"value":"a","group":"Vcf Info"},
+            "alt":{"values":["c"],"group":"Vcf Info"},
+            "qual":{"value":"5","group":"Vcf Info"},
+            "af":{"value":0.86,"group":"Vcf Info"},
+            "filter":{"value":"pass","group":"Vcf Info"},
+            "dp":{"value":"33","group":"Vcf Info"},
+            "validated":{"value":true,"group":"Vcf Info"},
+            "acquisition_date":{"value":null,"group":"Vcf Info"},
+            "ns":{"value":null,"group":"Vcf Info"},
+            "somatic":{"value":null,"group":"Vcf Info"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
     },
-    "tags": ["test","a test"],
-    "notes": "just a test",
-    "parentSubject": 3,
-   "parentSample": null,
-   "parentData": null
-  }
+    {
+        "id":3,
+        "type":3,
+        "date": "2012-12-28",
+        "metadata": {
+            "name":{"value":"Antares","group":"Generic Info"},
+            "constellation":{"value":"scorpius","group":"Generic Info"},
+            "classification":{"value":"supergiant","group":"Generic Info"},
+            "designation":{"values":["Alpha Scorpii","21 Sco", "Cor Scorpii", "Borgil(?)"],"group":"Generic Info","loop":"Other Designations"},
+            "mass":{"value":12.4,"unit":"M☉","group":"Physical Details"},
+            "radius":{"value":883,"unit":"R☉","group":"Physical Details"},
+            "luminosity":{"value":57500,"unit":"L☉","group":"Physical Details"},
+            "temperature":{"value":3400,"unit":"K","group":"Physical Details"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
+    },
+    {
+        "id":4,
+        "type":3,
+        "date": "2012-12-28",
+        "metadata": {
+            "name":{"value":"Betelgeuse","group":"Generic Info"},
+            "constellation":{"value":"orion","group":"Generic Info"},
+            "classification":{"value":"supergiant","group":"Generic Info"},
+            "designation":{"values":["Alpha Ori", "HR 2061", "SAO 113271"],"group":"Generic Info","loop":"Other Designations"},
+            "mass":{"value":11.6,"unit":"M☉","group":"Physical Details"},
+            "radius":{"value":887,"unit":"R☉","group":"Physical Details"},
+            "luminosity":{"value":90000,"unit":"L☉","group":"Physical Details"},
+            "temperature":{"value":3590,"unit":"K","group":"Physical Details"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
+    },
+    {
+        "id":5,
+        "type":3,
+        "date": "2012-12-28",
+        "metadata": {
+            "name":{"value":"Sirius","group":"Generic Info"},
+            "constellation":{"value":"canis major","group":"Generic Info"},
+            "classification":{"value":"main-sequence star","group":"Generic Info"},
+            "designation":{"values":["Dog Star","Al Shira", "Alpha Canis Majoris", "HD 48915"],"group":"Generic Info","loop":"Other Designations"},
+            "mass":{"value":2.02,"unit":"M☉","group":"Physical Details"},
+            "radius":{"value":1.711,"unit":"R☉","group":"Physical Details"},
+            "luminosity":{"value":25.4,"unit":"L☉","group":"Physical Details"},
+            "temperature":{"value":9940,"unit":"K","group":"Physical Details"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
+    },
+    {
+        "id":6,
+        "type":3,
+        "date": "2012-12-28",
+        "metadata": {
+            "name":{"value":"VY Canis Majoris","group":"Generic Info"},
+            "constellation":{"value":"canis major","group":"Generic Info"},
+            "classification":{"value":"hypergiant","group":"Generic Info"},
+            "designation":{"values":["VY CMa", "HD 58061"],"group":"Generic Info","loop":"Other Designations"},
+            "mass":{"value":17,"unit":"M☉","group":"Physical Details"},
+            "radius":{"value":1420,"unit":"R☉","group":"Physical Details"},
+            "luminosity":{"value":270000,"unit":"L☉","group":"Physical Details"},
+            "temperature":{"value":3490,"unit":"K","group":"Physical Details"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
+    },
+    {
+        "id":7,
+        "type":4,
+        "date": "2015-12-28",
+        "metadata": {
+            "chromosome":{"value":"1","group":"Vcf Info"},
+            "pos":{"value":35004,"group":"Vcf Info"},
+            "ref":{"value":"a","group":"Vcf Info"},
+            "alt":{"values":["g"],"group":"Vcf Info"},
+            "qual":{"value":"5","group":"Vcf Info"},
+            "af":{"value":0.3,"group":"Vcf Info"},
+            "filter":{"value":"pass","group":"Vcf Info"},
+            "dp":{"value":"33","group":"Vcf Info"},
+            "validated":{"value":true,"group":"Vcf Info"},
+            "acquisition_date":{"value":null,"group":"Vcf Info"},
+            "ns":{"value":null,"group":"Vcf Info"},
+            "somatic":{"value":null,"group":"Vcf Info"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
+    },
+    {
+        "id":8,
+        "type":4,
+        "date": "2016-12-02",
+        "metadata": {
+            "chromosome":{"value":"X","group":"Vcf Info"},
+            "pos":{"value":1000987,"group":"Vcf Info"},
+            "ref":{"value":"c","group":"Vcf Info"},
+            "alt":{"values":["a", "at", "an"],"group":"Vcf Info"},
+            "qual":{"value":"5","group":"Vcf Info"},
+            "af":{"value":0.4,"group":"Vcf Info"},
+            "filter":{"value":"pass","group":"Vcf Info"},
+            "dp":{"value":"33","group":"Vcf Info"},
+            "validated":{"value":true,"group":"Vcf Info"},
+            "acquisition_date":{"value":null,"group":"Vcf Info"},
+            "ns":{"value":null,"group":"Vcf Info"},
+            "somatic":{"value":null,"group":"Vcf Info"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
+    },
+    {
+        "id":9,
+        "type":4,
+        "date": "2016-12-02",
+        "metadata": {
+            "chromosome":{"value":"12","group":"Vcf Info"},
+            "pos":{"value":135009453,"group":"Vcf Info"},
+            "ref":{"value":"a","group":"Vcf Info"},
+            "alt":{"values":["t"],"group":"Vcf Info"},
+            "qual":{"value":"5","group":"Vcf Info"},
+            "af":{"value":0.99,"group":"Vcf Info"},
+            "filter":{"value":"pass","group":"Vcf Info"},
+            "dp":{"value":"33","group":"Vcf Info"},
+            "validated":{"value":true,"group":"Vcf Info"},
+            "acquisition_date":{"value":null,"group":"Vcf Info"},
+            "ns":{"value":null,"group":"Vcf Info"},
+            "somatic":{"value":null,"group":"Vcf Info"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
+    },
+    {
+        "id": 10,
+        "type": 5,
+        "date": "2016-12-04",
+        "metadata": {
+            "gene_name": "mycn",
+            "gene_id": "4613"
+        },
+        "tags": ["ciao"],
+        "notes": "bao"
+    },
+    {
+        "id": 11,
+        "type": 5,
+        "date": "2016-12-04",
+        "metadata": {
+            "gene_name": "mycn",
+            "gene_id": "4613"
+        },
+        "tags": ["ciao"],
+        "notes": "bao"
+    },
+    {
+        "id": 12,
+        "type": 5,
+        "date": "2016-12-04",
+        "metadata": {
+            "gene_name": "sox4",
+            "gene_id": "6659"
+        },
+        "tags": ["ciao"],
+        "notes": "bao"
+    },
+    {
+        "id": 13,
+        "type": 5,
+        "date": "2016-12-04",
+        "metadata": {
+            "gene_name": "mycn",
+            "gene_id": "4613"
+        },
+        "tags": ["ciao"],
+        "notes": "bao"
+    },
+    {
+        "id": 14,
+        "type": 5,
+        "date": "2016-12-04",
+        "metadata": {
+            "gene_name": "sox4",
+            "gene_id": "6659"
+        },
+        "tags": ["ciao"],
+        "notes": "bao"
+    },
+    {
+        "id":15,
+        "type":3,
+        "date": "2012-12-28",
+        "metadata": {
+            "name":{"value":"Mu Cephei","group":"Generic Info"},
+            "constellation":{"value":"cepheus","group":"Generic Info"},
+            "classification":{"value":"supergiant","group":"Generic Info"},
+            "designation":{"values":["Erakis", "Herschel's Garnet Star", "Mu Cep"],"group":"Generic Info","loop":"Other Designations"},
+            "mass":{"value":19.2,"unit":"M☉","group":"Physical Details"},
+            "radius":{"value":1260,"unit":"R☉","group":"Physical Details"},
+            "luminosity":{"value":283000,"unit":"L☉","group":"Physical Details"},
+            "temperature":{"value":3750,"unit":"K","group":"Physical Details"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
+    },
+    {
+        "id":16,
+        "type":3,
+        "date": "2012-12-28",
+        "metadata": {
+            "name":{"value":"VV Cephei","group":"Generic Info"},
+            "constellation":{"value":"cepheus","group":"Generic Info"},
+            "classification":{"value":"supergiant","group":"Generic Info"},
+            "designation":{"values":["VV Cep","HR 8383"],"group":"Generic Info","loop":"Other Designations"},
+            "mass":{"value":18.2,"unit":"M☉","group":"Physical Details"},
+            "radius":{"value":1050,"unit":"R☉","group":"Physical Details"},
+            "luminosity":{"value":200000,"unit":"L☉","group":"Physical Details"},
+            "temperature":{"value":3826,"unit":"K","group":"Physical Details"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
+    },
+    {
+        "id":17,
+        "type":3,
+        "date": "2012-12-28",
+        "metadata": {
+            "name":{"value":"Arcturus","group":"Generic Info"},
+            "constellation":{"value":"boötes","group":"Generic Info"},
+            "classification":{"value":"giant","group":"Generic Info"},
+            "designation":{"values":["Alramech", "Abramech", "Alpha Boötis", "HR 5340"],"group":"Generic Info","loop":"Other Designations"},
+            "mass":{"value":1.08,"unit":"M☉","group":"Physical Details"},
+            "radius":{"value":25.4,"unit":"R☉","group":"Physical Details"},
+            "luminosity":{"value":170,"unit":"L☉","group":"Physical Details"},
+            "temperature":{"value":4286,"unit":"K","group":"Physical Details"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
+    },
+    {
+        "id":18,
+        "type":4,
+        "date": "2016-12-05",
+        "metadata": {
+            "chromosome":{"value":"3","group":"Vcf Info"},
+            "pos":{"value":578984,"group":"Vcf Info"},
+            "ref":{"value":"g","group":"Vcf Info"},
+            "alt":{"values":["a", "c"],"group":"Vcf Info"},
+            "qual":{"value":"5","group":"Vcf Info"},
+            "af":{"value":0.6,"group":"Vcf Info"},
+            "filter":{"value":"pass","group":"Vcf Info"},
+            "dp":{"value":"33","group":"Vcf Info"},
+            "validated":{"value":false,"group":"Vcf Info"},
+            "acquisition_date":{"value":null,"group":"Vcf Info"},
+            "ns":{"value":null,"group":"Vcf Info"},
+            "somatic":{"value":true,"group":"Vcf Info"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
+    },
+    {
+        "id": 19,
+        "type": 5,
+        "date": "2016-12-04",
+        "metadata": {
+            "gene_name": "mycn",
+            "gene_id": "4613"
+        },
+        "tags": ["ciao"],
+        "notes": "bao"
+    },
+    {
+        "id": 20,
+        "type": 5,
+        "date": "2016-12-04",
+        "metadata": {
+            "gene_name": "mycn",
+            "gene_id": "4613"
+        },
+        "tags": ["ciao"],
+        "notes": "bao"
+    },
+    {
+        "id": 21,
+        "type": 5,
+        "date": "2016-12-04",
+        "metadata": {
+            "gene_name": "sox4",
+            "gene_id": "6659"
+        },
+        "tags": ["ciao"],
+        "notes": "bao"
+    },
+    {
+        "id":22,
+        "type":4,
+        "date": "2016-12-05",
+        "metadata": {
+            "chromosome":{"value":"17","group":"Vcf Info"},
+            "pos":{"value":578984,"group":"Vcf Info"},
+            "ref":{"value":"t","group":"Vcf Info"},
+            "alt":{"values":["a", "c"],"group":"Vcf Info"},
+            "qual":{"value":"5","group":"Vcf Info"},
+            "af":{"value":0.6,"group":"Vcf Info"},
+            "filter":{"value":"pass","group":"Vcf Info"},
+            "dp":{"value":"33","group":"Vcf Info"},
+            "validated":{"value":true,"group":"Vcf Info"},
+            "acquisition_date":{"value":null,"group":"Vcf Info"},
+            "ns":{"value":null,"group":"Vcf Info"},
+            "somatic":{"value":true,"group":"Vcf Info"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
+    },
+    {
+        "id": 23,
+        "type": 5,
+        "date": "2016-12-04",
+        "metadata": {
+            "gene_name": "alk",
+            "gene_id": "238"
+        },
+        "tags": ["ciao"],
+        "notes": "bao"
+    },
+    {
+        "id": 24,
+        "type": 5,
+        "date": "2016-12-04",
+        "metadata": {
+            "gene_name": "sox4",
+            "gene_id": "6659"
+        },
+        "tags": ["ciao"],
+        "notes": "bao"
+    },
+    {
+        "id":25,
+        "type":3,
+        "date": "2012-12-28",
+        "metadata": {
+            "name":{"value":"Vega","group":"Generic Info"},
+            "constellation":{"value":"lyra","group":"Generic Info"},
+            "classification":{"value":"main-sequence star","group":"Generic Info"},
+            "designation":{"values":["Wega", "Lucida Lyrae", "Alpha Lyrae", "HR 7001"],"group":"Generic Info","loop":"Other Designations"},
+            "mass":{"value":2.135,"unit":"M☉","group":"Physical Details"},
+            "radius":{"value":2.36,"unit":"R☉","group":"Physical Details"},
+            "luminosity":{"value":40.12,"unit":"L☉","group":"Physical Details"},
+            "temperature":{"value":9602,"unit":"K","group":"Physical Details"}
+        },
+        "tags": ["test","a test"],
+        "notes": "just a test"
+    }
 ]

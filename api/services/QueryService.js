@@ -3,94 +3,74 @@
  */
 /* jshint node: true */
 /* jshint esnext: true */
-/* globals _, sails, Data, DataService */
+/* globals _, sails, */
 "use strict";
 
-const DEFAULT_SORT = 'id DESC';
+const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
+const querystring = require('querystring');
 
-let QueryService = {
+const QueryService = {
 
     /**
      * @method
-     * @name tryToParseJSON
-     * @param {string} json - the string to parse as JSON
-     * @return {JSON} if the string can be parsed, a valid JSON
-     * mutuated by: https://github.com/balderdashy/sails/blob/master/lib/hooks/blueprints/actionUtil.js
+     * @name composeFind
+     * @param{Request}  req
+     * @param{Object} populateOpts
+        - contains the property 'blacklisted' {array} - optional list of blackListed fields
+     * @return{Promise}
      */
-    tryToParseJSON: function(json) {
-        if (!_.isString(json)) return null;
-        try {
-            return JSON.parse(json);
-        }
-        catch (e) {
-            return e;
-        }
+    composeFind: function(req, populateOpts) {
+        const Model = actionUtil.parseModel(req);
+        const queryFind = Model.find(QueryService.parseSelect(req))
+            .where(actionUtil.parseCriteria(req))
+            .limit(actionUtil.parseLimit(req))
+            .skip(actionUtil.parseSkip(req))
+            .sort(actionUtil.parseSort(req));
+
+        return actionUtil.populateRequest(queryFind, req, populateOpts);
     },
 
     /**
      * @method
-     * @name parseCriteria
-     * @param {Request} - req
-     * @return {Object} - the criteria Object
-     * mutuated by: https://github.com/balderdashy/sails/blob/master/lib/hooks/blueprints/actionUtil.js
+     * @name composeHeaderInfo
+     * @param{Request} req
+     * @return{Promise/Object} all the info to be shipped as response header
      */
-    parseCriteria: function(req) {
+    composeHeaderInfo: function(req) {
+        const Model = actionUtil.parseModel(req);
+        // sails.log.verbose('QueryService.composeHeaderInfo - Model is:');
+        // sails.log.verbose(Model);
+        return Model.count().where(actionUtil.parseCriteria(req))
 
-        // Look for explicitly specified `where` parameter.
-        let where = req.allParams().where;
+        .then(count => {
+            const pageSize = actionUtil.parseLimit(req), skip = actionUtil.parseSkip(req),
+                numPages = Math.ceil(count/pageSize),
+                currPage = Math.ceil(skip/pageSize), params = req.allParams();
+            let queryNext, queryPrevious, queryLast, queryFirst;
 
-        // If `where` parameter is a string, try to interpret it as JSON
-        if (_.isString(where)) {
-            where = QueryService.tryToParseJSON(where);
-        }
 
-        // If `where` has not been specified, but other unbound parameter variables
-        // **ARE** specified, build the `where` option using them.
-        if (!where) {
-            where = req.allParams();
+            if (currPage < numPages - 1) {
+                queryNext = querystring.stringify(Object.assign(params, { limit: pageSize, skip: pageSize + skip }));
+                queryLast = querystring.stringify(Object.assign(params, { limit: pageSize, skip: (numPages-1)*pageSize }));
+            }
+            if (currPage > 0) {
+                queryPrevious = querystring.stringify(Object.assign(params, { limit: pageSize, skip: skip - pageSize }));
+                queryFirst = querystring.stringify(Object.assign(params, { limit: pageSize, skip: undefined }));
+            }
 
-            // Omit built-in runtime config (like query modifiers)
-            where = _.omit(where, ['limit', 'skip', 'sort', 'populate']);
-
-            // Omit any params w/ undefined values
-            where = _.omit(where, p => { if (_.isUndefined(p)) return true; });
-        }
-
-        return where;
-    },
-
-    /**
-     * @method
-     * @name parseLimit
-     * mutuated by: https://github.com/balderdashy/sails/blob/master/lib/hooks/blueprints/actionUtil.js
-     */
-    parseLimit: function(req) {
-        let DEFAULT_LIMIT = sails.config.blueprints.defaultLimit || 30;
-        let limit = req.param('limit') || DEFAULT_LIMIT;
-        if (limit) { limit = +limit; }
-        return limit;
-    },
-
-    /**
-     * @method
-     * @name parseSkip
-     * mutuated by: https://github.com/balderdashy/sails/blob/master/lib/hooks/blueprints/actionUtil.js
-     */
-    parseSkip: function (req) {
-        let DEFAULT_SKIP = 0;
-        let skip = req.param('skip') || DEFAULT_SKIP;
-        if (skip) { skip = +skip; }
-        return skip;
-    },
-
-    /**
-     * @method
-     * @name parseSort
-     * @param  {Request} req
-     * mutuated by: https://github.com/balderdashy/sails/blob/master/lib/hooks/blueprints/actionUtil.js
-     */
-    parseSort: function (req) {
-        return req.param('sort') || DEFAULT_SORT;
+            return {
+                count: count,
+                pageSize: pageSize,
+                numPages: numPages,
+                currPage: currPage,
+                links: [
+                    { value: queryNext ? `${req.baseUrl}${req.path}?${queryNext}` : null, rel: 'next' },
+                    { value: queryPrevious ? `${req.baseUrl}${req.path}?${queryPrevious}` : null, rel: 'previous'},
+                    { value: queryFirst ? `${req.baseUrl}${req.path}?${queryFirst}` : null, rel: 'first' },
+                    { value: queryLast ? `${req.baseUrl}${req.path}?${queryLast}` : null, rel: 'last'}
+                ]
+            };
+        });
     },
 
     /**
@@ -100,113 +80,25 @@ let QueryService = {
      */
     parseSelect: function(req) {
         let select = req.param('select');
+        if (!select) {
+            return null;
+        }
         try {
             select = JSON.parse(select);
             if (_.isEmpty(select)) {
                 return null;
             }
             select = _.isArray(select) ? select : null;
-            console.log(select);
+            sails.log.debug(select);
             return {
                 'select': select
             };
         }
-         catch(err) {
-             console.log(err.message);
-             return null;
-         }
-    },
-
-    /**
-     * Given a Waterline query and an express request, populate
-     * the appropriate/specified association attributes and
-     * return it so it can be chained further ( i.e. so you can
-     * .exec() it )
-     *
-     * mutuated by: https://github.com/balderdashy/sails/blob/master/lib/hooks/blueprints/actionUtil.js
-     *
-     * @param  {Query} query         [waterline query object]
-     * @param  {Request} req
-     * @param {Object} options, it may contain:
-     *                 - blacklist{Array}: a list of items that must not be populated
-     * @return {Query}
-     */
-    populateRequest: function(query, req, options) {
-        let DEFAULT_POPULATE_LIMIT = req._sails.config.blueprints.defaultLimit || 30;
-        let _options = req.options;
-        let aliasFilter = req.param('populate');
-        let shouldPopulate = _options.populate;
-
-        // Convert the string representation of the filter list to an Array. We
-        // need this to provide flexibility in the request param. This way both
-        // list string representations are supported:
-        //   /model?populate=alias1,alias2,alias3
-        //   /model?populate=[alias1,alias2,alias3]
-        if (typeof aliasFilter === 'string') {
-            aliasFilter = aliasFilter.replace(/\[|\]/g, '');
-            aliasFilter = (aliasFilter) ? aliasFilter.split(',') : [];
+        catch(err) {
+            sails.log.error(err);
+            return null;
         }
-
-        let associations = [];
-
-        _.each(_options.associations, association => {
-            // If an alias filter was provided, override the blueprint config.
-            if (aliasFilter) {
-                shouldPopulate = _.contains(aliasFilter, association.alias);
-            }
-
-            // Only populate associations if a population filter has been supplied
-            // with the request or if `populate` is set within the blueprint config.
-            // Population filters will override any value stored in the config.
-            //
-            // Additionally, allow an object to be specified, where the key is the
-            // name of the association attribute, and value is true/false
-            // (true to populate, false to not)
-            if (shouldPopulate) {
-                let populationLimit =
-                    _options['populate_' + association.alias + '_limit'] ||
-                    _options.populate_limit ||
-                    _options.limit ||
-                    DEFAULT_POPULATE_LIMIT;
-
-                associations.push({
-                    alias: association.alias,
-                    limit: populationLimit
-                });
-            }
-        });
-
-        // omit blacklisted populated items (added by Massi)
-        if (options && _.isArray(options.blacklist)) {
-            associations = _.remove(associations, association => {
-                return options.blacklist.indexOf(association.alias) < 0;
-            });
-        }
-
-        return QueryService.populateQuery(query, associations, req._sails);
     },
-
-    /**
-     * Given a Waterline query, populate the appropriate/specified
-     * association attributes and return it so it can be chained
-     * further ( i.e. so you can .exec() it )
-     *
-     * mutuated by: https://github.com/balderdashy/sails/blob/master/lib/hooks/blueprints/actionUtil.js
-     *
-     * @param  {Query} query         [waterline query object]
-     * @param  {Array} associations  [array of objects with an alias
-     *                                and (optional) limit key]
-     * @return {Query}
-     */
-    populateQuery: function(query, associations, sails) {
-        let DEFAULT_POPULATE_LIMIT = (sails && sails.config.blueprints.defaultLimit) || 30;
-
-        return _.reduce(associations, (query, association) => {
-            return query.populate(association.alias, {
-                limit: association.limit || DEFAULT_POPULATE_LIMIT
-            });
-        }, query);
-    }
 
 };
 

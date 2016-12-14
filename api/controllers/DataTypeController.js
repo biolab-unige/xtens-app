@@ -9,6 +9,8 @@
  "use strict";
  const ControllerOut = require("xtens-utils").ControllerOut;
  const crudManager = sails.hooks.persistence.crudManager;
+ const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
+
 
  const DataTypeController = {
 
@@ -25,11 +27,10 @@
          const operator = TokenService.getToken(req);
 
          let query = DataType.find()
-        .where(QueryService.parseCriteria(req))
-        .limit(QueryService.parseLimit(req))
-        .skip(QueryService.parseSkip(req))
-        .sort(QueryService.parseSort(req));
-        // .populate('parents');  // commented out by Massi 2015-05-20
+            .where(actionUtil.parseCriteria(req))
+            .limit(actionUtil.parseLimit(req))
+            .skip(actionUtil.parseSkip(req))
+            .sort(actionUtil.parseSort(req));
 
          if (!req.param('populate')) {
              query.populate('parents');  // by default populate only with 'parents' dataTypes

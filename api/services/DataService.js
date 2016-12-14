@@ -99,7 +99,7 @@ let DataService = BluebirdPromise.promisifyAll({
      * @return{Object} fieldValidatorSchema - the JOI validation schema for the field
      */
     buildMetadataFieldValidationSchema: function(metadataField) {
-        let fieldValidatorSchema = Joi.object(), value, unit, group;
+        let fieldValidatorSchema = Joi.object(), value, group;
 
         switch(metadataField.fieldType) {
             case FieldTypes.INTEGER:
@@ -325,7 +325,7 @@ let DataService = BluebirdPromise.promisifyAll({
         crudManager.query(queryObj, (err, results) => {
             if (err) {
                 sails.log(err);
-                return next(err,null);
+                return next(err, null);
             }
             data = results.rows;
 
@@ -403,6 +403,77 @@ let DataService = BluebirdPromise.promisifyAll({
             return next(null, stream);
         });
 
+    },
+
+    /**
+     * @method
+     * @name filterListByPrivileges
+     * @description filters the metadata of a list of data entities on the basis of the user privileges
+     * @param{Array} data - the array to be filtered
+     * @param{Array} dataTypesId -
+     * @param{Array/Object} privileges
+     * @param{boolean} canAccessSensitiveData
+     * @return {Promise} - a Bluebird promise returning an Array with the filtered data
+     */
+    filterListByPrivileges: function(data, dataTypesId, privileges, canAccessSensitiveData) {
+        // filter out privileges not pertaining the dataTypes we have
+        // privileges = privileges.filter(privEl => dataTypesId.indexOf(privEl.dataType) > -1);
+        
+        const arrPrivileges = _.isArray(privileges) ? privileges : [privileges];
+            //filter Out Metadata if operator has not at least a privilege on Data or exists at least a VIEW_OVERVIEW privilege level
+        // sails.log.verbose('DataService.filterListByPrivileges - privileges: ', privileges);
+        if (!arrPrivileges || _.isEmpty(arrPrivileges) ){
+            return [];
+        }
+        else if( arrPrivileges.length < dataTypesId.length ||
+              (arrPrivileges.length === dataTypesId.length && _.find(arrPrivileges, { privilegeLevel: VIEW_OVERVIEW }))) {
+
+            // check for each datum if operator has the privilege to view details. If not metadata object is cleaned
+            let index = 0, arrDtPrivId = arrPrivileges.map(el => el.dataType);
+            // sails.log.verbose('DataService.filterListByPrivileges - : arrDtPrivId', arrDtPrivId);
+            for ( let i = data.length - 1; i >= 0; i-- ) {
+                let idDataType = _.isObject(data[i].type) ? data[i].type.id : data[i].type;
+                index = arrDtPrivId.indexOf(idDataType);
+                // sails.log.verbose(`DataService.filterListByPrivileges - for data ${data[i].id} and dataType ID ${idDataType} index is ${index}`);
+                if( index < 0 ){
+                    // sails.log.verbose(`DataService.filterListByPrivileges - Splicing data #${data[i].id}`);
+                    data.splice(i, 1);
+                }
+                else if (arrPrivileges[index].privilegeLevel === VIEW_OVERVIEW) { data[i].metadata = {}; }
+            }
+        }
+        if( canAccessSensitiveData ){ return data; }
+            //filter Out Sensitive Info if operator can not access to Sensitive Data
+        return DataService.filterOutSensitiveInfo(data, canAccessSensitiveData);
+    },
+
+    /**
+     * @method
+     * @name prepareAndSendResponse
+     * @param{HTTPResponse} res
+     * @param{Array} data - the body of the response
+     * @param{Object} headerInfo
+     * @return sends the response
+     */
+    prepareAndSendResponse: function(res, data, headerInfo) {
+        const linkArr = [];
+        res.set('Access-Control-Expose-Headers', [
+            'X-Total-Count', 'X-Page-Size', 'X-Total-Pages', 'X-Current-Page', 'Link'
+        ]);
+        for (const elem of headerInfo.links) {
+            const { value: link , rel } = elem;
+            if (link) {
+                linkArr.push(`<${link}>; rel=${rel}`);
+            }
+        }
+        res.set({
+            'X-Total-Count': headerInfo.count,
+            'X-Page-Size': headerInfo.pageSize,
+            'X-Total-Pages': headerInfo.numPages,
+            'X-Current-Page': headerInfo.currPage,
+            'Link': linkArr.join(', ')
+        });
+        return res.json(data);
     },
 
     /**

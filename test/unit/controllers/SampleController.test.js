@@ -94,7 +94,7 @@ describe('SampleController', function() {
                 metadata: {}
             }).expect(200)
             .end(function(err, res) {
-                console.log(res.body[0].biobank);
+                sails.log(res.body[0].biobank);
                 expect(res.body[0].biobank).to.equals(biobank);
                 if (err) {
                     done(err);

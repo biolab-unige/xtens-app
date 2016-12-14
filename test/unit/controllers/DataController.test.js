@@ -39,6 +39,7 @@ describe('DataController', function() {
     describe('POST /data', function() {
         it('Should return OK 201, with location of new Data', function (done) {
 
+            const existingDataCount = fixtures.data.length;
             sails.log.debug(metadata);
 
             request(sails.hooks.http.app)
@@ -59,7 +60,7 @@ describe('DataController', function() {
                 var l = res.header.location;
                 var loc = l.split('/');
                 var location = '/' + loc[3]+ '/' + loc[4];
-                expect(location).to.equals('/data/3');
+                expect(location).to.equals(`/data/${existingDataCount+1}`);
                 done();
                 return;
             });

@@ -1,6 +1,6 @@
 /* jshint node:true */
 /* jshint mocha: true */
-/* globals _, sails, fixtures, Data, Sample, Subject, DataService, TokenService */
+/* globals _, sails, fixtures, Data, DataService, TokenService */
 "use strict";
 var chai = require("chai");
 var chaiAsPromised = require("chai-as-promised");
@@ -36,11 +36,10 @@ describe('DataService', function() {
 
         loginHelper.loginSuperAdmin(request, function (bearerToken) {
             tokenSA = bearerToken;
-            console.log(`Got token: ${tokenSA}`);
+            sails.log(`Got token: ${tokenSA}`);
             loginHelper.loginAnotherStandardUserNoDataSens(request, function (bearerToken) {
                 tokenNS = bearerToken;
-                console.log(`Got token: ${tokenSA}`);
-
+                sails.log(`Got token: ${tokenSA}`);
                 done();
             });
 
@@ -64,7 +63,7 @@ describe('DataService', function() {
             invalidData.metadata.radius = {value: "Unknown", unit: "M☉"};
             var res = DataService.validate(invalidData, true, dataType);
             expect(res.error).to.be.not.null;
-            console.log(res.error);
+            sails.log(res.error);
         });
 
     });
@@ -395,7 +394,7 @@ describe('DataService', function() {
             "date": "2012-12-28",
             "metadata": {
                 "name":{"value":"Aldebaran","group":"Generic Info"},
-                "constellation":{"value":"orion","group":"Generic Info"},
+                "constellation":{"value":"taurus","group":"Generic Info"},
                 "classification":{"value":"giant","group":"Generic Info"},
                 "designation":{"values":["87 Tauri","Alpha Tauri","SAO 94027","Borgil(?)"],"group":"Generic Info","loop":"Other Designations"},
                 "mass":{"value":1.7,"unit":"M☉","group":"Physical Details"},
@@ -465,7 +464,7 @@ describe('DataService', function() {
                 "type":3,
                 "date": "2012-12-28",
                 "metadata": {
-                    "constellation":{"value":"orion","group":"Generic Info"},
+                    "constellation":{"value":"taurus","group":"Generic Info"},
                     "classification":{"value":"giant","group":"Generic Info"},
                     "designation":{"values":["87 Tauri","Alpha Tauri","SAO 94027","Borgil(?)"],"group":"Generic Info","loop":"Other Designations"},
                     "mass":{"value":1.7,"unit":"M☉","group":"Physical Details"},
@@ -566,6 +565,110 @@ describe('DataService', function() {
                 done();
                 return;
             });
+        });
+
+    });
+
+    /**
+     * TODO write some test:
+     *      - filter out metadata content if privileges are only for VIEW_OVERVIEW
+     */
+    describe('#filterListByPrivileges', function() {
+
+        let stub;
+
+        beforeEach(() => {
+            stub = sinon.stub(DataService, 'filterOutSensitiveInfo', arr => arr);
+        });
+
+        afterEach(() => {
+            stub.restore();
+        });
+
+        it('should return an empty array if no privileges were found', () => {
+            const dataToFilter = _.cloneDeep(fixtures.data),
+                dataTypesId = [3, 4, 5], privileges = [], canAccessSensitiveData = false;
+            const filteredData = DataService.filterListByPrivileges(dataToFilter, dataTypesId, privileges, canAccessSensitiveData);
+            expect(filteredData).to.be.empty;
+        });
+
+        it('should return all the data unfiltered', () => {
+            const dataTypesId = [3, 4];
+            const dataToFilter = _.filter(fixtures.data, el => {
+                return dataTypesId.indexOf(el.type) > -1;
+            });
+            const privileges = _.filter(fixtures.datatypeprivileges, {'group': 1}),
+                canAccessSensitiveData = true;
+            const filteredData = DataService.filterListByPrivileges(dataToFilter, dataTypesId, privileges, canAccessSensitiveData);
+            expect(filteredData).to.eql(dataToFilter);
+        });
+
+        it('should filter out all the data for which the user does not posses a privilege level', () => {
+            const dataToFilter = _.cloneDeep(fixtures.data),
+                dataTypesId = [3, 4, 5], privileges = fixtures.datatypeprivileges.filter(el => {
+                    return el.group === 1 && dataTypesId.indexOf(el.dataType) > -1;
+                });
+            const canAccessSensitiveData = false;
+            const actualFilteredData = DataService.filterListByPrivileges(dataToFilter, dataTypesId, privileges, canAccessSensitiveData);
+            const allowedDataTypesId = privileges.map(el => el.dataType);
+            const expectedFilteredData = _.filter(fixtures.data, el => {
+                return allowedDataTypesId.indexOf(el.type) > -1;
+            });
+            expect(actualFilteredData).to.eql(expectedFilteredData);
+        });
+
+    });
+
+    describe('#prepareAndSendResponse', () => {
+
+        const res = {
+            set: function() {},
+            json: function(thing) {
+                return thing;
+            }
+        };
+        let setSpy, jsonSpy;
+
+        beforeEach(() => {
+            setSpy = sinon.spy(res, 'set');
+            jsonSpy = sinon.spy(res, 'json');
+        });
+
+        afterEach(() => {
+            setSpy.restore();
+            jsonSpy.restore();
+        });
+
+        it('should write the correct headers and send the response as json', () => {
+            const dataToSend = fixtures.data.filter(datum => datum.type === 3);
+            const headerInfo = {
+                count: 1200,
+                pageSize: 100,
+                numPages: 12,
+                currPage: 1,
+                links: [
+                    { value: 'http://link.next', rel: 'next' },
+                    { value: 'http://link.prev', rel: 'previous'},
+                    { value: 'http://link.first', rel: 'first' },
+                    { value: 'http://link.last', rel: 'last'}
+                ]
+            };
+            const sentRes = DataService.prepareAndSendResponse(res, dataToSend, headerInfo);
+            expect(setSpy).to.be.calledTwice;
+            expect(jsonSpy).to.be.calledOnce;
+            expect(setSpy.firstCall.args[0]).to.equal('Access-Control-Expose-Headers');
+            expect(setSpy.firstCall.args[1]).to.eql([
+                'X-Total-Count', 'X-Page-Size', 'X-Total-Pages', 'X-Current-Page', 'Link'
+            ]);
+            expect(setSpy.secondCall.args[0]).to.eql({
+                'X-Total-Count': headerInfo.count,
+                'X-Page-Size': headerInfo.pageSize,
+                'X-Total-Pages': headerInfo.numPages,
+                'X-Current-Page': headerInfo.currPage,
+                'Link': '<http://link.next>; rel=next, <http://link.prev>; rel=previous, <http://link.first>; rel=first, <http://link.last>; rel=last'
+            });
+            expect(jsonSpy.calledWithExactly(dataToSend));
+            expect(sentRes).to.eql(dataToSend);
         });
 
     });
