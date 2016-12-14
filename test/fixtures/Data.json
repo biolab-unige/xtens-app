@@ -14,7 +14,10 @@
             "temperature":{"value":3910,"unit":"K","group":"Physical Details"}
         },
         "tags": ["test","a test"],
-        "notes": "just a test"
+        "notes": "just a test",
+        "parentSubject": 2,
+        "parentSample": null,
+        "parentData": null
     },
     {
         "id":2,

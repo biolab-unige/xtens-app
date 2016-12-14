@@ -82,5 +82,35 @@
         "dataType": 5,
         "group": 3,
         "privilegeLevel": "edit"
+    },
+    {
+        "id": 16,
+        "dataType": 6,
+        "group": 1,
+        "privilegeLevel": "view_overview"
+    },
+    {
+        "id": 17,
+        "dataType": 6,
+        "group": 2,
+        "privilegeLevel": "view_overview"
+    },
+    {
+        "id": 18,
+        "dataType": 6,
+        "group": 3,
+        "privilegeLevel": "view_overview"
+    },
+    {
+        "id": 19,
+        "dataType": 6,
+        "group": 4,
+        "privilegeLevel": "view_overview"
+    },
+    {
+        "id": 20,
+        "dataType": 2,
+        "group": 4,
+        "privilegeLevel": "edit"
     }
 ]
