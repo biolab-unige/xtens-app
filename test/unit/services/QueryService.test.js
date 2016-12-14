@@ -1,6 +1,6 @@
 /* globals _, sails, fixtures, QueryService, Data */
-const expect = require('chai').expect, assert = require('chai').assert,
-    sinon = require('sinon');
+"use strict";
+const expect = require('chai').expect, sinon = require('sinon');
 const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 
 // var BluebirdPromise = require('bluebird');
