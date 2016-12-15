@@ -36,7 +36,7 @@
              query.populate('parents');  // by default populate only with 'parents' dataTypes
          }
          else {
-             query = QueryService.populateRequest(query, req);
+             query = actionUtil.populateRequest(query, req);
          }
 
          query.then(function(dataTypes) {

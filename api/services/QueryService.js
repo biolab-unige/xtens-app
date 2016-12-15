@@ -98,7 +98,7 @@ const QueryService = {
             sails.log.error(err);
             return null;
         }
-    },
+    }
 
 };
 
