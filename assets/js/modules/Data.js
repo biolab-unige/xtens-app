@@ -1143,7 +1143,8 @@
                 data:  $.param(_.assign(_.omit(that.params, ['parentDataType', 'parentSubjectCode']), {
                     populate: ['type'],
                     limit: 30,
-                    skip: that.data.length
+                    skip: that.data.length,
+                    sort: 'created_at DESC'
                 })),
                 remove: false,
                 success: function (results) {

@@ -309,7 +309,8 @@
                 var $dataDeferred = data.fetch({
                     data: $.param(_.assign(_.omit(queryParams, ['parentDataType', 'parentSubjectCode']), { // omit "parentSubjectCode" as param in server-side GET request
                         populate: ['type'],
-                        limit: DEFAULT_LIMIT
+                        limit: DEFAULT_LIMIT,
+                        sort: 'created_at DESC'
                     }))
                 });
                 $.when($dataTypesDeferred, $dataDeferred, $privilegesDeferred).then(function(dataTypesRes, dataRes, privilegesRes) {
@@ -479,7 +480,8 @@
                 var $subjectsDeferred = subjects.fetch({
                     data: $.param({
                         populate: ['type', 'projects'],
-                        limit: DEFAULT_LIMIT
+                        limit: DEFAULT_LIMIT,
+                        sort: 'created_at DESC'
                     })
                 });
                 $.when($dataTypesDeferred, $subjectsDeferred, $privilegesDeferred).then(function(dataTypesRes, subjectsRes, privilegesRes) {
@@ -578,7 +580,8 @@
                 var $samplesDeferred = samples.fetch({
                     data: $.param(_.assign(_.omit(queryParams, ['parentDataType','donorCode']), {      // omit "donorCode" as param in server-side GET request
                         populate: ['type', 'biobank', 'donor'],
-                        limit: DEFAULT_LIMIT
+                        limit: DEFAULT_LIMIT,
+                        sort: 'created_at DESC'
                     }))
                 });
                 $.when($dataTypesDeferred, $samplesDeferred, $privilegesDeferred).then( function(dataTypesRes, samplesRes, privilegesRes) {

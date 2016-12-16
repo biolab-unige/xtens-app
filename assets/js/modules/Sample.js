@@ -470,7 +470,8 @@
                 data: $.param(_.assign(_.omit(that.params, ['parentDataType','donorCode']), {      // omit "donorCode" as param in server-side GET request
                     populate: ['type', 'biobank', 'donor'],
                     limit: 30,
-                    skip: that.samples.length
+                    skip: that.samples.length,
+                    sort: 'created_at DESC'
                 })),
                 remove: false,
                 success: function (results) {

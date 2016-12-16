@@ -334,7 +334,8 @@
             that.subjects.fetch({
                 data: $.param({ populate: ['type', 'projects'],
                 limit: 30,
-                skip: that.subjects.length
+                skip: that.subjects.length,
+                sort: 'created_at DESC'
               }),
                 remove: false,
                 success: function (results) {
