@@ -7,20 +7,12 @@ const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 
 describe('QueryService', function() {
 
-    describe('parseCriteria', function() {
 
-        it("should return the criterias as stored in the 'where' property, if present", function() {
-
-
-
-        });
-
-    });
 
     /**
      * TODO stub the promise chain
      */
-    describe('composeHeaderInfo', function() {
+    describe('#composeHeaderInfo', function() {
 
         let parseModelStub, parseCriteriaStub, parseLimitStub, parseSkipStub, mockReq;
 
@@ -35,7 +27,7 @@ describe('QueryService', function() {
                         'radius': {'>': 10}
                     },*/
                     limit: 5,
-                    skip: 10,
+                    skip: 10
                 },
                 allParams: function() {
                     return this.params;
@@ -88,6 +80,82 @@ describe('QueryService', function() {
             });
         });
 
+    });
+
+    describe('parseSelect', function() {
+
+        it("should return the select string parsed", function() {
+            const strigToBeParsed = '[{"example":10}]';
+            const expectedObject = JSON.parse(strigToBeParsed);
+            let req = {
+                baseUrl: 'http:/localhost:80',
+                path: '/data',
+                params: {
+                    select: strigToBeParsed
+                },
+                param: function(par) {
+                    return this.params[par];
+                }
+            };
+
+            let res = QueryService.parseSelect(req);
+            expect(res['select']).to.eql(expectedObject);
+
+        });
+
+        it("should return null with a wrong string object", function() {
+            const strigToBeParsed = '[{wrongobject}]';
+
+            let req = {
+                baseUrl: 'http:/localhost:80',
+                path: '/data',
+                params: {
+                    select: strigToBeParsed
+                },
+                param: function(par) {
+                    return this.params[par];
+                }
+            };
+
+            let res = QueryService.parseSelect(req);
+            expect(res).to.be.null;
+        });
+
+        it("should return null with no select string ", function() {
+            const strigToBeParsed = '';
+
+            let req = {
+                baseUrl: 'http:/localhost:80',
+                path: '/data',
+                params: {
+                    select: false
+                },
+                param: function(par) {
+                    return this.params[par];
+                }
+            };
+
+            let res = QueryService.parseSelect(req);
+            expect(res).to.be.null;
+        });
+
+        it("should return null with an empty object select string", function() {
+            const strigToBeParsed = '{}';
+
+            let req = {
+                baseUrl: 'http:/localhost:80',
+                path: '/data',
+                params: {
+                    select: strigToBeParsed
+                },
+                param: function(par) {
+                    return this.params[par];
+                }
+            };
+
+            let res = QueryService.parseSelect(req);
+            expect(res).to.be.null;
+        });
     });
 
 });
