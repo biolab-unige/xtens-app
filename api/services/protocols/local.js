@@ -64,7 +64,7 @@ exports.createUser = function(_user, next) {
 
             return next(err);
         }
-        
+
     // Generating accessToken for API authentication
     // var token = crypto.randomBytes(48).toString('base64');
         var payload = operator.formatForTokenPayload(operator);
@@ -154,7 +154,7 @@ exports.login = function(req, identifier, password, next) {
 
     Operator.findOne(query).populate('groups').exec(function(err, user) {
         if (err) {
-            return next(err);
+            return next({error:err,code:500});
         }
 
         if (!user) {
@@ -164,7 +164,7 @@ exports.login = function(req, identifier, password, next) {
                 err = new Error('Error.Passport.Username.NotFound');
             }
 
-            return next(null, false);
+            return next({error:err,code:401}, false);
         }
 
         Passport.findOne({
@@ -179,7 +179,7 @@ exports.login = function(req, identifier, password, next) {
 
                     if (!res) {
                         err = new Error('Error.Passport.Password.Wrong');
-                        return next(null, false);
+                        return next({error:err,code:401}, false);
                     } else {
                         return next(null, user);
                     }
@@ -187,7 +187,7 @@ exports.login = function(req, identifier, password, next) {
             } else {
         // next line commented out by Massi
         // req.flash('error', 'Error.Passport.Password.NotSet');
-                return next(null, false);
+                return next({err:err,code:500}, false);
             }
         });
     });

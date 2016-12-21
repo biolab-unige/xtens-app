@@ -4,7 +4,7 @@ instrumentation:
     extensions:
         - .js
     default-excludes: true
-    excludes: ['**/api/services/GeneratedDataService.js', '**/api/services/PopulateService.js', "**/api/responses/**", "**/config/bootstrap.js"]
+    excludes: ['**/api/services/GeneratedDataService.js', '**/api/services/PopulateService.js', "**/api/responses/**", "**/config/bootstrap.js", '**/api/policies/sessionAuth.js']
     embed-source: false
     variable: __coverage__
     compact: true

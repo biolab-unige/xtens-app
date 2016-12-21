@@ -28,13 +28,13 @@ let AuthController = {
         PassportService.callback(req, res, function (err, operator) {
             // If an error was thrown, return the JSON content of the error
             /* istanbul ignore if */
-            if (err) {
+            if (err && err.code === 500) {
                 sails.log.verbose('Authentication error thrown');
                 sails.log.verbose(err);
                 return res.json(500, err);
             }
             // if no user was found return 401 - user not authenticated
-            if (!operator) {
+            if (!operator && err && err.code === 401) {
                 sails.log.verbose('User authentication failed');
                 return res.json(401, {'message':'User authentication failed'});
             }
