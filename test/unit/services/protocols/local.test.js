@@ -58,14 +58,14 @@ describe("PassportService protocol Local", function() {
                 "birthDate": "1970-01-01T00:00:00.000Z",
                 "password": "password"
             };
-            var expectedToken = 'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiaXNXaGVlbCI6ZmFsc2UsImlzQWRtaW4iOmZhbHNlLCJjYW5BY2Nlc3NQZXJzb25hbERhdGEiOmZhbHNlLCJjYW5BY2Nlc3NTZW5zaXRpdmVEYXRhIjpmYWxzZX0.cKOtym6UnQcdYvxhWVf4bS-1X6zTFFmXT-U6ZHRnODc';
             PassportService.protocols.local.createUser(_user,function (err,operator) {
+                console.log(operator);
                 if(err){
                     sails.log.error(err);
                     done(err);
                 }
-                Passport.findOne({id: operator.id}).then(function (passport) {
-                    expect(passport.accessToken).to.eql(expectedToken);
+                Passport.findOne({user: operator.id}).then(function (passport) {
+                    expect(passport.user).to.eql(operator.id);
                     expect(operator.id).to.eql(expectedId + 2);
                     expect(operator.password).to.not.exist;
                 });

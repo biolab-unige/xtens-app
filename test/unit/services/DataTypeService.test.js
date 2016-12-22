@@ -151,7 +151,7 @@ describe('DataTypeService', function() {
 
         it("should return an empty array", function(done) {
 
-            DataTypeService.getDataTypePrivilegeLevel(7,5).then(function(result) {
+            DataTypeService.getDataTypePrivilegeLevel(8,5).then(function(result) {
 
                 sails.log("DataType Privilege Level: " + JSON.stringify(result));
 

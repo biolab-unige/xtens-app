@@ -1,0 +1,332 @@
+/* globals _, sails, fixtures, PassportService, Passport */
+"use strict";
+const expect = require('chai').expect, sinon = require('sinon');
+
+describe('PassportService', function() {
+
+    describe('#callback', function() {
+        let registerStub, connectStub, disconnectStub, authStub, mockReq, mockRes , next;
+
+        beforeEach(() => {
+            mockReq = {
+                baseUrl: 'http:/localhost:80',
+                path: '/data',
+                params: {
+                    provider: 'local',
+                    action: undefined
+                },
+                param: function(par) {
+                    return this.params[par];
+                }}, mockRes = {};
+
+            registerStub = sinon.stub(PassportService.protocols.local, 'register',function (req,res,next) {
+                return next();
+            });
+
+            connectStub = sinon.stub(PassportService.protocols.local, 'connect',function (req,res,next) {
+                return next();
+            });
+
+            disconnectStub = sinon.stub(PassportService, 'disconnect',function (req,res,next) {
+                return next();
+            });
+
+            // authStub = sinon.stub(PassportService, 'authenticate',function (req,next) {
+            //     return next();
+            // });
+
+        });
+
+        afterEach(() => {
+            registerStub.restore();
+            connectStub.restore();
+            disconnectStub.restore();
+            // authStub.restore();
+        });
+
+        it('should fire the "register" function with the right Args', function(done) {
+            mockReq.params.action = 'register';
+
+            PassportService.callback(mockReq,mockRes,function () {
+                sinon.assert.calledWith(registerStub,mockReq,mockRes);
+                sinon.assert.notCalled(connectStub);
+                sinon.assert.notCalled(disconnectStub);
+                // sinon.assert.notCalled(authStub);
+
+                done();
+                return;
+            });
+        });
+
+        it('should fire "connect" function with the right Args', function(done) {
+            mockReq.params.action = 'connect';
+            mockReq.user = _.cloneDeep(fixtures.operator[0]);
+
+            PassportService.callback(mockReq,mockRes,function () {
+                sinon.assert.calledWith(connectStub,mockReq,mockRes);
+                sinon.assert.notCalled(registerStub);
+                sinon.assert.notCalled(disconnectStub);
+                // sinon.assert.notCalled(authStub);
+
+                done();
+                return;
+            });
+        });
+
+        it('should fire "disconnectStub" function with the right Args', function(done) {
+            mockReq.params.action = 'disconnect';
+            mockReq.user = _.cloneDeep(fixtures.operator[0]);
+
+            PassportService.callback(mockReq,mockRes,function () {
+                sinon.assert.calledWith(disconnectStub,mockReq,mockRes);
+                sinon.assert.notCalled(connectStub);
+                sinon.assert.notCalled(registerStub);
+                // sinon.assert.notCalled(authStub);
+
+                done();
+                return;
+            });
+        });
+
+        it('should return ERROR - Invalid action', function(done) {
+            mockReq.params.action = 'wrongAction';
+            let expectedErr = new Error('Invalid action');
+
+            PassportService.callback(mockReq,mockRes,function (err) {
+
+                expect(err).to.be.an('error');
+                expect(err).to.eql(expectedErr);
+                sinon.assert.notCalled(connectStub);
+                sinon.assert.notCalled(disconnectStub);
+                sinon.assert.notCalled(registerStub);
+
+                done();
+                return;
+            });
+        });
+
+        it('should fire "disconnectStub" function with the right Args with no "local" provider', function(done) {
+            mockReq.params.action = 'disconnect';
+            mockReq.params.provider = 'bearer';
+            mockReq.user = _.cloneDeep(fixtures.operator[0]);
+
+            PassportService.callback(mockReq,mockRes,function () {
+                sinon.assert.calledWith(disconnectStub,mockReq,mockRes);
+                sinon.assert.notCalled(connectStub);
+                sinon.assert.notCalled(registerStub);
+                // sinon.assert.notCalled(authStub);
+
+                done();
+                return;
+            });
+        });
+
+        it('should not fire any function and redirect user to the provider authentication', function(done) {
+            mockReq.params.action = undefined;
+
+            PassportService.callback(mockReq,mockRes,function () {
+                // sinon.assert.calledWith(authStub, mockReq.params.provider);
+                sinon.assert.notCalled(connectStub);
+                sinon.assert.notCalled(disconnectStub);
+                sinon.assert.notCalled(registerStub);
+
+                done();
+                return;
+            });
+        });
+
+    });
+
+    describe('#connect', function() {
+        let mockReq, profile, query, operator;
+
+        beforeEach(() => {
+            operator = _.cloneDeep(fixtures.operator[6]);
+            mockReq = {
+                baseUrl: 'http:/localhost:80',
+                path: '/data',
+                user : operator,
+                params: {
+                    provider: 'provider',
+                    action: undefined
+                },
+                param: function(par) {
+                    return this.params[par];
+                }},
+            profile = {
+                emails: ['email@email.it'],
+                username: operator.login,
+                provider: 'provider',
+                hasOwnProperty: function(par) {
+                    return this[par] ? true : false;
+                }},
+            query = {
+                identifier: 'identifier',
+                protocol: 'local',
+                provider: 'provider',
+                tokens: 'sdkjnfdnsalnfalkjdsnfdsaljnls32932jeidwqwio',
+                hasOwnProperty: function(par) {
+                    return this[par] ? true : false;
+                }};
+        });
+
+
+        it('should return the operator correctly connected', function(done) {
+
+            PassportService.connect(mockReq, query, profile, function (err,res) {
+                expect(res).to.eql(operator);
+                done();
+                return;
+            });
+        });
+
+        it('should return ERROR - Neither a username nor email was available', function(done) {
+            profile.emails = undefined;
+            profile.username = undefined;
+            let expectedErr = new Error('Neither a username nor email was available');
+            PassportService.connect(mockReq, query, profile, function (err,res) {
+                expect(res).to.be.undefined;
+                expect(err).to.be.an('error');
+                expect(err).to.eql(expectedErr);
+                done();
+                return;
+            });
+        });
+
+        it('should return ERROR - user not found', function(done) {
+            query.identifier = "notExistentIdentifier";
+            mockReq.user = undefined;
+            let expectedErr = 'user not found';
+            PassportService.connect(mockReq, query, profile, function (err,res) {
+                expect(res).to.be.undefined;
+                expect(err).to.eql(expectedErr);
+                done();
+                return;
+            });
+        });
+
+        it('should return operator correctly connected, creating a new passport', function(done) {
+            query.identifier = "notExistentIdentifier";
+            let passportCreateSpy = sinon.spy(Passport, "create");
+
+            PassportService.connect(mockReq, query, profile, function (err,res) {
+
+                sinon.assert.calledWith(passportCreateSpy,query);
+                expect(res).to.eql(operator);
+
+                passportCreateSpy.restore();
+                done();
+                return;
+            });
+        });
+
+        it('should return operator correctly connected, updating passport', function(done) {
+            mockReq.user = undefined;
+            let passportUpdateeSpy = sinon.spy(Passport, "update");
+
+            PassportService.connect(mockReq, query, profile, function (err,res) {
+
+                sinon.assert.called(passportUpdateeSpy);
+                expect(res.id).to.eql(operator.id);
+
+                passportUpdateeSpy.restore();
+                done();
+                return;
+            });
+        });
+
+    });
+
+    describe('#endpoint', function() {
+        let mockReq, mockRes, loadStrategiesStub;
+
+        beforeEach(() => {
+            loadStrategiesStub = sinon.stub(PassportService, "loadStrategies",function () {
+                return;
+            });
+            mockReq = {
+                baseUrl: 'http:/localhost:80',
+                path: '/data',
+                params: {
+                    provider: 'provider'
+                },
+                param: function(par) {
+                    return this.params[par];
+                },
+                next:function () {
+                    return;
+                }},
+                mockRes = {
+                    json:function (code,message) {
+                        return {code:code, message: message};
+                    }
+                };
+
+
+        });
+
+        afterEach(() => {
+            PassportService.loadStrategies.restore();
+        });
+
+        it('should return Error Unauthorized -  Unknown auth provider', function(done) {
+            let expectedRes = {code: 401, message: 'Unknown auth provider'};
+            let res = PassportService.endpoint(mockReq, mockRes);
+            console.log(res);
+            expect(res).to.eql(expectedRes);
+            sinon.assert.notCalled(loadStrategiesStub);
+
+            done();
+            return;
+        });
+
+        it('should fire loadStrategies function', function(done) {
+            sails.config.passport['provider'] = {
+                scope: 'scope',
+                strategy: {Strategy:function () {
+                    return;
+                }}};
+
+            PassportService.endpoint(mockReq, mockRes);
+
+            sinon.assert.calledWith(loadStrategiesStub, mockReq);
+
+            done();
+            return;
+        });
+
+    });
+
+    describe('#loadStrategies', function() {
+
+
+        it('should fire loadStrategies with "oauth2" protocol', function(done) {
+            sails.config.passport['provider'] = {
+                scope: 'scope',
+                protocol: "oauth2",
+                callback: undefined,
+                strategy: function () {
+                    return {name:"nameStrategy"};
+                }};
+
+            PassportService.loadStrategies();
+            done();
+            return;
+        });
+
+        it('should fire loadStrategies function with "openid" protocol', function(done) {
+            sails.config.passport['provider'] = {
+                scope: 'scope',
+                protocol: "openid",
+                callback: undefined,
+                strategy: function () {
+                    return {name:"nameStrategy"};
+                }};
+
+            PassportService.loadStrategies();
+            done();
+            return;
+        });
+
+    });
+});

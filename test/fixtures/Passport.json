@@ -69,4 +69,16 @@
     "createdAt": "2015-06-18T10:13:13.000Z",
     "updatedAt": "2015-06-18T10:13:13.000Z",
     "user": 6
+},
+{
+    "id": 7,
+    "protocol": "local",
+    "password": "testUser",
+    "provider": "provider",
+    "identifier": "identifier",
+    "tokens": null,
+    "accessToken": null,
+    "createdAt": "2015-06-18T10:13:13.000Z",
+    "updatedAt": "2015-06-18T10:13:13.000Z",
+    "user": 7
 }]

@@ -1,3 +1,6 @@
+/* jshint node: true */
+/* jshint mocha: true */
+/* globals _, sails, Operator, Passport */
 /**
  * @modified by Massimiliano Izzo
  * for more details see: https://github.com/tarlepp/angular-sailsjs-boilerplate/blob/master/backend/api/services/Passport.js
@@ -157,13 +160,18 @@ PassportService.connect = function (req, query, profile, next) {
                 }
 
                 // Save any updates to the Passport before moving on
-                passport.save(function (err, passport) {
+                Passport.update({id: passport.id}, passport,function (err, passport) {
                     if (err) {
                         return next(err);
                     }
 
                     // Fetch the user associated with the Passport
-                    Operator.findOne(passport.user.id, next);
+                    Operator.findOne({id: passport[0].user}, function (err,operator) {
+                        if (err) {
+                            return next(err);
+                        }
+                        next(null, operator);
+                    });
                 });
             }
         } else {
@@ -178,7 +186,7 @@ PassportService.connect = function (req, query, profile, next) {
                         return next(err);
                     }
 
-                    next(err, req.user);
+                    next(null, req.user);
                 });
             }
             // Scenario: The user is a nutjob or spammed the back-button.
