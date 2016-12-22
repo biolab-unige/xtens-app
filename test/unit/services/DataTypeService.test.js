@@ -163,4 +163,121 @@ describe('DataTypeService', function() {
         });
     });
 
+    describe('#getDataTypeToEditPrivileges', function() {
+
+        it("should return the right DataType of the given Privilege", function(done) {
+            const expectedDataType = _.cloneDeep(fixtures.datatype[0]);
+
+            DataTypeService.getDataTypeToEditPrivileges(1).then(function(result) {
+
+                expect(result.id).to.be.equal(expectedDataType.id);
+                expect(result.model).to.be.equal(expectedDataType.model);
+                expect(result.name).to.be.equal(expectedDataType.name);
+                done();
+            }).catch(function(err) {
+                done(err);
+            });
+        });
+
+        it("should return undefined", function(done) {
+
+            DataTypeService.getDataTypeToEditPrivileges().then(function(result) {
+
+                expect(result).to.be.undefined;
+                done();
+            }).catch(function(err) {
+                done(err);
+            });
+        });
+    });
+
+    describe('#getDataTypesToCreateNewPrivileges', function() {
+
+        it("should return the right DataType of the given Privilege", function(done) {
+            const expectedDataType = [_.cloneDeep(fixtures.datatype[5])];
+
+            DataTypeService.getDataTypesToCreateNewPrivileges(1).then(function(result) {
+
+                // expect(result.length).be.equal(expectedDataType.length);
+                expect(result[0].id).be.equal(expectedDataType[0].id);
+                done();
+            }).catch(function(err) {
+                done(err);
+            });
+        });
+
+        it("should return undefined", function(done) {
+
+            DataTypeService.getDataTypesToCreateNewPrivileges().then(function(result) {
+
+                expect(result).to.be.undefined;
+                done();
+            }).catch(function(err) {
+                done(err);
+            });
+        });
+
+    });
+
+    describe('#filterDataTypes', function() {
+
+        it("should return the right set of DataTypes", function(done) {
+            const dataTypes = _.cloneDeep(fixtures.datatype);
+            const expectedDataTypes = _.reject(dataTypes, function (dt) {
+                return dt.name === "Variant Annotation";
+            });
+
+            DataTypeService.filterDataTypes(1, dataTypes).then(function(result) {
+                // console.log(result);
+                expect(result.length).be.equal(expectedDataTypes.length);
+                // expect(result).to.be.eql(expectedDataTypes);
+                done();
+            }).catch(function(err) {
+                done(err);
+            });
+        });
+
+        it("should return undefined", function(done) {
+
+            DataTypeService.filterDataTypes(1).then(function(result) {
+
+                expect(result).to.be.undefined;
+                done();
+            }).catch(function(err) {
+                done(err);
+            });
+        });
+
+    });
+
+    describe('#getDataTypePrivileges', function() {
+
+        it("should return the right set of DataTypes", function(done) {
+            const expectedDataTypePrivilege = _.cloneDeep(fixtures.datatypeprivileges[0]);
+
+            DataTypeService.getDataTypePrivileges(1, function(err ,result) {
+
+                expect(result.id).be.equal(expectedDataTypePrivilege.id);
+                expect(result.dataType).be.equal(expectedDataTypePrivilege.dataType);
+                expect(result.group).be.equal(expectedDataTypePrivilege.group);
+                expect(result.group).be.equal(expectedDataTypePrivilege.group);
+                expect(result.privilegeLevel).be.equal(expectedDataTypePrivilege.privilegeLevel);
+
+                done();
+                return;
+            });
+        });
+
+        it("should return undefined", function(done) {
+            const expectedDataTypePrivilege = _.cloneDeep(fixtures.datatypeprivileges[0]);
+
+            DataTypeService.getDataTypePrivileges(false,function(err ,result) {
+
+                expect(result).to.be.undefined;
+
+                done();
+                return;
+            });
+        });
+    });
 });

@@ -6,7 +6,7 @@
  */
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, Group, DataType, DataTypeService, QueryService */
+/* globals _, Group, DataTypePrivileges, DataTypeService, QueryService */
 "use strict";
 const ControllerOut = require("xtens-utils").ControllerOut;
 const BluebirdPromise = require("bluebird");
@@ -32,7 +32,7 @@ let DataTypePrivilegesController = {
         Joi.validateAsync(req.body, validationSchema)
 
         .then(function(validatedBody) {
-            return global.sails.models.datatypeprivileges.create(validatedBody);
+            return DataTypePrivileges.create(validatedBody);
         })
 
         .then(function(result) {
@@ -57,7 +57,7 @@ let DataTypePrivilegesController = {
         let co = new ControllerOut(res);
         let id = req.param('id');
 
-        let query = global.sails.models.datatypeprivileges.findOne(id);
+        let query = DataTypePrivileges.findOne(id);
 
         query = actionUtil.populateRequest(query, req);
 
@@ -81,7 +81,7 @@ let DataTypePrivilegesController = {
         const co = new ControllerOut(res);
         const query = QueryService.composeFind(req);
         /*
-        let query = global.sails.models.datatypeprivileges.find()
+        let query = DataTypePrivileges.find()
         .where(QueryService.parseCriteria(req))
         .limit(QueryService.parseLimit(req))
         .skip(QueryService.parseSkip(req))
@@ -115,7 +115,7 @@ let DataTypePrivilegesController = {
         Joi.validateAsync(req.body, validationSchema)
 
         .then(function(validatedBody) {
-            return global.sails.models.datatypeprivileges.update({id: validatedBody.id}, validatedBody);
+            return DataTypePrivileges.update({id: validatedBody.id}, validatedBody);
         })
 
         .then(function(result) {
@@ -138,7 +138,7 @@ let DataTypePrivilegesController = {
     destroy: function(req, res) {
         let co = new ControllerOut(res);
         let id = req.param('id');
-        global.sails.models.datatypeprivileges.destroy(id)
+        DataTypePrivileges.destroy(id)
 
         .then(function(results) {
             return res.json({deleted: results && results.length});
@@ -163,7 +163,7 @@ let DataTypePrivilegesController = {
         return BluebirdPromise.props({
             group: Group.findOne({id: params.groupId}),
             // retrieve all dataTypes not yet authorized for this group
-            dataTypes: DataTypeService.getDataTypesToCreateNewPrivileges(params.groupId, params.id),
+            dataTypes: DataTypeService.getDataTypesToCreateNewPrivileges(params.groupId),
             dataType: DataTypeService.getDataTypeToEditPrivileges(params.id),
             dataTypePrivileges: getDataTypePrivileges(params.id)
         })

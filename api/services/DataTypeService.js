@@ -5,7 +5,7 @@
  */
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, sails , DataType, Operator */
+/* globals _, sails , DataType, Operator, DataTypePrivileges */
 "use strict";
 let Joi = require("joi");
 let BluebirdPromise = require("bluebird");
@@ -137,9 +137,9 @@ let DataTypeService = {
      * @return {Array} - list of found DataType entities
      */
 
-    get: function(next, params) {
+    get: /*istanbul ignore next*/ function(params, next) {
         let criteriaObj = { model: params.model };
-        if (params.idDataTypes) {
+        if (params) {
             let ids = params.idDataTypes.split(",");
             criteriaObj.id = ids;
         }
@@ -226,7 +226,7 @@ let DataTypeService = {
             return next();
         }
         else {
-            return global.sails.models.datatypeprivileges.findOne({id: privilegesId}).exec(next);
+            return DataTypePrivileges.findOne({id: privilegesId}).exec(next);
         }
     },
 
@@ -235,15 +235,13 @@ let DataTypeService = {
      * @name getDataTypesToEditPrivileges
      * @param{integer} privilegesId
      * @param{function} next - callback function
-     * @description service function to retrieve the right set of dataType(s) when editing
+     * @description service function to retrieve the right dataType when editing
      *              an existing DataTypePrivileges entity
      */
-    getDataTypeToEditPrivileges: function(privilegesId) {
-        sails.log("getDataTypeToEditPrivileges on privilege: ", privilegesId);
-        if (privilegesId) {
-            return global.sails.models.datatypeprivileges.findOne({
-                select: ['dataType'], where: {id: privilegesId}
-            })
+    getDataTypeToEditPrivileges: function(privilegeId) {
+        sails.log("getDataTypeToEditPrivileges on privilege: ", privilegeId);
+        if (privilegeId) {
+            return DataTypePrivileges.findOne({ id: privilegeId })
 
             .then(function(privileges) {
                 sails.log(privileges);
@@ -264,12 +262,10 @@ let DataTypeService = {
      * @description service function to retrieve the right set of dataType(s) when creating
      *              a new DataTypePrivileges entity
      */
-    getDataTypesToCreateNewPrivileges: function(groupId, privilegesId) {
-        sails.log("getDataTypePrivilegeLevel on groupId: " + groupId + ". privilegesId: " + privilegesId);
-        if (!privilegesId) {
-            return global.sails.models.datatypeprivileges.find({
-                select: ['dataType'], where: {group: groupId}
-            })
+    getDataTypesToCreateNewPrivileges: function(groupId) {
+        sails.log("getDataTypePrivilegeLevel on groupId: " + groupId);
+        if (groupId) {
+            return DataTypePrivileges.find({ group: groupId })
 
             .then(function(privileges) {
                 sails.log(privileges);
@@ -302,7 +298,7 @@ let DataTypeService = {
             return Operator.findOne( {id : operatorId} ).populate('groups').then(operator => {
                 groupId = _.pluck(operator.groups,'id');
 
-                return global.sails.models.datatypeprivileges.find({ where: {group: groupId, dataType: dataTypesId} });
+                return DataTypePrivileges.find({ where: {group: groupId, dataType: dataTypesId} });
             })
             .then(dataTypePrivileges => {
                 if (!dataTypePrivileges){
@@ -336,7 +332,7 @@ let DataTypeService = {
 
                 groupId = _.pluck(operator.groups,'id');
 
-                return global.sails.models.datatypeprivileges.find({ where: {group: groupId} });
+                return DataTypePrivileges.find( {group: groupId} );
             })
             .then(dataTypePrivileges => {
                 if (!dataTypePrivileges){
