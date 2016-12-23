@@ -10,7 +10,7 @@ module.exports.loginSuperAdmin = function(request, done) {
         'protocol': 'local'
     });
 
-    sails.log("DataController.test - superadmin and local passport is: ");
+    sails.log("Xtens.test - superadmin and local passport is: ");
     sails.log(admin);
     sails.log(passport);
 
@@ -19,11 +19,10 @@ module.exports.loginSuperAdmin = function(request, done) {
     .send({identifier: admin.login, password: passport.password})
     .end(function(err, res) {
         if (err) {
-            sails.log.error("DataController.test - login failed");
+            sails.log.error("Xtens.test - login failed");
             sails.log.error(err.message);
             done(err);
         }
-        console.log(res.body);
         var token =  res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);
@@ -38,7 +37,7 @@ module.exports.loginAdminUser = function(request, done) {
         'protocol': 'local'
     });
 
-    sails.log("DataController.test - admin and local passport is: ");
+    sails.log("Xtens.test - admin and local passport is: ");
     sails.log(admin);
     sails.log(passport);
 
@@ -47,11 +46,10 @@ module.exports.loginAdminUser = function(request, done) {
     .send({identifier: admin.login, password: passport.password})
     .end(function(err, res) {
         if (err) {
-            sails.log.error("DataController.test - login failed");
+            sails.log.error("Xtens.test - login failed");
             sails.log.error(err.message);
             done(err);
         }
-        console.log(res.body);
         var token =  res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);
@@ -67,7 +65,7 @@ module.exports.loginStandardUser = function(request, done) {
         'protocol': 'local'
     });
 
-    sails.log("DataController.test - demouser and local passport is: ");
+    sails.log("Xtens.test - demouser and local passport is: ");
     sails.log(demouser);
     sails.log(passport);
 
@@ -76,11 +74,10 @@ module.exports.loginStandardUser = function(request, done) {
     .send({identifier: demouser.login, password: passport.password})
     .end(function(err, res) {
         if (err) {
-            sails.log.error("DataController.test - login failed");
+            sails.log.error("Xtens.test - login failed");
             sails.log.error(err.message);
             done(err);
         }
-        console.log(res.body);
         var token =  res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);
@@ -95,7 +92,7 @@ module.exports.loginAnotherStandardUser = function(request, done) {
         'protocol': 'local'
     });
 
-    sails.log("DataController.test - demouser and local passport is: ");
+    sails.log("Xtens.test - demouser and local passport is: ");
     sails.log(demouser);
     sails.log(passport);
 
@@ -104,11 +101,10 @@ module.exports.loginAnotherStandardUser = function(request, done) {
     .send({identifier: demouser.login, password: passport.password})
     .end(function(err, res) {
         if (err) {
-            sails.log.error("DataController.test - login failed");
+            sails.log.error("Xtens.test - login failed");
             sails.log.error(err.message);
             done(err);
         }
-        console.log(res.body);
         var token =  res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);
@@ -122,8 +118,7 @@ module.exports.loginAnotherStandardUserNoDataSens = function(request, done) {
         'user': demouser.id,
         'protocol': 'local'
     });
-    console.log(demouser,passport);
-    sails.log("DataController.test - demouser and local passport is: ");
+    sails.log("Xtens.test - demouser and local passport is: ");
     sails.log(demouser);
     sails.log(passport);
 
@@ -132,11 +127,37 @@ module.exports.loginAnotherStandardUserNoDataSens = function(request, done) {
     .send({identifier: demouser.login, password: passport.password})
     .end(function(err, res) {
         if (err) {
-            sails.log.error("DataController.test - login failed");
+            sails.log.error("Xtens.test - login failed");
             sails.log.error(err.message);
             done(err);
         }
-        console.log(res.body);
+        var token =  res.body && res.body.token;
+        sails.log("Bearer token is: " + token);
+        done(token);
+        return;
+    });
+};
+
+module.exports.loginUserNoPrivileges = function(request, done) {
+    const user = fixtures.operator[6];
+    const passport = _.find(fixtures.passport, {
+        'user': user.id,
+        'protocol': 'local'
+    });
+
+    sails.log("Xtens.test - user and local passport is: ");
+    sails.log(user);
+    sails.log(passport);
+
+    request(sails.hooks.http.app)
+    .post('/login')
+    .send({identifier: user.login, password: passport.password})
+    .end(function(err, res) {
+        if (err) {
+            sails.log.error("Xtens.test - login failed");
+            sails.log.error(err.message);
+            done(err);
+        }
         var token =  res.body && res.body.token;
         sails.log("Bearer token is: " + token);
         done(token);

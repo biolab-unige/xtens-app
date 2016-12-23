@@ -9,7 +9,7 @@ const loginHelper = require('./loginHelper');
 
 describe('DataController', function() {
 
-    let tokenDataSens, tokenNoDataSens;
+    let tokenDataSens, tokenNoDataSens, tokenNoPriv;
 
     const metadata = {
         "name":{"value":"Antares", "group": "Generic Info" },
@@ -30,13 +30,20 @@ describe('DataController', function() {
             loginHelper.loginAnotherStandardUserNoDataSens(request, function (bearerToken2) {
                 tokenNoDataSens = bearerToken2;
                 sails.log.debug(`Got token: ${tokenNoDataSens}`);
-                done();
-                return;
+
+                loginHelper.loginUserNoPrivileges(request, function (bearerToken3) {
+                    console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",bearerToken3);
+                    tokenNoPriv = bearerToken3;
+                    sails.log.debug(`Got token: ${tokenNoPriv}`);
+                    done();
+                    return;
+                });
             });
         });
     });
 
     describe('POST /data', function() {
+
         it('Should return OK 201, with location of new Data', function (done) {
 
             const existingDataCount = fixtures.data.length;
@@ -80,6 +87,48 @@ describe('DataController', function() {
             .expect(400);
             done();
             return;
+        });
+
+        it('Should return 403 Forbidden - Authenticated user does not have edit privileges on the data type 3', function (done) {
+            let expectedError = `Authenticated user does not have edit privileges on the data type 3`;
+            request(sails.hooks.http.app)
+            .post('/data')
+            .set('Authorization', `Bearer ${tokenNoPriv}`)
+            .send({
+                type:3,
+                metadata:{},
+                date:"2015-12-06",
+                tags:[],
+                notes:"New data"
+            })
+            .expect(403)
+            .end(function(err, res) {
+                expect(res.body.error).to.exist;
+                expect(res.body.error.message).to.eql(expectedError);
+                done();
+                return;
+            });
+        });
+
+        it('Should return 400 Bad Request - Validation Error', function (done) {
+            let expectedError = `"date" must be a valid ISO 8601 date`;
+            request(sails.hooks.http.app)
+            .post('/data')
+            .set('Authorization', `Bearer ${tokenDataSens}`)
+            .send({
+                type:3,
+                metadata:{},
+                date:"wrongFormat",
+                tags:[],
+                notes:"New data"
+            })
+            .expect(400)
+            .end(function(err, res) {
+                expect(res.body.error).to.exist;
+                expect(res.body.error.message.details[0].message).to.eql(expectedError);
+                done();
+                return;
+            });
         });
 
     });

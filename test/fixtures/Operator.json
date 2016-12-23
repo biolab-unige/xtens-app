@@ -68,7 +68,7 @@
     "birthDate": "1970-01-01T00:00:00.000Z",
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
-    "groups": [2]
+    "groups": [4]
 },
 {
     "sex": "N.A.",
@@ -80,5 +80,17 @@
     "birthDate": "1970-01-01T00:00:00.000Z",
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
-    "groups": [1]
+    "groups": [4]
+},
+{
+    "sex": "N.A.",
+    "email": "none@none.com",
+    "login": "userNoPriv",
+    "id": 8,
+    "firstName": "user",
+    "lastName": "NoPrivileges",
+    "birthDate": "1970-01-01T00:00:00.000Z",
+    "createdAt": "2015-06-18T10:13:11.000Z",
+    "updatedAt": "2015-06-18T10:13:11.000Z",
+    "groups": [5]
 }]

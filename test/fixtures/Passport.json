@@ -65,7 +65,7 @@
     "provider": null,
     "identifier": null,
     "tokens": null,
-    "accessToken": "accessToken-sdkjnfdk",
+    "accessToken": "alijnafsia23ofdsoajmols",
     "createdAt": "2015-06-18T10:13:13.000Z",
     "updatedAt": "2015-06-18T10:13:13.000Z",
     "user": 6
@@ -81,4 +81,16 @@
     "createdAt": "2015-06-18T10:13:13.000Z",
     "updatedAt": "2015-06-18T10:13:13.000Z",
     "user": 7
+},
+{
+    "id": 8,
+    "protocol": "local",
+    "password": "testUser",
+    "provider": null,
+    "identifier": null,
+    "tokens": null,
+    "accessToken": null,
+    "createdAt": "2015-06-18T10:13:13.000Z",
+    "updatedAt": "2015-06-18T10:13:13.000Z",
+    "user": 8
 }]

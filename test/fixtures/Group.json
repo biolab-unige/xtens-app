@@ -34,5 +34,14 @@
         "canAccessSensitiveData": false,
         "createdAt": "2015-10-22T09:01:28.000Z",
         "updatedAt": "2015-10-22T13:08:49.000Z"
+    },
+    {
+        "name": "guestNoPrivileges",
+        "id": 5,
+        "privilegeLevel": "standard",
+        "canAccessPersonalData": false,
+        "canAccessSensitiveData": false,
+        "createdAt": "2015-10-22T09:01:28.000Z",
+        "updatedAt": "2015-10-22T13:08:49.000Z"
     }
 ]

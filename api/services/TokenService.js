@@ -72,15 +72,15 @@ var TokenService = {
             } else if (throwError) {
                 throw new Error('Invalid authorization header format. Format is Authorization: Bearer [token]');
             }
-        } 
+        }
 
         // JWT token sent by parameter
         else if (request.param('token')) { // JWT token sent by parameter
             token = request.param('token');
-        } 
+        }
 
         // Otherwise request didn't contain required JWT token
-        else if (throwError) { 
+        else if (throwError) {
             throw new Error('No authorization header was found');
         }
 
