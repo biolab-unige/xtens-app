@@ -113,6 +113,7 @@ PassportService.connect = function (req, query, profile, next) {
         provider   : profile.provider,
         identifier : query.identifier.toString()
     }, function (err, passport) {
+        // console.log(passport);
         if (err) {
             return next(err);
         }
@@ -214,7 +215,7 @@ PassportService.endpoint = function (req, res) {
     var strategies = sails.config.passport,
         provider   = req.param('provider'),
         options    = {};
-
+    console.log(strategies,strategies.hasOwnProperty(provider));
     // If a provider doesn't exist for this endpoint, send the user back to the
     // login page
     if (!strategies.hasOwnProperty(provider)) {
@@ -414,7 +415,8 @@ PassportService.serializeUser(function (user, next) {
 
     sails.log.verbose(__filename + ':' + __line + ' [Service.Passport.serializeUser() called]');
     if (!user) {
-        next({message: 'Invalid user.'}, null);
+        var err = new Error('Invalid user');
+        next(err, null);
     } else {
         next(null, user.id);
     }

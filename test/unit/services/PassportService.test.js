@@ -1,4 +1,4 @@
-/* globals _, sails, fixtures, PassportService, Passport */
+/* globals _, sails, fixtures, PassportService, Passport, Operator */
 "use strict";
 const expect = require('chai').expect, sinon = require('sinon');
 
@@ -222,14 +222,14 @@ describe('PassportService', function() {
 
         it('should return operator correctly connected, updating passport', function(done) {
             mockReq.user = undefined;
-            let passportUpdateeSpy = sinon.spy(Passport, "update");
+            let passportUpdateSpy = sinon.spy(Passport, "update");
 
             PassportService.connect(mockReq, query, profile, function (err,res) {
 
-                sinon.assert.called(passportUpdateeSpy);
+                sinon.assert.called(passportUpdateSpy);
                 expect(res.id).to.eql(operator.id);
 
-                passportUpdateeSpy.restore();
+                passportUpdateSpy.restore();
                 done();
                 return;
             });
@@ -283,9 +283,10 @@ describe('PassportService', function() {
         it('should fire loadStrategies function', function(done) {
             sails.config.passport['provider'] = {
                 scope: 'scope',
-                strategy: {Strategy:function () {
-                    return;
-                }}};
+                strategy: function () {
+                    return {name:"nameStrategy"};
+                }
+            };
 
             PassportService.endpoint(mockReq, mockRes);
 
@@ -327,6 +328,101 @@ describe('PassportService', function() {
             done();
             return;
         });
+    });
 
+    describe('#disconnect', function() {
+
+        let mockReq, mockRes, passportFindOneSpy, passportDestroySpy, operator;
+
+        beforeEach(() => {
+            operator = _.cloneDeep(fixtures.operator[6]);
+            mockReq = {
+                baseUrl: 'http:/localhost:80',
+                path: '/data',
+                user : operator,
+                params: {
+                    provider: 'provider',
+                    action: undefined
+                },
+                param: function(par) {
+                    return this.params[par];
+                }},
+            mockRes = {
+                json:function (code,message) {
+                    return {code:code, message: message};
+                }
+            };
+
+            passportFindOneSpy = sinon.spy(Passport, "findOne");
+            passportDestroySpy = sinon.spy(Passport, "destroy");
+        });
+
+        it('should return operator correctly disconnected, firing FindOne and Destroy Passport', function(done) {
+
+            PassportService.disconnect(mockReq, mockRes, function (err,res) {
+
+                sinon.assert.called(passportFindOneSpy);
+                sinon.assert.called(passportDestroySpy);
+
+                expect(res.id).to.eql(operator.id);
+
+                passportFindOneSpy.restore();
+                passportDestroySpy.restore();
+                done();
+                return;
+            });
+        });
+    });
+
+    describe('#deserializeUser', function() {
+
+        let operatorFindOneSpy, operator;
+
+        beforeEach(() => {
+            operator = _.cloneDeep(fixtures.operator[6]);
+
+            operatorFindOneSpy = sinon.spy(Operator, "findOne");
+        });
+
+        it('should fire FindOne Operator with the right Args', function(done) {
+
+            PassportService.deserializeUser(operator.id, function (err,res) {
+
+                sinon.assert.calledWith(operatorFindOneSpy, operator.id);
+
+                operatorFindOneSpy.restore();
+                done();
+                return;
+            });
+        });
+    });
+
+    describe('#serializeUser', function() {
+
+        it('should return the right user id', function(done) {
+            let operator = _.cloneDeep(fixtures.operator[6]);
+
+            PassportService.serializeUser(operator, function (err,res) {
+
+                expect(res).to.eql(operator.id);
+
+                done();
+                return;
+            });
+        });
+
+        it('should return ERROR - Invalid user', function(done) {
+            let expectedErr = new Error('Invalid user');
+
+            PassportService.serializeUser(false, function (err,res) {
+
+                expect(err).to.be.an('error');
+                expect(err).to.eql(expectedErr);
+                expect(res).to.be.null;
+
+                done();
+                return;
+            });
+        });
     });
 });
