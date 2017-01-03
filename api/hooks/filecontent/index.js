@@ -29,16 +29,18 @@ module.exports = function filecontent(sails){
         configure: function() {
 
             this.download = function downloadFileContent(req, res) {
-                let dataFile;
+                let dataFile, idDataType;
                 let co = new ControllerOut(res);
                 let fileId = _.parseInt(req.param('id'));
                 let fileSystem = BluebirdPromise.promisifyAll(sails.hooks['persistence'].getFileSystem().manager);
                 const operator = TokenService.getToken(req);
 
-                DataFile.findOne(fileId).populate('data').then(result => {
+                DataFile.findOne(fileId).populate('data').populate('samples').then(result => {
 
                     dataFile = result;
-                    return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataFile.data[0].type);
+                    dataFile.data[0] ? idDataType = dataFile.data[0].type :
+                    dataFile.samples[0] ? idDataType = dataFile.samples[0].type : undefined;
+                    return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
                 })
                 .then(dataTypePrivilege => {
 
