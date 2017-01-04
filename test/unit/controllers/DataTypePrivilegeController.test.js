@@ -30,6 +30,7 @@ describe('DataTypePrivilege', function() {
     describe('POST /dataTypePrivilegesTypePrivileges', function() {
         it('Should return OK 201, with location of new Data', function (done) {
 
+            const existingPrivilegeCount = fixtures.datatypeprivileges.length;
             request(sails.hooks.http.app)
             .post('/dataTypePrivileges')
             .set('Authorization', `Bearer ${tokenSA}`)
@@ -47,7 +48,7 @@ describe('DataTypePrivilege', function() {
                 let l = res.header.location;
                 let loc = l.split('/');
                 let location = '/' + loc[3]+ '/' + loc[4];
-                expect(location).to.equals('/dataTypePrivileges/22');
+                expect(location).to.equals(`/dataTypePrivileges/${existingPrivilegeCount+1}`);
                 done();
                 return;
             });

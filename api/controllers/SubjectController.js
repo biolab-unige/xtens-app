@@ -169,7 +169,7 @@ module.exports = {
         DataService.hasDataSensitive(subject.id, SUBJECT).then(result => {
 
             if (result.hasDataSensitive && !operator.canAccessSensitiveData) {
-                throw new PrivilegesError(`"Authenticated user is not allowed to modify sensitive data"`);
+                throw new PrivilegesError(`Authenticated user is not allowed to modify sensitive data`);
             }
             //retrieve dataType id
             const idDataType = _.isObject(subject.type) ? subject.type.id : subject.type;
@@ -286,7 +286,7 @@ module.exports = {
 
             //if operator has not the privilege to EDIT datatype, then return forbidden
             if (_.isEmpty(results.dataTypes)) {
-                throw new PrivilegesError(`Authenticated user does not have EDIT privileges on any data type`);
+                throw new PrivilegesError(`Authenticated user does not have edit privileges on any subject type`);
             }
 
             if (results.subject) {
@@ -329,14 +329,14 @@ module.exports = {
         const fetchSubjectDataTree = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTree;
 
         function subjectTreeCb(err, resp) {
-
+          /*istanbul ignore if*/
             if (err){
-                console.log(err);
+                sails.log.error(err);
                 return co.error(err);
             }
 
             else {
-                console.log(resp.rows);
+                sails.log(resp.rows);
                 let links = [];
 
                 BluebirdPromise.map(resp.rows, function(row) {
@@ -353,13 +353,13 @@ module.exports = {
 
                 })
                 .then(function(link){
-                    // console.log(link);
+                    // sails.log(link);
                     links = link;
                     let json = {'links':links};
                     return res.json(json);
                 })
                 .catch(function(err){
-                    console.log(err);
+                    sails.log(err);
                     return co.error(err);
                 });
             }
@@ -377,18 +377,18 @@ module.exports = {
      *
      */
     createGraphSimple: function(req,res){
-        console.log("createGraphSimple");
+        sails.log("createGraphSimple");
         let co = new ControllerOut(res);
         let fetchSubjectDataTreeSimple = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTreeSimple;
         let idSubject = req.param("idPatient");
-        console.log("idSubject",idSubject);
+        sails.log("idSubject",idSubject);
 
         function subjectTreeSimpleCb(err,resp) {
 
             let children = [], child, links = [];
 
-            console.log(resp);
-
+            sails.log(resp);
+            /*istanbul ignore if*/
             if (resp.rows.length === 0) {
                 links = [{
                     'source': 'Patient',
@@ -402,24 +402,24 @@ module.exports = {
                 children.push(resp.rows[i].id);
             }
 
-            console.log(children);
+            sails.log(children);
 
             BluebirdPromise.map(children,function(child){
 
                 let childName;
                 return DataType.findOne(child).then(function(dataType){
                     childName = dataType.name;
-                    console.log(childName);
+                    sails.log(childName);
                     return {'source':'Patient','target':childName};
                 });
 
             })
 
             .then(function(link){
-                console.log(link);
+                sails.log(link);
                 links = link;
                 let json = {'links':links};
-                console.log(json);
+                sails.log(json);
                 return res.json(json);
 
             })

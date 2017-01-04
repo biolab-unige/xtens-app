@@ -57,7 +57,7 @@
         "id": 11,
         "dataType": 1,
         "group": 3,
-        "privilegeLevel": "edit"
+        "privilegeLevel": "view_overview"
     },
     {
         "id": 12,
@@ -116,6 +116,12 @@
     {
         "id": 21,
         "dataType": 5,
+        "group": 4,
+        "privilegeLevel": "view_details"
+    },
+    {
+        "id": 5,
+        "dataType": 1,
         "group": 4,
         "privilegeLevel": "view_details"
     }

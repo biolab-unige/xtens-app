@@ -12,7 +12,7 @@
                             "isList":true,"hasUnit":false,"hasRange":false,"required":true,
                             "fieldType":"Text","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":["days"],
                             "possibleValues":["healthy","diseased","deceased","N.A."]},
-                            {"name":"Disease", "formattedName":"disease", "label":"METADATA FIELD","isList":true,"hasUnit":false,"hasRange":false,"required":false,"fieldType":"Text","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":["neuroblastoma","medulloblastoma","DIV","DIA","fallot","glucogen storage disease"]},
+                            {"name":"Disease", "formattedName":"disease", "label":"METADATA FIELD","isList":true,"hasUnit":false,"hasRange":false,"required":false,"fieldType":"Text","sensitive":true,"customValue":null,"ontologyUri":null,"possibleUnits":null,"possibleValues":["neuroblastoma","medulloblastoma","DIV","DIA","fallot","glucogen storage disease"]},
                             {"name":"Diagnosis Age","formattedName":"diagnosis_age","label":"METADATA FIELD","isList":false,"hasUnit":true,"hasRange":false,"required":false,"fieldType":"Integer","sensitive":false,"customValue":null,"ontologyUri":null,"possibleUnits":["day","month"],"possibleValues":null}
                         ]
                     }

@@ -108,9 +108,7 @@ module.exports = {
             return res.json(filteredData);
         })
         .catch(error => {
-            /*istanbul ignore next*/
             sails.log.error("DataController.findOne: " + error.message);
-            /*istanbul ignore next*/
             return co.error(error);
         });
 
@@ -153,7 +151,7 @@ module.exports = {
         .spread((payload, headerInfo) => {
             return DataService.prepareAndSendResponse(res, payload, headerInfo);
         })
-        .catch( /*istanbul ignore next*/ function(err) {
+        .catch( function(err) {
             sails.log.error(err);
             return co.error(err);
         });

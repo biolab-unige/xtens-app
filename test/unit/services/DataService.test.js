@@ -247,9 +247,9 @@ describe('DataService', function() {
 
         it("should return an object with false result of investigation", function(done) {
 
-            var data = _.cloneDeep(fixtures.subject[1]);
+            var data = _.cloneDeep(fixtures.data[25]);
 
-            var result = DataService.hasDataSensitive(data.id, "Subject");
+            var result = DataService.hasDataSensitive(data.id, "Data");
 
             expect(result).to.eventually.have.deep.property('hasDataSensitive', false);
             done();

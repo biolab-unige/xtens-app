@@ -36,7 +36,7 @@ describe('DataController', function() {
                     tokenNoPriv = bearerToken3;
                     sails.log.debug(`Got token: ${tokenNoPriv}`);
 
-                    loginHelper.loginStandardUser(request, function (bearerToken4) {
+                    loginHelper.loginAnotherStandardUser(request, function (bearerToken4) {
                         tokenDemo = bearerToken4;
                         sails.log.debug(`Got token: ${tokenDemo}`);
                         done();
@@ -342,7 +342,7 @@ describe('DataController', function() {
         it('Should return OK 200 without Object, not found', function (done) {
 
             request(sails.hooks.http.app)
-            .get('/data/27')
+            .get('/data/39')
             .set('Authorization', `Bearer ${tokenDataSens}`)
             .expect(200)
             .end(function(err, res) {
@@ -422,7 +422,6 @@ describe('DataController', function() {
             .send()
             .expect(403)
             .end(function(err, res) {
-                console.log(err,res.body);
                 if (err) {
                     sails.log.error(err);
                     done(err);
