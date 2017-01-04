@@ -121,7 +121,7 @@ Object.defineProperty(global, '__line', {
 });
 
 Object.defineProperty(global, '__function', {
-    get: function() {
+    get: /*istanbul ignore next*/ function() {
         return global.__stack && global.__stack[1] && global.__stack[1].getFunctionName();
     }
 });

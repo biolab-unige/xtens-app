@@ -60,7 +60,7 @@ module.exports = {
             return res.json(201, result);
         })
         .catch(error => {
-            sails.log.error("SubjectController.create: " + error.message);
+            sails.log.error("SampleController.create: " + error.message);
             return co.error(error);
         });
 
@@ -165,7 +165,7 @@ module.exports = {
         DataService.hasDataSensitive(sample.id, SAMPLE).then(function(result) {
 
             if (result.hasDataSensitive && !operator.canAccessSensitiveData) {
-                throw new PrivilegesError(`"Authenticated user is not allowed to modify sensitive data"`);
+                throw new PrivilegesError("Authenticated user is not allowed to modify sensitive data");
             }
         //retrieve dataType id
             const idDataType = _.isObject(sample.type) ? sample.type.id : sample.type;
@@ -284,7 +284,7 @@ module.exports = {
 
               //if operator has not the privilege to EDIT datatype, then return forbidden
               if (_.isEmpty(results.dataTypes)) {
-                  throw new PrivilegesError(`Authenticated user does not have EDIT privileges on any data type`);
+                  throw new PrivilegesError(`Authenticated user does not have edit privileges on any sample type`);
               }
 
               if(results.sample){

@@ -105,7 +105,7 @@
         "id": 19,
         "dataType": 6,
         "group": 4,
-        "privilegeLevel": "view_overview"
+        "privilegeLevel": "view_details"
     },
     {
         "id": 20,
