@@ -108,7 +108,9 @@ module.exports = {
             return res.json(filteredData);
         })
         .catch(error => {
+            /*istanbul ignore next*/
             sails.log.error("DataController.findOne: " + error.message);
+            /*istanbul ignore next*/
             return co.error(error);
         });
 
@@ -151,7 +153,7 @@ module.exports = {
         .spread((payload, headerInfo) => {
             return DataService.prepareAndSendResponse(res, payload, headerInfo);
         })
-        .catch(function(err) {
+        .catch( /*istanbul ignore next*/ function(err) {
             sails.log.error(err);
             return co.error(err);
         });
@@ -172,7 +174,7 @@ module.exports = {
         DataService.hasDataSensitive(data.id, DATA).then(result => {
 
             if (result.hasDataSensitive && !operator.canAccessSensitiveData) {
-                throw new PrivilegesError(`"Authenticated user is not allowed to modify sensitive data"`);
+                throw new PrivilegesError("Authenticated user is not allowed to modify sensitive data");
             }
         //retrieve dataType id
             const idDataType = _.isObject(data.type) ? data.type.id : data.type;
@@ -291,7 +293,7 @@ module.exports = {
                 payload = results;
                 //if operator has not the privilege to EDIT datatype, then return forbidden
                 if (_.isEmpty(results.dataTypes)){
-                    throw new PrivilegesError(`Authenticated user does not have EDIT privileges on any data type`);
+                    throw new PrivilegesError(`Authenticated user does not have edit privileges on any data type`);
                 }
 
                 if(results.data){

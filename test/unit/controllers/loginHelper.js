@@ -139,7 +139,7 @@ module.exports.loginAnotherStandardUserNoDataSens = function(request, done) {
 };
 
 module.exports.loginUserNoPrivileges = function(request, done) {
-    const user = fixtures.operator[6];
+    const user = fixtures.operator[7];
     const passport = _.find(fixtures.passport, {
         'user': user.id,
         'protocol': 'local'

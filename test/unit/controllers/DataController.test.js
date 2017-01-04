@@ -1,15 +1,16 @@
 /* jshint node: true */
 /* jshint mocha: true */
-/* globals , sails, fixtures */
+/* globals , sails, fixtures, DataService */
 "use strict";
 
 const expect = require("chai").expect;
 const request = require('supertest');
 const loginHelper = require('./loginHelper');
+const sinon = require('sinon');
 
 describe('DataController', function() {
 
-    let tokenDataSens, tokenNoDataSens, tokenNoPriv;
+    let tokenDataSens, tokenNoDataSens, tokenNoPriv, tokenDemo;
 
     const metadata = {
         "name":{"value":"Antares", "group": "Generic Info" },
@@ -32,11 +33,15 @@ describe('DataController', function() {
                 sails.log.debug(`Got token: ${tokenNoDataSens}`);
 
                 loginHelper.loginUserNoPrivileges(request, function (bearerToken3) {
-                    console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",bearerToken3);
                     tokenNoPriv = bearerToken3;
                     sails.log.debug(`Got token: ${tokenNoPriv}`);
-                    done();
-                    return;
+
+                    loginHelper.loginStandardUser(request, function (bearerToken4) {
+                        tokenDemo = bearerToken4;
+                        sails.log.debug(`Got token: ${tokenDemo}`);
+                        done();
+                        return;
+                    });
                 });
             });
         });
@@ -170,6 +175,73 @@ describe('DataController', function() {
             done();
             return;
         });
+
+        it('Should return 400 Validation Error', function (done) {
+
+            request(sails.hooks.http.app)
+            .put('/data/3')
+            .set('Authorization', `Bearer ${tokenDataSens}`)
+            .send({id:2, type:3, metadata:{}, date:"wrongFormat",tags:[],notes:"New data"})
+            .expect(400)
+            .end(function(err, res) {
+                expect(res.body.error.message.name).to.eql("ValidationError");
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
+                }
+                done();
+                return;
+            });
+        });
+
+        it('Should return 403 FORBIDDEN - Authenticated user is not allowed to modify sensitive data', function (done) {
+            let expectedError = "Authenticated user is not allowed to modify sensitive data";
+            request(sails.hooks.http.app)
+                .put('/data/3')
+                .set('Authorization', `Bearer ${tokenNoDataSens}`)
+                .send({
+                    id: 3,
+                    type: 3,
+                    metadata: metadata,
+                    notes: "New Data Updated"
+                })
+                .expect(403)
+                .end(function(err, res) {
+                    expect(res.body.error.message).to.be.equal(expectedError);
+                    if (err) {
+                        sails.log.error(err);
+                        done(err);
+                        return;
+                    }
+                    done();
+                    return;
+                });
+        });
+
+        it('Should return 403 FORBIDDEN - Authenticated user does not have edit privileges on the data type', function (done) {
+            let expectedError = "Authenticated user does not have edit privileges on the data type 3";
+            request(sails.hooks.http.app)
+                .put('/data/3')
+                .set('Authorization', `Bearer ${tokenNoPriv}`)
+                .send({
+                    id: 3,
+                    type: 3,
+                    metadata: metadata,
+                    notes: "New Data Updated"
+                })
+                .expect(403)
+                .end(function(err, res) {
+                    expect(res.body.error.message).to.be.equal(expectedError);
+                    if (err) {
+                        sails.log.error(err);
+                        done(err);
+                        return;
+                    }
+                    done();
+                    return;
+                });
+        });
     });
 
     describe('GET /data', function() {
@@ -178,7 +250,6 @@ describe('DataController', function() {
             request(sails.hooks.http.app)
             .get('/data')
             .set('Authorization', `Bearer ${tokenDataSens}`)
-            //.send({id:1})
             .expect(200)
             .end(function(err, res) {
                 expect(res.body).to.have.length(fixtures.data.length + 1);
@@ -210,6 +281,99 @@ describe('DataController', function() {
             });
         });
 
+        it('Should return OK 200 the expected Object, calling filterOutSensitiveInfo', function (done) {
+            let spy = sinon.spy(DataService, "filterOutSensitiveInfo");
+
+            request(sails.hooks.http.app)
+            .get('/data/23')
+            .set('Authorization', `Bearer ${tokenNoDataSens}`)
+            .expect(200)
+            .end(function(err, res) {
+                expect(res.body.id).to.eql(23);
+                sinon.assert.calledOnce(spy);
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
+                }
+                DataService.filterOutSensitiveInfo.restore();
+                done();
+                return;
+            });
+        });
+
+
+        it('Should return OK 200 the expected Object, with metadata object empty', function (done) {
+
+            request(sails.hooks.http.app)
+            .get('/data/22')
+            .set('Authorization', `Bearer ${tokenDemo}`)
+            .expect(200)
+            .end(function(err, res) {
+                expect(res.body.id).to.eql(22);
+                expect(res.body.metadata).to.be.empty;
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
+                }
+                done();
+                return;
+            });
+        });
+
+        it('Should return OK 200 without Object, no privileges', function (done) {
+
+            request(sails.hooks.http.app)
+            .get('/data/22')
+            .set('Authorization', `Bearer ${tokenNoPriv}`)
+            .expect(200)
+            .end(function(err, res) {
+                expect(res.body).to.be.empty;
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
+                }
+                done();
+                return;
+            });
+        });
+        it('Should return OK 200 without Object, not found', function (done) {
+
+            request(sails.hooks.http.app)
+            .get('/data/27')
+            .set('Authorization', `Bearer ${tokenDataSens}`)
+            .expect(200)
+            .end(function(err, res) {
+                expect(res.body).to.be.empty;
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
+                }
+                done();
+                return;
+            });
+        });
+
+        it('Should return OK 200 without Objects, not found', function (done) {
+
+            request(sails.hooks.http.app)
+            .get('/data?type=120')
+            .set('Authorization', `Bearer ${tokenDataSens}`)
+            .expect(200)
+            .end(function(err, res) {
+                expect(res.body).to.be.empty;
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
+                }
+                done();
+                return;
+            });
+        });
     });
 
     describe('DELETE /data', function() {
@@ -249,6 +413,45 @@ describe('DataController', function() {
                 return;
             });
         });
+
+        it('Should return 403 Forbidden - Authenticated user does not have edit privileges on the data type', function (done) {
+            let expectedError = 'Authenticated user does not have edit privileges on the data type 3';
+            request(sails.hooks.http.app)
+            .delete('/data/1')
+            .set('Authorization', `Bearer ${tokenNoPriv}`)
+            .send()
+            .expect(403)
+            .end(function(err, res) {
+                console.log(err,res.body);
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
+                }
+                expect(res.body.error.message).to.eql(expectedError);
+                done();
+                return;
+            });
+        });
+
+        it('Should return 400 Bad request -  Missing data ID on DELETE request', function (done) {
+            let expectedError = 'Missing data ID on DELETE request';
+            request(sails.hooks.http.app)
+            .delete('/data/')
+            .set('Authorization', `Bearer ${tokenDataSens}`)
+            .send()
+            .expect(400)
+            .end(function(err, res) {
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
+                }
+                expect(res.body.message).to.eql(expectedError);
+                done();
+                return;
+            });
+        });
     });
 
     describe('EDIT /data/edit', function() {
@@ -277,7 +480,7 @@ describe('DataController', function() {
                 });
         });
 
-        it('Should return 403 FORBIDDEN without data', function (done) {
+        it('Should return 403 FORBIDDEN - Authenticated user is not allowed to edit sensitive data', function (done) {
 
             request(sails.hooks.http.app)
                 .get('/data/edit?id=1')
@@ -285,7 +488,6 @@ describe('DataController', function() {
                 .send()
                 .expect(403)
                 .end(function(err, res) {
-                    console.log("Res edit: "+JSON.stringify(res.body));
                     expect(res.body.error.message).to.be.equal("Authenticated user is not allowed to edit sensitive data");
                     if (err) {
                         sails.log.error(err);
@@ -296,5 +498,55 @@ describe('DataController', function() {
                     return;
                 });
         });
+
+        it('Should return 403 FORBIDDEN - Authenticated user does not have edit privileges on any data type', function (done) {
+            let expectedError = 'Authenticated user does not have edit privileges on any data type';
+
+            let stub = sinon.stub(sails.hooks.persistence.crudManager, "getDataTypesByRolePrivileges",function () {
+                return [];
+            });
+
+            request(sails.hooks.http.app)
+                .get('/data/edit?id=1')
+                .set('Authorization', `Bearer ${tokenNoPriv}`)
+                .send()
+                .expect(403)
+                .end(function(err, res) {
+                    expect(res.body.error.message).to.eql(expectedError);
+                    if (err) {
+                        sails.log.error(err);
+                        done(err);
+                        return;
+                    }
+                    sails.hooks.persistence.crudManager.getDataTypesByRolePrivileges.restore();
+                    done();
+                    return;
+                });
+        });
+    });
+
+    it('Should return 403 FORBIDDEN - Authenticated user does not have edit privileges on the data type', function (done) {
+        let expectedError = 'Authenticated user does not have edit privileges on the data type';
+
+        let prova = sinon.stub(sails.hooks.persistence.crudManager, "getDataTypesByRolePrivileges",function () {
+            return [2];
+        });
+
+        request(sails.hooks.http.app)
+            .get('/data/edit?id=1')
+            .set('Authorization', `Bearer ${tokenNoPriv}`)
+            .send()
+            .expect(403)
+            .end(function(err, res) {
+                expect(res.body.error.message).to.eql(expectedError);
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
+                }
+                sails.hooks.persistence.crudManager.getDataTypesByRolePrivileges.restore();
+                done();
+                return;
+            });
     });
 });

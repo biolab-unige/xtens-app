@@ -75,7 +75,7 @@
         "id": 14,
         "dataType": 4,
         "group": 3,
-        "privilegeLevel": "edit"
+        "privilegeLevel": "view_overview"
     },
     {
         "id": 15,
@@ -112,5 +112,11 @@
         "dataType": 2,
         "group": 4,
         "privilegeLevel": "edit"
+    },
+    {
+        "id": 21,
+        "dataType": 5,
+        "group": 4,
+        "privilegeLevel": "view_details"
     }
 ]

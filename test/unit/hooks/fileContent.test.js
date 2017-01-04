@@ -27,17 +27,17 @@ describe('fileContent Hook', function() {
         beforeEach(function() {
             let fileSystem = BluebirdPromise.promisifyAll(sails.hooks['persistence'].getFileSystem().manager);
             downloadFileContentAsyncStub = sinon.stub(fileSystem, "downloadFileContent", function(uri, remoteRes, next) {
-              
+
                 let getRequest = fs.createReadStream(uri);
 
                 getRequest.pipe(remoteRes);
                 getRequest.on('error', function(err) {
-                    console.log('irods.downloadFileContent - problem while downloading file: ' + err.message);
+                    sails.log('irods.downloadFileContent - problem while downloading file: ' + err.message);
                     next(err);
                 });
 
                 getRequest.on('end', function() {
-                    console.log("irods.downloadFileContent - file download ended");
+                    sails.log("irods.downloadFileContent - file download ended");
                     next();
                 });
             });
@@ -60,11 +60,10 @@ describe('fileContent Hook', function() {
             .expect(200)
             .end(function(err, res) {
                 if (err) {
-                    console.log(err);
+                    sails.log.error(err);
                     done(err);
                 }
                 let fileNameReceived = res.headers['content-disposition'].split('=')[1];
-                // console.log(fileNameReceived);
 
                 expect(fileNameReceived).to.equals(fileNameExpected);
                 done();
@@ -92,12 +91,10 @@ describe('fileContent Hook', function() {
             .expect(200)
             .end(function(err, res) {
                 if (err) {
-                    console.log(err);
+                    sails.log.error(err);
                     done(err);
                 }
-
                 let finaldest = res.body.name.fd;
-                // console.log(finaldest);
 
                 expect(finaldest).to.equals(finalDestExpected);
                 done();

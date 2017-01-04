@@ -47,7 +47,7 @@ describe('DataTypePrivilege', function() {
                 let l = res.header.location;
                 let loc = l.split('/');
                 let location = '/' + loc[3]+ '/' + loc[4];
-                expect(location).to.equals('/dataTypePrivileges/21');
+                expect(location).to.equals('/dataTypePrivileges/22');
                 done();
                 return;
             });
@@ -82,7 +82,7 @@ describe('DataTypePrivilege', function() {
         it('Should return OK 200, notes Updated', function (done) {
 
             request(sails.hooks.http.app)
-            .put('/dataTypePrivileges/21')
+            .put('/dataTypePrivileges/22')
             .set('Authorization', `Bearer ${tokenSA}`)
             .send({
                 "id": 16,
@@ -107,7 +107,7 @@ describe('DataTypePrivilege', function() {
             let expectedErrorMessage = 'child "privilegeLevel" fails because ["privilegeLevel" must be one of [view_overview, view_details, download, edit]]';
 
             request(sails.hooks.http.app)
-            .put('/dataTypePrivileges/21')
+            .put('/dataTypePrivileges/22')
             .set('Authorization', `Bearer ${tokenSA}`)
             .send({
                 "id": 16,
@@ -173,7 +173,7 @@ describe('DataTypePrivilege', function() {
 
         it('Should return 200 OK with 1 deleted item if resource exists', function (done) {
             request(sails.hooks.http.app)
-            .delete('/dataTypePrivileges/21')
+            .delete('/dataTypePrivileges/22')
             .set('Authorization', `Bearer ${tokenSA}`)
             .send()
             .expect(200)
@@ -191,7 +191,7 @@ describe('DataTypePrivilege', function() {
 
         it('Should return 200 OK with 0 deleted items if resource does not exist', function (done) {
             request(sails.hooks.http.app)
-            .delete('/dataTypePrivileges/21')
+            .delete('/dataTypePrivileges/22')
             .set('Authorization', `Bearer ${tokenSA}`)
             .send()
             .expect(200)
