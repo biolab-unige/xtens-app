@@ -214,7 +214,7 @@ let DataService = BluebirdPromise.promisifyAll({
 
              return next(null ,{queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: forbiddenFields});
          })
-         .catch(function (err) {
+         .catch(err => {
              sails.log(err);
              next(err, null);
          });
@@ -302,7 +302,7 @@ let DataService = BluebirdPromise.promisifyAll({
             };
             return json;
         })
-        .catch(err => {
+        .catch ( err => {
             sails.log.error(err);
             return err;
         });
@@ -328,25 +328,21 @@ let DataService = BluebirdPromise.promisifyAll({
                 return next(err, null);
             }
             data = results.rows;
-
             //if operator has not privilege on dataType return empty data
             if (!dataPrivilege || _.isEmpty(dataPrivilege) ){ data = []; }
 
           //else if operator has not at least Details privilege level delete metadata object
             else if( dataPrivilege.privilegeLevel === VIEW_OVERVIEW) {
                 for (const datum of data) { datum.metadata = {}; }
-                return data;
             }
             //else if operator can not access to Sensitive Data and datatype has Sensitive data, remove them.
             else if( forbiddenFields.length > 0 && !operator.canAccessSensitiveData){
-
                 for (const field of forbiddenFields) {
                     for (const datum of data) {
                         delete datum.metadata[field.formattedName];
                     }
                 }
             }
-
             const json = {data: data, dataType: dataType, dataTypePrivilege : dataPrivilege };
 
             return next(null, json);
@@ -392,7 +388,7 @@ let DataService = BluebirdPromise.promisifyAll({
                 if (!dataPrivilege || _.isEmpty(dataPrivilege) ) { return; }
 
                 else if( dataPrivilege.privilegeLevel === VIEW_OVERVIEW) { chunk.metadata = {}; }
-
+                /*istanbul ignore if*/
                 else if( forbiddenFields.length > 0 && !operator.canAccessSensitiveData){
                     for (const field of forbiddenFields) {
                         delete chunk.metadata[field.formattedName];
@@ -418,7 +414,7 @@ let DataService = BluebirdPromise.promisifyAll({
     filterListByPrivileges: function(data, dataTypesId, privileges, canAccessSensitiveData) {
         // filter out privileges not pertaining the dataTypes we have
         // privileges = privileges.filter(privEl => dataTypesId.indexOf(privEl.dataType) > -1);
-        
+        // console.log(data,dataTypesId,privileges,canAccessSensitiveData);
         const arrPrivileges = _.isArray(privileges) ? privileges : [privileges];
             //filter Out Metadata if operator has not at least a privilege on Data or exists at least a VIEW_OVERVIEW privilege level
         // sails.log.verbose('DataService.filterListByPrivileges - privileges: ', privileges);
