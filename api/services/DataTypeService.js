@@ -301,9 +301,6 @@ let DataTypeService = {
                 return DataTypePrivileges.find({ where: {group: groupId, dataType: dataTypesId} });
             })
             .then(dataTypePrivileges => {
-                if (!dataTypePrivileges){
-                    return dataTypePrivileges = [];
-                }
                 return dataTypePrivileges.length === 1 ? dataTypePrivileges[0] : dataTypePrivileges;
             })
             .catch((err) => {
@@ -335,7 +332,7 @@ let DataTypeService = {
                 return DataTypePrivileges.find( {group: groupId} );
             })
             .then(dataTypePrivileges => {
-                if (!dataTypePrivileges){
+                if (_.isEmpty(dataTypePrivileges)){
                     return dataTypes = [];
                 }
 

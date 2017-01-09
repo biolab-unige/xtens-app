@@ -125,9 +125,7 @@ describe('DataTypeService', function() {
         it("should return the right privilege level of the given DataType for the operator", function(done) {
 
             DataTypeService.getDataTypePrivilegeLevel(1, 1).then(function(result) {
-
-
-                sails.log("DataType Privilege Level: " + JSON.stringify(result));
+                // sails.log("DataType Privilege Level: " + JSON.stringify(result));
 
                 expect(result.privilegeLevel).to.be.equal("edit");
                 done();
@@ -139,8 +137,7 @@ describe('DataTypeService', function() {
         it("should return undefined", function(done) {
 
             DataTypeService.getDataTypePrivilegeLevel(1,undefined).then(function(result) {
-
-                sails.log("DataType Privilege Level: " + JSON.stringify(result));
+                // sails.log("DataType Privilege Level: " + JSON.stringify(result));
 
                 expect(result).to.be.undefined;
                 done();
@@ -152,8 +149,7 @@ describe('DataTypeService', function() {
         it("should return an empty array", function(done) {
 
             DataTypeService.getDataTypePrivilegeLevel(8,5).then(function(result) {
-
-                sails.log("DataType Privilege Level: " + JSON.stringify(result));
+                // sails.log("DataType Privilege Level: " + JSON.stringify(result));
 
                 expect(result).to.be.empty;
                 done();
@@ -198,7 +194,6 @@ describe('DataTypeService', function() {
 
             DataTypeService.getDataTypesToCreateNewPrivileges(1).then(function(result) {
 
-                // expect(result.length).be.equal(expectedDataType.length);
                 expect(result[0].id).be.equal(expectedDataType[0].id);
                 done();
             }).catch(function(err) {
@@ -228,9 +223,8 @@ describe('DataTypeService', function() {
             });
 
             DataTypeService.filterDataTypes(1, dataTypes).then(function(result) {
-                // console.log(result);
+
                 expect(result.length).be.equal(expectedDataTypes.length);
-                // expect(result).to.be.eql(expectedDataTypes);
                 done();
             }).catch(function(err) {
                 done(err);
@@ -242,6 +236,17 @@ describe('DataTypeService', function() {
             DataTypeService.filterDataTypes(1).then(function(result) {
 
                 expect(result).to.be.undefined;
+                done();
+            }).catch(function(err) {
+                done(err);
+            });
+        });
+
+        it("should return an empty array", function(done) {
+
+            DataTypeService.filterDataTypes(8,4).then(function(result) {
+
+                expect(result).to.be.empty;
                 done();
             }).catch(function(err) {
                 done(err);
