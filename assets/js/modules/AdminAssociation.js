@@ -2,9 +2,9 @@
 
 
     // dependencies
-    var i18n = xtens.module("i18n").en;    
+    var i18n = xtens.module("i18n").en;
     var router = xtens.router;
-    
+
     /**
      * @class
      * @name AdminAssociation.Views.Edit
@@ -27,7 +27,7 @@
             $("#main").html(this.el);
             this.template = JST["views/templates/association.ejs"];
             this.dominant = options.dominant;
-            this.nondominant = options.nondominant; 
+            this.nondominant = options.nondominant;
             this.nondominantName = options.nondominantName;
             this.field = options.field;
             this.render();
@@ -36,7 +36,7 @@
         render: function() {
 
             this.$el.html(this.template({
-                __: i18n, 
+                __: i18n,
                 dominant:this.dominant,
                 nondominants:this.nondominant,
                 nondominantName:this.nondominantName,
@@ -51,6 +51,10 @@
 
             ev.preventDefault();
             var idToAssociate=ev.originalEvent.dataTransfer.getData("Text");
+            var members = this.dominant.get('members');
+            if (_.find(members, function (m) { return m.id === parseInt(idToAssociate); })){
+                return;
+            }
             ev.target.appendChild(document.getElementById(idToAssociate));
             var nondominants = this.dominant.get(this.nondominantName);
             nondominants.push(idToAssociate);
@@ -66,6 +70,10 @@
 
             ev.preventDefault();
             var idToDissociate=ev.originalEvent.dataTransfer.getData("Text");
+            var members = this.dominant.get('members');
+            if (!_.find(members, function (m) { return m.id === parseInt(idToDissociate); })){
+                return;
+            }
             ev.target.appendChild(document.getElementById(idToDissociate));
             var nondominants = this.dominant.get(this.nondominantName);
             nondominants.pop(idToDissociate);
@@ -86,5 +94,5 @@
 
     });
 
-    
+
 } (xtens, xtens.module("adminassociation")));

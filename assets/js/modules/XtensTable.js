@@ -484,12 +484,13 @@
                       var view = new DataFile.Views.List({collection: dataFiles});
                       console.log(dataFiles);
 
-                    // if there is any open popover close it
-                      $('[data-original-title]').popover('hide');
+                    // if there is any open popover destroy it
+                      $('[data-original-title]').popover('destroy');
 
                       $(ev.currentTarget).popover({
                           html: true,
-                          content: view.render().el
+                          content: view.render().el,
+                          placement: 'auto right'
                       }).popover('show');
                       that.listenTo(view, 'closeMe', that.removeChild);
                       that.childrenViews.push(view);
@@ -512,7 +513,7 @@
                       this.stopListening(child);
                       child.remove();
                     // if contained within a popover remove it
-                      $('[data-original-title]').popover('hide');
+                      $('[data-original-title]').popover('destroy');
                       this.childrenViews.splice(i, 1);
                   }
               }
