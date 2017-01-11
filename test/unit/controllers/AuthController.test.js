@@ -12,7 +12,7 @@ describe('AuthController', function() {
     describe('POST /login', function() {
         it('Should return OK 200 with the logged operator and his token', function(done) {
             const expectedOperator = _.cloneDeep(fixtures.operator[5]);
-            const expectedToken = 'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6NiwiaXNXaGVlbCI6ZmFsc2UsImlzQWRtaW4iOmZhbHNlLCJjYW5BY2Nlc3NQZXJzb25hbERhdGEiOmZhbHNlLCJjYW5BY2Nlc3NTZW5zaXRpdmVEYXRhIjpmYWxzZX0.CdDYNtZlaXguKLZ7FuHx6C2eceLJhA196cFZE4z_akE';
+            const expectedToken = 'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6NiwiZ3JvdXBzIjpbNF0sImlzV2hlZWwiOmZhbHNlLCJpc0FkbWluIjpmYWxzZSwiY2FuQWNjZXNzUGVyc29uYWxEYXRhIjpmYWxzZSwiY2FuQWNjZXNzU2Vuc2l0aXZlRGF0YSI6ZmFsc2V9.ZxMLMNn_q49BzRv-1mZhkb1j-kEx4ddxX7gf_J8bU-A';
             const passport = _.find(fixtures.passport, {
                 'user': expectedOperator.id,
                 'protocol': 'local'

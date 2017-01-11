@@ -95,7 +95,7 @@ var Operator = {
             operator.isAdmin = operator.isWheel || privilegesArray.indexOf(constants.GroupPrivilegeLevels.ADMIN) > -1;
             operator.canAccessPersonalData = _.pluck(operator.groups, 'canAccessPersonalData').indexOf(true) > -1;
             operator.canAccessSensitiveData = _.pluck(operator.groups, 'canAccessSensitiveData').indexOf(true) > -1;
-            delete operator.groups;
+            operator.groups = _.pluck(operator.groups, 'id');
             return operator;
         }
 

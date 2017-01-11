@@ -375,189 +375,193 @@
             var patient = document.getElementById('select').value;
 
             // retrieve all the descendant subjects and data for the given patient
-            $.post('/subjectGraph',{
-                idPatient:patient
-            },function(err,res,body){
+            $.ajax({
+                url: '/subjectGraph',
+                type: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                },
+                data: { idPatient: patient },
+                success: function(err,res,body){
 
-                // clean the previous graph if present
-                d3.select("#subject-graph").remove();
+                    // clean the previous graph if present
+                    d3.select("#subject-graph").remove();
 
-                // set margins, width and height of the svg container
-                var margin = {top: 40, right: 120, bottom: 40, left: 120},
-                    width = 1000 - margin.left - margin.right,
-                    height = 800 - margin.top - margin.bottom;
+                    // set margins, width and height of the svg container
+                    var margin = {top: 40, right: 120, bottom: 40, left: 120},
+                        width = 1000 - margin.left - margin.right,
+                        height = 800 - margin.top - margin.bottom;
 
-                var color = d3.scale.category20();
+                    var color = d3.scale.category20();
 
-                // show tooltip with metadata details
-                // TODO:CHANGE MODIFY THIS PART TO MODULARIZE IT!!
-                var tip = d3.tip()
-                .attr('class', 'd3-tip')
-                .offset([-10, 0])
-                .html(function(d) {
-                    if(d.metadata!==undefined){
-                        var dato = (JSON.stringify(d.metadata)).replace(/,/g,"<br />");
-                        return d.name+"<br />" +dato;
-                    }
-                    else
-                        return 'Patient'+" " +patient;
-                });
+                    // show tooltip with metadata details
+                    // TODO:CHANGE MODIFY THIS PART TO MODULARIZE IT!!
+                    var tip = d3.tip()
+                    .attr('class', 'd3-tip')
+                    .direction('e')
+                    .offset([-10, 0])
+                    .html(function(d) {
+                        if(d.metadata!==undefined){
+                            var dato = (JSON.stringify(d.metadata)).replace(/,/g,"<br />");
+                            return d.name+"<br />" +dato;
+                        }
+                        else
+                            return 'Patient'+" " +patient;
+                    });
 
-                // generate a data hierarchy tree
-                var tree = d3.layout.tree()
-                .size([width, height])
-                // decrease the separation among nodes dividing the distance by a factor 2 for each level
-                .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+                    // generate a data hierarchy tree
+                    var tree = d3.layout.tree()
+                    .size([width, height])
+                    // decrease the separation among nodes dividing the distance by a factor 2 for each level
+                    .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
 
-                //function to draw the slanted arcs
-                var diagonal = d3.svg.diagonal()
-                .projection(function(d) {
-                    return [d.x*1.3-120, d.y/2];
-                });
+                    //function to draw the slanted arcs
+                    var diagonal = d3.svg.diagonal()
+                    .projection(function(d) {
+                        return [d.x*1.3-120, d.y/2];
+                    });
 
-                // x and y required by d3.tip() function
-                var x = d3.scale.ordinal()
-                .rangeRoundBands([0, width], 0.1);
+                    // x and y required by d3.tip() function
+                    var x = d3.scale.ordinal()
+                    .rangeRoundBands([0, width], 0.1);
 
-                var y = d3.scale.linear()
-                .range([height, 0]);
+                    var y = d3.scale.linear()
+                    .range([height, 0]);
 
-                // create the svg container
-                var svg = d3.select("#main").append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .attr("id", "subject-graph")
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                    // create the svg container
+                    var svg = d3.select("#main").append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .attr("id", "subject-graph")
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-                // execute the tip method
-                svg.call(tip);
+                    // execute the tip method
+                    svg.call(tip);
 
-                var graph = body.responseJSON;
+                    var graph = body.responseJSON;
 
-                var links = graph.links;
-                var nodesByName = {};
+                    var links = graph.links;
+                    var nodesByName = {};
 
-                // Create nodes for each unique source and target.
-                links.forEach(function(link) {
-                    var parent = link.source = nodeByName(link.source),
-                        child = link.target = nodeByName(link.target);
-                    if (parent.children) parent.children.push(child);
-                    else parent.children = [child];
-                });
+                    // Create nodes for each unique source and target.
+                    links.forEach(function(link) {
+                        var parent = link.source = nodeByName(link.source),
+                            child = link.target = nodeByName(link.target);
+                        if (parent.children) parent.children.push(child);
+                        else parent.children = [child];
+                    });
 
-                var index;
+                    var index;
 
-                // find the root node (Patient)
-                for(var i=0;i<links.length;i++){
-                    if(links[i].source.name === 'Patient'){
-                        index = i;
-                    }
-                }
-
-                //generate the tree
-                var nodes = tree.nodes(links[index].source);
-
-                //add to each node its type and the metadata
-                nodes.forEach(function(node){
+                    // find the root node (Patient)
                     for(var i=0;i<links.length;i++){
-                        if(node.name===links[i].target.name){
-                            node.type = links[i].type;
-                            node.metadata = links[i].metadata;
+                        if(links[i].source.name === 'Patient'){
+                            index = i;
                         }
                     }
-                });
+
+                    //generate the tree
+                    var nodes = tree.nodes(links[index].source);
+
+                    //add to each node its type and the metadata
+                    nodes.forEach(function(node){
+                        for(var i=0;i<links.length;i++){
+                            if(node.name===links[i].target.name){
+                                node.type = links[i].type;
+                                node.metadata = links[i].metadata;
+                            }
+                        }
+                    });
 
 
-                // define the links format/appereance
-                svg.append("svg:defs").selectAll("marker")
-                .data(links)
-                .enter().append("svg:marker")
-                .attr("id","arrowhead")
-                .attr("viewBox", "0 -5 10 10")
-                .attr("refX",10)
-                .attr("refY",1.5)
-                .attr("markerWidth", 5)
-                .attr("markerHeight", 5)
-                .attr("orient","auto")
-                .attr("stroke","grey")
-                .attr("stroke-width",10)
-                .append("path")
-                .attr("d","M0,0L100,100,200,200");
+                    // define the links format/appereance
+                    svg.append("svg:defs").selectAll("marker")
+                    .data(links)
+                    .enter().append("svg:marker")
+                    .attr("id","arrowhead")
+                    .attr("viewBox", "0 -5 10 10")
+                    .attr("refX",10)
+                    .attr("refY",1.5)
+                    .attr("markerWidth", 5)
+                    .attr("markerHeight", 5)
+                    .attr("orient","auto")
+                    .attr("stroke","grey")
+                    .attr("stroke-width",10)
+                    .append("path")
+                    .attr("d","M0,0L100,100,200,200");
 
-                // draw the links
-                svg.selectAll(".link")
-                .data(links.filter(function(d){ return d.target.name;}))
-                .enter().append("path")
-                .attr("class", "link")
-                .attr("marker-end","url(#arrowhead)")
-                .attr("d",diagonal);
+                    // draw the links
+                    svg.selectAll(".link")
+                    .data(links.filter(function(d){ return d.target.name;}))
+                    .enter().append("path")
+                    .attr("class", "link")
+                    .attr("marker-end","url(#arrowhead)")
+                    .attr("d",diagonal);
 
-                // draw the nodes
-                svg.selectAll(".node")
-                .data(nodes.filter(function(d){ return d.name;}))
-                .enter().append("circle")
-                .attr("class", "node")
-                .attr("r",function(d){
-                    if (d.metadata === undefined){
-                        return 10; // for the subject use double node size
+                    // draw the nodes
+                    svg.selectAll(".node")
+                    .data(nodes.filter(function(d){ return d.name;}))
+                    .enter().append("circle")
+                    .attr("class", "node")
+                    .attr("r",function(d){
+                        if (d.metadata === undefined){
+                            return 10; // for the subject use double node size
+                        }
+                        else{
+                            return 5;
+                        }
+                    })
+                    // set the x coordinate of the node centre
+                    .attr("cx", function(d) {
+                        return d.x*1.3-120;
+                    })
+                    // set the y
+                    .attr("cy", function(d) {
+                        return d.y/2;
+                    })
+                    // set the color
+                    .style("fill", function(d) {
+                        if(d.type){
+                            return color(d.type);
+                        }
+                        else{
+                            return "blue"; // if subject colour it with blue
+                        }
+                    })
+                    .on('mouseover', tip.show)
+                    .on('mouseout', tip.hide);
+
+                    // add the colour legend
+                    var legend = svg.selectAll(".legend")
+                    .data(color.domain())
+                    .enter().append("g")
+                    .attr("class", "legend")
+                    .attr("transform", function(d, i) { return "translate(80," + i * 20 + ")"; });
+
+                    legend.append("rect")
+                    .attr("x", width - 18)
+                    .attr("width", 18)
+                    .attr("height", 18)
+                    .style("fill", color);
+
+                    legend.append("text")
+                    .attr("x", width - 24)
+                    .attr("y", 9)
+                    .attr("dy", ".35em")
+                    .style("text-anchor", "end")
+                    .text(function(d) { return d; });
+
+
+                    function nodeByName(name) {
+                        return nodesByName[name] || (nodesByName[name] = {name: name});
                     }
-                    else{
-                        return 5;
-                    }
-                })
-                // set the x coordinate of the node centre
-                .attr("cx", function(d) {
-                    return d.x*1.3-120;
-                })
-                // set the y
-                .attr("cy", function(d) {
-                    return d.y/2;
-                })
-                // set the color
-                .style("fill", function(d) {
-                    if(d.type){
-                        return color(d.type);
-                    }
-                    else{
-                        return "blue"; // if subject colour it with blue
-                    }
-                })
-                .on('mouseover', tip.show)
-                .on('mouseout', tip.hide);
-
-                // add the colour legend
-                var legend = svg.selectAll(".legend")
-                .data(color.domain())
-                .enter().append("g")
-                .attr("class", "legend")
-                .attr("transform", function(d, i) { return "translate(80," + i * 20 + ")"; });
-
-                legend.append("rect")
-                .attr("x", width - 18)
-                .attr("width", 18)
-                .attr("height", 18)
-                .style("fill", color);
-
-                legend.append("text")
-                .attr("x", width - 24)
-                .attr("y", 9)
-                .attr("dy", ".35em")
-                .style("text-anchor", "end")
-                .text(function(d) { return d; });
-
-
-                function nodeByName(name) {
-                    return nodesByName[name] || (nodesByName[name] = {name: name});
+                },
+                error: function(res){
+                    xtens.error(res);
                 }
-            })
-
-            .fail(function(res){
-                alert("Error: " + res.responseJSON.error);
             });
-
         }
-
 
     });
 

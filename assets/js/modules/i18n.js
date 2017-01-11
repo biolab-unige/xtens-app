@@ -150,6 +150,7 @@
         "subject-list": "Subject List",
         "new-subject": "New Subject",
         "more-data": "More Data",
+        "subject-graph": "Subject Graph",
         /* views/templates/subject-edit.ejs */
         "subject-manager": "Subject Manager",
         "create-subject": "Create Subject",

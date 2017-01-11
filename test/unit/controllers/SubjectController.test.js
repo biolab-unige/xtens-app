@@ -570,35 +570,35 @@ describe('SubjectController', function() {
         const subjectTree = [
             {
                 "id": 's_2',
-                "type": 'RNA',
+                "type": 'Tissue',
                 "metadata":{},
                 "parent_sample": 'd_1',
                 "parent_data": null },
 
             {
                 "id": 's_5',
-                "type": 'RNA',
+                "type": 'Tissue',
                 "metadata":{},
                 "parent_sample": 's_4',
                 "parent_data": null },
 
             {
                 "id": 's_3',
-                "type": 'DNA',
+                "type": 'Fluid',
                 "metadata":{},
                 "parent_sample": null,
                 "parent_data": 'd_1' },
 
             {
                 "id": 's_6',
-                "type": 'DNA',
+                "type": 'Fluid',
                 "metadata":{},
                 "parent_sample": 's_4',
                 "parent_data": null },
 
             {
                 "id": 'd_1',
-                "type": 'CGH_Analysis',
+                "type": 'Star',
                 "metadata":{},
                 "parent_sample": null,
                 "parent_data": null },
@@ -615,35 +615,35 @@ describe('SubjectController', function() {
                     "source": "d_1",
                     "target": "s_2",
                     "name": "s_2",
-                    "type": "RNA",
+                    "type": "Tissue",
                     "metadata": {}
                 },
                 {
                     "source": "s_4",
                     "target": "s_5",
                     "name": "s_5",
-                    "type": "RNA",
+                    "type": "Tissue",
                     "metadata": {}
                 },
                 {
                     "source": "d_1",
                     "target": "s_3",
                     "name": "s_3",
-                    "type": "DNA",
+                    "type": "Fluid",
                     "metadata": {}
                 },
                 {
                     "source": "s_4",
                     "target": "s_6",
                     "name": "s_6",
-                    "type": "DNA",
+                    "type": "Fluid",
                     "metadata": {}
                 },
                 {
                     "source": "Patient",
                     "target": "d_1",
                     "name": "d_1",
-                    "type": "CGH_Analysis",
+                    "type": "Star",
                     "metadata": {}
                 },
                 {
@@ -688,6 +688,27 @@ describe('SubjectController', function() {
             return;
         });
 
+        it('Should return Forbidden 403 FORBIDDEN - Authenticated user does not have privileges', function (done) {
+            let expectedError = 'Authenticated user does not have privileges';
+
+            request(sails.hooks.http.app)
+            .post('/subjectGraph')
+            .set('Authorization', `Bearer ${tokenNoPriv}`)
+            .send({
+                "idPatient": 1
+            })
+            .expect(403)
+            .end(function(err, res) {
+                expect(res.body.error.message).to.eql(expectedError);
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
+                }
+                done();
+                return;
+            });
+        });
     });
 
     describe('POST /subjectGraphSimple', function() {
@@ -733,7 +754,27 @@ describe('SubjectController', function() {
             });
             return;
         });
-
     });
 
+    it('Should return Forbidden 403 FORBIDDEN - Authenticated user does not have privileges', function (done) {
+        let expectedError = 'Authenticated user does not have privileges';
+
+        request(sails.hooks.http.app)
+        .post('/subjectGraphSimple')
+        .set('Authorization', `Bearer ${tokenNoPriv}`)
+        .send({
+            "idPatient": 1
+        })
+        .expect(403)
+        .end(function(err, res) {
+            expect(res.body.error.message).to.eql(expectedError);
+            if (err) {
+                sails.log.error(err);
+                done(err);
+                return;
+            }
+            done();
+            return;
+        });
+    });
 });

@@ -5,7 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 /* jshint node: true */
-/* globals _, __filename__, sails, Project, Subject, Data, DataType, SubjectService, TokenService, QueryService, DataService, DataTypeService, SampleService */
+/* globals _, __filename__, sails, Project, DataTypePrivileges, Subject, Data, DataType, SubjectService, TokenService, QueryService, DataService, DataTypeService, SampleService */
 "use strict";
 
 const ControllerOut = require("xtens-utils").ControllerOut;
@@ -327,6 +327,24 @@ module.exports = {
         const co = new ControllerOut(res);
         const idSubject = req.param("idPatient");
         const fetchSubjectDataTree = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTree;
+        const operator = TokenService.getToken(req);
+        let dataTypePrivileges;
+
+        return DataTypePrivileges.find({ group: operator.groups[0] }).populate('dataType')
+        .then(results => {
+
+            dataTypePrivileges = results;
+            // operator has not the privilege to EDIT datatype, then throw Privileges Error
+            if (_.isEmpty(dataTypePrivileges)) {
+                throw new PrivilegesError(`Authenticated user does not have privileges`);
+            }
+            return fetchSubjectDataTree(idSubject, subjectTreeCb);
+
+        })
+        .catch(err => {
+            sails.log.error(err);
+            return co.error(err);
+        });
 
         function subjectTreeCb(err, resp) {
           /*istanbul ignore if*/
@@ -336,25 +354,30 @@ module.exports = {
             }
 
             else {
-                sails.log(resp.rows);
                 let links = [];
-
+                console.log(resp.rows);
                 BluebirdPromise.map(resp.rows, function(row) {
-
-                    if (row.parent_data !== null) {
-                        return {'source':row.parent_data,'target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata};
-                    }
-                    else if(row.parent_sample !== null) {
-                        return {'source':row.parent_sample,'target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata};
-                    }
-                    else {
-                        return {'source':'Patient','target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata};
+                    let privilege;
+                    if(_.find(dataTypePrivileges, function (d) {
+                        privilege = d;
+                        return privilege.dataType.name === row.type;
+                    })){
+                        if(privilege.privilegeLevel === VIEW_OVERVIEW){ row.metadata = {};}
+                        if (row.parent_data !== null) {
+                            return {'source':row.parent_data,'target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata};
+                        }
+                        else if(row.parent_sample !== null) {
+                            return {'source':row.parent_sample,'target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata};
+                        }
+                        else {
+                            return {'source':'Patient','target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata};
+                        }
                     }
 
                 })
                 .then(function(link){
-                    // sails.log(link);
-                    links = link;
+                    console.log(link);
+                    links = _.reject(link, function(l){ return l === undefined; });
                     let json = {'links':links};
                     return res.json(json);
                 })
@@ -365,7 +388,6 @@ module.exports = {
             }
         }
 
-        fetchSubjectDataTree(idSubject, subjectTreeCb);
 
     },
     /**
@@ -377,11 +399,27 @@ module.exports = {
      *
      */
     createGraphSimple: function(req,res){
-        sails.log("createGraphSimple");
-        let co = new ControllerOut(res);
-        let fetchSubjectDataTreeSimple = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTreeSimple;
-        let idSubject = req.param("idPatient");
-        sails.log("idSubject",idSubject);
+        const co = new ControllerOut(res);
+        const fetchSubjectDataTreeSimple = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTreeSimple;
+        const idSubject = req.param("idPatient");
+        const operator = TokenService.getToken(req);
+        let dataTypePrivileges;
+
+        return DataTypePrivileges.find({ group: operator.groups[0] }).populate('dataType')
+        .then(results => {
+
+            dataTypePrivileges = results;
+            // operator has not the privilege to EDIT datatype, then throw Privileges Error
+            if (_.isEmpty(dataTypePrivileges)) {
+                throw new PrivilegesError(`Authenticated user does not have privileges`);
+            }
+            return fetchSubjectDataTreeSimple(idSubject, subjectTreeSimpleCb);
+
+        })
+        .catch(err => {
+            sails.log.error(err);
+            return co.error(err);
+        });
 
         function subjectTreeSimpleCb(err,resp) {
 
@@ -394,7 +432,7 @@ module.exports = {
                     'source': 'Patient',
                     'target': null
                 }];
-                // let json = {'links':links};
+
                 return res.json({links: links});
             }
 
@@ -405,32 +443,30 @@ module.exports = {
             sails.log(children);
 
             BluebirdPromise.map(children,function(child){
+                let privilege, childName;
 
-                let childName;
                 return DataType.findOne(child).then(function(dataType){
                     childName = dataType.name;
-                    sails.log(childName);
-                    return {'source':'Patient','target':childName};
+                    if(_.find(dataTypePrivileges, function (d) {
+                        privilege = d;
+                        return privilege.dataType.name === childName;
+                    })){
+                        return {'source':'Patient','target':childName};
+                    }
                 });
-
             })
-
             .then(function(link){
-                sails.log(link);
-                links = link;
+                links = _.reject(link, function(l){ return l === undefined; });
                 let json = {'links':links};
-                sails.log(json);
                 return res.json(json);
-
             })
-
             .catch(function(err){
+                sails.log.error(err);
                 return co.error(err);
             });
 
         }
 
-        fetchSubjectDataTreeSimple(idSubject, subjectTreeSimpleCb);
     }
 
 };
