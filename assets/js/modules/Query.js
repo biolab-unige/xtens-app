@@ -790,9 +790,9 @@
             }
             this.$addNestedButton.removeClass('hidden');
 
-            let flattenedFields = this.selectedDataType.getFlattenedFields();
+            var flattenedFields = this.selectedDataType.getFlattenedFields();
             if (!xtens.session.get('canAccessSensitiveData') && this.selectedPrivilege.get('privilegeLevel') !== VIEW_OVERVIEW){
-                flattenedFields = _.filter(flattenedFields, (field) => { return !field.sensitive; });
+                flattenedFields = _.filter(flattenedFields, function(field) { return !field.sensitive; });
             }
 
             // this.model.set("model", this.selectedDataType.get("model"));
