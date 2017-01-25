@@ -51,19 +51,21 @@
                     }
                 },
                 initialize: function($el) {
-                    $el.select2({placeholder: i18n('please-select')});
+                    $el.select2({
+                        placeholder: i18n('please-select')
+                    });
                 },
                 getVal: function($el, ev, options) {
                     var value = parseInt($el.val());
                     return _.isNaN(value) ? null : value;
-                    // return _.findWhere(options.view.dataTypes, {id: value });
+          // return _.findWhere(options.view.dataTypes, {id: value });
                 },
                 onGet: function(val, options) {
-                    // if you get the whole DataType object you must retrieve the ID
+          // if you get the whole DataType object you must retrieve the ID
                     if (_.isObject(val)) {
                         return (val && val.id);
                     }
-                    // otherwise you've already the ID
+          // otherwise you've already the ID
                     else {
                         return val;
                     }
@@ -82,45 +84,49 @@
                     }
                 },
                 initialize: function($el) {
-                    $el.select2({placeholder: i18n('please-select')});
+                    $el.select2({
+                        placeholder: i18n('please-select')
+                    });
                 },
                 getVal: function($el, ev, options) {
                     var value = parseInt($el.val());
-                    return _.findWhere(options.view.biobanks, {id: value });
+                    return _.findWhere(options.view.biobanks, {
+                        id: value
+                    });
                 },
                 onGet: function(val, options) {
                     return (val && val.id);
                 }
             },
 
-            /*
-            '#donor': {
-                observe: 'donor',
-                selectOptions: {
-                    collection: function() {
-                        return this.subjects.map(function(subj) {
-                            return {
-                                label: subj.personalInfo.surname + " " +  subj.personalInfo.givenName,
-                                value: subj.id
-                            };
-                        });
-                    },
-                    defaultOption: {
-                        label: "",
-                        value: null
-                    }
-                },
-                initialize: function($el) {
-                    $el.select2({placeholder: i18n('please-select')});
-                },
-                getVal: function($el, ev, options) {
-                    var value = parseInt($el.val());
-                    return _.findWhere(options.view.subjects, {id: value });
-                },
-                onGet: function(val, options) {
-                    return (val && val.id);
-                }
-            }, */
+      /*
+      '#donor': {
+          observe: 'donor',
+          selectOptions: {
+              collection: function() {
+                  return this.subjects.map(function(subj) {
+                      return {
+                          label: subj.personalInfo.surname + " " +  subj.personalInfo.givenName,
+                          value: subj.id
+                      };
+                  });
+              },
+              defaultOption: {
+                  label: "",
+                  value: null
+              }
+          },
+          initialize: function($el) {
+              $el.select2({placeholder: i18n('please-select')});
+          },
+          getVal: function($el, ev, options) {
+              var value = parseInt($el.val());
+              return _.findWhere(options.view.subjects, {id: value });
+          },
+          onGet: function(val, options) {
+              return (val && val.id);
+          }
+      }, */
 
             '#parent-sample': {
                 observe: 'parentSample',
@@ -139,11 +145,15 @@
                     }
                 },
                 initialize: function($el) {
-                    $el.select2({placeholder: i18n('please-select')});
+                    $el.select2({
+                        placeholder: i18n('please-select')
+                    });
                 },
                 getVal: function($el, ev, options) {
                     var value = parseInt($el.val());
-                    return _.findWhere(options.view.parentSamples, {id: value });
+                    return _.findWhere(options.view.parentSamples, {
+                        id: value
+                    });
                 },
                 onGet: function(val, options) {
                     return (val && val.id);
@@ -173,14 +183,13 @@
             this.subjects = options.subjects || [];
             if (options.sample) {
                 this.model = new Sample.Model(options.sample);
-            }
-            else {
+            } else {
                 this.model = new Sample.Model({
                     biobank: this.biobanks[0]
                 });
             }
-            _.each(["donor","parentSample"], function(parent) {
-                if(options[parent]) {
+            _.each(["donor", "parentSample"], function(parent) {
+                if (options[parent]) {
                     this.model.set(parent, options[parent]);
                 }
             }, this);
@@ -193,14 +202,14 @@
             "click button.delete": "deleteSample"
         },
 
-        /**
-         * @method
-         * @name saveData
-         * @description retrieve all the Sample properties from the form (the metadata value(s)-unit(s) pairs, the files' paths, etc...)
-         *              and save the Sample model on the server
-         * @param {event} - the form submission event
-         * @return {false} - to suppress the HTML form submission
-         */
+    /**
+     * @method
+     * @name saveData
+     * @description retrieve all the Sample properties from the form (the metadata value(s)-unit(s) pairs, the files' paths, etc...)
+     *              and save the Sample model on the server
+     * @param {event} - the form submission event
+     * @return {false} - to suppress the HTML form submission
+     */
         saveSample: function(ev) {
             var targetRoute = $(ev.currentTarget).data('targetRoute') || 'samples';
             if (this.schemaView && this.schemaView.serialize) {
@@ -208,9 +217,9 @@
                 this.$modal = this.$(".sample-modal");
                 var metadata = this.schemaView.serialize(useFormattedNames);
                 this.model.set("metadata", metadata);
-                // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
+        // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
                 this.retrieveAndSetFiles();
-                // console.log(this.model);
+        // console.log(this.model);
                 this.model.save(null, {
                     success: function(data) {
 
@@ -225,10 +234,14 @@
                         $('.modal-header').addClass('alert-success');
                         modal.show();
 
-                        setTimeout(function(){ modal.hide(); }, 1200);
-                        that.$('.sample-modal').on('hidden.bs.modal', function (e) {
+                        setTimeout(function() {
+                            modal.hide();
+                        }, 1200);
+                        that.$('.sample-modal').on('hidden.bs.modal', function(e) {
                             modal.remove();
-                            xtens.router.navigate(targetRoute, {trigger: true});
+                            xtens.router.navigate(targetRoute, {
+                                trigger: true
+                            });
                         });
 
                     },
@@ -257,22 +270,26 @@
             this.$modal.append(modal.render().el);
             modal.show();
 
-            this.$('#confirm-delete').click( function (e) {
+            this.$('#confirm-delete').click(function(e) {
                 modal.hide();
                 var targetRoute = $(ev.currentTarget).data('targetRoute') || 'samples';
 
                 that.model.destroy({
                     success: function(model, res) {
-                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
-                        modal.title= i18n('ok');
-                        modal.body= i18n('sample-deleted');
+                        modal.template = JST["views/templates/dialog-bootstrap.ejs"];
+                        modal.title = i18n('ok');
+                        modal.body = i18n('sample-deleted');
                         that.$modal.append(modal.render().el);
                         $('.modal-header').addClass('alert-success');
                         modal.show();
-                        setTimeout(function(){ modal.hide(); }, 1200);
-                        that.$modal.on('hidden.bs.modal', function (e) {
+                        setTimeout(function() {
+                            modal.hide();
+                        }, 1200);
+                        that.$modal.on('hidden.bs.modal', function(e) {
                             modal.remove();
-                            xtens.router.navigate(targetRoute, {trigger: true});
+                            xtens.router.navigate(targetRoute, {
+                                trigger: true
+                            });
                         });
                     },
                     error: function(model, res) {
@@ -284,14 +301,15 @@
 
         },
 
-        /**
-         * @method
-         * @name dataTypeOnChange
-         */
-        // TODO check this one!!
+    /**
+     * @method
+     * @name dataTypeOnChange
+     */
+    // TODO check this one!!
         dataTypeOnChange: function() {
             Data.Views.Edit.prototype.dataTypeOnChange.call(this);
-            var typeName = this.$('#type :selected').text(), parentSample = this.model.get("parentSample");
+            var typeName = this.$('#type :selected').text(),
+                parentSample = this.model.get("parentSample");
 
             if (parentSample && parentSample.biobankCode) {
                 this.model.set('biobankCode', biobankCodeMap[typeName] + parentSample.biobankCode);
@@ -299,13 +317,14 @@
 
         },
 
-        /**
-         * @method
-         * @name editDonor
-         *
-         */
+    /**
+     * @method
+     * @name editDonor
+     *
+     */
         editDonor: function(ev) {
-            var donors = new Subject.List(), that = this;
+            var donors = new Subject.List(),
+                that = this;
             donors.fetch({
                 data: $.param({
                     select: JSON.stringify(["id", "code", "personalInfo", "type"]),
@@ -331,7 +350,7 @@
 
             var parent = targetElem.parentNode;
 
-             // remove all subelements but the label
+      // remove all subelements but the label
             while (parent.children.length > 1) {
                 parent.removeChild(parent.lastChild);
             }
@@ -346,7 +365,7 @@
                     collection: function() {
                         return this.subjects.map(function(subj) {
                             var label = subj.personalInfo ? subj.code + ": " + subj.personalInfo.surname +
-                                " " + subj.personalInfo.givenName : subj.code;
+                " " + subj.personalInfo.givenName : subj.code;
                             return {
                                 label: label,
                                 value: subj.id
@@ -359,11 +378,15 @@
                     }
                 },
                 initialize: function($el) {
-                    $el.select2({placeholder: i18n('please-select')});
+                    $el.select2({
+                        placeholder: i18n('please-select')
+                    });
                 },
                 getVal: function($el, ev, options) {
                     var value = parseInt($el.val());
-                    return _.findWhere(options.view.subjects, {id: value });
+                    return _.findWhere(options.view.subjects, {
+                        id: value
+                    });
                 },
                 onGet: function(val, options) {
                     return (val && val.id);
@@ -374,18 +397,18 @@
 
     });
 
-    /**
-     * @class
-     * @name Sample.Views.Details
-     * @extends Data.Views.Details
-     * @description view containing the details (metadata and files) of a Sample (Sample.Model) instance
-     */
+  /**
+   * @class
+   * @name Sample.Views.Details
+   * @extends Data.Views.Details
+   * @description view containing the details (metadata and files) of a Sample (Sample.Model) instance
+   */
     Sample.Views.Details = Data.Views.Details.fullExtend({
 
-        /**
-         * @method
-         * @name initialize
-         */
+    /**
+     * @method
+     * @name initialize
+     */
         initialize: function(options) {
             $("#main").html(this.el);
             this.template = JST["views/templates/sample-details.ejs"];
@@ -417,13 +440,21 @@
         tagName: 'div',
         className: 'sample',
 
+        events: {
+            'click .pagin': 'changePage',
+            'click #moreData': 'loadResults',
+            'click #newSample': 'openNewSampleView'
+        },
+
         initialize: function(options) {
             $("#main").html(this.el);
             this.dataTypes = options.dataTypes;
             this.samples = options.samples;
+            this.listenTo(this.samples, 'reset', this.render);
+            this.headers = options.paginationHeaders;
             this.dataTypePrivileges = options.dataTypePrivileges.models;
             this.template = JST["views/templates/sample-list.ejs"];
-            this.addLinksToModels();
+
             this.params = options.params;
             this.donor = options.params && options.params.donor;
             this.donorCode = options.params && options.params.donorCode;
@@ -434,57 +465,102 @@
 
         addLinksToModels: function() {
             _.each(this.samples.models, function(sample) {
-                var privilege = _.find(this.dataTypePrivileges, function(model){ return model.get('dataType') === sample.get("type").id;});
-                if(privilege.get('privilegeLevel') === "edit" ){
-                    sample.set("editLink", "#/samples/edit/" + sample.id);}
+                var privilege = _.find(this.dataTypePrivileges, function(model) {
+                    return model.get('dataType') === sample.get("type").id;
+                });
+                if (privilege.get('privilegeLevel') === "edit") {
+                    sample.set("editLink", "#/samples/edit/" + sample.id);
+                }
                 var typeId = sample.get("type").id;
                 var type = this.dataTypes.get(typeId);
                 if (type.get("children") && type.get("children").length > 0) {
-                    var sampleTypeChildren = _.where(type.get("children"), {"model": Classes.SAMPLE});
+                    var sampleTypeChildren = _.where(type.get("children"), {
+                        "model": Classes.SAMPLE
+                    });
                     if (sampleTypeChildren.length > 0) {
                         var sids = _.pluck(sampleTypeChildren, 'id').join();
-                        sample.set("newDerivativeLink", "#/samples/new/0?idDataTypes="+sids+"&parentSample="+sample.id+"&donor="+sample.get("donor").id);
+                        sample.set("newDerivativeLink", "#/samples/new/0?idDataTypes=" + sids + "&parentSample=" + sample.id + "&donor=" + sample.get("donor").id);
                     }
-                    var dataTypeChildren = _.where(type.get("children"), {"model": Classes.DATA});
+                    var dataTypeChildren = _.where(type.get("children"), {
+                        "model": Classes.DATA
+                    });
                     if (dataTypeChildren.length > 0) {
                         var dids = _.pluck(dataTypeChildren, 'id').join();
-                        sample.set("newDataLink", "#/data/new/0?idDataTypes="+dids+"&parentSample="+sample.id);
+                        sample.set("newDataLink", "#/data/new/0?idDataTypes=" + dids + "&parentSample=" + sample.id);
                     }
                 }
             }, this);
         },
 
         render: function(options) {
-            this.$el.html(this.template({__: i18n, samples: this.samples.models, dataTypePrivileges: this.dataTypePrivileges}));
-            this.table = this.$('.table').DataTable();
-            if(options && options.pageActive){
-                this.table.page( options.pageActive.page ).draw('page');
-            }
+            this.addLinksToModels();
+            this.$el.html(this.template({
+                __: i18n,
+                samples: this.samples.models,
+                dataTypePrivileges: this.dataTypePrivileges
+            }));
+            this.table = this.$('.table').DataTable({
+                "paging": false,
+                "info": false
+            });
+            $('#pagination').append(JST["views/templates/pagination-bar.ejs"]({
+                __: i18n,
+                headers: this.headers
+            }));
+            this.setPaginationInfo();
+
             return this;
         },
 
-        loadResults: function (ev) {
+        changePage: function(ev) {
             ev.preventDefault();
             var that = this;
-            that.samples.fetch({
-                data: $.param(_.assign(_.omit(that.params, ['parentDataType','donorCode']), {      // omit "donorCode" as param in server-side GET request
-                    populate: ['type', 'biobank', 'donor'],
-                    limit: 30,
-                    skip: that.samples.length,
-                    sort: 'created_at DESC'
-                })),
-                remove: false,
-                success: function (results) {
-                    that.addLinksToModels();
-                    var pageActive= that.table.page.info();
-                    that.render({pageActive:pageActive});
+
+            $.ajax({
+                url: ev.target.value,
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                },
+                data:{
+                    populate:'donor'
+                },
+                contentType: 'application/json',
+                success: function(results, options, res) {
+                    var headers = {
+                        'Link': xtens.parseLinkHeader(res.getResponseHeader('Link')),
+                        'X-Total-Count': parseInt(res.getResponseHeader('X-Total-Count')),
+                        'X-Page-Size': parseInt(res.getResponseHeader('X-Page-Size')),
+                        'X-Total-Pages': parseInt(res.getResponseHeader('X-Total-Pages')),
+                        'X-Current-Page': parseInt(res.getResponseHeader('X-Current-Page')) + 1
+                    };
+                    var startRow = (headers['X-Page-Size'] * parseInt(res.getResponseHeader('X-Current-Page'))) + 1;
+                    var endRow = headers['X-Page-Size'] * headers['X-Current-Page'];
+                    headers['startRow'] = startRow;
+                    headers['endRow'] = endRow;
+                    that.headers = headers;
+                    that.samples.reset(results);
+                },
+                error: function(err) {
+                    xtens.error(err);
                 }
             });
         },
 
-        events: {
-            'click #moreData':'loadResults',
-            'click #newSample': 'openNewSampleView'
+        setPaginationInfo: function() {
+            var links = this.headers.Link;
+            var linkNames = ['previous', 'first', 'next', 'last'];
+            _.forEach(linkNames, function(ln) {
+                if (links[ln]) {
+                    $('#' + ln).removeClass('disabled');
+                    $('#' + ln).prop('disabled', false);
+                    $('#' + ln).val(links[ln]);
+                } else {
+                    $('#' + ln).prop('disabled', true);
+                    $('#' + ln).addClass('disabled');
+                    $('#' + ln).val('');
+                }
+            });
         },
 
         openNewSampleView: function(ev) {
@@ -493,13 +569,15 @@
             var donorCodeQuery = this.donorCode ? 'donorCode=' + this.donorCode : '';
             var parentSampleQuery = this.parentSample ? 'parentSample=' + this.parentSample : '';
             var parentDataTypeQuery = this.parentDataType ? 'parentDataType=' + this.parentDataType : '';
-            // var queryString = _.trim([donorQuery, donorCodeQuery, parentSampleQuery].join('&'), '&');
+      // var queryString = _.trim([donorQuery, donorCodeQuery, parentSampleQuery].join('&'), '&');
             var queryString = _.compact([donorQuery, donorCodeQuery, parentSampleQuery, parentDataTypeQuery]).join('&');
             var route = _.trim(['/samples/new', queryString].join('/0?'), '/0?');
-            xtens.router.navigate(route, {trigger: true});
+            xtens.router.navigate(route, {
+                trigger: true
+            });
             return false;
         }
     });
 
 
-} (xtens, xtens.module("sample")));
+}(xtens, xtens.module("sample")));

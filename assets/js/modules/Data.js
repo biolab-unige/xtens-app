@@ -1085,6 +1085,7 @@
     Data.Views.List = Backbone.View.extend({
 
         events: {
+            'click .pagin': 'changePage',
             'click #newData': 'openNewDataView',
             'click #moreData':'loadResults'
         },
@@ -1099,9 +1100,10 @@
             $("#main").html(this.el);
             this.dataTypes = options.dataTypes;
             this.data = options.data;
+            this.listenTo(this.data, 'reset', this.render);
+            this.headers = options.paginationHeaders;
             this.dataTypePrivileges = options.dataTypePrivileges.models;
             this.template = JST["views/templates/data-list.ejs"];
-            this.addLinksToModels();
             this.params = options.params;
             this.parentDataType = options.params && options.params.parentDataType;
             this.parentSubject = options.params && options.params.parentSubject;
@@ -1127,35 +1129,67 @@
             }, this);
         },
 
-        render: function(options) {
+        render: function() {
+            this.addLinksToModels();
             this.$el.html(this.template({__: i18n, data: this.data.models, dataTypePrivileges: this.dataTypePrivileges}));
-            this.table = this.$('.table').DataTable();
-            if(options && options.pageActive){
-                this.table.page( options.pageActive.page ).draw('page');
-            }
+            this.table = this.$('.table').DataTable({
+                "paging": false,
+                "info": false
+            });
+            $('#pagination').append(JST["views/templates/pagination-bar.ejs"]({__: i18n, headers:this.headers}));
+            this.setPaginationInfo();
+
             return this;
         },
 
-        loadResults: function (ev) {
+        changePage: function (ev) {
             ev.preventDefault();
             var that = this;
-            that.data.fetch({
-                data:  $.param(_.assign(_.omit(that.params, ['parentDataType', 'parentSubjectCode']), {
-                    populate: ['type'],
-                    limit: 30,
-                    skip: that.data.length,
-                    sort: 'created_at DESC'
-                })),
-                remove: false,
-                success: function (results) {
-                    that.addLinksToModels();
-                    var pageActive= that.table.page.info();
-                    that.render({pageActive:pageActive});
+
+            $.ajax({
+                url: ev.target.value,
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                },
+                contentType: 'application/json',
+                success: function(results, options, res) {
+                    var headers = {
+                        'Link': xtens.parseLinkHeader(res.getResponseHeader('Link')),
+                        'X-Total-Count': parseInt(res.getResponseHeader('X-Total-Count')),
+                        'X-Page-Size': parseInt(res.getResponseHeader('X-Page-Size')),
+                        'X-Total-Pages': parseInt(res.getResponseHeader('X-Total-Pages')),
+                        'X-Current-Page': parseInt(res.getResponseHeader('X-Current-Page')) + 1
+                    };
+                    var startRow = (headers['X-Page-Size']*parseInt(res.getResponseHeader('X-Current-Page')))+1;
+                    var endRow = headers['X-Page-Size']*headers['X-Current-Page'];
+                    headers['startRow'] = startRow;
+                    headers['endRow'] = endRow;
+                    that.headers = headers;
+                    that.data.reset(results);
+                },
+                error: function(err) {
+                    xtens.error(err);
                 }
             });
         },
 
-
+        setPaginationInfo: function () {
+            var links = this.headers.Link;
+            var linkNames = ['previous', 'first', 'next', 'last'];
+            _.forEach(linkNames, function (ln) {
+                if(links[ln]){
+                    $('#'+ln).removeClass('disabled');
+                    $('#'+ln).prop('disabled', false);
+                    $('#'+ln).val(links[ln]);
+                }
+                else {
+                    $('#'+ln).prop('disabled', true);
+                    $('#'+ln).addClass('disabled');
+                    $('#'+ln).val('');
+                }
+            });
+        },
 
         openNewDataView: function(ev) {
             ev.preventDefault();

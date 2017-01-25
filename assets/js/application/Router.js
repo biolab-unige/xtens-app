@@ -20,7 +20,7 @@
     var FileManager= xtens.module("filemanager");
     var Session = xtens.module("session");
 
-    var DEFAULT_LIMIT = 30;
+    var DEFAULT_LIMIT = 10;
 
     /**
      * @method
@@ -306,20 +306,44 @@
                 var $privilegesDeferred = privileges.fetch({
                     data: $.param({group: groupId})
                 });
-                var $dataDeferred = data.fetch({
-                    data: $.param(_.assign(_.omit(queryParams, ['parentDataType', 'parentSubjectCode']), { // omit "parentSubjectCode" as param in server-side GET request
-                        populate: ['type'],
-                        limit: DEFAULT_LIMIT,
-                        sort: 'created_at DESC'
-                    }))
-                });
-                $.when($dataTypesDeferred, $dataDeferred, $privilegesDeferred).then(function(dataTypesRes, dataRes, privilegesRes) {
-                    that.loadView(new Data.Views.List({
-                        dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
-                        data: new Data.List(dataRes && dataRes[0]),
-                        dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
-                        params: queryParams
-                    }));
+                $.when($dataTypesDeferred, $privilegesDeferred).then(function(dataTypesRes, privilegesRes) {
+                    $.ajax({
+                        url: '/data',
+                        type: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                        },
+                        data: {
+                            populate: ['type'],
+                            limit: DEFAULT_LIMIT,
+                            sort: 'created_at DESC'
+                        },
+                        contentType: 'application/json',
+                        success: function(results, options, res) {
+                            var headers = {
+                                'Link': xtens.parseLinkHeader(res.getResponseHeader('Link')),
+                                'X-Total-Count': parseInt(res.getResponseHeader('X-Total-Count')),
+                                'X-Page-Size': parseInt(res.getResponseHeader('X-Page-Size')),
+                                'X-Total-Pages': parseInt(res.getResponseHeader('X-Total-Pages')),
+                                'X-Current-Page': parseInt(res.getResponseHeader('X-Current-Page')) + 1
+                            };
+                            var startRow = (headers['X-Page-Size']*parseInt(res.getResponseHeader('X-Current-Page')))+1;
+                            var endRow = headers['X-Page-Size']*headers['X-Current-Page'];
+                            headers['startRow'] = startRow;
+                            headers['endRow'] = endRow;
+                            that.loadView(new Data.Views.List({
+                                dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
+                                data: new Data.List(results),
+                                dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
+                                params: queryParams,
+                                paginationHeaders: headers
+                            }));
+                        },
+                        error: function(err) {
+                            xtens.error(err);
+                        }
+                    });
+
                 }, function(jqxhr) {
                     xtens.error(jqxhr);
                 });
@@ -477,19 +501,43 @@
                 var $dataTypesDeferred = dataTypes.fetch({
                     data: $.param({ populate: ['children'] })
                 });
-                var $subjectsDeferred = subjects.fetch({
-                    data: $.param({
-                        populate: ['type', 'projects'],
-                        limit: DEFAULT_LIMIT,
-                        sort: 'created_at DESC'
-                    })
-                });
-                $.when($dataTypesDeferred, $subjectsDeferred, $privilegesDeferred).then(function(dataTypesRes, subjectsRes, privilegesRes) {
-                    that.loadView(new Subject.Views.List({
-                        dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
-                        subjects: new Subject.List(subjectsRes && subjectsRes[0]),
-                        dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])
-                    }));
+                $.when($dataTypesDeferred, $privilegesDeferred).then(function(dataTypesRes, privilegesRes) {
+                    $.ajax({
+                        url: '/subject',
+                        type: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                        },
+                        data: {
+                            populate: ['type', 'projects'],
+                            limit: DEFAULT_LIMIT,
+                            sort: 'created_at DESC'
+                        },
+                        contentType: 'application/json',
+                        success: function(results, options, res) {
+                            var headers = {
+                                'Link': xtens.parseLinkHeader(res.getResponseHeader('Link')),
+                                'X-Total-Count': parseInt(res.getResponseHeader('X-Total-Count')),
+                                'X-Page-Size': parseInt(res.getResponseHeader('X-Page-Size')),
+                                'X-Total-Pages': parseInt(res.getResponseHeader('X-Total-Pages')),
+                                'X-Current-Page': parseInt(res.getResponseHeader('X-Current-Page')) + 1
+                            };
+                            var startRow = (headers['X-Page-Size']*parseInt(res.getResponseHeader('X-Current-Page')))+1;
+                            var endRow = headers['X-Page-Size']*headers['X-Current-Page'];
+                            headers['startRow'] = startRow;
+                            headers['endRow'] = endRow;
+                            that.loadView(new Subject.Views.List({
+                                dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
+                                subjects: new Subject.List(results),
+                                dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
+                                paginationHeaders: headers
+                            }));
+                        },
+                        error: function(err) {
+                            xtens.error(err);
+                        }
+                    });
+
                 }, function(jqxhr) {
                     xtens.error(jqxhr);
                 });
@@ -577,20 +625,50 @@
                 var $dataTypesDeferred = dataTypes.fetch({
                     data: $.param({populate:['children']})
                 });
-                var $samplesDeferred = samples.fetch({
-                    data: $.param(_.assign(_.omit(queryParams, ['parentDataType','donorCode']), {      // omit "donorCode" as param in server-side GET request
-                        populate: ['type', 'biobank', 'donor'],
-                        limit: DEFAULT_LIMIT,
-                        sort: 'created_at DESC'
-                    }))
-                });
-                $.when($dataTypesDeferred, $samplesDeferred, $privilegesDeferred).then( function(dataTypesRes, samplesRes, privilegesRes) {
-                    that.loadView(new Sample.Views.List({
-                        dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
-                        samples: new Sample.List(samplesRes && samplesRes[0]),
-                        dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
-                        params: queryParams
-                    }));
+                // var $samplesDeferred = samples.fetch({
+                //     data: $.param(_.assign(_.omit(queryParams, ['parentDataType','donorCode']), {      // omit "donorCode" as param in server-side GET request
+                //         populate: ['type', 'biobank', 'donor'],
+                //         limit: DEFAULT_LIMIT,
+                //         sort: 'created_at DESC'
+                //     }))
+                // });
+                $.when($dataTypesDeferred, $privilegesDeferred).then( function(dataTypesRes, privilegesRes) {
+                    $.ajax({
+                        url: '/sample',
+                        type: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                        },
+                        data: {
+                            populate: ['type', 'donor'],
+                            limit: DEFAULT_LIMIT,
+                            sort: 'created_at DESC'
+                        },
+                        contentType: 'application/json',
+                        success: function(results, options, res) {
+                            var headers = {
+                                'Link': xtens.parseLinkHeader(res.getResponseHeader('Link')),
+                                'X-Total-Count': parseInt(res.getResponseHeader('X-Total-Count')),
+                                'X-Page-Size': parseInt(res.getResponseHeader('X-Page-Size')),
+                                'X-Total-Pages': parseInt(res.getResponseHeader('X-Total-Pages')),
+                                'X-Current-Page': parseInt(res.getResponseHeader('X-Current-Page')) + 1
+                            };
+                            var startRow = (headers['X-Page-Size']*parseInt(res.getResponseHeader('X-Current-Page')))+1;
+                            var endRow = headers['X-Page-Size']*headers['X-Current-Page'];
+                            headers['startRow'] = startRow;
+                            headers['endRow'] = endRow;
+                            that.loadView(new Sample.Views.List({
+                                dataTypePrivileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
+                                samples: new Sample.List(results),
+                                dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
+                                params: queryParams,
+                                paginationHeaders: headers
+                            }));
+                        },
+                        error: function(err) {
+                            xtens.error(err);
+                        }
+                    });
                 }, function(jqxhr) {
                     xtens.error(jqxhr);
                 });

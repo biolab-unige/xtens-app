@@ -39,7 +39,7 @@
                         </td>
                         -->
                         <td><%= data.get("notes") %></td>
-                        <td>
+                        <td class="text-right">
                           <% var privilege = dataTypePrivileges.find(function(model) {
                             return model.get('dataType') === data.get("type").id; });
                            if(privilege.get("privilegeLevel") !== "view_overview" ){ %>
@@ -57,10 +57,11 @@
                     </tbody>
                 </table>
             </div>
+            <div id="pagination" class="row"></div>
             <div id="buttonbardiv" class="row text-center">
                 <div class="btn-group btn-group-margin">
                       <a href="" id="newData" class="btn btn-primary"><%= __("new-data")%></a>
-                      <a href="" id="moreData" class="btn btn-default moreData"><%= __("more-data") %></a>              
+                      <a href="" id="moreData" class="btn btn-default moreData"><%= __("more-data") %></a>
                 </div>
             </div>
         </div>

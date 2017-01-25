@@ -1,4 +1,4 @@
-<h2><%= __("samples") %></h2>
+<h2><%= __("samples-list") %></h2>
 
 <div id="content">
     <div class="row">
@@ -28,7 +28,7 @@
                         <td><%= sample.get("donor") && sample.get("donor").code %></td>
                         <td><%= metadata.pathology &&  metadata.pathology.value %></td>
                         <td><%= metadata.sample_codification && metadata.sample_codification.value %></td>
-                        <td>
+                        <td  class="text-right">
                           <% var privilege = dataTypePrivileges.find(function(model) {
                             return model.get('dataType') === sample.get("type").id; });
                            if(privilege.get("privilegeLevel") === "edit" ){ %>
@@ -46,6 +46,7 @@
                     </tbody>
                 </table>
             </div>
+            <div id="pagination" class="row"></div>
             <div id="buttonbardiv" class="row text-center">
               <div class="btn-group btn-group-margin">
                 <a href="" id="newSample" class="btn btn-primary"><%= __("new-sample")%></a>

@@ -1,0 +1,12 @@
+<div class="col-sm-6 text-left" style="margin-top:2%;">
+  Showing <%= headers['startRow']%> to <%= headers['endRow']%> of <%= headers['X-Total-Count']%> rows
+</div>
+<div id="pagination" class="col-sm-6 text-right">
+  <ul class="pagination">
+    <li><a id="first" class="pagin btn btn-link"><%= __("first")%></a></li>
+    <li><a id="previous" class="pagin btn btn-link"><%= __("prev")%></a></li>
+    <li><a class="btn btn-default"><%= headers['X-Current-Page']%> of <%= headers['X-Total-Pages']%></a></li>
+    <li><a id="next" class="pagin btn btn-link"><%= __("next")%></a></li>
+    <li><a id="last" class="pagin btn btn-link"><%= __("last")%></a></li>
+  </ul>
+</div>

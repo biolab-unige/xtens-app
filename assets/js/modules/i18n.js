@@ -141,6 +141,11 @@
         "metadata": "Metadata",
         "new-data": "New Data",
         "datatype-graph": "DataType Graph",
+        /* pagination - tables */
+        "first": "First",
+        "prev": "Prev",
+        "next": "Next",
+        "last": "Last",
         /* views/templates/personal-details-edit.ejs */
         "given-name": "Name",
         "surname": "Surname",
@@ -176,6 +181,7 @@
         'sample-correctly-stored-on-server': "Sample correctly stored on server",
         "sample-will-be-permanently-deleted-are-you-sure": "Sample will be permanently deleted. Are you sure?",
         /* views/templates/sample-list */
+        "samples-list": "Samples List",
         "new-sample": "New Sample",
         "diagnosis": "Diagnosis",
         "arrival-code": "Arrival Code",

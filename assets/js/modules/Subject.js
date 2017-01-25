@@ -282,6 +282,7 @@
     Subject.Views.List = Backbone.View.extend({
 
         events: {
+            'click .pagin': 'changePage',
             'click #moreData':'loadResults'
         },
 
@@ -292,6 +293,8 @@
             $("#main").html(this.el);
             this.dataTypes = options.dataTypes;
             this.subjects = options.subjects;
+            this.listenTo(this.subjects, 'reset', this.render);
+            this.headers = options.paginationHeaders;
             this.dataTypePrivileges = options.dataTypePrivileges.models;
             this.params = options.params;
             this.template = JST["views/templates/subject-list.ejs"];
@@ -321,27 +324,64 @@
 
         render: function(options) {
             this.$el.html(this.template({__: i18n, subjects: this.subjects.models, dataTypePrivileges: this.dataTypePrivileges}));
-            this.table = this.$('.table').DataTable();
-            if(options && options.pageActive){
-                this.table.page( options.pageActive.page ).draw('page');
-            }
+            this.table = this.$('.table').DataTable({
+                "paging": false,
+                "info": false
+            });
+            $('#pagination').append(JST["views/templates/pagination-bar.ejs"]({__: i18n, headers:this.headers}));
+            this.setPaginationInfo();
+
             return this;
         },
 
-        loadResults: function (ev) {
+        changePage: function (ev) {
             ev.preventDefault();
             var that = this;
-            that.subjects.fetch({
-                data: $.param({ populate: ['type', 'projects'],
-                limit: 30,
-                skip: that.subjects.length,
-                sort: 'created_at DESC'
-              }),
-                remove: false,
-                success: function (results) {
-                    that.addLinksToModels();
-                    var pageActive= that.table.page.info();
-                    that.render({pageActive:pageActive});
+
+            $.ajax({
+                url: ev.target.value,
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                },
+                data:{
+                    populate:'projects'
+                },
+                contentType: 'application/json',
+                success: function(results, options, res) {
+                    var headers = {
+                        'Link': xtens.parseLinkHeader(res.getResponseHeader('Link')),
+                        'X-Total-Count': parseInt(res.getResponseHeader('X-Total-Count')),
+                        'X-Page-Size': parseInt(res.getResponseHeader('X-Page-Size')),
+                        'X-Total-Pages': parseInt(res.getResponseHeader('X-Total-Pages')),
+                        'X-Current-Page': parseInt(res.getResponseHeader('X-Current-Page')) + 1
+                    };
+                    var startRow = (headers['X-Page-Size']*parseInt(res.getResponseHeader('X-Current-Page')))+1;
+                    var endRow = headers['X-Page-Size']*headers['X-Current-Page'];
+                    headers['startRow'] = startRow;
+                    headers['endRow'] = endRow;
+                    that.headers = headers;
+                    that.subjects.reset(results);
+                },
+                error: function(err) {
+                    xtens.error(err);
+                }
+            });
+        },
+
+        setPaginationInfo: function () {
+            var links = this.headers.Link;
+            var linkNames = ['previous', 'first', 'next', 'last'];
+            _.forEach(linkNames, function (ln) {
+                if(links[ln]){
+                    $('#'+ln).removeClass('disabled');
+                    $('#'+ln).prop('disabled', false);
+                    $('#'+ln).val(links[ln]);
+                }
+                else {
+                    $('#'+ln).prop('disabled', true);
+                    $('#'+ln).addClass('disabled');
+                    $('#'+ln).val('');
                 }
             });
         }
