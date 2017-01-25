@@ -352,7 +352,7 @@
           addLinks: function(options) {
 
               var btnGroupTemplate = JST["views/templates/xtenstable-buttongroup.ejs"];
-
+              var that = this;
               _.each(this.data, function(datum) {
                   datum._links = btnGroupTemplate({
                       __:i18n,
@@ -361,7 +361,7 @@
                       fileUpload: options.fileUpload,
                       hasDataChildren: options.hasDataChildren,
                       hasSampleChildren: options.hasSampleChildren,
-                      id: this.dataType.id
+                      id: that.dataType.id
                   });
               });
 

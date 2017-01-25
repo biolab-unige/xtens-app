@@ -354,12 +354,8 @@
                 observe: 'surnameComparator',
                 initialize: function($el) {
                     $el.select2({
-<<<<<<< HEAD
                         data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' },
                                 { id: 'LIKE', text: 'LIKE'}, { id: 'NOT LIKE', text: 'NOT LIKE'}]
-=======
-                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }]
->>>>>>> 1ee1f683ba84d9e10b05b1d00c62498c0bc46f78
                     });
                 }
             },
@@ -370,12 +366,8 @@
                 observe: 'givenNameComparator',
                 initialize: function($el) {
                     $el.select2({
-<<<<<<< HEAD
                         data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' },
                                 { id: 'LIKE', text: 'LIKE'}, { id: 'NOT LIKE', text: 'NOT LIKE'}]
-=======
-                        data: [ { id: 'LIKE', text: '=' }, { id: 'NOT LIKE', text: '≠' }]
->>>>>>> 1ee1f683ba84d9e10b05b1d00c62498c0bc46f78
                     });
                 }
             },
@@ -386,13 +378,9 @@
                 observe: 'birthDateComparator',
                 initialize: function($el) {
                     $el.select2({
-<<<<<<< HEAD
                         data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' },
                                 { id: '<=', text: '≤' }, { id: '>=', text: '≥' },
                                 { id: '<', text: '<'}, {id: '>', text: '>'}]
-=======
-                        data: [ { id: '=', text: '=' }, { id: '<>', text: '≠' }]
->>>>>>> 1ee1f683ba84d9e10b05b1d00c62498c0bc46f78
                     });
                 }
             },
@@ -745,11 +733,7 @@
                 biobanks: this.biobanks,
                 dataTypes: childrenDataTypes,
                 dataTypesComplete: this.dataTypesComplete,
-<<<<<<< HEAD
                 dataTypePrivileges:this.dataTypePrivileges,
-
-=======
->>>>>>> 1ee1f683ba84d9e10b05b1d00c62498c0bc46f78
                 model: new Query.Model(queryObj)
             });
 
@@ -786,11 +770,7 @@
             this.selectedDataType = this.dataTypes.get(idDataType);
             this.selectedPrivilege = this.dataTypePrivileges.findWhere({'dataType' : idDataType});
             this.model.set("model", this.selectedDataType.get("model"));
-<<<<<<< HEAD
             if (this.model.get("model") === DataTypeClasses.SUBJECT && xtens.session.get('canAccessPersonalData')) {
-=======
-            if (this.model.get("model") === DataTypeClasses.SUBJECT) {      //TODO add policy to filter those not allowed to see personal info
->>>>>>> 1ee1f683ba84d9e10b05b1d00c62498c0bc46f78
                 personalInfoQueryView = new Query.Views.PersonalInfo({
                     model: new Query.PersonalInfoModel(_.findWhere(queryContent, {personalDetails: true}))
                 });
@@ -828,7 +808,6 @@
                     }
                     // it is a leaf query element
                     else {
-<<<<<<< HEAD
                         if (this.selectedPrivilege.get('privilegeLevel') !== VIEW_OVERVIEW) {
                             childView = new Query.Views.Row({
                                 fieldList: flattenedFields,
@@ -836,13 +815,6 @@
                             });
                             this.addSubqueryView(childView);
                         }
-=======
-                        childView = new Query.Views.Row({
-                            fieldList: this.selectedDataType.getFlattenedFields(),
-                            model: new Query.RowModel(queryElem)
-                        });
-                        this.addSubqueryView(childView);
->>>>>>> 1ee1f683ba84d9e10b05b1d00c62498c0bc46f78
                     }
                 }, this);
             }
@@ -938,10 +910,7 @@
                 biobanks: this.biobanks,
                 dataTypes: this.dataTypes,
                 dataTypesComplete: this.dataTypes,
-<<<<<<< HEAD
                 dataTypePrivileges: this.dataTypePrivileges,
-=======
->>>>>>> 1ee1f683ba84d9e10b05b1d00c62498c0bc46f78
                 model: new Query.Model(options.queryObj)
             });
             this.$tableCnt = this.$("#result-table-cnt");
@@ -962,13 +931,6 @@
             return this;
         },
 
-<<<<<<< HEAD
-=======
-        events : {
-            'click #search': 'sendQuery',
-        },
->>>>>>> 1ee1f683ba84d9e10b05b1d00c62498c0bc46f78
-
         /**
          * @method
          * @name sendQuery
@@ -988,7 +950,6 @@
             console.log(this.queryView.serialize());
             var path = '/query/' + encodeURIComponent(queryParameters);
             xtens.router.navigate(path, {trigger: false});
-<<<<<<< HEAD
             if (isStream) {
                 fetch('/query/dataSearch',{
                     method: 'POST',
@@ -1022,19 +983,6 @@
                 });
             }
 
-=======
-            $.ajax({
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
-                },
-                contentType: 'application/json;charset:utf-8',
-                url: '/query/dataSearch',
-                data: queryParameters,
-                success: this.queryOnSuccess,
-                error: this.queryOnError
-            });
->>>>>>> 1ee1f683ba84d9e10b05b1d00c62498c0bc46f78
             this.modal = new ModalDialog({
                 title: i18n('please-wait-for-query-to-complete'),
                 body: JST["views/templates/progressbar.ejs"]({valuemin: 0, valuemax: 100, valuenow: 100})
