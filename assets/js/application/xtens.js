@@ -27,7 +27,7 @@ var xtens = {
 
     parseLinkHeader: function (header) {
         if (header.length == 0) {
-            throw new Error("input must not be of zero length");
+            return [];
         }
 
   // Split parts by comma
