@@ -47,7 +47,8 @@
               "click .xtenstable-edit": "showEditView",
               "click .xtenstable-files": "showFileList",
               "click .xtenstable-derivedsamples": "showDerivedSampleList",
-              "click .xtenstable-deriveddata": "showDerivedDataList"
+              "click .xtenstable-deriveddata": "showDerivedDataList",
+              "click .xtenstable-parameters": "showVideoParameters"
           },
 
           tagName: 'table',
@@ -501,6 +502,20 @@
                   }
               });
           },
+
+          showVideoParameters: function(ev) {
+              var currRow = this.table.row($(ev.currentTarget).parents('tr'));
+              var data = currRow.data();
+
+            // model here is the ENTITY model (a.k.a. the server-side resource)
+              var model = this.dataType.get("model");
+              var path = model === Classes.DATA ? model.toLowerCase() : model.toLowerCase() + 's';
+              path += "/parameters/" + data.id;
+              xtens.router.navigate(path, {trigger: true});
+              return false;
+          },
+
+
 
         /**
          * @method
