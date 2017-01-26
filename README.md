@@ -1,6 +1,5 @@
 # XTENS 2
 
-<a href="https://nodejs.org"><img src="https://cloud.githubusercontent.com/assets/14332186/22329480/bf0228ec-e3c1-11e6-9d8b-7840838e177e.png" width="150"></a>
 [![Build Status](https://travis-ci.org/biolab-unige/xtens-app.svg?branch=master)](https://travis-ci.org/biolab-unige/xtens-app)
 [![Coverage Status](https://coveralls.io/repos/github/biolab-unige/xtens-app/badge.svg?branch=master&etc=1)](https://coveralls.io/github/biolab-unige/xtens-app?branch=master)
 
@@ -8,7 +7,7 @@ a digital repository for heterogeneous data in life science.
 
 ##Dependencies:
 
-* [Node.js 4.1+](http://nodejs.org/);
+* <a href="https://nodejs.org"><img src="https://cloud.githubusercontent.com/assets/14332186/22329480/bf0228ec-e3c1-11e6-9d8b-7840838e177e.png" width="150"></a>[Node.js 4.1+](http://nodejs.org/);
 * [Sails.js 0.11+](http://sailjs.org);
 * [Bower](http://bower.io/);
 * [PostgreSQL 9.4+](http://www.postgresql.org/).
