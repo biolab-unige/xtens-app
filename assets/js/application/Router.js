@@ -306,6 +306,15 @@
                 var $privilegesDeferred = privileges.fetch({
                     data: $.param({group: groupId})
                 });
+
+                // var $dataDeferred = data.fetch({
+                //     data: $.param(_.assign(_.omit(queryParams, ['parentDataType', 'parentSubjectCode']), { // omit "parentSubjectCode" as param in server-side GET request
+                //         populate: ['type'],
+                //         limit: DEFAULT_LIMIT,
+                //         sort: 'created_at DESC'
+                //     }))
+                // });
+
                 $.when($dataTypesDeferred, $privilegesDeferred).then(function(dataTypesRes, privilegesRes) {
                     $.ajax({
                         url: '/data',
@@ -314,6 +323,7 @@
                             'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                         },
                         data: {
+                            parentSubject: queryParams.parentSubject,
                             populate: ['type'],
                             limit: DEFAULT_LIMIT,
                             sort: 'created_at DESC'
@@ -640,6 +650,7 @@
                             'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                         },
                         data: {
+                            donor: queryParams.donor,
                             populate: ['type', 'donor'],
                             limit: DEFAULT_LIMIT,
                             sort: 'created_at DESC'
