@@ -98,7 +98,7 @@ describe('DataTypeService', function() {
             this.eavLoopCreate = sinon.stub(EavLoop,'create'); */
             this.dataType = fixtures.datatype[2];
             this.fields = DataTypeService.getFlattenedFields(this.dataType, false);
-            this.crudManager = sails.config.xtens.crudManager;
+            this.crudManager = sails.hooks['persistence'].getDatabaseManager().crudManager;
             this.transactionalPutMetadataFieldsIntoEAV = sinon.stub(this.crudManager, 'putMetadataFieldsIntoEAV', function() {
                 return BluebirdPromise.try(function() { return [1]; });
             });

@@ -11,18 +11,6 @@
  */
  "use strict";
 
- let dbConnectionMap = new Map([
-     ['sails-postgresql', 'xtens-pg']
- ]);
- let IrodsRestStrategy = require('xtens-fs').IrodsRestStrategy;
- let FileSystemManager = require('xtens-fs').FileSystemManager;
-
- let databaseConnections = require('../../local.js').connections;
- let connName = require('../../models.js').models.connection;
-
- let databaseManager = require(dbConnectionMap.get(databaseConnections[connName].adapter));
- let fileSystemConnections = require('../../local.js').fileSystemConnections;
-
 // ES6 Map for customised data management
  let customisedDataMap = new Map();
  customisedDataMap.set('CGH', '../migrate-utils/createCGH.js');
@@ -65,15 +53,8 @@
       */
      xtens: {
 
-         fileSystemManager: new FileSystemManager(fileSystemConnections[fileSystemConnections.default]),
+         customisedDataMap: customisedDataMap
 
-         fileSystemConnection: fileSystemConnections[fileSystemConnections.default],
-
-         databaseManager: databaseManager,
-
-         crudManager: new databaseManager.CrudManager(null, databaseConnections[connName], fileSystemConnections[fileSystemConnections.default]),
-
-         queryBuilder: new databaseManager.QueryBuilder()
      }
 
  };

@@ -70,8 +70,8 @@ module.exports = function filecontent(sails){
 
             this.upload = function uploadFileContent(req, res) {
 
-                let dirName, fileName, fsPath = sails.config.xtens.fileSystemConnection.path,
-                    landingDir = sails.config.xtens.fileSystemConnection.landingDirectory;
+                let dirName, fileName, fsPath = sails.hooks['persistence'].getFileSystem().defaultConnection.path,
+                    landingDir = sails.hooks['persistence'].getFileSystem().defaultConnection.landingDirectory;
                 // if the local-fs strategy is not in use, don't allow local file upload
                 // if (this.fileSystemManager.type && this.fileSystemManager.type !== 'local-fs') {
                 //     return res.badRequest('Files cannot be uploaded on server local file system.');

@@ -445,13 +445,13 @@ describe('DataController', function() {
             let rootDataType = _.cloneDeep(fixtures.datatype[0]);
             let id = rootDataType.id;
 
-            fetchDataTypeTreeStub = sinon.stub(sails.config.xtens.databaseManager.recursiveQueries, "fetchDataTypeTree", function(id, next) {
+            fetchDataTypeTreeStub = sinon.stub(sails.hooks['persistence'].getDatabaseManager().recursiveQueries, "fetchDataTypeTree", function(id, next) {
                 next(null, {rows:dataTypeTree});
             });
         });
 
         afterEach(function() {
-            sails.config.xtens.databaseManager.recursiveQueries.fetchDataTypeTree.restore();
+            sails.hooks['persistence'].getDatabaseManager().recursiveQueries.fetchDataTypeTree.restore();
         });
 
         it('Should return OK 200, with the expected graph structure', function(done) {

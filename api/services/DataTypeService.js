@@ -10,7 +10,7 @@
 let Joi = require("joi");
 let BluebirdPromise = require("bluebird");
 let constants = sails.config.xtens.constants;
-let crudManager = sails.config.xtens.crudManager;
+let crudManager = sails.hooks['persistence'].getDatabaseManager().crudManager;
 
 let DataTypeService = {
 

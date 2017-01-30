@@ -9,10 +9,10 @@ let BluebirdPromise = require('bluebird');
 
 let DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
 let FieldTypes = sails.config.xtens.constants.FieldTypes;
-let fileSystemManager = sails.config.xtens.fileSystemManager;
+let fileSystemManager = sails.hooks['persistence'].getFileSystem().managerManager;
 let Joi = require('joi');
-let crudManager = sails.config.xtens.crudManager;
-let queryBuilder = sails.config.xtens.queryBuilder;
+let crudManager = sails.hooks['persistence'].getDatabaseManager().crudManager;
+let queryBuilder = sails.hooks['persistence'].getDatabaseManager().queryBuilder;
 const DATA = sails.config.xtens.constants.DataTypeClasses.DATA;
 const VIEW_OVERVIEW = sails.config.xtens.constants.DataTypePrivilegeLevels.VIEW_OVERVIEW;
 
