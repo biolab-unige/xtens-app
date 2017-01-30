@@ -180,7 +180,7 @@
      buildGraph : function(req,res) {
 
          const name = req.param("idDataType");
-         const fetchDataTypeTree = sails.config.xtens.databaseManager.recursiveQueries.fetchDataTypeTree;
+         const fetchDataTypeTree = sails.hooks['persistence'].getDatabaseManager().recursiveQueries.fetchDataTypeTree;
          sails.log(req.param("idDataType"));
 
          return DataType.findOne({name:name})

@@ -8,7 +8,7 @@
  "use strict";
 
  let JSONStream = require('JSONStream');
- let crudManager = sails.config.xtens.crudManager;
+ let crudManager = sails.hooks['persistence'].getDatabaseManager().crudManager;
  const xtensConf = global.sails.config.xtens;
  const VIEW_OVERVIEW = xtensConf.constants.DataTypePrivilegeLevels.VIEW_OVERVIEW;
 

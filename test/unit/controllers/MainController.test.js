@@ -27,7 +27,7 @@ describe('OperatorController', function() {
 
     describe('GET /fileManager', function() {
         it('Should return OK 200 with the file system connection', function(done) {
-            let expectedFileSystemConn = sails.config.xtens.fileSystemConnection;
+            let expectedFileSystemConn = sails.hooks['persistence'].getFileSystem().defaultConnection;
 
             request(sails.hooks.http.app)
             .get('/fileManager')
@@ -48,7 +48,7 @@ describe('OperatorController', function() {
 
     describe('POST /customisedData', function() {
         it('Should return OK 200 with the file system connection', function(done) {
-            let expectedFileSystemConn = sails.config.xtens.fileSystemConnection;
+            let expectedFileSystemConn = sails.hooks['persistence'].getFileSystem().defaultConnection;
 
             request(sails.hooks.http.app)
             .post('/customisedData')

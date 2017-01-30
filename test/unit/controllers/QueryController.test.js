@@ -50,7 +50,7 @@ describe('QueryController', function() {
             var dataPrivilege = _.cloneDeep(fixtures.datatypeprivileges[2]);
             var queryObj = { statement: "WITH s AS (SELECT id, code, sex, personal_info FROM subject) SELECT DISTINCT d.id, s.code, s.sex, d.metadata FROM data d LEFT JOIN s ON s.id = d.parent_subject WHERE d.type = $1;", parameters: [dataType.id]};
 
-            queryStub = sinon.stub(sails.config.xtens.crudManager, "query", function(query, next) {
+            queryStub = sinon.stub(sails.hooks['persistence'].getDatabaseManager().crudManager, "query", function(query, next) {
 
                 if (query.statement === queryObj.statement && _.isArray(query.parameters)) {
                     next(null, {rows:expectedData});
@@ -60,7 +60,7 @@ describe('QueryController', function() {
                 }
             });
 
-            queryStreamStub = sinon.stub(sails.config.xtens.crudManager, "queryStream", function(query, next) {
+            queryStreamStub = sinon.stub(sails.hooks['persistence'].getDatabaseManager().crudManager, "queryStream", function(query, next) {
 
                 let stream = fs.createReadStream('./test/resources/data.json', {encoding: 'utf8'});
                 return next(stream,null);
@@ -68,8 +68,8 @@ describe('QueryController', function() {
             });
         });
         afterEach(function() {
-            sails.config.xtens.crudManager.query.restore();
-            sails.config.xtens.crudManager.queryStream.restore();
+            sails.hooks['persistence'].getDatabaseManager().crudManager.query.restore();
+            sails.hooks['persistence'].getDatabaseManager().crudManager.queryStream.restore();
         });
 
         it('Should return OK 200, with a json response', function(done) {

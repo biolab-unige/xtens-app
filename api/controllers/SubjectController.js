@@ -326,7 +326,7 @@ module.exports = {
     createGraph:function(req,res) {
         const co = new ControllerOut(res);
         const idSubject = req.param("idPatient");
-        const fetchSubjectDataTree = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTree;
+        const fetchSubjectDataTree = sails.hooks['persistence'].getDatabaseManager().recursiveQueries.fetchSubjectDataTree;
         const operator = TokenService.getToken(req);
         let dataTypePrivileges;
 
@@ -400,7 +400,7 @@ module.exports = {
      */
     createGraphSimple: function(req,res){
         const co = new ControllerOut(res);
-        const fetchSubjectDataTreeSimple = sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTreeSimple;
+        const fetchSubjectDataTreeSimple = sails.hooks['persistence'].getDatabaseManager().recursiveQueries.fetchSubjectDataTreeSimple;
         const idSubject = req.param("idPatient");
         const operator = TokenService.getToken(req);
         let dataTypePrivileges;

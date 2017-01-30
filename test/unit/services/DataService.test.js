@@ -237,7 +237,7 @@ describe('DataService', function() {
          * @description BEFORE HOOK: stub all the methods wrapped inside DataService.advancedQuery()
          */
         beforeEach(function() {
-            composeStub = sinon.stub(sails.config.xtens.queryBuilder, 'compose', function(args) {
+            composeStub = sinon.stub(sails.hooks['persistence'].getDatabaseManager().queryBuilder, 'compose', function(args) {
                 return {
                     statement: queryStatement,
                     parameters: args.type
@@ -255,7 +255,7 @@ describe('DataService', function() {
         });
 
         afterEach(function() {
-            sails.config.xtens.queryBuilder.compose.restore();
+            sails.hooks['persistence'].getDatabaseManager().queryBuilder.compose.restore();
             Data.query.restore();
         });
 
@@ -274,9 +274,9 @@ describe('DataService', function() {
 
         it("#should call the CRUD manager to execute the storage of metadata value", function() {
 
-            sails.log.debug(sails.config.xtens.crudManager);
+            sails.log.debug(sails.hooks['persistence'].getDatabaseManager().crudManager);
 
-            var stub = sinon.stub(sails.config.xtens.crudManager, 'putMetadataValuesIntoEAV', function() {
+            var stub = sinon.stub(sails.hooks['persistence'].getDatabaseManager().crudManager, 'putMetadataValuesIntoEAV', function() {
                 return BluebirdPromise.try(function() { return [1]; } );
             });
 
@@ -285,7 +285,7 @@ describe('DataService', function() {
             .then(function() {
                 console.log('DataService.test.storeMetadataIntoEAV - testing after promise fulfilled');
                 expect(stub.calledOnce).to.be.true;
-                sails.config.xtens.crudManager.putMetadataValuesIntoEAV.restore();
+                sails.hooks['persistence'].getDatabaseManager().crudManager.putMetadataValuesIntoEAV.restore();
             })
             .catch(function(err) {
                 sails.log.error(err);
@@ -388,14 +388,14 @@ describe('DataService', function() {
             var req = {headers:{authorization : bearer}};
             operatorPayload = TokenService.getToken(req);
 
-            composeStub = sinon.stub(sails.config.xtens.queryBuilder, 'compose', function(args) {
+            composeStub = sinon.stub(sails.hooks['persistence'].getDatabaseManager().queryBuilder, 'compose', function(args) {
                 return ({
                     statement: queryStatement,
                     parameters: [args.dataType]
                 });
             });
             // afterEach(function() {
-            //     sails.config.xtens.queryBuilder.compose.restore();
+            //     sails.hooks['persistence'].getDatabaseManager().queryBuilder.compose.restore();
             // });
 
         });
@@ -479,7 +479,7 @@ describe('DataService', function() {
         beforeEach(function(done) {
 
 
-            queryStub = sinon.stub(sails.config.xtens.crudManager, "query", function(query,next) {
+            queryStub = sinon.stub(sails.hooks['persistence'].getDatabaseManager().crudManager, "query", function(query,next) {
                 if (query.statement === queryStatement && _.isArray(query.parameters)) {
                     next(null, {rows:recordFound});
                 }
@@ -491,7 +491,7 @@ describe('DataService', function() {
         });
 
         afterEach(function(done) {
-            sails.config.xtens.crudManager.query.restore();
+            sails.hooks['persistence'].getDatabaseManager().crudManager.query.restore();
             done();
         });
 
@@ -656,7 +656,7 @@ describe('DataService', function() {
             var dataPrivilege = _.cloneDeep(fixtures.datatypeprivileges[2]);
             queryObj = { statement: "WITH s AS (SELECT id, code, sex, personal_info FROM subject) SELECT DISTINCT d.id, s.code, s.sex, d.metadata FROM data d LEFT JOIN s ON s.id = d.parent_subject WHERE d.type = $1;", parameters: [dataType.id]};
 
-            queryStreamStub = sinon.stub(sails.config.xtens.crudManager, "queryStream", function(query, next) {
+            queryStreamStub = sinon.stub(sails.hooks['persistence'].getDatabaseManager().crudManager, "queryStream", function(query, next) {
 
                 let stream = fs.createReadStream('./test/resources/data.json');
                 return next(stream,null);
@@ -664,7 +664,7 @@ describe('DataService', function() {
             });
         });
         // afterEach(function(done) {
-        //     sails.config.xtens.crudManager.queryStream.restore();
+        //     sails.hooks['persistence'].getDatabaseManager().crudManager.queryStream.restore();
         //     done();
         // });
 

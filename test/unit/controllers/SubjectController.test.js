@@ -661,13 +661,13 @@ describe('SubjectController', function() {
             let rootSubject = _.cloneDeep(fixtures.datatype[0]);
             let id = rootSubject.id;
 
-            fetchSubjectDataTreeStub = sinon.stub(sails.config.xtens.databaseManager.recursiveQueries, "fetchSubjectDataTree", function(id, next) {
+            fetchSubjectDataTreeStub = sinon.stub(sails.hooks['persistence'].getDatabaseManager().recursiveQueries, "fetchSubjectDataTree", function(id, next) {
                 next(null, {rows:subjectTree});
             });
         });
 
         afterEach(function() {
-            sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTree.restore();
+            sails.hooks['persistence'].getDatabaseManager().recursiveQueries.fetchSubjectDataTree.restore();
         });
 
         it('Should return OK 200, with the expected graph structure', function(done) {
@@ -728,13 +728,13 @@ describe('SubjectController', function() {
             let rootSubject = _.cloneDeep(fixtures.datatype[0]);
             let id = rootSubject.id;
 
-            fetchSubjectDataTreeSimpleStub = sinon.stub(sails.config.xtens.databaseManager.recursiveQueries, "fetchSubjectDataTreeSimple", function(id, next) {
+            fetchSubjectDataTreeSimpleStub = sinon.stub(sails.hooks['persistence'].getDatabaseManager().recursiveQueries, "fetchSubjectDataTreeSimple", function(id, next) {
                 next(null, {rows:subjectTreeRes});
             });
         });
 
         afterEach(function() {
-            sails.config.xtens.databaseManager.recursiveQueries.fetchSubjectDataTreeSimple.restore();
+            sails.hooks['persistence'].getDatabaseManager().recursiveQueries.fetchSubjectDataTreeSimple.restore();
         });
 
         it('Should return OK 200, with the expected graph structure', function(done) {

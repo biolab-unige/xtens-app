@@ -20,7 +20,7 @@ let MainController = {
      * @description retrieve the FileSystem coordinates for the client
      */
     getFileSystemStrategy: function(req, res) {
-        let conn = sails.config.xtens.fileSystemConnection;
+        let conn = sails.hooks['persistence'].getFileSystem().defaultConnection;
         return res.json(conn);
     },
 
