@@ -654,6 +654,7 @@
                             'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                         },
                         data: {
+                            donor: queryParams.donor,
                             parentData: queryParams.parentData,
                             parentSample: queryParams.parentSample,
                             populate: ['type', 'donor'],
