@@ -298,6 +298,7 @@
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
+
             $.when($operatorDeferred).then(function(operatorRes) {
                 var groupId = operatorRes && operatorRes[0].groups[0].id;
                 var $dataTypesDeferred = dataTypes.fetch({
@@ -323,6 +324,8 @@
                             'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                         },
                         data: {
+                            parentData: queryParams.parentData,
+                            parentSample: queryParams.parentSample,
                             parentSubject: queryParams.parentSubject,
                             populate: ['type'],
                             limit: DEFAULT_LIMIT,
@@ -414,7 +417,6 @@
             });
         },
 
-
         downloadView:function() {
             this.loadView(new FileManager.Views.Download());
         },
@@ -503,6 +505,7 @@
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
+
             $.when($operatorDeferred).then(function(operatorRes) {
                 var groupId = operatorRes && operatorRes[0].groups[0].id;
                 var $privilegesDeferred = privileges.fetch({
@@ -627,6 +630,7 @@
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
+
             $.when($operatorDeferred).then( function(operatorRes) {
                 var groupId = operatorRes && operatorRes[0].groups[0].id;
                 var $privilegesDeferred = privileges.fetch({
@@ -650,7 +654,8 @@
                             'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                         },
                         data: {
-                            donor: queryParams.donor,
+                            parentData: queryParams.parentData,
+                            parentSample: queryParams.parentSample,
                             populate: ['type', 'donor'],
                             limit: DEFAULT_LIMIT,
                             sort: 'created_at DESC'
@@ -767,6 +772,7 @@
             var dataTypes = new DataType.List();
             var biobanks = new Biobank.List();
             var that = this;
+
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
