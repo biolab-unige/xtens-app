@@ -212,18 +212,18 @@ e.g:
             'default': 'irodRestConn',
     
             irodRestConn: {
-                type: 'irods-rest',             // connection type: 'local' or 'irods-rest'
+                type: 'irods-rest',            
                  restURL: {                     // irods-rest url
                     protocol:'http:',               // protocol
-                    hostname: 'localhost',          // ip host
-                    port: 8080,                     // port
+                    hostname: 'host',               // tomcat ip host
+                    port: 8080,                     // tomcat port
                     path: '/irods-rest/rest'        // path 
                 },
-                irodsHome: '/Zone/home/rods',   // irods Home path
-                repoCollection: 'xtens-repo',   // default Collection name
-                landingCollection: 'landing',   // landing directory name
-                username: 'userirods',          //fs user
-                password: 'passwordirods'       //fs user password
+                irodsHome: '/nameZone/home/rods',   // irods home path
+                repoCollection: 'xtens-repo',   // irods default Collection name
+                landingCollection: 'landing',   // irods landing directory name
+                username: 'user',               // irods user
+                password: 'password'            // irods user password
             }
         },
 
@@ -237,7 +237,7 @@ You need to be in xtens-app directory:
 
         cd path/xtens-app
 
-To start sails (and the application) (Node.js v6 or higher) in production mode:
+To start sails (and the application) in production mode:
 
         sails lift --prod
 or:
