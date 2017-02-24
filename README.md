@@ -108,7 +108,7 @@ You can choose two different way to handle your binary data:
 
 First choice:
 ### Local FileSystem
-This solution uses the file system of the local machine. It is raccomended if it is not necessary collaborations between different centers
+This solution uses the file system of the local machine. It is raccomended if it is not necessary collaborate with different centers
 
 * Edit local.js file in xtens-app/config/ with the proper settings
 
