@@ -104,6 +104,8 @@ You can also define default Operators will be auto created on the platform at th
 
 ## FileSystem Configuration:
 You can choose two different way to handle your binary data:
+
+
 First choice:
 ### Local FileSystem
 This solution uses the file system of the local machine. It is raccomended if it is not necessary collaborations between different centers
