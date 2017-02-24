@@ -126,7 +126,7 @@
             }
             // check that there are no fields with more than one occurrence
             var occurrences = {}, duplicates = [];
-            _.each(_.pluck(flattened, 'name'), function(fieldName) {
+            _.each(_.map(flattened, 'name'), function(fieldName) {
                 if (!occurrences[fieldName]) {
                     occurrences[fieldName] = 1;
                 }
@@ -270,7 +270,7 @@
                 }
             };
 
-            this.model.set("parents", _.pluck(this.model.get("parents"),'id'));
+            this.model.set("parents", _.map(this.model.get("parents"),'id'));
 
             this.model.save(dataTypeDetails, {
                 //  patch: true,

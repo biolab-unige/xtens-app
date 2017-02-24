@@ -1123,7 +1123,7 @@
                 var type = this.dataTypes.get(data.get("type").id);
                 var dataTypeChildren = _.where(type.get("children"), {"model": Classes.DATA});
                 if (dataTypeChildren.length > 0) {
-                    var dids = _.pluck(dataTypeChildren, 'id').join();
+                    var dids = _.map(dataTypeChildren, 'id').join();
                     data.set("newDataLink", "#/data/new/0?idDataTypes="+dids+"&parentData="+data.id);
                 }
             }, this);

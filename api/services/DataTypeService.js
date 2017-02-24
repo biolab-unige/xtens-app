@@ -271,7 +271,7 @@ let DataTypeService = {
                 sails.log(privileges);
 
                 let whereObj = _.isEmpty(privileges) ? {} : {
-                    id: {'!': _.pluck(privileges, 'dataType')}
+                    id: {'!': _.map(privileges, 'dataType')}
                 };
 
                 return DataType.find({ where: whereObj });
@@ -296,7 +296,7 @@ let DataTypeService = {
             sails.log("getDataTypePrivilegeLevel on Datatype: " + dataTypesId + ". Operator: " + operatorId);
 
             return Operator.findOne( {id : operatorId} ).populate('groups').then(operator => {
-                groupId = _.pluck(operator.groups,'id');
+                groupId = _.map(operator.groups,'id');
 
                 return DataTypePrivileges.find({ where: {group: groupId, dataType: dataTypesId} });
             })
@@ -327,7 +327,7 @@ let DataTypeService = {
 
             return Operator.findOne( {id : operatorId} ).populate('groups').then(function(operator) {
 
-                groupId = _.pluck(operator.groups,'id');
+                groupId = _.map(operator.groups,'id');
 
                 return DataTypePrivileges.find( {group: groupId} );
             })
@@ -336,7 +336,7 @@ let DataTypeService = {
                     return dataTypes = [];
                 }
 
-                let idPriv = _.pluck(dataTypePrivileges,'dataType');
+                let idPriv = _.map(dataTypePrivileges,'dataType');
                 for(let datatype of dataTypes){
                   //If there is not privilege on datatype, remove it from datatypes array
                     if( _.indexOf( idPriv, datatype.id) < 0){

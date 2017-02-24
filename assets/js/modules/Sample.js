@@ -478,14 +478,14 @@
                         "model": Classes.SAMPLE
                     });
                     if (sampleTypeChildren.length > 0) {
-                        var sids = _.pluck(sampleTypeChildren, 'id').join();
+                        var sids = _.map(sampleTypeChildren, 'id').join();
                         sample.set("newDerivativeLink", "#/samples/new/0?idDataTypes=" + sids + "&parentSample=" + sample.id + "&donor=" + sample.get("donor").id);
                     }
                     var dataTypeChildren = _.where(type.get("children"), {
                         "model": Classes.DATA
                     });
                     if (dataTypeChildren.length > 0) {
-                        var dids = _.pluck(dataTypeChildren, 'id').join();
+                        var dids = _.map(dataTypeChildren, 'id').join();
                         sample.set("newDataLink", "#/data/new/0?idDataTypes=" + dids + "&parentSample=" + sample.id);
                     }
                 }

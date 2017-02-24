@@ -311,7 +311,7 @@
                 if (type.get("children") && type.get("children").length > 0) {
                     var sampleTypeChildren = _.where(type.get("children"), {"model": Classes.SAMPLE});
                     if (sampleTypeChildren.length) {
-                        var sids = _.pluck(sampleTypeChildren, 'id').join();
+                        var sids = _.map(sampleTypeChildren, 'id').join();
                         subject.set("newSampleLink", "#/samples/new/0?idDataTypes="+sids+"&donor=" + subject.id);
                     }
                     var dataTypeChildren = _.where(type.get("children"), {"model": Classes.DATA});

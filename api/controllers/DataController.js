@@ -136,7 +136,7 @@ module.exports = {
             data = results;
 
             //retrieve dataType id
-            dataTypesId = _.isObject(data[0].type) ? _.uniq(_.pluck(_.pluck(data, 'type'), 'id')) : _.uniq(_.pluck(data, 'type'));
+            dataTypesId = _.isObject(data[0].type) ? _.uniq(_.map(_.map(data, 'type'), 'id')) : _.uniq(_.map(data, 'type'));
 
             return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId);
 

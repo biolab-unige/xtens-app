@@ -18,7 +18,7 @@ describe('PopulateService', function() {
             expect(data).to.have.property('type');
             expect(data).to.have.property('metadata');
             expect(data.type).to.equals(this.type.id);
-            var names = _.pluck(this.fields,"name");
+            var names = _.map(this.fields,"name");
             names.forEach(function(name) {
                 expect(data.metadata[name]).to.exist;
                 expect(data.metadata[name]).to.have.property('value');

@@ -145,7 +145,7 @@
         render: function() {
             this.$el.html(this.template({
                 __:i18n,
-                fileNames: _.map(_.pluck(this.files, 'uri'), function(uri) {
+                fileNames: _.map(_.map(this.files, 'uri'), function(uri) {
                     var uriFrags = uri && uri.split('/');
                     return uriFrags && uriFrags[uriFrags.length - 1];
                 })

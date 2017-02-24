@@ -624,7 +624,7 @@ var GeneratedDataService = {
         .spread(function(dataTypes, biobanks) {
             console.log(dataTypes);
             console.log(biobanks);
-            var biobankIds = _.pluck(biobanks, 'id');
+            var biobankIds = _.map(biobanks, 'id');
 
             return BluebirdPromise.map(new Array(n), function() {
 

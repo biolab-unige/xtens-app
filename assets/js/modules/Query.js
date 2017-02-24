@@ -722,7 +722,7 @@
          *
          */
         addNestedQuery: function(queryObj) {
-            var childrenIds = _.pluck(this.selectedDataType.get("children"), 'id');
+            var childrenIds = _.map(this.selectedDataType.get("children"), 'id');
             var childrenDataTypes = new DataType.List(_.filter(this.dataTypesComplete.models, function(dataType) {
                 return childrenIds.indexOf(dataType.id) > -1;
             }));

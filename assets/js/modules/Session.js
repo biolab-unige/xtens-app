@@ -40,11 +40,11 @@
             if (_.isEmpty(options.user.groups)) {
                 return;
             }
-            var privilegeLevelArr = _.pluck(options.user.groups, 'privilegeLevel');
+            var privilegeLevelArr = _.map(options.user.groups, 'privilegeLevel');
             this.set("isWheel", privilegeLevelArr.indexOf(GroupPrivilegeLevels.WHEEL) > -1);
             this.set("isAdmin", this.get("isWheel") || privilegeLevelArr.indexOf(GroupPrivilegeLevels.ADMIN) > -1);
-            this.set("canAccessPersonalData", _.pluck(options.user.groups, 'canAccessPersonalData').indexOf(true) > -1);
-            this.set("canAccessSensitiveData", _.pluck(options.user.groups, 'canAccessSensitiveData').indexOf(true) > -1);
+            this.set("canAccessPersonalData", _.map(options.user.groups, 'canAccessPersonalData').indexOf(true) > -1);
+            this.set("canAccessSensitiveData", _.map(options.user.groups, 'canAccessSensitiveData').indexOf(true) > -1);
 
         },
 

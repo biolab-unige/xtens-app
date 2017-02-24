@@ -90,12 +90,12 @@ var Operator = {
          */
         formatForTokenPayload: function() {
             var operator = _.pick(this.toObject(), ['id', 'groups']);
-            var privilegesArray = _.pluck(operator.groups, 'privilegeLevel');
+            var privilegesArray = _.map(operator.groups, 'privilegeLevel');
             operator.isWheel = privilegesArray.indexOf(constants.GroupPrivilegeLevels.WHEEL) > -1;
             operator.isAdmin = operator.isWheel || privilegesArray.indexOf(constants.GroupPrivilegeLevels.ADMIN) > -1;
-            operator.canAccessPersonalData = _.pluck(operator.groups, 'canAccessPersonalData').indexOf(true) > -1;
-            operator.canAccessSensitiveData = _.pluck(operator.groups, 'canAccessSensitiveData').indexOf(true) > -1;
-            operator.groups = _.pluck(operator.groups, 'id');
+            operator.canAccessPersonalData = _.map(operator.groups, 'canAccessPersonalData').indexOf(true) > -1;
+            operator.canAccessSensitiveData = _.map(operator.groups, 'canAccessSensitiveData').indexOf(true) > -1;
+            operator.groups = _.map(operator.groups, 'id');
             return operator;
         }
 

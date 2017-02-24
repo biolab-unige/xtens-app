@@ -8,10 +8,12 @@
  * For more information on configuration, check out:
  * http://links.sailsjs.org/docs/config/globals
  */
+
+var _ = require('lodash');
 module.exports.globals = {
-	_: true,
-	async: true,
-	sails: true,
-	services: true,
-	models: true
+    _: _,
+    async: true,
+    sails: true,
+    services: true,
+    models: true
 };

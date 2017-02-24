@@ -531,7 +531,7 @@ let DataService = BluebirdPromise.promisifyAll({
                 sails.log("limit: " + limit);
                 return query("SELECT id FROM " + modelName + " LIMIT $1 OFFSET $2", [limit,offset]).then(function(result) {
                     offset += limit;
-                    let ids = _.pluck(result.rows, 'id');
+                    let ids = _.map(result.rows, 'id');
                     // sails.log(ids);
                     return DataService.storeMetadataIntoEAV(ids);
                     // return;
