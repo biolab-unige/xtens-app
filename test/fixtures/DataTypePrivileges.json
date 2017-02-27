@@ -124,5 +124,11 @@
         "dataType": 1,
         "group": 4,
         "privilegeLevel": "view_details"
+    },
+    {
+        "id": 22,
+        "dataType": 5,
+        "group": 1,
+        "privilegeLevel": "edit"
     }
 ]

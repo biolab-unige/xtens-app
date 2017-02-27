@@ -38,7 +38,7 @@ describe('QueryService', function() {
                 return Data;
             });
 
-            parseCriteriaStub = sinon.stub(actionUtil, 'parseCriteria', () => null);
+            parseCriteriaStub = sinon.stub(actionUtil, 'parseCriteria', () => {return {};});
             parseLimitStub = sinon.stub(actionUtil, 'parseLimit', req => req.params.limit);
             parseSkipStub = sinon.stub(actionUtil, 'parseSkip', req => req.params.skip);
 
@@ -54,8 +54,9 @@ describe('QueryService', function() {
 
         it('should compose correctly the header info given the response', function() {
             const url = `${mockReq.baseUrl}${mockReq.path}`, totalCount = fixtures.data.length,
+                privileges = _.where(fixtures.datatypeprivileges, { 'group': 1 }),
                 numPages = Math.ceil(totalCount/5);
-            return QueryService.composeHeaderInfo(mockReq).then(headerInfo => {
+            return QueryService.composeHeaderInfo(mockReq,privileges).then(headerInfo => {
                 expect(headerInfo).to.be.not.empty;
                 expect(headerInfo).to.have.property('count', totalCount);
                 expect(headerInfo).to.have.property('pageSize', 5);
