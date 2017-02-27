@@ -79,15 +79,14 @@ let DataTypePrivilegesController = {
      */
     find: function(req, res) {
         const co = new ControllerOut(res);
-        const query = QueryService.composeFind(req);
-        /*
+        // const query = QueryService.composeFind(req);
+
         let query = DataTypePrivileges.find()
-        .where(QueryService.parseCriteria(req))
-        .limit(QueryService.parseLimit(req))
-        .skip(QueryService.parseSkip(req))
-        .sort(QueryService.parseSort(req));
-        query = QueryService.populateRequest(query, req);
-        */
+           .where(actionUtil.parseCriteria(req))
+           .limit(actionUtil.parseLimit(req))
+           .skip(actionUtil.parseSkip(req))
+           .sort(actionUtil.parseSort(req));
+
         query.then(function(data) {
             res.json(data);
         })

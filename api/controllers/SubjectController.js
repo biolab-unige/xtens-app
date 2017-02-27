@@ -121,14 +121,17 @@ module.exports = {
     find: function(req, res) {
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
-        let subjects = [], dataTypesId;
+        let subjects = [], dataTypesId, allPrivileges;
 
-        const query = QueryService.composeFind(req, { blacklist: ['personalInfo'] });
-        if (operator.canAccessPersonalData) {
-            query.populate('personalInfo');
-        }
-
-        query.then(results => {
+        return DataTypePrivileges.find({group:operator.groups[0]}).then(results =>{
+            allPrivileges = results;
+            let query = QueryService.composeFind(req, { blacklist: ['personalInfo'] }, allPrivileges);
+            if (operator.canAccessPersonalData) {
+                query.populate('personalInfo');
+            }
+            return query;
+        })
+        .then(results => {
             if (!results || _.isEmpty(results)) {
                 return [];
             }
@@ -139,20 +142,21 @@ module.exports = {
 
             return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId);
 
-        }).then(privileges => {
+        }).then(pagePrivileges => {
 
             return BluebirdPromise.all([
-                DataService.filterListByPrivileges(subjects, dataTypesId, privileges, operator.canAccessSensitiveData),
-                QueryService.composeHeaderInfo(req)
+                DataService.filterListByPrivileges(subjects, dataTypesId, pagePrivileges, operator.canAccessSensitiveData),
+                QueryService.composeHeaderInfo(req, allPrivileges)
             ]);
 
-        }).spread((payload, headerInfo) => {
-            return DataService.prepareAndSendResponse(res, payload, headerInfo);
         })
-        .catch(err => {
-            sails.log.error(err);
-            return co.error(err);
-        });
+            .spread((payload, headerInfo) => {
+                return DataService.prepareAndSendResponse(res, payload, headerInfo);
+            })
+            .catch(err => {
+                sails.log.error(err);
+                return co.error(err);
+            });
     },
 
     /**

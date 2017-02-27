@@ -5,7 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 /* jshint node: true */
-/* globals _, sails, Data, DataType, DataService, DataTypeService, SubjectService, SampleService, QueryService, TokenService */
+/* globals _, sails, Data, DataType, DataService, DataTypeService, SubjectService, SampleService, QueryService, TokenService, DataTypePrivileges */
 "use strict";
 
 const BluebirdPromise = require('bluebird');
@@ -125,11 +125,15 @@ module.exports = {
     find: function(req, res) {
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
-        let data = [], dataTypesId;
-        const query = QueryService.composeFind(req);
-        sails.log.verbose(req.allParams());
+        console.log(operator);
+        let data = [], dataTypesId, allPrivileges;
+        return DataTypePrivileges.find({group:operator.groups[0]}).then(results =>{
+            allPrivileges = results;
+            let query = QueryService.composeFind(req, null, allPrivileges);
 
-        query.then(results => {
+            return query;
+        })
+        .then(results => {
             if (!results || _.isEmpty(results)) {
                 return [];
             }
@@ -140,11 +144,11 @@ module.exports = {
 
             return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId);
 
-        }).then(privileges => {
+        }).then(pagePrivileges => {
 
             return BluebirdPromise.all([
-                DataService.filterListByPrivileges(data, dataTypesId, privileges, operator.canAccessSensitiveData),
-                QueryService.composeHeaderInfo(req)
+                DataService.filterListByPrivileges(data, dataTypesId, pagePrivileges, operator.canAccessSensitiveData),
+                QueryService.composeHeaderInfo(req, allPrivileges)
             ]);
 
         })
