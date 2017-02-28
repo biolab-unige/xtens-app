@@ -159,4 +159,56 @@ describe('QueryService', function() {
         });
     });
 
+    describe('#composeHeaderInfo', function() {
+
+        let parseCriteriaStub, mockReq;
+
+        beforeEach(() => {
+            mockReq = {
+                baseUrl: 'http:/localhost:80',
+                path: '/data',
+                params: {
+                    parentSubject:1,
+                    parentSample:13
+                },
+                allParams: function() {
+                    return this.params;
+                }
+            };
+
+            parseCriteriaStub = sinon.stub(actionUtil, 'parseCriteria', () => { return { parentSubject:1, parentSample:13 }; });
+        });
+
+        afterEach(() => {
+            parseCriteriaStub.restore();
+        });
+
+        it('should compose correctly the where params object including privileges', function() {
+
+            const privileges = _.where(fixtures.datatypeprivileges, { 'group': 1 });
+            const expectedType = privileges.map(el => el.dataType);
+            const resultParams = QueryService.parseParams(mockReq, privileges);
+
+            console.log(resultParams);
+
+            expect(resultParams).to.be.not.empty;
+            expect(resultParams).to.have.property('parentSubject').that.is.deep.equal(1);
+            expect(resultParams).to.have.property('parentSample').that.is.deep.equal(13);
+            expect(resultParams).to.have.property('type').that.is.deep.equal(expectedType);
+
+        });
+
+        it('should compose correctly the where params object without privileges', function() {
+
+            const privileges = _.where(fixtures.datatypeprivileges, { 'group': 8 });
+            const resultParams = QueryService.parseParams(mockReq, privileges);
+
+            expect(resultParams).to.be.not.empty;
+            expect(resultParams).to.have.property('parentSubject').that.is.deep.equal(1);
+            expect(resultParams).to.have.property('parentSample').that.is.deep.equal(13);
+            expect(resultParams).to.not.have.property('type');
+
+        });
+    });
+
 });

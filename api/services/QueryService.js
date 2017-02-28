@@ -3,7 +3,7 @@
  */
 /* jshint node: true */
 /* jshint esnext: true */
-/* globals _, sails, DataTypePrivileges*/
+/* globals _, sails*/
 "use strict";
 
 const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
@@ -22,14 +22,7 @@ const QueryService = {
     composeFind: function(req, populateOpts, privileges) {
 
         const Model = actionUtil.parseModel(req);
-
-        let whereParams = actionUtil.parseCriteria(req);
-
-        if (!whereParams.type) {
-            const arrPrivileges = _.isArray(privileges) ? privileges : [privileges];
-            let arrDtPrivId = arrPrivileges.map(el => el.dataType);
-            whereParams['type'] = arrDtPrivId;
-        }
+        const whereParams = QueryService.parseParams(req,privileges);
         const queryFind = Model.find(QueryService.parseSelect(req))
           .where(whereParams)
           .limit(actionUtil.parseLimit(req))
@@ -49,11 +42,8 @@ const QueryService = {
         const Model = actionUtil.parseModel(req);
         // sails.log.verbose('QueryService.composeHeaderInfo - Model is:');
         // sails.log.verbose(Model);
-        var params = actionUtil.parseCriteria(req);
 
-        const arrPrivileges = _.isArray(privileges) ? privileges : [privileges];
-        let arrDtPrivId = arrPrivileges.map(el => el.dataType);
-        params['type'] = arrDtPrivId;
+        const params = QueryService.parseParams(req,privileges);
 
         return Model.count().where(params)
 
@@ -113,6 +103,25 @@ const QueryService = {
             sails.log.error(err);
             return null;
         }
+    },
+
+    /**
+     * @method
+     * @name
+     * @param {Request} req
+     */
+    parseParams: function(req,privileges) {
+        let params = actionUtil.parseCriteria(req);
+
+        if (!privileges || _.isEmpty(privileges)) {
+            return params;
+        }
+        if(!params.type){
+            const arrPrivileges = _.isArray(privileges) ? privileges : [privileges];
+            let arrDtPrivId = arrPrivileges.map(el => el.dataType);
+            params.type = arrDtPrivId;
+        }
+        return params;
     }
 
 };

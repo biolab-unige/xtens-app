@@ -5,7 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 /* jshint node: true */
-/* globals _, __filename__, sails, Project, DataTypePrivileges, Subject, Data, DataType, SubjectService, TokenService, QueryService, DataService, DataTypeService, SampleService */
+/* globals _, sails, Project, DataTypePrivileges, Subject, DataType, SubjectService, TokenService, QueryService, DataService, DataTypeService */
 "use strict";
 
 const ControllerOut = require("xtens-utils").ControllerOut;
@@ -16,7 +16,6 @@ const PrivilegesError = require('xtens-utils').Errors.PrivilegesError;
 const NonexistentResourceError = require('xtens-utils').Errors.NonexistentResourceError;
 const xtensConf = global.sails.config.xtens;
 const SUBJECT = xtensConf.constants.DataTypeClasses.SUBJECT;
-const DATA = xtensConf.constants.DataTypeClasses.DATA;
 const VIEW_OVERVIEW = xtensConf.constants.DataTypePrivilegeLevels.VIEW_OVERVIEW;
 const EDIT = xtensConf.constants.DataTypePrivilegeLevels.EDIT;
 const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
@@ -132,17 +131,19 @@ module.exports = {
             return query;
         })
         .then(results => {
-            if (!results || _.isEmpty(results)) {
-                return [];
-            }
+            // if (!results || _.isEmpty(results)) {
+            //     return [];
+            // }
             subjects = results;
 
-            //retrieve dataType id
-            dataTypesId = _.isObject(subjects[0].type) ? _.uniq(_.map(_.map(subjects, 'type'), 'id')) : _.uniq(_.map(subjects, 'type'));
+            //retrieve dataTypes id and Privileges id
+            dataTypesId = !_.isEmpty(subjects) ? _.isObject(subjects[0].type) ? _.uniq(_.map(_.map(subjects, 'type'), 'id')) : _.uniq(_.map(subjects, 'type')) : [];
 
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId);
-
-        }).then(pagePrivileges => {
+            let arrDtPrivId = allPrivileges.map(el => el.dataType);
+            let pagePrivileges = _.intersection(arrDtPrivId, dataTypesId);
+        //     return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId);
+        //
+        // }).then(pagePrivileges => {
 
             return BluebirdPromise.all([
                 DataService.filterListByPrivileges(subjects, dataTypesId, pagePrivileges, operator.canAccessSensitiveData),
@@ -150,13 +151,13 @@ module.exports = {
             ]);
 
         })
-            .spread((payload, headerInfo) => {
-                return DataService.prepareAndSendResponse(res, payload, headerInfo);
-            })
-            .catch(err => {
-                sails.log.error(err);
-                return co.error(err);
-            });
+        .spread((payload, headerInfo) => {
+            return DataService.prepareAndSendResponse(res, payload, headerInfo);
+        })
+        .catch(err => {
+            sails.log.error(err);
+            return co.error(err);
+        });
     },
 
     /**
@@ -359,7 +360,7 @@ module.exports = {
 
             else {
                 let links = [];
-                console.log(resp.rows);
+
                 BluebirdPromise.map(resp.rows, function(row) {
                     let privilege;
                     if(_.find(dataTypePrivileges, function (d) {
@@ -380,7 +381,7 @@ module.exports = {
 
                 })
                 .then(function(link){
-                    console.log(link);
+
                     links = _.reject(link, function(l){ return l === undefined; });
                     let json = {'links':links};
                     return res.json(json);
@@ -427,7 +428,7 @@ module.exports = {
 
         function subjectTreeSimpleCb(err,resp) {
 
-            let children = [], child, links = [];
+            let children = [], links = [];
 
             sails.log(resp);
             /*istanbul ignore if*/

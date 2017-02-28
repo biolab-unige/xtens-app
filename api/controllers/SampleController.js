@@ -119,25 +119,21 @@ module.exports = {
     find: function(req, res) {
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
-        let samples = [], dataTypesId, allPrivileges;
+        let samples = [], dataTypesId, allPrivileges, pagePrivileges;
+
         return DataTypePrivileges.find({group:operator.groups[0]}).then(results =>{
             allPrivileges = results;
             let query = QueryService.composeFind(req, null, allPrivileges);
-
             return query;
         })
         .then(results => {
-            if (!results || _.isEmpty(results)) {
-                return [];
-            }
+
             samples = results;
+            //retrieve dataTypes id and Privileges id
+            dataTypesId = !_.isEmpty(samples) ? _.isObject(samples[0].type) ? _.uniq(_.map(_.map(samples, 'type'), 'id')) : _.uniq(_.map(samples, 'type')) : [];
+            let arrDtPrivId = allPrivileges.map(el => el.dataType);
 
-          //retrieve dataType id
-            dataTypesId = _.isObject(samples[0].type) ? _.uniq(_.map(_.map(samples, 'type'), 'id')) : _.uniq(_.map(samples, 'type'));
-
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId);
-
-        }).then(pagePrivileges => {
+            pagePrivileges = _.intersection(arrDtPrivId, dataTypesId);
 
             return BluebirdPromise.all([
                 DataService.filterListByPrivileges(samples, dataTypesId, pagePrivileges, operator.canAccessSensitiveData),

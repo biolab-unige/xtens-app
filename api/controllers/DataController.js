@@ -125,7 +125,7 @@ module.exports = {
     find: function(req, res) {
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
-        console.log(operator);
+
         let data = [], dataTypesId, allPrivileges;
         return DataTypePrivileges.find({group:operator.groups[0]}).then(results =>{
             allPrivileges = results;
@@ -134,17 +134,18 @@ module.exports = {
             return query;
         })
         .then(results => {
-            if (!results || _.isEmpty(results)) {
-                return [];
-            }
+            // if (!results || _.isEmpty(results)) {
+            //     return [];
+            // }
             data = results;
 
-            //retrieve dataType id
-            dataTypesId = _.isObject(data[0].type) ? _.uniq(_.map(_.map(data, 'type'), 'id')) : _.uniq(_.map(data, 'type'));
-
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId);
-
-        }).then(pagePrivileges => {
+            //retrieve dataTypes id and Privileges id
+            dataTypesId = !_.isEmpty(data) ? _.isObject(data[0].type) ? _.uniq(_.map(_.map(data, 'type'), 'id')) : _.uniq(_.map(data, 'type')) : [];
+            let arrDtPrivId = allPrivileges.map(el => el.dataType);
+            let pagePrivileges = _.intersection(arrDtPrivId, dataTypesId);
+        //     return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId);
+        //
+        // }).then(pagePrivileges => {
 
             return BluebirdPromise.all([
                 DataService.filterListByPrivileges(data, dataTypesId, pagePrivileges, operator.canAccessSensitiveData),
