@@ -256,7 +256,7 @@ Now you can go to the application page http://host:port/#/. (the host is the ip 
 
 To discover XTENS 2 RESTful API follow the link: [RESTful API](http://docs.xtens2.apiary.io)
 
-XTENS 2 is published under the MIT License.
+XTENS 2 is published under the BSD 3-clause License.
 
 
 
