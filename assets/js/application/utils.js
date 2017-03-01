@@ -15,7 +15,7 @@
     function handleError(res){
         var modal, body;
 
-        var error = res.responseJSON.error._internal;
+        var error = res.responseJSON.error._internal ? res.responseJSON.error._internal : res.responseJSON.error;
 
         if (_.isObject(error)){
           //error is an object
