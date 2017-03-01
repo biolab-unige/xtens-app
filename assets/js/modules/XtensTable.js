@@ -16,7 +16,7 @@
 
       if (!_.isEmpty(data)) {
           var d = new Date(data);
-          if (type === 'display' || type === 'filter') {
+          if (type === 'display' || type === 'filter' || type === 'export') {
               return pad(d.getDate()) + "/" + pad(d.getMonth()+1) + "/" + d.getFullYear();
           }
           else return new Date(data);
@@ -123,11 +123,25 @@
                   else{
                       this.tableOpts.fixedColumns=false;
                   }
-
+                  //Generating an array with the right length of columns to export without action column
+                  this.numColExport = Array.apply(null, {length: this.tableOpts.columns.length - 1}).map(Function.call, Number);
                 // display the buttons option
                   new $.fn.dataTable.Buttons(this.table, {
                       buttons: [
-                          'copy', 'excel'
+                          {
+                              extend: 'copy',
+                              exportOptions: {
+                                  orthogonal: 'export', // to export source data and not rendered data
+                                  columns:  this.numColExport //to not export action column
+                              }
+                          },
+                          {
+                              extend: 'excel',
+                              exportOptions: {
+                                  orthogonal: 'export', // to export source data and not rendered data
+                                  columns:  this.numColExport //to not export action column
+                              }
+                          }
                       ]
                   });
                   this.table.buttons().container().appendTo($('.col-sm-6:eq(0)', this.table.table().container()));
@@ -193,9 +207,12 @@
                   if (field._loop) {
                       columnOpts.data = "metadata." + fieldName + ".values";
                       var data = columnOpts.data;
-                      columnOpts.render = function ( data ) {
-                          return  data && data.length > 2 ? '<span>List on Details button</span>' : data.join();
+                      columnOpts.render = function (data, type, row) {
+                          return  type === 'export' ? data.join() : data && data.length > 2 ? '<span>List on Details button</span>' : data.join();
                       };
+                      // columnOpts.render = function ( data ) {
+                      //     return  data && data.length > 2 ? '<span>List on Details button</span>' : data.join();
+                      // };
 
                   }
 
