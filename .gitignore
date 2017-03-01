@@ -43,6 +43,7 @@ config/local.js
 coverage/*
 logs
 assets/dataFiles
+assets.json
 
 
 ################################################

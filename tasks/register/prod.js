@@ -5,11 +5,12 @@ module.exports = function (grunt) {
         'uglify',
         'cssmin',
         'copy:fonts',
+        'assets_versioning',
         'sails-linker:prodJs',
         'sails-linker:prodStyles',
-        'sails-linker:devTpl',
+        'sails-linker:prodTpl',
         'sails-linker:prodJsJade',
         'sails-linker:prodStylesJade',
-        'sails-linker:devTplJade'
+        'sails-linker:prodTplJade'
     ]);
 };

@@ -15,11 +15,11 @@
 module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-bower-task');
-
+    grunt.loadNpmTasks('grunt-assets-versioning');
     grunt.initConfig({
         bower: {
             install: {
-                // grunt-bower-task default options
+        // grunt-bower-task default options
                 options: {
                     targetDir: './assets/dependencies',
                     layout: 'byComponent',
@@ -32,18 +32,31 @@ module.exports = function(grunt) {
                     }
                 }
             }
+        },
+        assets_versioning: {
+            production: {
+                options: {
+                    versionsMapFile: 'assets.json',
+                    tag: 'date'
+                },
+                files: {
+                    '.tmp/public/version/min/production.min.css': ['.tmp/public/min/production.min.css'],
+                    '.tmp/public/version/min/production.min.js': ['.tmp/public/min/production.min.js'],
+                    '.tmp/public/version/jst.js': ['.tmp/public/jst.js']
+                }
+            }
         }
+
     });
-    // Load the include-all library in order to require all of our grunt
-    // configurations and task registrations dynamically.
+  // Load the include-all library in order to require all of our grunt
+  // configurations and task registrations dynamically.
     var includeAll;
     try {
         includeAll = require('include-all');
     } catch (e0) {
         try {
             includeAll = require('sails/node_modules/include-all');
-        }
-        catch(e1) {
+        } catch (e1) {
             console.error('Could not find `include-all` module.');
             console.error('Skipping grunt tasks...');
             console.error('To fix this, please run:');
@@ -56,12 +69,12 @@ module.exports = function(grunt) {
     }
 
 
-    /**
-     * Loads Grunt configuration modules from the specified
-     * relative path. These modules should export a function
-     * that, when run, should either load/configure or register
-     * a Grunt task.
-     */
+  /**
+   * Loads Grunt configuration modules from the specified
+   * relative path. These modules should export a function
+   * that, when run, should either load/configure or register
+   * a Grunt task.
+   */
     function loadTasks(relPath) {
         return includeAll({
             dirname: require('path').resolve(__dirname, relPath),
@@ -69,10 +82,10 @@ module.exports = function(grunt) {
         }) || {};
     }
 
-    /**
-     * Invokes the function from a Grunt configuration module with
-     * a single argument - the `grunt` object.
-     */
+  /**
+   * Invokes the function from a Grunt configuration module with
+   * a single argument - the `grunt` object.
+   */
     function invokeConfigFn(tasks) {
         for (var taskName in tasks) {
             if (tasks.hasOwnProperty(taskName)) {
@@ -84,16 +97,18 @@ module.exports = function(grunt) {
 
 
 
-    // Load task functions
+  // Load task functions
     var taskConfigurations = loadTasks('./tasks/config'),
-    registerDefinitions = loadTasks('./tasks/register');
+        registerDefinitions = loadTasks('./tasks/register');
 
-    // (ensure that a default task exists)
+  // (ensure that a default task exists)
     if (!registerDefinitions.default) {
-        registerDefinitions.default = function (grunt) { grunt.registerTask('default', []); };
+        registerDefinitions.default = function(grunt) {
+            grunt.registerTask('default', []);
+        };
     }
 
-    // Run task functions to configure Grunt.
+  // Run task functions to configure Grunt.
     invokeConfigFn(taskConfigurations);
     invokeConfigFn(registerDefinitions);
 

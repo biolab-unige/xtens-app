@@ -37,14 +37,14 @@ module.exports = function(grunt) {
                 expand: true,
                 dot: true,
                 cwd: '.tmp/public/dependencies/select2',
-                dest: '.tmp/public/min',
+                dest: '.tmp/public/version/min',
                 src: ['**/*.{ico,png,txt,gif}']
             }, {
                 expand: true,
                 dot: true,
                 cwd: 'bower_components/font-awesome',
                 src: ['fonts/*.*'],
-                dest: '.tmp/public'
+                dest: '.tmp/public/version'
             }]
         }
 
