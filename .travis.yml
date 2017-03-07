@@ -1,3 +1,4 @@
+
 language: node_js
 sudo: false
 env:
@@ -9,11 +10,9 @@ addons:
     packages:
     - g++-4.8
 node_js:
-  - 4
   - 6
 install:
   - npm install
-  - npm install sails
 branches:
   only:
   - master
@@ -21,11 +20,6 @@ before_script:
   - mkdir logs
 script:
   - nv=$(node -v)
-  - if [[ $nv == v4* ]] ;
-    then
-        npm run-script test:v4-travis;
-    else
-        npm run-script test:v6-travis;
-    fi
+  - npm run-script test:v6-travis
 after_success:
   - npm run-script upload-to-coveralls
