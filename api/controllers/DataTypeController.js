@@ -7,10 +7,82 @@
  /* jshint node: true */
  /* globals _, sails, DataType, DataTypeService, QueryService, TokenService */
  "use strict";
- const ControllerOut = require("xtens-utils").ControllerOut;
+ const ControllerOut = require("xtens-utils").ControllerOut, ValidationError = require('xtens-utils').Errors.ValidationError;
  const crudManager = sails.hooks.persistence.crudManager;
  const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
+ const BluebirdPromise = require('bluebird');
 
+/**
+ * @method
+ * @name findCoroutine
+ * @param{Request} req
+ * @param{Response} res
+ * @description coroutine for retrieval of a list of Data Types
+ */
+ const findCoroutine = BluebirdPromise.coroutine(function *(req, res) {
+     const operator = TokenService.getToken(req);
+     let query = DataType.find()
+        .where(actionUtil.parseCriteria(req))
+        .limit(actionUtil.parseLimit(req))
+        .skip(actionUtil.parseSkip(req))
+        .sort(actionUtil.parseSort(req));
+
+     if (!req.param('populate')) {
+         query.populate('parents');  // by default populate only with 'parents' dataTypes
+     }
+     else {
+         query = actionUtil.populateRequest(query, req);
+     }
+     const dataTypes = yield BluebirdPromise.resolve(query);
+     const filteredDataTypes = yield DataTypeService.filterDataTypes(operator.id, dataTypes);
+     sails.log(filteredDataTypes);
+     return res.json(filteredDataTypes);
+ });
+
+ /**
+  * @method
+  * @name createCoroutine
+  * @param{Request} req
+  * @param{Response} res
+  * @description coroutine for new DataType creation
+  */
+ const createCoroutine = BluebirdPromise.coroutine(function *(req, res) {
+     let dataType = req.allParams();
+
+     if (!dataType.name) dataType.name = dataType.schema && dataType.schema.name;
+     if (!dataType.model) dataType.model = dataType.schema && dataType.schema.model;
+
+     const validationRes = DataTypeService.validate(dataType, true);
+
+     if (validationRes.error) {
+         throw new ValidationError(validationRes.error);
+     }
+     dataType = yield crudManager.createDataType(dataType);
+     sails.log(dataType);
+     res.set('Location', `${req.baseUrl}${req.url}/${dataType.id}`);
+     return res.json(201, dataType);
+ });
+
+ /**
+  * @method
+  * @name updateCoroutine
+  * @param{Request} req
+  * @param{Response} res
+  * @description coroutine for existing DataType update
+  */
+ const updateCoroutine = BluebirdPromise.coroutine(function *(req, res) {
+     let dataType = req.allParams();
+
+    // Validate data type (schema included)
+     const validationRes = DataTypeService.validate(dataType, true);
+
+     if (validationRes.error) {
+         throw new ValidationError(validationRes.error);
+     }
+     dataType = yield crudManager.updateDataType(dataType);
+     sails.log(dataType);
+     return res.json(dataType);
+ });
 
  const DataTypeController = {
 
@@ -24,31 +96,11 @@
      */
      find: function(req, res) {
          const co = new ControllerOut(res);
-         const operator = TokenService.getToken(req);
-
-         let query = DataType.find()
-            .where(actionUtil.parseCriteria(req))
-            .limit(actionUtil.parseLimit(req))
-            .skip(actionUtil.parseSkip(req))
-            .sort(actionUtil.parseSort(req));
-
-         if (!req.param('populate')) {
-             query.populate('parents');  // by default populate only with 'parents' dataTypes
-         }
-         else {
-             query = actionUtil.populateRequest(query, req);
-         }
-
-         query.then(function(dataTypes) {
-             DataTypeService.filterDataTypes(operator.id, dataTypes).then(function (dataTypesFiltered) {
-                 sails.log(dataTypesFiltered);
-                 return res.json(dataTypesFiltered);
-
-             });
-         })
-        .catch(function(err) {
-            return co.error(err);
-        });
+         findCoroutine(req, res)
+         .catch(err => {
+             sails.log.error(err);
+             return co.error(err);
+         });
      },
 
     /**
@@ -58,37 +110,11 @@
      */
      create: function(req, res) {
          const co = new ControllerOut(res);
-         let dataType = req.allParams();
-
-         if (!dataType.name) dataType.name = dataType.schema && dataType.schema.name;
-         if (!dataType.model) dataType.model = dataType.schema && dataType.schema.model;
-
-        // omit all the properties relative to associations
-        // var newDataType = _.omit(req.body, ['parents', 'children', 'datas', 'groups']);
-        // var parents = req.param('parents');
-
-        // Validate data type (schema included)
-         const validationRes = DataTypeService.validate(dataType, true);
-
-         if (validationRes.error) {
-             return co.error(validationRes.error);
-         }
-         else {
-             crudManager.createDataType(dataType)
-            /*
-            .then(function(idDataType) {
-                return DataType.findOne(idDataType).populate('parents');
-            }) */
-            .then(function(dataType) {
-                sails.log(dataType);
-                res.set('Location', req.baseUrl + req.url + '/'  + dataType.id);
-                return res.json(201, dataType);
-            })
-            .catch(function(error) {
-                sails.log(error.message);
-                return co.error(error);
-            });
-         }
+         createCoroutine(req, res)
+         .catch(err => {
+             sails.log.error(err);
+             return co.error(err);
+         });
      },
 
     /**
@@ -98,28 +124,11 @@
      */
      update: function(req, res) {
          const co = new ControllerOut(res);
-         let dataType = req.allParams();
-
-        // Validate data type (schema included)
-         const validationRes = DataTypeService.validate(dataType, true);
-
-         if (validationRes.error) {
-             return co.error(validationRes.error);
-         }
-         else {
-             crudManager.updateDataType(dataType)
-            /*
-            .then(function(idDataType) {
-                return DataType.findOne(idDataType).populate('parents');
-            }) */
-            .then(function(dataType) {
-                sails.log(dataType);
-                return res.json(dataType);
-            })
-            .catch(function(error) {
-                return co.error(error);
-            });
-         }
+         updateCoroutine(req, res)
+        .catch(err => {
+            sails.log.error(err);
+            return co.error(err);
+        });
      },
 
     /**

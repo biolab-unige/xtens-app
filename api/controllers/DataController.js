@@ -20,6 +20,36 @@ const VIEW_OVERVIEW = xtensConf.constants.DataTypePrivilegeLevels.VIEW_OVERVIEW;
 const EDIT = xtensConf.constants.DataTypePrivilegeLevels.EDIT;
 const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 
+/**
+ * @method
+ * @name createCoroutine
+ * @param{Request} req
+ * @param{Response} res
+ * @description coroutine for new Data instance creation
+ */
+const createCoroutine = BluebirdPromise.coroutine(function *(req, res) {
+    let data = req.allParams();
+    const operator = TokenService.getToken(req);
+    const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.id, data.type);
+    if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege) || dataTypePrivilege.privilegeLevel !== EDIT) {
+        throw new PrivilegesError(`Authenticated user does not have edit privileges on the data type ${data.type}`);
+    }
+    DataService.simplify(data);
+    const dataType = yield DataType.findOne(data.type);
+    sails.log.debug(dataType);
+    sails.log.debug(crudManager);
+    const validationRes = DataService.validate(data, true, dataType);
+    if (validationRes.error !== null) {
+        throw new ValidationError(validationRes.error);
+    }
+    data = validationRes.value;
+    const dataTypeName = dataType && dataType.name;
+    const result = yield crudManager.createData(data, dataTypeName);
+    sails.log.info(result);
+    res.set('Location', `${req.baseUrl}${req.url}/${result.id}`);
+    return res.json(201, result);
+});
+
 module.exports = {
 
   /**
@@ -30,44 +60,13 @@ module.exports = {
    *
    */
     create: function(req, res) {
-        let data = req.allParams();
+
         const co = new ControllerOut(res);
-        const operator = TokenService.getToken(req);
-
-        DataTypeService.getDataTypePrivilegeLevel(operator.id, data.type).then(dataTypePrivilege => {
-
-            if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege) || dataTypePrivilege.privilegeLevel != EDIT) {
-                throw new PrivilegesError(`Authenticated user does not have edit privileges on the data type ${data.type}`);
-            }
-            else {
-                sails.log("DataController.create - here we are!!");
-                DataService.simplify(data);
-
-                return DataType.findOne(data.type);
-            }
-        })
-         .then(dataType => {
-             sails.log.debug(dataType);
-             sails.log.debug(crudManager);
-             const validationRes = DataService.validate(data, true, dataType);
-             if (validationRes.error === null) {
-                 data = validationRes.value;
-                 const dataTypeName = dataType && dataType.name;
-                 return crudManager.createData(data, dataTypeName);
-             }
-             else {
-                 throw new ValidationError(validationRes.error);
-             }
-         })
-         .then(result => {
-             sails.log.info(result);
-             res.set('Location', req.baseUrl + req.url + '/' + result.id);
-             return res.json(201, result);
-         })
-         .catch(error => {
-             sails.log.error("DataController.create: " + error.message);
-             return co.error(error);
-         });
+        createCoroutine(req, res)
+        .catch(error => {
+            sails.log.error("DataController.create: " + error.message);
+            return co.error(error);
+        });
 
     },
 
