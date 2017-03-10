@@ -6,11 +6,12 @@
  * for more details see: https://github.com/tarlepp/angular-sailsjs-boilerplate/blob/master/backend/api/services/Passport.js
  */
 
-var path     = require('path');
-var url      = require('url');
-var PassportService = require('passport');
-var BluebirdPromise = require('bluebird');
-
+let path     = require('path');
+let url      = require('url');
+let PassportService = require('passport');
+let BluebirdPromise = require('bluebird');
+let Joi = require("joi");
+const ValidationError = require('xtens-utils').Errors.ValidationError;
 /**
  * Passport Service
  *
@@ -74,7 +75,7 @@ PassportService.protocols = require('./protocols');
 PassportService.connect = function (req, query, profile, next) {
     sails.log.verbose(__filename + ':' + '__line' + ' [Service.Passport.connect() called]');
 
-    var user = {};
+    let user = {};
     // , provider;
 
     // Get the authentication provider from the query.
@@ -82,7 +83,7 @@ PassportService.connect = function (req, query, profile, next) {
 
     // Use profile.provider or fallback to the query.provider if it is undefined
     // as is the case for OpenID, for example
-    provider = profile.provider || query.provider;
+    let provider = profile.provider || query.provider;
 
     // If the provider cannot be identified we cannot match it to a passport so
     // throw an error and let whoever's next in line take care of it.
@@ -110,7 +111,7 @@ PassportService.connect = function (req, query, profile, next) {
     }
 
     Passport.findOne({
-        provider   : profile.provider,
+        provider   : provider,
         identifier : query.identifier.toString()
     }, function (err, passport) {
         // console.log(passport);
@@ -199,6 +200,17 @@ PassportService.connect = function (req, query, profile, next) {
     });
 };
 
+
+PassportService.validate = (req) => {
+    let params = req.allParams();
+
+    const loginSchema = {
+        identifier:Joi.string().required(),
+        password:Joi.string().required()
+    };
+
+    return Joi.validate(params, loginSchema);
+};
 /**
  * Create an authentication endpoint
  *
@@ -212,7 +224,7 @@ PassportService.endpoint = function (req, res) {
     console.log("Service.Passport.endpoint() called");
     sails.log.verbose(__filename + ':' + __line + ' [Service.Passport.endpoint() called]');
 
-    var strategies = sails.config.passport,
+    let strategies = sails.config.passport,
         provider   = req.param('provider'),
         options    = {};
     console.log(strategies,strategies.hasOwnProperty(provider));
@@ -251,7 +263,7 @@ PassportService.callback = function (req, res, next) {
     console.log("Service.Passport.callback() called");
     sails.log.verbose(__filename + ':' + __line + ' [Service.Passport.callback() called]');
 
-    var provider = req.param('provider', 'local'),
+    let provider = req.param('provider', 'local'),
         action   = req.param('action');
 
     // Passport.js wasn't really built for local user registration, but it's nice
@@ -278,6 +290,12 @@ PassportService.callback = function (req, res, next) {
             // the authentication process by attempting to obtain an access token. If
             // access was granted, the user will be logged in. Otherwise, authentication
             // has failed.
+            const validationParams = PassportService.validate(req);
+            if(validationParams.error){
+                let err = new ValidationError(validationParams.error);
+                err.code = 400;
+                return next(err, false);
+            }
             this.authenticate(provider, next)(req, res, req.next);
         }
     }
@@ -309,10 +327,10 @@ PassportService.loadStrategies = function () {
     console.log("Service.Passport.loadStrategies() called");
     sails.log.verbose(__filename + ':' + __line + ' [Service.Passport.loadStrategies() called]');
 
-    var that = this, strategies = sails.config.passport;
+    let that = this, strategies = sails.config.passport;
 
     Object.keys(strategies).forEach(function(key) {
-        var options = { passReqToCallback: true }, Strategy;
+        let options = { passReqToCallback: true }, Strategy;
 
         if (key === 'local') {
             // Since we need to allow users to login using both usernames as well as
@@ -344,7 +362,7 @@ PassportService.loadStrategies = function () {
 
         }
         else {
-            var protocol = strategies[key].protocol,
+            let protocol = strategies[key].protocol,
                 callback = strategies[key].callback;
 
             if (!callback) {
@@ -355,7 +373,7 @@ PassportService.loadStrategies = function () {
 
             Strategy = strategies[key].strategy;
 
-            var baseUrl = sails.getBaseurl();
+            let baseUrl = sails.getBaseurl();
 
             switch (protocol) {
                 case 'oauth':
@@ -387,7 +405,7 @@ PassportService.loadStrategies = function () {
  * @param  {Object} res
  */
 PassportService.disconnect = function (req, res, next) {
-    var user     = req.user,
+    let user     = req.user,
         provider = req.param('provider', 'local'),
         query    = {};
 
@@ -415,7 +433,7 @@ PassportService.serializeUser(function (user, next) {
 
     sails.log.verbose(__filename + ':' + __line + ' [Service.Passport.serializeUser() called]');
     if (!user) {
-        var err = new Error('Invalid user');
+        let err = new Error('Invalid user');
         next(err, null);
     } else {
         next(null, user.id);

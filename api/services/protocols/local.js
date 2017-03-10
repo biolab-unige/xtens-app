@@ -1,9 +1,9 @@
 /* jshint node: true */
 /* globals _, __filename__, sails, Project, Subject, Data, isEmail, Operator,Passport, DataType, SubjectService, TokenService, QueryService, DataService */
 'use strict';
-var validator = require('validator');
-var crypto = require('crypto');
-var ValidationError = require('xtens-utils').Errors.ValidationError;
+let validator = require('validator');
+let crypto = require('crypto');
+const ValidationError = require('xtens-utils').Errors.ValidationError;
 let BluebirdPromise = require('bluebird');
 /**
  * Local Authentication Protocol
@@ -33,7 +33,7 @@ exports.register = function(user, next) {
  */
 exports.createUser = function(_user, next) {
 
-    var password = _user.password;
+    let password = _user.password;
     delete _user.password;
   /*
      if (!email) {
@@ -66,9 +66,9 @@ exports.createUser = function(_user, next) {
         }
 
     // Generating accessToken for API authentication
-    // var token = crypto.randomBytes(48).toString('base64');
-        var payload = operator.formatForTokenPayload(operator);
-        var token = TokenService.issue(_.isObject(payload) ? JSON.stringify(payload) : payload); // modified by Massi
+    // let token = crypto.randomBytes(48).toString('base64');
+        let payload = operator.formatForTokenPayload(operator);
+        let token = TokenService.issue(_.isObject(payload) ? JSON.stringify(payload) : payload); // modified by Massi
 
         Passport.create({
             protocol: 'local',
@@ -105,7 +105,7 @@ exports.createUser = function(_user, next) {
  * @param {Function} next
  */
 exports.connect = function(req, res, next) {
-    var user = req.user,
+    let user = req.user,
         password = req.param('password');
 
     Passport.findOne({
@@ -143,7 +143,7 @@ exports.connect = function(req, res, next) {
  * @param {Function} next
  */
 exports.login = function(req, identifier, password, next) {
-    var isEmail = validator.isEmail(identifier),
+    let isEmail = validator.isEmail(identifier),
         query = {};
 
     if (isEmail) {
@@ -154,17 +154,18 @@ exports.login = function(req, identifier, password, next) {
 
     Operator.findOne(query).populate('groups').exec(function(err, user) {
         if (err) {
-            return next({error:err,code:500});
+            err.code = 500;
+            return next(err,false);
         }
 
         if (!user) {
             if (isEmail) {
-                err = new Error('Error.Passport.Email.NotFound');
+                err = new ValidationError('Error.Passport.Email.NotFound');
             } else {
-                err = new Error('Error.Passport.Username.NotFound');
+                err = new ValidationError('Error.Passport.Username.NotFound');
             }
-
-            return next({error:err,code:401}, false);
+            err.code = 401;
+            return next(err, false);
         }
 
         Passport.findOne({
@@ -178,8 +179,9 @@ exports.login = function(req, identifier, password, next) {
                     }
 
                     if (!res) {
-                        err = new Error('Error.Passport.Password.Wrong');
-                        return next({error:err,code:401}, false);
+                        err = new ValidationError('User Authentication Failed');
+                        err.code = 401;
+                        return next(err, false);
                     } else {
                         return next(null, user);
                     }
@@ -208,17 +210,17 @@ exports.login = function(req, identifier, password, next) {
 /*eslint no-unreachable: 0*/
 exports.updatePassword = function(param, idOperator, next) {
 
-    var password = param.oldPass;
-    var newPass = param.newPass;
-    var cnewPass = param.cnewPass;
+    let password = param.oldPass;
+    let newPass = param.newPass;
+    let cnewPass = param.cnewPass;
 
     if (password === newPass) {
-        var err = new ValidationError('New Password and Old Password cannot be the same');
+        let err = new ValidationError('New Password and Old Password cannot be the same');
         return next(err, false);
     }
     // control if newPass and confirmNewPass match
     if (newPass !== cnewPass) {
-        var errn = new ValidationError('New Passwords do not match');
+        let errn = new ValidationError('New Passwords do not match');
         return next(errn, false);
     }
 
@@ -229,7 +231,7 @@ exports.updatePassword = function(param, idOperator, next) {
     .then(function(passport) {
 
       //Validate the old password inserted by user
-        var passValidatePassword = BluebirdPromise.promisify(passport.validatePassword);
+        let passValidatePassword = BluebirdPromise.promisify(passport.validatePassword);
 
         return passValidatePassword.call(passport, password, function(err,res){
             if (!res) {

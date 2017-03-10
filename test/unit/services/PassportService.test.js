@@ -1,11 +1,12 @@
 /* globals _, sails, fixtures, PassportService, Passport, Operator */
 "use strict";
 const expect = require('chai').expect, sinon = require('sinon');
+const ValidationError = require('xtens-utils').Errors.ValidationError;
 
 describe('PassportService', function() {
 
     describe('#callback', function() {
-        let registerStub, connectStub, disconnectStub, authStub, mockReq, mockRes , next;
+        let registerStub, connectStub, disconnectStub, authStub, validateStub, mockReq, mockRes , next;
 
         beforeEach(() => {
             mockReq = {
@@ -13,10 +14,15 @@ describe('PassportService', function() {
                 path: '/data',
                 params: {
                     provider: 'local',
-                    action: undefined
+                    action: undefined,
+                    identifier:"username",
+                    password:"password"
                 },
                 param: function(par) {
                     return this.params[par];
+                },
+                allParams: function(par) {
+                    return this.params;
                 }}, mockRes = {};
 
             registerStub = sinon.stub(PassportService.protocols.local, 'register',function (req,res,next) {
@@ -31,6 +37,9 @@ describe('PassportService', function() {
                 return next();
             });
 
+            validateStub = sinon.stub(PassportService, 'validate',function (req) {
+                return {};
+            });
             // authStub = sinon.stub(PassportService, 'authenticate',function (req,next) {
             //     return next();
             // });
@@ -41,6 +50,7 @@ describe('PassportService', function() {
             registerStub.restore();
             connectStub.restore();
             disconnectStub.restore();
+            validateStub.restore();
             // authStub.restore();
         });
 
@@ -373,6 +383,56 @@ describe('PassportService', function() {
             });
         });
     });
+
+    describe('#validate', function() {
+
+        let mockReq;
+
+        beforeEach(() => {
+            mockReq = {
+                baseUrl: 'http:/localhost:80',
+                path: '/data',
+                params: {
+                    identifier:"username",
+                    password:"password"
+                },
+                param: function(par) {
+                    return this.params[par];
+                },
+                allParams: function() {
+                    return this.params;
+                }};
+        });
+
+        it('Should return the validated object without error', function(done) {
+            let expectedRes = {
+                error: null,
+                value: { identifier: 'username', password: 'password' }
+            };
+            let validationResult = PassportService.validate(mockReq);
+            console.log(validationResult);
+            expect(validationResult).to.eql(expectedRes);
+
+            done();
+        });
+
+        it('Should return an object with a ValidationError', function(done) {
+            mockReq.params = {
+                wrongAttribute:"username",
+                password:"password"
+            };
+            let expectedRes = {
+                error: new ValidationError('ValidationError: child "identifier" fails because ["identifier" is required]'),
+                value: { wrongAttribute: 'username', password: 'password' }
+            };
+            let validationResult = PassportService.validate(mockReq);
+            console.log(validationResult);
+            expect(validationResult.value).to.eql(expectedRes.value);
+            expect(validationResult.error).to.be.an('error');
+            done();
+        });
+    });
+
 
     describe('#deserializeUser', function() {
 

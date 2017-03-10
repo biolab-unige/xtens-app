@@ -46,9 +46,9 @@ describe('AuthController', function() {
             });
         });
 
-        it('Should return UNAUTHORIZED 401 - User authentication failed', function(done) {
+        it('Should return UNAUTHORIZED 401 - User Authentication Failed', function(done) {
             const operator = _.cloneDeep(fixtures.operator[5]);
-            const expectedMessage = "User authentication failed";
+            const expectedMessage = 'User Authentication Failed';
             let username = operator.login;
             let password = "wrongPassword";
 
@@ -74,13 +74,13 @@ describe('AuthController', function() {
     });
 
     describe('POST /logout', function() {
-        it('Should return OK 200 with the file system connection', function(done) {
+        it('Should return OK 200 and the accessToken should be null', function(done) {
             const operator = _.cloneDeep(fixtures.operator[5]);
-            const passport = _.find(fixtures.passport, {
-                'user': operator.id,
-                'protocol': 'local'
-            });
-            const accessToken = passport.accessToken;
+            // const passport = _.find(fixtures.passport, {
+            //     'user': operator.id,
+            //     'protocol': 'local'
+            // });
+            // const accessToken = passport.accessToken;
             request(sails.hooks.http.app)
             .post('/logout')
             .send({
@@ -96,31 +96,32 @@ describe('AuthController', function() {
                 }
                 Passport.findOne({user:operator.id}).then(function (result) {
                     console.log(result);
-                    expect(result.accessToken).to.not.eql(accessToken);
+                    expect(result.accessToken).to.be.null;
+                    // .and.to.not.eql(accessToken);
                     done();
                     return;
                 });
             });
         });
 
-        it('Should return Error 500 - Caught some error while disconnecting the user', function(done) {
+        it('Should return Error 400 - User not logged', function(done) {
 
-            const expectedMessage = "Caught some error while disconnecting the user";
+            const expectedMessage = 'User not logged';
 
             request(sails.hooks.http.app)
             .post('/logout')
             .send({
                 user: {}
             })
-            .expect(500)
+            .expect(400)
             .end(function(err, res) {
                 if (err) {
                     sails.log.error(err);
                     done(err);
                     return;
                 }
-                expect(res.body.error).to.exist;
-                expect(res.body.error).to.eql(expectedMessage);
+
+                expect(res.body).to.equal(expectedMessage);
                 done();
                 return;
             });

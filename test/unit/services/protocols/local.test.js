@@ -231,11 +231,12 @@ describe("PassportService protocol Local", function() {
             const identifier = "wrong@email.it";
             const password = passport.password;
             const req = {};
-            const expectedError = new Error('Error.Passport.Email.NotFound');
+            let expectedError = new ValidationError('Error.Passport.Email.NotFound');
+            expectedError.code = 401;
             PassportService.protocols.local.login(req,identifier,password,function (err,res) {
 
-                expect(err.error).to.be.an('error');
-                expect(err.error).to.eql(expectedError);
+                expect(err).to.be.an('error');
+                expect(err).to.eql(expectedError);
                 done();
                 return;
             });
@@ -249,17 +250,18 @@ describe("PassportService protocol Local", function() {
             const identifier = "wrong_user";
             const password = passport.password;
             const req = {};
-            const expectedError = new Error('Error.Passport.Username.NotFound');
+            let expectedError = new ValidationError('Error.Passport.Username.NotFound');
+            expectedError.code = 401;
             PassportService.protocols.local.login(req,identifier,password,function (err,res) {
 
-                expect(err.error).to.be.an('error');
-                expect(err.error).to.eql(expectedError);
+                expect(err).to.be.an('error');
+                expect(err).to.eql(expectedError);
                 done();
                 return;
             });
         });
 
-        it("should return Error.Passport.Password.Wrong", function(done) {
+        it("should return ERROR - User Authentication Failed", function(done) {
             const operator = _.cloneDeep(fixtures.operator[0]);
             const passport = _.cloneDeep(_.find(fixtures.passport,function (ps) {
                 return ps.id === operator.id;
@@ -267,11 +269,12 @@ describe("PassportService protocol Local", function() {
             const identifier = operator.email;
             const password = "wrong_password";
             const req = {};
-            const expectedError = new Error('Error.Passport.Password.Wrong');
+            let expectedError = new ValidationError('User Authentication Failed');
+            expectedError.code = 401;
             PassportService.protocols.local.login(req,identifier,password,function (err,res) {
 
-                expect(err.error).to.be.an('error');
-                expect(err.error).to.eql(expectedError);
+                expect(err).to.be.an('error');
+                expect(err).to.eql(expectedError);
                 done();
                 return;
             });
