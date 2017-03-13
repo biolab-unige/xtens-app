@@ -116,7 +116,7 @@ You have to define default Operators (at least 1) and default Groups (at least 1
               name: "public",
               privilegeLevel: "standard",
               canAccessPersonalData: false,
-              canAccessSensitiveData false
+              canAccessSensitiveData: false
           }],
           
         defaultOperators: [                         //array of default users
