@@ -9,7 +9,7 @@
  * http://links.sailsjs.org/docs/config/bootstrap
  */
 /* jshint node: true */
-/* globals sails, PassportService, Operator */
+/* globals sails, PassportService, Operator, Group */
 "use strict";
 
 var BluebirdPromise = require("bluebird");
@@ -21,36 +21,38 @@ module.exports.bootstrap = function(cb) {
     // create default operators if no operator is available
     if (sails.config.models.connection !== 'test') {
         sails.on('lifted', function() {
-        //     let Barrels = require('barrels');
-        //     let barrels = new Barrels();
-        //
-        //     let fixtures = barrels.data;
-        //
-        //     barrels.populate(function(err) {
-        //         console.log(err);
-        //     }, false);
-        // }
-        //
-        // else {
 
-            let createUser = BluebirdPromise.promisify(PassportService.protocols.local.createUser);
-
-            Operator.count().then(function(count) {
+            Group.count().then(function(count) {
                 if (count) {
                     return [];
                 }
                 else {
-                    return BluebirdPromise.map(sails.config.defaultOperators, function(operator) {
-                        return createUser(operator);
+                    return BluebirdPromise.map(sails.config.defaultGroups, function(group) {
+                        return Group.create(group);
                     });
                 }
             })
+            .then(function(createdGroups) {
+                if (!createdGroups) {
+                    return [];
+                }
+                sails.log.verbose(createdGroups);
 
-            .then(function(createdOperators) {
-                console.log(createdOperators);
+                Operator.count().then(function(count) {
+                    if (count) {
+                        return [];
+                    }
+                    else {
+                        let createUser = BluebirdPromise.promisify(PassportService.protocols.local.createUser);
+                        return BluebirdPromise.map(sails.config.defaultOperators, function(operator) {
+                            return createUser(operator);
+                        });
+                    }
+                })
+                .then(function(createdOperators) {
+                    sails.log.verbose(createdOperators);
+                });
             });
-
-
         });
 
     }
