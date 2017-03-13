@@ -110,7 +110,7 @@ You have to define default Operators (at least 1) and default Groups (at least 1
               name: "admin",
               privilegeLevel: "wheel",
               canAccessPersonalData: true,
-              canAccessSensitiveData true
+              canAccessSensitiveData: true
           },
           {
               name: "public",
