@@ -50,6 +50,28 @@ const coroutines = {
         sails.log.info(result);
         res.set('Location', `${req.baseUrl}${req.url}/${result.id}`);
         return res.json(201, result);
+    }),
+
+    findOne: BluebirdPromise.coroutine(function *(req, res) {
+        const id = req.param('id');
+        const operator = TokenService.getToken(req);
+
+        let query = Data.findOne(id);
+        query = actionUtil.populateRequest(query, req);
+
+        let data = yield BluebirdPromise.resolve(query);
+        const idDataType = _.isObject(data.type) ? data.type.id : data.type;
+        const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+
+              //filter Out Metadata if operator has not the privilege
+        if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege)){ data = {}; }
+        else if( dataTypePrivilege.privilegeLevel === VIEW_OVERVIEW) { data.metadata = {}; }
+
+        if( !operator.canAccessSensitiveData && !_.isEmpty(data.metadata) ){
+            data = yield DataService.filterOutSensitiveInfo(data, operator.canAccessSensitiveData);
+        }
+        return res.json(data);
+
     })
 
 };
@@ -83,34 +105,7 @@ module.exports = {
    */
     findOne: function(req, res) {
         const co = new ControllerOut(res);
-        const id = req.param('id');
-        const operator = TokenService.getToken(req);
-        let data;
-        let query = Data.findOne(id);
-
-        query = actionUtil.populateRequest(query, req);
-
-        query.then(function(result) {
-            if (!result) {
-                return {};
-            }
-            data = result;
-
-            const idDataType = _.isObject(data.type) ? data.type.id : data.type;
-            //retrieve dataTypePrivilege
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
-        })
-        .then(dataTypePrivilege => {
-                //filter Out Metadata if operator has not the privilege
-            if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege)){ return {};}
-            else if( dataTypePrivilege.privilegeLevel === VIEW_OVERVIEW) { data.metadata = {}; }
-
-            if( operator.canAccessSensitiveData || _.isEmpty(data.metadata) ){ return data; }
-            return DataService.filterOutSensitiveInfo(data, operator.canAccessSensitiveData);
-        })
-        .then(filteredData => {
-            return res.json(filteredData);
-        })
+        coroutines.findOne(req, res)
         .catch(error => {
             sails.log.error("DataController.findOne: " + error.message);
             return co.error(error);

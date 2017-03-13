@@ -5,9 +5,9 @@
     var MetadataComponent = xtens.module("metadatacomponent");
     var i18n = xtens.module("i18n").en;
 
-    // var metadataFieldNameNotAllowedCharset = /[^A-Za-z_][^A-Za-z_0-9]*/g;    
-    var metadataFieldNameNotAllowedCharset = /[^A-Za-z_0-9:]/g;   
-    
+    // var metadataFieldNameNotAllowedCharset = /[^A-Za-z_][^A-Za-z_0-9]*/g;
+    var metadataFieldNameNotAllowedCharset = /[^A-Za-z_0-9:]/g;
+
     /*
        function addChoiceToSelect2(term, data) {
        if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
@@ -20,7 +20,7 @@
      * @name initializeSelect2Field
      */
     function initializeSelect2Field($el, model, option) {
-        var property =  $el.attr('name'); 
+        var property =  $el.attr('name');
         if (_.isArray(model.get(property))) {
             var data =[];
             var list = model.get(property);
@@ -28,7 +28,7 @@
                 data.push({id: list[i], text: list[i], locked: false}); // set locked to false to edit values/unit list options
             }
             $el.select2({
-                multiple: true, 
+                multiple: true,
                 data: data,
                 createSearchChoice: function(term, data) {
                     if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
@@ -40,7 +40,7 @@
             });
         }
     }
-    
+
     function initializeCaseInsensitive($el, model, option) {
         if (model.get("fieldType") !== fieldTypes.TEXT || model.get("isList")) {
             $el.parent().hide();
@@ -75,7 +75,8 @@
             isList: false,
             possibleValues: null,
             hasUnit: false,
-            possibleUnits: null
+            possibleUnits: null,
+            description: null
         },
 
         initialize: function() {
@@ -83,10 +84,10 @@
         },
 
         isNumeric: function() {
-            var type = this.get("fieldType"); 
+            var type = this.get("fieldType");
             return (type === fieldTypes.INTEGER || type === fieldTypes.FLOAT);
         },
-        
+
         /**
          * @method
          * @name formatName
@@ -95,23 +96,23 @@
          */
         formatName: function() {
             var name = this.get("name");
-            
+
             // if name starts with digit add a dollar char ($) at the beginning
             if (/^\d/.test(name)) {
                 name = "_" + name;
             }
-            
-            // replace with underscore all the not allowed charsets 
+
+            // replace with underscore all the not allowed charsets
             // (all the chars that  cannot be used in Javascript property names with dot notation)
             name = name.toLowerCase().replace(metadataFieldNameNotAllowedCharset, "_");
-            
+
             console.log(name);
             // set the formatted name in the metadata field
             this.set("formattedName", name);
         }
 
     });
-    
+
     /**
      * @class
      * @name MetadataField.Views.Edit
@@ -224,13 +225,14 @@
                 selectOptions: {
                     collection: function() {
                         return ["SNOMED CT"];
-                    } 
+                    }
                 },
                 defaultOption: {
                     label: i18n('please-select'),
                     value: null
                 }
-            }
+            },
+            '[name=description]': 'description'
         },
 
         initialize: function(attrs) {
@@ -313,7 +315,7 @@
                 this.$('select[name=dbCollection]').parent().hide();
             }
         },
-        
+
         /**
          * @method
          * @name fieldTypeOnChange
@@ -340,7 +342,7 @@
 
         toggleRangeInputs: function() {
             if (this.model.get('hasRange')) {
-                this.$('div.metadataField-range').show();            
+                this.$('div.metadataField-range').show();
             }
             else {
                 var $range = this.$('.metadataField-range');

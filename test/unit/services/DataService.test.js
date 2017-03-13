@@ -423,6 +423,7 @@ describe('DataService', function() {
                     "ontologyUri":null,
                     "customValue":null,
                     "visible":true,
+                    "description": "Description",
                     "caseInsensitive":true,
                     "required":true,
                     "sensitive":true,

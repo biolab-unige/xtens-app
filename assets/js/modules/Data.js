@@ -459,6 +459,10 @@
 
     Data.Views.MetadataField = Data.Views.MetadataComponent.fullExtend({
 
+        events: {
+            'click #descriptionIcon': 'showDescription'
+        },
+
         className: 'metadatafield',
 
         /**
@@ -497,9 +501,38 @@
             if (this.setValidationOptions) {
                 this.setValidationOptions();
             }
+            var btnDescription = JST["views/templates/field-description-button.ejs"]({__:i18n, component: this.component});
+
+            $(this.el.children).append(btnDescription);
+
             return this;
         },
 
+        showDescription: function(ev) {
+            ev.preventDefault();
+            var that = this, content= "", title = "";
+            if($('.'+that.component.name).data().toggle === that.component.name){
+                $('.'+that.component.name).data().toggle = false;
+            }
+            if(!$('.'+that.component.name).data().toggle){
+                $('[data-original-title]').popover('destroy');
+                if(that.component.description){
+                    content = that.component.description;
+                    title = that.component.name;
+                }
+                $(ev.currentTarget).popover({
+                    html: true,
+                    content: content,
+                    placement: 'auto right',
+                    title: title
+                }).popover('show');
+                $('.'+that.component.name).data().toggle = that.component.name;
+            }
+            else {
+                $('[data-original-title]').popover('destroy');
+                $('.'+that.component.name).data().toggle = false;
+            }
+        },
         /**
          * @method
          * @name serialize

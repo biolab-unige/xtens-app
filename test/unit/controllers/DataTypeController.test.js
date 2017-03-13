@@ -8,7 +8,7 @@ const request = require('supertest');
 const loginHelper = require('./loginHelper');
 const sinon = require('sinon');
 
-describe('DataController', function() {
+describe('DataTypeController', function() {
 
     let tokenA, tokenS;
 
@@ -30,6 +30,7 @@ describe('DataController', function() {
                         "fieldType": "Integer",
                         "sensitive": false,
                         "customValue": null,
+                        "description":"Description metadata 1",
                         "ontologyUri": null,
                         "formattedName": "metadata_1",
                         "possibleUnits": null,
@@ -46,6 +47,7 @@ describe('DataController', function() {
                         "required": false,
                         "fieldType": "Text",
                         "sensitive": false,
+                        "description":"Description metadata 2",
                         "customValue": null,
                         "ontologyUri": null,
                         "formattedName": "metadata_2",
