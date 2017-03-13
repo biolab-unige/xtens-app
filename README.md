@@ -27,6 +27,9 @@ The following software packages are required to be installed on your system:
 
 * <a href="http://bower.io/"><img src="https://cloud.githubusercontent.com/assets/14332186/22330443/8bda895a-e3c6-11e6-9809-2d0e50c537b6.png" width="50"></a>   [Bower](http://bower.io/). 
 
+* <a href="https://gruntjs.com/"><img src="https://cloud.githubusercontent.com/assets/14332186/23852502/76eeb570-07e8-11e7-9643-fc6ee8f58a84.png" width="50"></a>   [Grunt](https://gruntjs.com/). 
+
+
 ## Installation (ubuntu server):
 
 * Download the file .zip or Clone the repository:
@@ -60,10 +63,22 @@ The following software packages are required to be installed on your system:
 * Load the bower packages:
 
         grunt bower
+* Create logs folder
 
+        mkdir logs
+        
 ## Database Configuration:
 
-You must create the local.js file in xtens-app/config/. This config file should include any settings specifically for your development computer (db passwords, operators etc.)
+Now configure PostgreSQL:
+
+* Create a PostreSQL user with a password
+
+* Create a database owned by the user just created
+
+* Import the sql-schema located in xtens-app/db-schema/ into database
+
+
+Then create the local.js file in xtens-app/config/. This config file should include any settings specifically for your development computer (db passwords, operators etc.)
 
 e.g:
 
@@ -88,16 +103,42 @@ e.g:
                     schema: true 
                 },
                 
-You can also define default Operators will be auto created on the platform at the first start. 
-
-        defaultOperators: [{                            //array of default users
-            firstName: 'default administrator',
-            lastName: 'sysadmin',
-            birthDate: '1970-01-01',
-            sex: 'N.A.',
-            email: 'email@domain.com',
-            login: 'defaultAdmin',
-            password: 'password'
+You have to define default Operators (at least 1) and default Groups (at least 1). They will be inserted into database at the first start. 
+         
+         defaultGroups:[                            //array of default groups
+         {                              
+              name: "admin",
+              privilegeLevel: "wheel",
+              canAccessPersonalData: true,
+              canAccessSensitiveData true
+          },
+          {
+              name: "public",
+              privilegeLevel: "standard",
+              canAccessPersonalData: false,
+              canAccessSensitiveData false
+          }],
+          
+        defaultOperators: [                         //array of default users
+            {                            
+              firstName: 'default administrator',
+              lastName: 'sysadmin',
+              birthDate: '1970-01-01',
+              sex: 'N.A.',
+              email: 'email@domain.com',
+              login: 'defaultAdmin',
+              password: 'password',
+              groups:[1]                //operator "defaultAdmin" is associated with group "admin"
+            },
+            {                           
+              firstName: 'default user',
+              lastName: 'demo user',
+              birthDate: '1970-01-01',
+              sex: 'N.A.',
+              email: 'email@domain.com',
+              login: 'demouser',
+              password: 'password',
+              groups:[2]                //operator "demouser" is associated with group "public"
             }]
         }
     };
