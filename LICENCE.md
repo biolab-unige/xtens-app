@@ -1,7 +1,7 @@
 BSD 3-clause “New” or “Revised” License
 --
 
-Copyright (c) 2015, University of Genoa (Università degli Studi di Genova)
+Copyright (c) 2015-2017, University of Genoa (Università degli Studi di Genova)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
