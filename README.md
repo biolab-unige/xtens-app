@@ -78,11 +78,11 @@ Now configure PostgreSQL:
 * Import the sql-schema located in xtens-app/db-schema/ into database
 
 
-Then create the local.js file in xtens-app/config/. This config file should include any settings specifically for your development computer (db passwords, operators etc.)
+Then create a file named ```local.js``` in the ```config/``` directory. This config file should include any settings specific of your local system/setup (db passwords, operators etc.). 
 
-e.g:
+In the minimal setup it should contain the following information:
 
-        module.exports {
+        module.exports = {
         
             port: process.env.PORT || #port;
         
@@ -101,7 +101,8 @@ e.g:
                     password: 'password',               //db user password
                     database: 'xtensdatabase',          //db name
                     schema: true 
-                },
+                }
+        };
                 
 You have to define default Operators (at least 1) and default Groups (at least 1). They will be inserted into database at the first start. 
          
