@@ -144,12 +144,12 @@ You have to define default Operators (at least 1) and default Groups (at least 1
     };
 
 ## FileSystem Configuration:
-You can choose two different way to handle your binary data:
+You can choose among two options to store raw/bulk data files:
 
 
 First choice:
 ### Local FileSystem
-This solution uses the file system of the local machine. It is raccomended if it is not necessary collaborate with different centers
+This solution uses the file system of the local (server) machine. It is raccomended if it is not necessary share data with different centers or distribuite them across machines
 
 * Edit local.js file in xtens-app/config/ with the proper settings
 
@@ -181,6 +181,7 @@ e.g:
     
 Second choice:
 ### Irods FileSystem
+This is the supported solution for distribuited data grid scenarios, using iRODS (https://irods.org/)
 Irods File System Prerequisities:
 * Irods Data Grid
 * Tomcat Server
