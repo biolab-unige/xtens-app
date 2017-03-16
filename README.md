@@ -80,7 +80,7 @@ Now configure PostgreSQL:
 
 Then create a file named ```local.js``` in the ```config/``` directory. This config file should include any settings specific of your local system/setup (db passwords, operators etc.). 
 
-In the minimal setup it should contain the following information:
+In the minimal setup it should contain the following information, including two default users with two user groups (admin and general user).
 
         module.exports = {
         
@@ -101,47 +101,44 @@ In the minimal setup it should contain the following information:
                     password: 'password',               //db user password
                     database: 'xtensdatabase',          //db name
                     schema: true 
-                }
-        };
-                
-You have to define default Operators (at least 1) and default Groups (at least 1). They will be inserted into database at the first start. 
-         
-         defaultGroups:[                            //array of default groups
-         {                              
-              name: "admin",
-              privilegeLevel: "wheel",
-              canAccessPersonalData: true,
-              canAccessSensitiveData: true
-          },
-          {
-              name: "public",
-              privilegeLevel: "standard",
-              canAccessPersonalData: false,
-              canAccessSensitiveData: false
-          }],
-          
-        defaultOperators: [                         //array of default users
-            {                            
-              firstName: 'default administrator',
-              lastName: 'sysadmin',
-              birthDate: '1970-01-01',
-              sex: 'N.A.',
-              email: 'email@domain.com',
-              login: 'defaultAdmin',
-              password: 'password',
-              groups:[1]                //operator "defaultAdmin" is associated with group "admin"
             },
-            {                           
-              firstName: 'default user',
-              lastName: 'demo user',
-              birthDate: '1970-01-01',
-              sex: 'N.A.',
-              email: 'email@domain.com',
-              login: 'demouser',
-              password: 'password',
-              groups:[2]                //operator "demouser" is associated with group "public"
-            }]
-        }
+         
+             defaultGroups:[                            //array of default groups
+            {                              
+                name: "admin",
+                privilegeLevel: "wheel",
+                canAccessPersonalData: true,
+                canAccessSensitiveData: true
+            },
+            {
+                name: "public",
+                privilegeLevel: "standard",
+                canAccessPersonalData: false,
+                canAccessSensitiveData: false
+            }],
+          
+            defaultOperators: [                         //array of default users
+              {                            
+                firstName: 'default administrator',
+                lastName: 'sysadmin',
+                birthDate: '1970-01-01',
+                sex: 'N.A.',
+                email: 'email@domain.com',
+                login: 'defaultAdmin',
+                password: 'password',
+                groups:[1]                //operator "defaultAdmin" is associated with group "admin"
+              },
+              {                           
+                firstName: 'default user',
+                lastName: 'demo user',
+                birthDate: '1970-01-01',
+                sex: 'N.A.',
+                email: 'email@domain.com',
+                login: 'demouser',
+                password: 'password',
+                groups:[2]                //operator "demouser" is associated with group "public"
+              }]
+          }
     };
 
 ## FileSystem Configuration:
