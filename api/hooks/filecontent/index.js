@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, sails, Data, DataFile, DataService, DataTypeService, SubjectService, SampleService, QueryService, TokenService, MigrateService, GeneratedDataService */
+/* globals _, sails, DataFile, DataTypeService, TokenService*/
 "use strict";
 
 // lib/hooks/myhook.js
@@ -40,7 +40,7 @@ module.exports = function filecontent(sails){
                     dataFile = result;
                     dataFile.data[0] ? idDataType = dataFile.data[0].type :
                     dataFile.samples[0] ? idDataType = dataFile.samples[0].type : undefined;
-                    return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+                    return DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
                 })
                 .then(dataTypePrivilege => {
 

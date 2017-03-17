@@ -32,7 +32,7 @@ const coroutines = {
     create: BluebirdPromise.coroutine(function *(req, res) {
         let data = req.allParams();
         const operator = TokenService.getToken(req);
-        const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.id, data.type);
+        const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.groups, data.type);
         if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege) || dataTypePrivilege.privilegeLevel !== EDIT) {
             throw new PrivilegesError(`Authenticated user does not have edit privileges on the data type ${data.type}`);
         }
@@ -60,8 +60,8 @@ const coroutines = {
         query = actionUtil.populateRequest(query, req);
 
         let data = yield BluebirdPromise.resolve(query);
-        const idDataType = _.isObject(data.type) ? data.type.id : data.type;
-        const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+        const idDataType = data ? _.isObject(data.type) ? data.type.id :  data.type : undefined;
+        const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
 
               //filter Out Metadata if operator has not the privilege
         if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege)){ data = {}; }
@@ -142,7 +142,7 @@ module.exports = {
             dataTypesId = !_.isEmpty(data) ? _.isObject(data[0].type) ? _.uniq(_.map(_.map(data, 'type'), 'id')) : _.uniq(_.map(data, 'type')) : [];
             let arrDtPrivId = allPrivileges.map(el => el.dataType);
             let pagePrivileges = _.intersection(arrDtPrivId, dataTypesId);
-        //     return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId);
+        //     return DataTypeService.getDataTypePrivilegeLevel(operator.groups, dataTypesId);
         //
         // }).then(pagePrivileges => {
 
@@ -180,7 +180,7 @@ module.exports = {
             }
         //retrieve dataType id
             const idDataType = _.isObject(data.type) ? data.type.id : data.type;
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+            return DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
         })
         .then(dataTypePrivilege =>  {
 
@@ -238,7 +238,7 @@ module.exports = {
               //retrieve dataType id
             const idDataType = _.isObject(data.type) ? data.type.id : data.type;
 
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+            return DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
         })
         .then(dataTypePrivilege => {
 

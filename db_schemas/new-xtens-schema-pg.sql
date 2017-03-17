@@ -440,6 +440,7 @@ CREATE TABLE datatype_privileges (
     id integer NOT NULL,
     data_type integer NOT NULL,
     xtens_group integer NOT NULL,
+    -- project integer NOT NULL,
     privilege_level datatype_privilege_level DEFAULT 'view_overview'::datatype_privilege_level NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
@@ -2071,6 +2072,7 @@ ALTER TABLE ONLY data_type
     ADD CONSTRAINT data_type_pkey PRIMARY KEY (id);
 
 
+
 --
 -- Name: datafile_samples__sample_files_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
@@ -2117,6 +2119,7 @@ ALTER TABLE ONLY datatype_groups__group_datatypes
 
 ALTER TABLE ONLY datatype_groups__group_datatypes
     ADD CONSTRAINT datatype_groups__group_datatypes_pkey PRIMARY KEY (id);
+
 
 
 --
@@ -2532,6 +2535,7 @@ ALTER TABLE ONLY data_files__datafile_data
 ALTER TABLE ONLY datatype_privileges
     ADD CONSTRAINT data_type_fkey FOREIGN KEY (data_type) REFERENCES data_type(id) MATCH FULL ON DELETE CASCADE;
 
+
 --
 -- Name: project_fkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
@@ -2570,6 +2574,7 @@ ALTER TABLE ONLY datatype_children__datatype_parents
 
 ALTER TABLE ONLY datatype_groups__group_datatypes
     ADD CONSTRAINT datatype_groups_fkey FOREIGN KEY (datatype_groups) REFERENCES data_type(id) MATCH FULL ON DELETE CASCADE;
+
 
 
 --
@@ -2906,6 +2911,7 @@ GRANT ALL ON TABLE datatype_groups__group_datatypes TO xtenspg;
 REVOKE ALL ON SEQUENCE datatype_groups__group_datatypes_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE datatype_groups__group_datatypes_id_seq FROM xtenspg;
 GRANT ALL ON SEQUENCE datatype_groups__group_datatypes_id_seq TO xtenspg;
+
 
 
 --

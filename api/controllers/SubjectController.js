@@ -32,7 +32,7 @@ module.exports = {
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
 
-        DataTypeService.getDataTypePrivilegeLevel(operator.id, subject.type).then(dataTypePrivilege => {
+        DataTypeService.getDataTypePrivilegeLevel(operator.groups, subject.type).then(dataTypePrivilege => {
 
             if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege) || dataTypePrivilege.privilegeLevel != EDIT) {
                 throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type ${subject.type}`);
@@ -89,7 +89,7 @@ module.exports = {
             const idDataType = _.isObject(subject.type) ? subject.type.id : subject.type;
 
             //retrieve dataTypePrivilege
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+            return DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
         })
         .then(dataTypePrivilege => {
             //filter Out Metadata if operator has not the privilege
@@ -141,7 +141,7 @@ module.exports = {
 
             let arrDtPrivId = allPrivileges.map(el => el.dataType);
             let pagePrivileges = _.intersection(arrDtPrivId, dataTypesId);
-        //     return DataTypeService.getDataTypePrivilegeLevel(operator.id, dataTypesId);
+        //     return DataTypeService.getDataTypePrivilegeLevel(operator.groups, dataTypesId);
         //
         // }).then(pagePrivileges => {
 
@@ -178,7 +178,7 @@ module.exports = {
             }
             //retrieve dataType id
             const idDataType = _.isObject(subject.type) ? subject.type.id : subject.type;
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+            return DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
 
         })
         .then(dataTypePrivilege => {
@@ -236,7 +236,7 @@ module.exports = {
             //retrieve dataType id
             const idDataType = _.isObject(subject.type) ? subject.type.id : subject.type;
 
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+            return DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
         })
         .then(dataTypePrivilege => {
 
@@ -277,7 +277,7 @@ module.exports = {
         sails.log.info("SubjectController.edit - Decoded ID is: " + operator.id);
 
         return BluebirdPromise.props({
-            projects: Project.find(),
+            // projects: Project.find(),
             subject: SubjectService.getOneAsync(id, code),
             dataTypes: crudManager.getDataTypesByRolePrivileges({
                 idOperator: operator.id,

@@ -481,8 +481,6 @@ describe('SubjectController', function() {
                     expect(res.body.subject).to.exist;
                     expect(res.body.subject).to.not.equal(null);
                     expect(res.body.dataTypes).to.exist;
-                    expect(res.body.projects).to.exist;
-                    expect(res.body.projects).to.eql([]);
                     if (err) {
                         sails.log.error(err);
                         done(err);

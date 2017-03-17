@@ -46,11 +46,17 @@ var DataType = {
             collection: 'dataType',
             via: 'parents'
         },
-        // many-to-may association with Group
+        // many-to-many association with Group
         groups: {
             collection: 'group',
             via: 'dataTypes',
             through:'datatypeprivileges'
+        },
+
+        project: {
+            model: 'project',
+            columnName: 'project'
+            // via:'dataTypes'
         }
     },
 

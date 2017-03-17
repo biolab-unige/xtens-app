@@ -6,7 +6,7 @@
  */
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, Group, DataTypePrivileges, DataTypeService, QueryService */
+/* globals _, Group, DataTypePrivileges, DataTypeService, Project */
 "use strict";
 const ControllerOut = require("xtens-utils").ControllerOut;
 const BluebirdPromise = require("bluebird");
@@ -111,7 +111,7 @@ let DataTypePrivilegesController = {
             updatedAt: Joi.date()
         };
         let payload = req.body;
-        Joi.validateAsync(req.body, validationSchema)
+        Joi.validateAsync(payload, validationSchema)
 
         .then(function(validatedBody) {
             return DataTypePrivileges.update({id: validatedBody.id}, validatedBody);
@@ -166,7 +166,6 @@ let DataTypePrivilegesController = {
             dataType: DataTypeService.getDataTypeToEditPrivileges(params.id),
             dataTypePrivileges: getDataTypePrivileges(params.id)
         })
-
 
         .then(function(result) {
             sails.log(result);

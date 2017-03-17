@@ -254,7 +254,11 @@ describe('DataTypePrivilege', function() {
                 .expect(200)
                 .end(function(err, res) {
                     expect(res.body.group).to.exist;
-                    expect(res.body.group).to.eql(expectedGroup);
+                    expect(res.body.group.id).to.eql(expectedGroup.id);
+                    expect(res.body.group.name).to.eql(expectedGroup.name);
+                    expect(res.body.group.canAccessPersonalData).to.eql(expectedGroup.canAccessPersonalData);
+                    expect(res.body.group.canAccessSensitiveData).to.eql(expectedGroup.canAccessSensitiveData);
+                    expect(res.body.group.privilegeLevel).to.eql(expectedGroup.privilegeLevel);
                     expect(res.body.dataType).to.exist;
                     expect(res.body.dataType).to.eql(dataType);
                     expect(res.body.dataTypes).to.exist;

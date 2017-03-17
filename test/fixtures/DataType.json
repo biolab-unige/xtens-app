@@ -2,6 +2,7 @@
     "id": 1,
     "name": "Patient",
     "model": "Subject",
+    "project":1,
     "schema": {
       "body": [{
         "name": "Generic Info",
@@ -67,6 +68,7 @@
     "id": 2,
     "name": "Tissue",
     "model": "Sample",
+    "project":1,
     "schema": {
       "header": {
         "name": "Tissue",
@@ -149,6 +151,7 @@
     "id": 3,
     "name": "Star",
     "model": "Data",
+    "project":1,
     "schema": {
       "header": {
         "name": "Star",
@@ -326,6 +329,7 @@
     "id": 4,
     "name": "Variant",
     "model": "Data",
+    "project":1,
     "schema": {
       "body": [{
         "name": "Vcf Info",
@@ -554,6 +558,7 @@
     "id": 5,
     "name": "Variant Annotation",
     "model": "Data",
+    "project":1,
     "schema": {
       "body": [{
         "name": "Generic Info",
@@ -635,6 +640,7 @@
     "id": 6,
     "name": "Fluid",
     "model": "Sample",
+    "project":1,
     "schema": {
       "header": {
         "name": "Fluid",

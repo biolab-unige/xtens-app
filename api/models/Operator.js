@@ -1,7 +1,7 @@
 /**
  * Operator.js
  */
-var bcrypt = require('bcrypt');
+
 var constants = sails.config.xtens.constants;
 
 var Operator = {

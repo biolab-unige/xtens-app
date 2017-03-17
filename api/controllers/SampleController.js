@@ -33,7 +33,7 @@ module.exports = {
         const co = new ControllerOut(res);
         const operator = TokenService.getToken(req);
 
-        DataTypeService.getDataTypePrivilegeLevel(operator.id, sample.type).then(function(dataTypePrivilege) {
+        DataTypeService.getDataTypePrivilegeLevel(operator.groups, sample.type).then(function(dataTypePrivilege) {
 
             if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege) || dataTypePrivilege.privilegeLevel != EDIT) {
                 throw new PrivilegesError(`Authenticated user does not have edit privileges on the sample type ${sample.type}`);
@@ -88,7 +88,7 @@ module.exports = {
             const idDataType = _.isObject(sample.type) ? sample.type.id : sample.type;
 
             //retrieve dataTypePrivilege
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+            return DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
         })
         .then(dataTypePrivilege => {
             //filter Out Metadata if operator has not the privilege
@@ -169,7 +169,7 @@ module.exports = {
             }
         //retrieve dataType id
             const idDataType = _.isObject(sample.type) ? sample.type.id : sample.type;
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+            return DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
 
         })
         .then(dataTypePrivilege => {
@@ -228,7 +228,7 @@ module.exports = {
           //retrieve dataType id
             const idDataType = _.isObject(result.type) ? result.type.id : result.type;
 
-            return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+            return DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
         })
           .then(dataTypePrivilege => {
 

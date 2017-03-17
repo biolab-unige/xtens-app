@@ -5,14 +5,46 @@
  */
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, sails , DataType, Operator, DataTypePrivileges */
+/* globals _, sails , DataType, Operator, DataTypePrivileges, Group, Project */
 "use strict";
 let Joi = require("joi");
 let BluebirdPromise = require("bluebird");
 let constants = sails.config.xtens.constants;
 let crudManager = sails.hooks['persistence'].getDatabaseManager().crudManager;
 
+const coroutines = {
+
+    /**
+     * @method
+     * @name getDataTypePrivilegeLevel
+     * @param{Integer - Array} groupsId
+     * @param{Integer - Array} dataTypesId
+     * @description coroutine for get DataTypes' privileges
+     */
+    getDataTypePrivilegeLevel: BluebirdPromise.coroutine(function *(groupsId, dataTypesId) {
+        if ( typeof dataTypesId === 'undefined' || dataTypesId === null  ) { return BluebirdPromise.resolve(undefined);}
+        if ( typeof groupsId === 'undefined' || groupsId === null  ) { return BluebirdPromise.resolve(undefined);}
+        sails.log("getDataTypePrivilegeLevel on Datatype: ", dataTypesId, ". Groups: ", groupsId);
+
+        const groups = yield Group.find( {id : groupsId} ).populate('projects');
+        let projectsGroups = _.map(groups, function (g) { return _.map(g.projects,'id'); });
+        projectsGroups = _.uniq(_.flatten(projectsGroups));
+        const projects = yield Project.find( {id : projectsGroups} ).populate('dataTypes');
+        let dataTypesProjects = _.map(projects, function (p) { return _.map(p.dataTypes,'id'); });
+        dataTypesProjects = _.uniq(_.flatten(dataTypesProjects));
+
+        const dataTypePrivileges = yield DataTypePrivileges.find({ where: {group: groupsId, dataType: dataTypesId} });
+        let results = _.map(dataTypePrivileges,function (dtp) {
+            if( _.findWhere(dataTypesProjects, dtp.dataType)){
+                return dtp;
+            }
+        });
+        return results.length === 1 ? results[0] : results;
+    })
+};
+
 let DataTypeService = {
+
 
     /**
      * @method
@@ -64,6 +96,7 @@ let DataTypeService = {
             name: Joi.string().required(),
             model: Joi.string().required().valid(_.values(constants.DataTypeClasses)),
             schema: Joi.object().required(),
+            project: Joi.number().integer().allow(null),
             parents: Joi.array().allow(null),
             children: Joi.array().allow(null),
             data: Joi.array().allow(null),
@@ -265,7 +298,7 @@ let DataTypeService = {
      *              a new DataTypePrivileges entity
      */
     getDataTypesToCreateNewPrivileges: function(groupId) {
-        sails.log("getDataTypePrivilegeLevel on groupId: " + groupId);
+        sails.log("getDataTypesToCreateNewPrivileges on groupId: " + groupId);
         if (groupId) {
             return DataTypePrivileges.find({ group: groupId })
 
@@ -293,27 +326,12 @@ let DataTypeService = {
      * @description service function to retrieve the dataType privilege
      */
     getDataTypePrivilegeLevel: function(operatorId, dataTypesId) {
-        let groupId;
-        if ( typeof dataTypesId !== 'undefined' && dataTypesId !== null ) {
-            sails.log("getDataTypePrivilegeLevel on Datatype: " + dataTypesId + ". Operator: " + operatorId);
 
-            return Operator.findOne( {id : operatorId} ).populate('groups').then(operator => {
-                groupId = _.map(operator.groups,'id');
-
-                return DataTypePrivileges.find({ where: {group: groupId, dataType: dataTypesId} });
-            })
-            .then(dataTypePrivileges => {
-                return dataTypePrivileges.length === 1 ? dataTypePrivileges[0] : dataTypePrivileges;
-            })
-            .catch((err) => {
-                sails.log(err);
-                return err;
-            });
-
-        }
-        else {
-            return BluebirdPromise.resolve(undefined);
-        }
+        return coroutines.getDataTypePrivilegeLevel(operatorId, dataTypesId)
+        .catch((err) => {
+            sails.log(err);
+            return err;
+        });
     },
 
     /**
@@ -331,7 +349,7 @@ let DataTypeService = {
 
                 groupId = _.map(operator.groups,'id');
 
-                return DataTypePrivileges.find( {group: groupId} );
+                return DataTypePrivileges.find( {group: groupId[0]} );
             })
             .then(dataTypePrivileges => {
                 if (_.isEmpty(dataTypePrivileges)){
