@@ -84,7 +84,7 @@ In the minimal setup it should contain the following information, including two 
 
            module.exports = {
 
-            port: process.env.PORT || #port;
+            port: process.env.PORT || #port,
 
             environment: process.env.NODE_ENV || 'development',
 
