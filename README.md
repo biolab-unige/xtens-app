@@ -140,7 +140,18 @@ In the minimal setup it should contain the following information, including two 
               }]
           }
     };
+    
+Last set your connection  in ```config/models.js``` file
 
+
+    module.exports.models = {
+    
+        migrate: 'safe',      
+        connection: 'postgresql'  // your db connection name
+
+    };
+    
+    
 ## FileSystem Configuration:
 You can choose among two options to store raw/bulk data files:
 
