@@ -6,7 +6,7 @@
  */
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, Group, DataTypePrivileges, DataTypeService, Project */
+/* globals _, Group, DataTypePrivileges, DataTypeService */
 "use strict";
 const ControllerOut = require("xtens-utils").ControllerOut;
 const BluebirdPromise = require("bluebird");

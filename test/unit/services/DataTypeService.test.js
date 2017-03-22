@@ -1,3 +1,6 @@
+/* jshint node:true */
+/* jshint mocha: true */
+/* globals _, sails, fixtures, DataType, DataTypeService */
 "use strict";
 var chai = require("chai");
 var chaiAsPromised = require("chai-as-promised");
@@ -283,6 +286,104 @@ describe('DataTypeService', function() {
                 done();
                 return;
             });
+        });
+    });
+
+    describe('#getHigherPrivileges', function() {
+
+        it("should return the right set of privileges", function(done) {
+            const dataTypePrivileges = [
+                {
+                    "id": 1,
+                    "dataType": 1,
+                    "group": 1,
+                    "privilegeLevel": "edit"
+                },
+                {
+                    "id": 2,
+                    "dataType": 2,
+                    "group": 1,
+                    "privilegeLevel": "download"
+                },
+                {
+                    "id": 3,
+                    "dataType": 3,
+                    "group": 1,
+                    "privilegeLevel": "view_overview"
+                },
+                {
+                    "id": 4,
+                    "dataType": 4,
+                    "group": 1,
+                    "privilegeLevel": "view_overview"
+                },
+                {
+                    "id": 8,
+                    "dataType": 3,
+                    "group": 2,
+                    "privilegeLevel": "view_details"
+                },
+                {
+                    "id": 9,
+                    "dataType": 6,
+                    "group": 2,
+                    "privilegeLevel": "view_overview"
+                },
+                {
+                    "id": 10,
+                    "dataType": 5,
+                    "group": 2,
+                    "privilegeLevel": "view_details"
+                },
+                {
+                    "id": 13,
+                    "dataType": 3,
+                    "group": 3,
+                    "privilegeLevel": "download"
+                },
+                {
+                    "id": 14,
+                    "dataType": 6,
+                    "group": 3,
+                    "privilegeLevel": "download"
+                }
+            ];
+            const expectedDataTypePrivileges = [
+              { id: 1, dataType: 1, group: 1, privilegeLevel: 'edit' },
+              { id: 2, dataType: 2, group: 1, privilegeLevel: 'download' },
+              { id: 13, dataType: 3, group: 3, privilegeLevel: 'download' },
+              { id: 4, dataType: 4, group: 1, privilegeLevel: 'view_overview' },
+              { id: 10, dataType: 5, group: 2, privilegeLevel: 'view_details' },
+              { id: 14, dataType: 6, group: 3, privilegeLevel: 'download' }
+            ];
+            let results = DataTypeService.getHigherPrivileges(dataTypePrivileges);
+            expect(results).to.be.eql(expectedDataTypePrivileges);
+
+            done();
+            return;
+
+        });
+
+        it("should return an empty array", function(done) {
+            const expectedDataTypePrivilege = [];
+
+            let result = DataTypeService.getHigherPrivileges([]);
+            expect(result).to.be.empty;
+
+            done();
+            return;
+
+        });
+
+        it("should return the same privilege in input", function(done) {
+            const expectedDataTypePrivilege = [_.cloneDeep(fixtures.datatypeprivileges[0])];
+
+            let result = DataTypeService.getHigherPrivileges(expectedDataTypePrivilege);
+            expect(result).to.be.eql(expectedDataTypePrivilege);
+
+            done();
+            return;
+
         });
     });
 });

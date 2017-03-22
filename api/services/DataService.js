@@ -7,9 +7,7 @@
 
 let BluebirdPromise = require('bluebird');
 
-let DataTypeClasses = sails.config.xtens.constants.DataTypeClasses;
 let FieldTypes = sails.config.xtens.constants.FieldTypes;
-let fileSystemManager = sails.hooks['persistence'].getFileSystem().managerManager;
 let Joi = require('joi');
 let crudManager = sails.hooks['persistence'].getDatabaseManager().crudManager;
 let queryBuilder = sails.hooks['persistence'].getDatabaseManager().queryBuilder;
@@ -228,8 +226,10 @@ let DataService = BluebirdPromise.promisifyAll({
      * @param {dataTypes} - an array of dataType
      * @return {Promise} -  a Bluebird Promise with Data Array filtered
      */
-    filterOutSensitiveInfo: function(data, canAccessSensitiveData, datatype) {
-
+    filterOutSensitiveInfo: function(data, canAccessSensitiveData) {
+        if (!data || _.isEmpty(data)) {
+            return [];
+        }
         let arrData = [], idDataType, typeIds, flattenedFields,
             forbiddenField, forbiddenFields  = [];
         _.isArray(data) ? arrData=data : arrData[0] = data;
@@ -279,11 +279,9 @@ let DataService = BluebirdPromise.promisifyAll({
      * @param {integer, string} - identifier of data, model Name of data
      * @return {Promise} -  a Bluebird Promise with an object containing boolean value of investigation and data
      */
-    hasDataSensitive: function(id, modelName) {
+    hasDataSensitive: function(idData, modelName) {
 
-        // let hasDataSensitive;
-
-        return global[modelName].findOne({id : id}).populateAll()
+        return global[modelName].findOne({id : idData}).populateAll()
         .then(datum => {
             //if (!datum){ return BluebirdPromise.resolve(undefined);}
 
@@ -293,8 +291,6 @@ let DataService = BluebirdPromise.promisifyAll({
             const forbiddenFields = _.filter(flattenedFields, field => { return field.sensitive; });
 
             const hasDataSensitive = forbiddenFields.length > 0;
-
-            //forbiddenFields.length > 0 ? hasDataSensitive = true : hasDataSensitive = false;
 
             const json = {
                 hasDataSensitive : hasDataSensitive,
@@ -413,26 +409,21 @@ let DataService = BluebirdPromise.promisifyAll({
      */
     filterListByPrivileges: function(data, dataTypesId, privileges, canAccessSensitiveData) {
         // filter out privileges not pertaining the dataTypes we have
-        // privileges = privileges.filter(privEl => dataTypesId.indexOf(privEl.dataType) > -1);
-        // console.log(data,dataTypesId,privileges,canAccessSensitiveData);
         const arrPrivileges = _.isArray(privileges) ? privileges : [privileges];
-            //filter Out Metadata if operator has not at least a privilege on Data or exists at least a VIEW_OVERVIEW privilege level
-        // sails.log.verbose('DataService.filterListByPrivileges - privileges: ', privileges);
+            //if operator has not at least a privilege on Data filter metadata
         if (!arrPrivileges || _.isEmpty(arrPrivileges) ){
             return [];
         }
+        //or exists at least a VIEW_OVERVIEW privilege level filter metadata
         else if( arrPrivileges.length < dataTypesId.length ||
               (arrPrivileges.length === dataTypesId.length && _.find(arrPrivileges, { privilegeLevel: VIEW_OVERVIEW }))) {
 
             // check for each datum if operator has the privilege to view details. If not metadata object is cleaned
             let index = 0, arrDtPrivId = arrPrivileges.map(el => el.dataType);
-            // sails.log.verbose('DataService.filterListByPrivileges - : arrDtPrivId', arrDtPrivId);
             for ( let i = data.length - 1; i >= 0; i-- ) {
                 let idDataType = _.isObject(data[i].type) ? data[i].type.id : data[i].type;
                 index = arrDtPrivId.indexOf(idDataType);
-                // sails.log.verbose(`DataService.filterListByPrivileges - for data ${data[i].id} and dataType ID ${idDataType} index is ${index}`);
                 if( index < 0 ){
-                    // sails.log.verbose(`DataService.filterListByPrivileges - Splicing data #${data[i].id}`);
                     data.splice(i, 1);
                 }
                 else if (arrPrivileges[index].privilegeLevel === VIEW_OVERVIEW) { data[i].metadata = {}; }

@@ -5,7 +5,7 @@
 * @help        :: See http://links.sailsjs.org/docs/controllers
 */
 /* jshint node: true */
-/* globals _, sails, DataType, DataTypeService, QueryService, TokenService */
+/* globals _, sails, DataType, DataTypeService, TokenService, Group */
 "use strict";
 const ControllerOut = require("xtens-utils").ControllerOut, ValidationError = require('xtens-utils').Errors.ValidationError;
 const crudManager = sails.hooks.persistence.crudManager;
@@ -35,10 +35,16 @@ const coroutines = {
         else {
             query = actionUtil.populateRequest(query, req);
         }
-        const dataTypes = yield BluebirdPromise.resolve(query);
-        const filteredDataTypes = yield DataTypeService.filterDataTypes(operator.id, dataTypes);
-        sails.log(filteredDataTypes);
-        return res.json(filteredDataTypes);
+        let dataTypes = yield BluebirdPromise.resolve(query);
+
+        let groups = yield Group.find(operator.groups);
+        let privilegeLevelGroups = _.uniq(_.flatten(_.map(groups, 'privilegeLevel')));
+        if(_.indexOf(privilegeLevelGroups, 'wheel') < 0){
+            dataTypes = yield DataTypeService.filterDataTypes(operator.groups, dataTypes);
+        }
+        
+        sails.log(dataTypes);
+        return res.json(dataTypes);
     }),
 
     /**

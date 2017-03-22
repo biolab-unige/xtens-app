@@ -10,11 +10,9 @@
 'use strict';
 
 const ControllerOut = require('xtens-utils').ControllerOut;
-const crudManager = sails.hooks.persistence.crudManager;
 const BluebirdPromise = require('bluebird');
 const createUser = BluebirdPromise.promisify(PassportService.protocols.local.createUser);
 const updatePassword = BluebirdPromise.promisify(PassportService.protocols.local.updatePassword);
-const ValidationError = require('xtens-utils').Errors.ValidationError;
 
 var OperatorController = {
 

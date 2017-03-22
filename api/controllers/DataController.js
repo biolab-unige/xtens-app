@@ -33,13 +33,12 @@ const coroutines = {
         let data = req.allParams();
         const operator = TokenService.getToken(req);
         const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.groups, data.type);
-        if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege) || dataTypePrivilege.privilegeLevel !== EDIT) {
+        if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege)) {
+          // || dataTypePrivilege.privilegeLevel !== EDIT
             throw new PrivilegesError(`Authenticated user does not have edit privileges on the data type ${data.type}`);
         }
         DataService.simplify(data);
         const dataType = yield DataType.findOne(data.type);
-        sails.log.debug(dataType);
-        sails.log.debug(crudManager);
         const validationRes = DataService.validate(data, true, dataType);
         if (validationRes.error !== null) {
             throw new ValidationError(validationRes.error);
@@ -72,8 +71,121 @@ const coroutines = {
         }
         return res.json(data);
 
-    })
+    }),
 
+    find: BluebirdPromise.coroutine(function *(req, res) {
+
+        const operator = TokenService.getToken(req);
+        let allPrivileges = yield DataTypePrivileges.find({group:operator.groups});
+        allPrivileges = operator.groups.length > 1 ? DataTypeService.getHigherPrivileges(allPrivileges) : allPrivileges;
+
+        let query = QueryService.composeFind(req, null, allPrivileges);
+
+        let data = yield BluebirdPromise.resolve(query);
+        const dataTypesId = !_.isEmpty(data) ? _.isObject(data[0].type) ? _.uniq(_.map(_.map(data, 'type'), 'id')) : _.uniq(_.map(data, 'type')) : [];
+
+        const pagePrivileges = allPrivileges.filter( obj => {
+            return _.find(dataTypesId, id =>{ return id === obj.dataType;});
+        });
+
+        const [payload, headerInfo]  = yield BluebirdPromise.all([
+            DataService.filterListByPrivileges(data, dataTypesId, pagePrivileges, operator.canAccessSensitiveData),
+            QueryService.composeHeaderInfo(req, allPrivileges)
+        ]);
+        return DataService.prepareAndSendResponse(res, payload, headerInfo);
+
+    }),
+
+    update: BluebirdPromise.coroutine(function *(req, res) {
+        let data = req.allParams();
+        const operator = TokenService.getToken(req);
+
+        let result = yield DataService.hasDataSensitive(data.id, DATA);
+        if (result.hasDataSensitive && !operator.canAccessSensitiveData) {
+            throw new PrivilegesError("Authenticated user is not allowed to modify sensitive data");
+        }
+
+        const idDataType = _.isObject(data.type) ? data.type.id : data.type;
+        const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
+        if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
+            throw new PrivilegesError(`Authenticated user does not have edit privileges on the data type ${data.type}`);
+        }
+        DataService.simplify(data);
+
+        const dataType = yield DataType.findOne(idDataType);
+        const validationRes = DataService.validate(data, true, dataType);
+        if (validationRes.error !== null) {
+            throw new ValidationError(validationRes.error);
+        }
+        const dataTypeName = dataType && dataType.name;
+        data = validationRes.value;
+        const updatedData = yield crudManager.updateData(data, dataTypeName);
+
+        return res.json(updatedData);
+    }),
+
+    destroy: BluebirdPromise.coroutine(function *(req, res, co) {
+        const id = req.param('id');
+        const operator = TokenService.getToken(req);
+
+        if (!id) {
+            return co.badRequest({ message: 'Missing data ID on DELETE request' });
+        }
+
+        const data = yield Data.findOne({ id: id });
+        if (!data) {
+            throw new NonexistentResourceError("Missing Resource");
+        }
+            //retrieve dataType id
+        const idDataType = _.isObject(data.type) ? data.type.id : data.type;
+
+        const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
+        if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
+            throw new PrivilegesError(`Authenticated user does not have edit privileges on the data type ${data.type}`);
+        }
+        sails.log.info(`Subject to be deleted:  ${data.id}`);
+
+        const deleted = yield crudManager.deleteData(id);
+        return res.json(200, { deleted: deleted });
+
+    }),
+
+    edit: BluebirdPromise.coroutine(function *(req, res) {
+        const operator = TokenService.getToken(req);
+        const params = req.allParams();
+        sails.log.info("DataController.edit - Decoded ID is: " + operator.id);
+
+        const payload = yield BluebirdPromise.props({
+            data: DataService.getOneAsync(params.id),
+            dataTypes: crudManager.getDataTypesByRolePrivileges({
+                idOperator: operator.id,
+                model: DATA,
+                idDataTypes: params.idDataTypes,
+                parentDataType: params.parentDataType,
+                privilegeLevel: EDIT
+            }),
+            parentSubject: SubjectService.getOneAsync(params.parentSubject, params.parentSubjectCode),
+            parentSample: SampleService.getOneAsync(params.parentSample),
+            parentData: DataService.getOneAsync(params.parentData)
+        });
+        if(!payload.data){ throw new ValidationError('No data found with id: ${params.id}'); }
+              //if operator has not the privilege to EDIT datatype, then return forbidden
+        if (_.isEmpty(payload.dataTypes)){ throw new PrivilegesError(`Authenticated user does not have edit privileges on any data type`); }
+
+        const sensitiveRes = yield DataService.hasDataSensitive(payload.data.id, DATA);
+
+            // if operator has not access to Sensitive Data and dataType has sensitive data, then return forbidden
+        if (sensitiveRes && ((sensitiveRes.hasDataSensitive && !operator.canAccessSensitiveData))) {
+            throw new PrivilegesError("Authenticated user is not allowed to edit sensitive data");
+        }
+              // if edit data exists and operator has not the privilege to EDIT datatype, then throw Privileges Error
+        if (payload.data && (_.isEmpty(payload.dataTypes) || !_.find(payload.dataTypes, {id : payload.data.type.id}))) {
+            throw new PrivilegesError(`Authenticated user does not have edit privileges on the data type`);
+        }
+        return res.json(payload);
+
+
+    })
 };
 
 
@@ -123,38 +235,7 @@ module.exports = {
    */
     find: function(req, res) {
         const co = new ControllerOut(res);
-        const operator = TokenService.getToken(req);
-
-        let data = [], dataTypesId, allPrivileges;
-        return DataTypePrivileges.find({group:operator.groups[0]}).then(results =>{
-            allPrivileges = results;
-            let query = QueryService.composeFind(req, null, allPrivileges);
-
-            return query;
-        })
-        .then(results => {
-            // if (!results || _.isEmpty(results)) {
-            //     return [];
-            // }
-            data = results;
-
-            //retrieve dataTypes id and Privileges id
-            dataTypesId = !_.isEmpty(data) ? _.isObject(data[0].type) ? _.uniq(_.map(_.map(data, 'type'), 'id')) : _.uniq(_.map(data, 'type')) : [];
-            let arrDtPrivId = allPrivileges.map(el => el.dataType);
-            let pagePrivileges = _.intersection(arrDtPrivId, dataTypesId);
-        //     return DataTypeService.getDataTypePrivilegeLevel(operator.groups, dataTypesId);
-        //
-        // }).then(pagePrivileges => {
-
-            return BluebirdPromise.all([
-                DataService.filterListByPrivileges(data, dataTypesId, pagePrivileges, operator.canAccessSensitiveData),
-                QueryService.composeHeaderInfo(req, allPrivileges)
-            ]);
-
-        })
-        .spread((payload, headerInfo) => {
-            return DataService.prepareAndSendResponse(res, payload, headerInfo);
-        })
+        coroutines.find(req,res)
         .catch( function(err) {
             sails.log.error(err);
             return co.error(err);
@@ -169,45 +250,8 @@ module.exports = {
    *
    */
     update: function(req, res) {
-        let data = req.body;
         const co = new ControllerOut(res);
-        const operator = TokenService.getToken(req);
-
-        DataService.hasDataSensitive(data.id, DATA).then(result => {
-
-            if (result.hasDataSensitive && !operator.canAccessSensitiveData) {
-                throw new PrivilegesError("Authenticated user is not allowed to modify sensitive data");
-            }
-        //retrieve dataType id
-            const idDataType = _.isObject(data.type) ? data.type.id : data.type;
-            return DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
-        })
-        .then(dataTypePrivilege =>  {
-
-            if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
-                throw new PrivilegesError(`Authenticated user does not have edit privileges on the data type ${data.type}`);
-            }
-
-            DataService.simplify(data);
-
-            return DataType.findOne(data.type);
-
-        })
-        .then(dataType => {
-            const validationRes = DataService.validate(data, true, dataType);
-            if (validationRes.error === null) {
-                const dataTypeName = dataType && dataType.name;
-                data = validationRes.value;
-                return crudManager.updateData(data, dataTypeName);
-            }
-            else {
-                throw new ValidationError(validationRes.error);
-            }
-        })
-        .then(function(result) {
-            sails.log(result);
-            return res.json(result);
-        })
+        coroutines.update(req, res, co)
         .catch(function(error) {
             sails.log.error(error);
             return co.error(error);
@@ -222,38 +266,7 @@ module.exports = {
    */
     destroy: function(req, res) {
         const co = new ControllerOut(res);
-        const id = req.param('id');
-        const operator = TokenService.getToken(req);
-        let data;
-
-        if (!id) {
-            return co.badRequest({ message: 'Missing data ID on DELETE request' });
-        }
-
-        Data.findOne({ id: id }).then(result => {
-            if (!result) {
-                throw new NonexistentResourceError("Missing Resource");
-            }
-            data = result;
-              //retrieve dataType id
-            const idDataType = _.isObject(data.type) ? data.type.id : data.type;
-
-            return DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
-        })
-        .then(dataTypePrivilege => {
-
-            if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
-                throw new PrivilegesError(`Authenticated user does not have edit privileges on the data type ${data.type}`);
-            }
-            sails.log.info(`Subject to be deleted:  ${data.data}`);
-
-            return crudManager.deleteData(id);
-        })
-        .then(function(deleted) {
-            return res.json(200, {
-                deleted: deleted
-            });
-        })
+        coroutines.destroy(req,res,co)
         .catch(err => {
             if (err instanceof NonexistentResourceError) {
                 return res.json(200, { deleted: 0 });
@@ -272,52 +285,7 @@ module.exports = {
 
     edit: function(req, res) {
         const co = new ControllerOut(res);
-        const params = req.allParams();
-        const operator = TokenService.getToken(req);
-        let payload;
-
-        sails.log.info("DataController.edit - Decoded ID is: " + operator.id);
-
-        BluebirdPromise.props({
-            data: DataService.getOneAsync(params.id),
-            dataTypes: crudManager.getDataTypesByRolePrivileges({
-                idOperator: operator.id,
-                model: DATA,
-                idDataTypes: params.idDataTypes,
-                parentDataType: params.parentDataType,
-                privilegeLevel: EDIT
-            }),
-            parentSubject: SubjectService.getOneAsync(params.parentSubject, params.parentSubjectCode),
-            parentSample: SampleService.getOneAsync(params.parentSample),
-            parentData: DataService.getOneAsync(params.parentData)
-        })
-            .then(results => {
-                payload = results;
-                //if operator has not the privilege to EDIT datatype, then return forbidden
-                if (_.isEmpty(results.dataTypes)){
-                    throw new PrivilegesError(`Authenticated user does not have edit privileges on any data type`);
-                }
-
-                if(results.data){
-                    // const idDataTypes = _.isObject(results.data.type) ? results.data.type.id : results.data.type;
-                    return DataService.hasDataSensitive(results.data.id, DATA);
-                }
-
-            })
-            .then(function(sensitiveRes) {
-
-                // sails.log.info(sensitiveRes);
-                // if operator has not access to Sensitive Data and dataType has sensitive data, then return forbidden
-                if (sensitiveRes && ((sensitiveRes.hasDataSensitive && !operator.canAccessSensitiveData))) {
-                    throw new PrivilegesError("Authenticated user is not allowed to edit sensitive data");
-                }
-                // if edit data exists and operator has not the privilege to EDIT datatype, then throw Privileges Error
-                if (payload.data && (_.isEmpty(payload.dataTypes) || !_.find(payload.dataTypes, {id : payload.data.type.id}))) {
-                    throw new PrivilegesError(`Authenticated user does not have edit privileges on the data type`);
-                }
-                return res.json(payload);
-
-            })
+        coroutines.edit(req, res)
             .catch(err => {
                 sails.log.error(err);
                 return co.error(err);
