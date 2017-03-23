@@ -163,7 +163,7 @@ let DataTypePrivilegesController = {
             group: Group.findOne({id: params.groupId}),
             // retrieve all dataTypes not yet authorized for this group
             dataTypes: DataTypeService.getDataTypesToCreateNewPrivileges(params.groupId),
-            dataType: DataTypeService.getDataTypeToEditPrivileges(params.id),
+            dataType: DataTypeService.getDataTypeToEditPrivileges(params.id, params.groupId),
             dataTypePrivileges: getDataTypePrivileges(params.id)
         })
 

@@ -167,7 +167,7 @@ describe('DataTypeService', function() {
         it("should return the right DataType of the given Privilege", function(done) {
             const expectedDataType = _.cloneDeep(fixtures.datatype[0]);
 
-            DataTypeService.getDataTypeToEditPrivileges(1).then(function(result) {
+            DataTypeService.getDataTypeToEditPrivileges(1,1).then(function(result) {
 
                 expect(result.id).to.be.equal(expectedDataType.id);
                 expect(result.model).to.be.equal(expectedDataType.model);

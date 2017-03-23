@@ -35,6 +35,16 @@ const coroutines = {
         else {
             query = actionUtil.populateRequest(query, req);
         }
+
+        if (query._criteria.where && query._criteria.where.project ) {
+            if (query._criteria.where.project[0] =="[") {
+                try {
+                    query._criteria.where.project = JSON.parse(query._criteria.where.project);
+                } catch (e) {
+                    res.json(400, "Error parsing project clause");
+                }
+            }
+        }
         let dataTypes = yield BluebirdPromise.resolve(query);
 
         let groups = yield Group.find(operator.groups);
@@ -42,7 +52,7 @@ const coroutines = {
         if(_.indexOf(privilegeLevelGroups, 'wheel') < 0){
             dataTypes = yield DataTypeService.filterDataTypes(operator.groups, dataTypes);
         }
-        
+
         sails.log(dataTypes);
         return res.json(dataTypes);
     }),

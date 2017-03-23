@@ -72,6 +72,32 @@ const coroutines = {
             return _.findWhere(dataTypesFilteredByProjects, {id: dtp.dataType} );
         }));
         return results;
+    }),
+
+    getDataTypesToCreateNewPrivileges: BluebirdPromise.coroutine(function *(groupId) {
+        if ( typeof groupId === 'undefined' || groupId === null  ) { return BluebirdPromise.resolve(undefined);}
+
+        const groups = yield Group.find( {id : groupId} ).populate('projects');
+        let projectsGroups = _.map(groups, function (g) { return _.map(g.projects,'id'); });
+        projectsGroups = _.uniq(_.flatten(projectsGroups));
+
+        const privileges = yield DataTypePrivileges.find({ where: {group: groupId} });
+
+        let whereObj = _.isEmpty(privileges) ? {project: projectsGroups} : {
+            id: {'!': _.map(privileges, 'dataType')},
+            project: projectsGroups
+        };
+
+        return DataType.find({ where: whereObj });
+    }),
+
+    getDataTypeToEditPrivileges: BluebirdPromise.coroutine(function *(privilegeId, groupId) {
+        if ( typeof privilegeId === 'undefined' || privilegeId === null  ) { return BluebirdPromise.resolve(undefined);}
+        if ( typeof groupId === 'undefined' || groupId === null  ) { return BluebirdPromise.resolve(undefined);}
+
+        const privilege = yield DataTypePrivileges.findOne({ id: privilegeId, group: groupId }).populate('dataType');
+        
+        return privilege.dataType;
     })
 };
 
@@ -306,19 +332,13 @@ let DataTypeService = {
      *              an existing DataTypePrivileges entity
      */
      // TODO: populate dataType Privilege? - filter by project
-    getDataTypeToEditPrivileges: function(privilegeId) {
-        sails.log("getDataTypeToEditPrivileges on privilege: ", privilegeId);
-        if (privilegeId) {
-            return DataTypePrivileges.findOne({ id: privilegeId })
-
-            .then(function(privileges) {
-                sails.log(privileges);
-                return DataType.findOne({id: privileges.dataType});
-            });
-        }
-        else {
-            return BluebirdPromise.resolve(undefined);
-        }
+    getDataTypeToEditPrivileges: function(privilegeId, groupId) {
+        sails.log("getDataTypeToEditPrivileges on privilege: ", privilegeId, " on group:", groupId);
+        return coroutines.getDataTypeToEditPrivileges(privilegeId, groupId)
+        .catch((err) => {
+            sails.log(err);
+            return err;
+        });
     },
 
     /**
@@ -333,22 +353,11 @@ let DataTypeService = {
      //TODO: - filter by project
     getDataTypesToCreateNewPrivileges: function(groupId) {
         sails.log("getDataTypesToCreateNewPrivileges on groupId: " + groupId);
-        if (groupId) {
-            return DataTypePrivileges.find({ group: groupId })
-
-            .then(function(privileges) {
-                sails.log(privileges);
-
-                let whereObj = _.isEmpty(privileges) ? {} : {
-                    id: {'!': _.map(privileges, 'dataType')}
-                };
-
-                return DataType.find({ where: whereObj });
-            });
-        }
-        else {
-            return BluebirdPromise.resolve(undefined);
-        }
+        return coroutines.getDataTypesToCreateNewPrivileges(groupId)
+        .catch((err) => {
+            sails.log(err);
+            return err;
+        });
     },
 
     /**
