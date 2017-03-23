@@ -209,15 +209,22 @@ const DataTypeController = {
     */
 
     buildGraph : function(req,res) {
-
-        const name = req.param("idDataType");
+        const idGroups = TokenService.getToken(req).groups;
+        const idDataType = req.param("idDataType");
         const fetchDataTypeTree = sails.hooks['persistence'].getDatabaseManager().recursiveQueries.fetchDataTypeTree;
         sails.log(req.param("idDataType"));
 
-        return DataType.findOne({name:name})
+        return Group.find({id:idGroups}).populate('projects').then(function (groups) {
 
+            let projectsGroups = _.map(groups, function (g) { return _.map(g.projects,'id'); });
+            projectsGroups = _.uniq(_.flatten(projectsGroups));
+
+            return DataType.findOne({id: idDataType, project: projectsGroups});
+        })
         .then(function(result) {
             const id = result.id;
+            const name = result.name;
+
             const template = result.model;
 
             // This query returns the parent-child associations among the datatypes

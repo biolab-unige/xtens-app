@@ -419,8 +419,9 @@
         },
 
         createGraph: function() {
-            var nameDatatype = document.getElementById('select1').value;
-
+            var selectedDatatype = document.getElementById('select1').value.split('-@#@-');
+            var idDatatype = selectedDatatype[0];
+            var nameDatatype = selectedDatatype[1];
             // retrieve all the descendant samples and data for the given datatype
 
             $.ajax({
@@ -429,7 +430,7 @@
                 headers: {
                     'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                 },
-                data: {idDataType: nameDatatype},
+                data: {idDataType: idDatatype},
 
                 success: function (res, textStatus, jqXHR) {
                     //Get parentWidth

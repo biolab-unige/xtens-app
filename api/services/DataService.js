@@ -193,7 +193,7 @@ let DataService = BluebirdPromise.promisifyAll({
      * @param{Object} queryArgs - a nested object containing all the query arguments
      * @return{Promise} promise with all parameters needed for the query
      */
-    preprocessQueryParams: function(queryArgs, idOperator, idDataType, next) {
+    preprocessQueryParams: function(queryArgs, idGroups, idDataType, next) {
         let dataType, dataPrivilege;
         let queryObj = queryBuilder.compose(queryArgs);
         sails.log("DataService.executeAdvancedQuery - query: " + queryObj.statement);
@@ -203,7 +203,7 @@ let DataService = BluebirdPromise.promisifyAll({
 
          .then(result => {
              dataType = result;
-             return DataTypeService.getDataTypePrivilegeLevel(idOperator, idDataType);
+             return DataTypeService.getDataTypePrivilegeLevel(idGroups, idDataType);
          })
          .then(dataTypePrivilege => {
              let flattenedFields = DataTypeService.getFlattenedFields(dataType, false);

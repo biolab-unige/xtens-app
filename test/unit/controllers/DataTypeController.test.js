@@ -462,7 +462,7 @@ describe('DataTypeController', function() {
             .post('/graph')
             .set('Authorization', `Bearer ${tokenA}`)
             .send({
-                "idDataType":"Patient"
+                "idDataType":"1"
             })
             .expect(200)
             .end(function(err,res) {
