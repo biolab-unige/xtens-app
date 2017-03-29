@@ -26,8 +26,8 @@
         urlRoot: '/subject',
 
         defaults: {
-            sex: sexOptions.UNKNOWN,
-            projects: []
+            sex: sexOptions.UNKNOWN
+            // projects: []
         }
     });
 
@@ -40,30 +40,30 @@
 
         bindings: {
 
-            '#projects': {
-                observe: 'projects',
-                initialize: function($el, model, option) {
-                    $el.select2({ placeholder: i18n("please-select") });
-                },
-                selectOptions: {
-                    collection: 'this.projects',
-                    labelPath: 'name',
-                    valuePath: 'id',
-                    defaultOption: {
-                        label: "",
-                        value: null
-                    }
-                },
-                getVal: function($el, ev, options) {
-                    return $el.val().map(function(value) {
-                        // return _.findWhere(options.view.projects, {id: parseInt(value)});
-                        return _.parseInt(value);
-                    });
-                },
-                onGet: function(vals, options) {
-                    return (vals && vals.map(function(val){return val.id; }));
-                }
-            },
+            // '#projects': {
+            //     observe: 'projects',
+            //     initialize: function($el, model, option) {
+            //         $el.select2({ placeholder: i18n("please-select") });
+            //     },
+            //     selectOptions: {
+            //         collection: 'this.projects',
+            //         labelPath: 'name',
+            //         valuePath: 'id',
+            //         defaultOption: {
+            //             label: "",
+            //             value: null
+            //         }
+            //     },
+            //     getVal: function($el, ev, options) {
+            //         return $el.val().map(function(value) {
+            //             // return _.findWhere(options.view.projects, {id: parseInt(value)});
+            //             return _.parseInt(value);
+            //         });
+            //     },
+            //     onGet: function(vals, options) {
+            //         return (vals && vals.map(function(val){return val.id; }));
+            //     }
+            // },
 
             '#code': {
                 observe: 'code'
@@ -104,7 +104,7 @@
             this.template = JST["views/templates/subject-edit.ejs"];
             this.personalDetailsView = null;
             this.schemaView = null;
-            this.projects = options.projects;
+            // this.projects = options.projects;
             if (options.subject) {
                 this.model = new Subject.Model(options.subject);
             }
@@ -345,7 +345,7 @@
                     'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                 },
                 data:{
-                    populate:'projects'
+                    // populate:'projects'
                 },
                 contentType: 'application/json',
                 success: function(results, options, res) {

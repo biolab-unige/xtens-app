@@ -12,7 +12,6 @@
                             <th><%= __("surname") %></th>
                             <th><%= __("birth-date") %></th>
                             <th><%= __("sex") %></th>
-                            <th><%= __("project") %></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -28,7 +27,6 @@
                             <%= date ? moment(date).lang("it").format('L') : ' ' %>
                         </td>
                         <td><%= subject.get("sex") %></td>
-                        <td><%= subject.get("projects").map(function(project) {return (" " + project.name); }).toString().trim() %></td>
                         <td>
                           <% var privilege = dataTypePrivileges.find(function(model) {
                             return model.get('dataType') === subject.get("type").id; });

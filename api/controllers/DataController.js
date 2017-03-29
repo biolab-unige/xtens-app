@@ -168,19 +168,21 @@ const coroutines = {
             parentSample: SampleService.getOneAsync(params.parentSample),
             parentData: DataService.getOneAsync(params.parentData)
         });
-        if(!payload.data){ throw new ValidationError('No data found with id: ${params.id}'); }
+        // if(payload.data){ throw new ValidationError('No data found with id: ${params.id}'); }
               //if operator has not the privilege to EDIT datatype, then return forbidden
         if (_.isEmpty(payload.dataTypes)){ throw new PrivilegesError(`Authenticated user does not have edit privileges on any data type`); }
 
-        const sensitiveRes = yield DataService.hasDataSensitive(payload.data.id, DATA);
 
-            // if operator has not access to Sensitive Data and dataType has sensitive data, then return forbidden
-        if (sensitiveRes && ((sensitiveRes.hasDataSensitive && !operator.canAccessSensitiveData))) {
-            throw new PrivilegesError("Authenticated user is not allowed to edit sensitive data");
-        }
-              // if edit data exists and operator has not the privilege to EDIT datatype, then throw Privileges Error
-        if (payload.data && (_.isEmpty(payload.dataTypes) || !_.find(payload.dataTypes, {id : payload.data.type.id}))) {
-            throw new PrivilegesError(`Authenticated user does not have edit privileges on the data type`);
+        if (payload.data){
+          // if operator has not access to Sensitive Data and dataType has sensitive data, then return forbidden
+            const sensitiveRes = yield DataService.hasDataSensitive(payload.data.id, DATA);
+            if (sensitiveRes && ((sensitiveRes.hasDataSensitive && !operator.canAccessSensitiveData))) {
+                throw new PrivilegesError("Authenticated user is not allowed to edit sensitive data");
+                // if edit data exists and operator has not the privilege to EDIT datatype, then throw Privileges Error
+            }
+            if(_.isEmpty(payload.dataTypes) || !_.find(payload.dataTypes, {id : payload.data.type.id})) {
+                throw new PrivilegesError(`Authenticated user does not have edit privileges on the data type`);
+            }
         }
         return res.json(payload);
 
