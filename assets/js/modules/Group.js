@@ -178,27 +178,45 @@
 
     Group.Views.List = Backbone.View.extend({
 
+        events: {
+            'change #projectSelector':'filterGroups'
+        },
         tagName: 'div',
         className: 'group',
 
-        initialize: function() {
+        initialize: function(options) {
             $("#main").html(this.el);
             this.template = JST["views/templates/group-list.ejs"];
-            this.render();
+            this.render(options);
         },
 
         render: function(options) {
 
             var _this = this;
-            var groups= new Group.List();
-            groups.fetch({
-                success: function(groups) {
-                    _this.$el.html(_this.template({__: i18n, groups: groups.models}));
-                    return _this;
-                },
-                error: 	xtens.error
-            });
+            this.$el.html(_this.template({__: i18n, groups: options.groups, projects:options.projects}));
+            $('.selectpicker').selectpicker();
+            if (options.paramProject) {
+                $('.selectpicker').selectpicker('val', options.paramProject.name);
+            }
+            $('.selectpicker').selectpicker('refresh');
+            this.filterGroups();
             return this;
+        },
+
+        filterGroups: function(){
+
+            var rex = new RegExp($('#projectSelector').val());
+
+            if(rex =="/all/"){this.clearFilter();}else{
+                $('.group_val').hide();
+                $('.group_val').filter(function() {
+                    return rex.test($(this).text());
+                }).show();
+            }
+        },
+        clearFilter: function(){
+            $('.projectSelector').val('');
+            $('.group_val').show();
         }
 
     });

@@ -362,27 +362,47 @@
      *  This is the view to show in a table the full list of existing datatypes
      */
     DataType.Views.List = Backbone.View.extend({
+        events: {
+            'change #projectSelector':'filterDataTypes'
+        },
         tagName: 'div',
         className: 'dataTypes',
 
-        initialize: function() {
+        initialize: function(options) {
             $("#main").html(this.el);
             this.template = JST["views/templates/datatype-list.ejs"];
-            this.render();
+            this.render(options);
         },
 
         render: function(options) {
-            var that = this;
-            var dataTypes = new DataType.List();
-            dataTypes.fetch({
-                success: function(dataTypes) {
-                    that.$el.html(that.template({__: i18n, dataTypes: dataTypes.models}));
-                },
-                error: function() {
-                    that.$el.html(that.template({__: i18n}));
-                }
-            });
+
+            this.$el.html(this.template({__: i18n, dataTypes: options.dataTypes, projects:options.projects}));
+
+            $('.selectpicker').selectpicker();
+            if (options.paramProject) {
+                $('.selectpicker').selectpicker('val', options.paramProject.name);
+            }
+            $('.selectpicker').selectpicker('refresh');
+            this.filterDataTypes();
+
             return this;
+        },
+
+        filterDataTypes: function(){
+
+            var rex = new RegExp($('#projectSelector').val());
+
+            if(rex =="/all/"){this.clearFilter();}else{
+                $('.content').hide();
+                $('.content').filter(function() {
+                    return rex.test($(this).text());
+                }).show();
+            }
+        },
+
+        clearFilter: function(){
+            $('.projectSelector').val('');
+            $('.content').show();
         }
     });
 

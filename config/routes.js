@@ -82,6 +82,7 @@ module.exports.routes = {
     // PersonalDetails Controller
 
     // Project Controller
+    'GET /project/edit': {controller: 'project', action: 'edit'},
 
     // Query Controller
     // Advanced Search API

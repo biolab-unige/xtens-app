@@ -96,8 +96,18 @@ const coroutines = {
         if ( typeof groupId === 'undefined' || groupId === null  ) { return BluebirdPromise.resolve(undefined);}
 
         const privilege = yield DataTypePrivileges.findOne({ id: privilegeId, group: groupId }).populate('dataType');
-        
+
         return privilege.dataType;
+    }),
+
+    getDataTypesToEditProject: BluebirdPromise.coroutine(function *() {
+
+        let datatypes = yield DataType.find();
+        datatypes = _.find(datatypes, dt =>{
+            return dt.project === null;
+        });
+
+        return datatypes ? _.isArray(datatypes) ? datatypes : [datatypes] : [] ;
     })
 };
 
@@ -395,7 +405,7 @@ let DataTypeService = {
 
     /**
      * @method
-     * @name getOne
+     * @name getHigherPrivileges
      * @param{array} privileges
      * @description return the higher privileges in array
      * @return {Object} - the found DataType
@@ -421,6 +431,20 @@ let DataTypeService = {
         });
         let results = _.values(levels);
         return results;
+    },
+
+    /**
+     * @method
+     * @name getDataTypesToEditProject
+     * @description return the higher privileges in array
+     * @return {Array} - Datatypes not yet associated with a project
+     */
+    getDataTypesToEditProject: function() {
+        return coroutines.getDataTypesToEditProject()
+        .catch((err) => {
+            sails.log(err);
+            return err;
+        });
     }
 
 

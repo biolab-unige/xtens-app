@@ -1,6 +1,15 @@
-<h2><%= __("data-type-list") %></h2>
+<h2 class="legend" align="center"><%= __("data-type-list") %></h2>
 
 <div id="content">
+    <div class="row">
+      <label for="dataType" class="data-label"><%= __("selected-project") %>:</label>
+      <select id='projectSelector' class="form-group selectpicker" data-width="fit">
+      <option selected value='all'>All</option>
+      <% _.each(projects, function(project) { %>
+        <option value='<%= project.name %>'><%= project.name %></option>
+      <% }) %>
+      </select>
+  </div>
     <div class="row">
         <div class="col-sm-12">
             <div class="table-responsive">
@@ -14,12 +23,13 @@
                             <th><%= __("json-schema") %></th>
                             -->
                             <th><%= __("parent") %></th>
+                            <th><%= __("project") %></th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                     <% _.each(dataTypes, function(dataType) { %>
-                    <tr>
+                    <tr class="content">
                         <td><%= dataType.id %></td>
                         <td><%= dataType.get("name") %></td>
                         <td><%= dataType.get("model") %></td>
@@ -27,6 +37,7 @@
                         <td><%= JSON.stringify(dataType.get("schema")) %></td>
                         -->
                         <td><%= dataType.get("parents").map(function(parent) { return (" " + parent.name); }).toString().trim() %></td>
+                        <td><%= dataType.get("project").name %></td>
                         <td><a class="btn" href="#/datatypes/edit/<%= dataType.id %>"><%=__("edit") %></a></td>
                     </tr>
                     <% }) %>

@@ -96,6 +96,9 @@
             "login":"logIn",
             "logout":"logOut",
             "groups/operator/:id": "associationOperator",
+            "projects":"projectList",
+            "projects/new":"projectEdit",
+            "projects/edit/:id":"projectEdit",
             "datatypeprivileges/:groupId": "dataTypePrivilegesList",
             "datatypeprivileges/new/:groupId": "dataTypePrivilegesEdit",
             "datatypeprivileges/edit/:groupId/:privilegesId": "dataTypePrivilegesEdit",
@@ -162,20 +165,29 @@
             var that = this;
             var group = new Group.Model({id: groupId});
             var privileges = new DataTypePrivileges.List();
+            var dataTypes = new DataType.List();
             var groupDeferred = group.fetch({
-                data: $.param({populate: ['dataTypes']})
+                data: $.param({populate: ['dataTypes','projects']})
             });
             var privilegesDeferred = privileges.fetch({
-                data: $.param({group: groupId})
+                data: $.param({group: groupId, sort:'id ASC'})
             });
 
-            $.when(groupDeferred, privilegesDeferred)
-            .then(function(groupRes, privilegesRes) {
-                that.loadView(new DataTypePrivileges.Views.List({
-                    group: new Group.Model(groupRes && groupRes[0]),
-                    privileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0])
-                }));
-            }, xtens.error);
+            $.when(groupDeferred, privilegesDeferred).then(function(groupRes, privilegesRes) {
+                var dataTypesDeferred = dataTypes.fetch({
+                    data: $.param({populate:['project']})
+                });
+                $.when(dataTypesDeferred).then(function(dataTypesRes) {
+
+                    that.loadView(new DataTypePrivileges.Views.List({
+                        group: new Group.Model(groupRes && groupRes[0]),
+                        privileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
+                        dataTypes: dataTypesRes
+                    }));
+                });
+            }, function(jqxhr) {
+                xtens.error(jqxhr);
+            });
         },
 
         /**
@@ -236,8 +248,30 @@
          * @name dataTypeList
          * @description opens the list view of all existing dataTypes
          */
-        dataTypeList: function() {
-            this.loadView(new DataType.Views.List());
+        dataTypeList: function(queryString) {
+            var that = this;
+            var queryParams = parseQueryString(queryString);
+            var dataTypes = new DataType.List();
+
+            dataTypes.fetch({
+                data:$.param({populate:['project','parents'], sort: 'id ASC'}),
+                success: function(dataTypes) {
+                    var projects = _.uniq(_.map(dataTypes.models,function (dt) {
+                        return dt.get('project');
+                    }),function (x) {
+                        return x.id;
+                    });
+                    if (queryParams.project) {
+                        var paramProject = _.find(projects,function (pr) {
+                            return pr.id === _.parseInt(queryParams.project);
+                        });
+                    }
+                    that.loadView(new DataType.Views.List({paramProject: paramProject, dataTypes: dataTypes.models, projects: projects}));
+                },
+                error: function(err) {
+                    xtens.error(err);
+                }
+            });
         },
 
         downIrods: function() {
@@ -421,8 +455,27 @@
             this.loadView(new FileManager.Views.Download());
         },
 
-        groupList:function() {
-            this.loadView(new Group.Views.List());
+        groupList:function(queryString) {
+            var that = this;
+            var queryParams = parseQueryString(queryString);
+            var groups = new Group.List();
+
+            groups.fetch({
+                data:$.param({populate:['projects'], sort: 'id ASC'}),
+                success: function(groups) {
+                    let projects = _.map(groups.models, function (g) { return g.get('projects'); });
+                    projects = _.uniq(_.flatten(projects), function (p) {return p.id;});
+                    if (queryParams.projects) {
+                        var paramProject = _.find(projects,function (pr) {
+                            return pr.id === _.parseInt(queryParams.projects);
+                        });
+                    }
+                    that.loadView(new Group.Views.List({paramProject: paramProject, groups: groups.models, projects: projects}));
+                },
+                error: function(err) {
+                    xtens.error(err);
+                }
+            });
         },
 
         /**
@@ -490,6 +543,36 @@
             else {
                 this.loadView(new Operator.Views.Edit({model: operator}));
             }
+        },
+
+        /**
+         * @method
+         * @name projectEdit
+         * @description retrieved a user project a renders its Edit View
+         * @param{Integer} id - the user project ID
+         */
+        projectEdit:function(id) {
+            var that = this;
+
+            $.ajax({
+                url: '/project/edit',
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                },
+                data: {id:id},
+                contentType: 'application/json',
+                success: function(results) {
+                    that.loadView(new Project.Views.Edit(results));
+                },
+                error: function(err) {
+                    xtens.error(err);
+                }
+            });
+        },
+
+        projectList:function() {
+            this.loadView(new Project.Views.List());
         },
 
         updatePassword:function() {

@@ -1,31 +1,30 @@
-<h2 class="legend" align="center"><%= __("group-list") %></h2> 
+<h2 class="legend" align="center"><%= __("group-list") %></h2>
 <div id="list">
+  <div class="row">
+    <label for="dataType" class="data-label"><%= __("selected-project") %>:</label>
+    <select id='projectSelector' class="form-group selectpicker" data-width="fit">
+    <option selected value='all'>All</option>
+    <% _.each(projects, function(project) { %>
+      <option value='<%= project.name %>'><%= project.name %></option>
+    <% }) %>
+    </select>
+</div>
     <div class="table-responsive">
         <table class="table striped">
-            <thead> 
-               
+            <thead>
                 <tr>
                     <th><%= __("name") %></th>
-                                      <th></th>
+                    <th><%= __("projects") %></th>
+                    <th></th>
                 </tr>
             </thead>
-            <script type="text/css">
-tbody{
-background-color:blue;
-}
-</script>
-
-
-            <tbody>  <% _.each(groups, function(group) { %> 
-            <tr>
-
-
-                <td class="group_val"><%= group.get("name") %></td>
-                               <td><a id="edit" class="btn" href="#/groups/edit/<%= group.id %>"><%=__("edit") %></a></td>
-                               <td><a id="edit" class="btn" href="#/groups/operator/<%= group.id %>"><%=__("member") %></a></td>
-                               <td><a id="edit" class="btn" href="#/datatypeprivileges/<%= group.id %>"><%=__("data-type") %></a></td>
-
-
+            <tbody>  <% _.each(groups, function(group) { %>
+            <tr class="group_val">
+              <td><%= group.get("name") %></td>
+              <td><%= _.map(group.get("projects"), 'name').join(" ") %></td>
+              <td><a id="edit" class="btn" href="#/groups/edit/<%= group.id %>"><%=__("edit") %></a></td>
+              <td><a id="edit" class="btn" href="#/groups/operator/<%= group.id %>"><%=__("members-operators") %></a></td>
+              <td><a id="edit" class="btn" href="#/datatypeprivileges/<%= group.id %>"><%=__("data-type-privileges") %></a></td>
             </tr>
             <% }) %>
             </tbody>

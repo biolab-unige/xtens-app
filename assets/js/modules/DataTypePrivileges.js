@@ -210,7 +210,9 @@
      * @extends Backbone.View
      */
     DataTypePrivileges.Views.List = Backbone.View.extend({
-
+        events: {
+            'change #projectSelector':'filterDataTypes'
+        },
         tagName: 'div',
         className: 'dataTypePrivileges',
 
@@ -224,6 +226,16 @@
             this.template = JST["views/templates/datatypeprivileges-list.ejs"];
             this.group = options.group;
             this.privileges = options.privileges;
+            this.mapTypeProjects = options.mapTypeProjects;
+            this.projects = options.projects;
+            var mapTypeProjects = {};
+            _.forEach(this.privileges.models,function (priv) {
+                var dt = _.find(options.dataTypes,function (dt) {
+                    return dt.id === priv.get('dataType');
+                });
+                dt ? mapTypeProjects[dt.id] = dt.project.name : null;
+            });
+            this.mapTypeProjects = mapTypeProjects;
             this.render();
         },
 
@@ -231,9 +243,31 @@
             this.$el.html(this.template({
                 __: i18n,
                 group: this.group,
-                privileges: this.privileges
+                privileges: this.privileges,
+                projects : _.uniq(_.values(this.mapTypeProjects)),
+                dataTypes : this.dataTypes,
+                mapTypeProjects: this.mapTypeProjects
             }));
+            $('.selectpicker').selectpicker();
+
             return this;
+        },
+
+        filterDataTypes: function(){
+
+            var rex = new RegExp($('#projectSelector').val());
+
+            if(rex =="/all/"){this.clearFilter();}else{
+                $('.content').hide();
+                $('.content').filter(function() {
+                    return rex.test($(this).text());
+                }).show();
+            }
+        },
+
+        clearFilter: function(){
+            $('.projectSelector').val('');
+            $('.content').show();
         }
     });
 

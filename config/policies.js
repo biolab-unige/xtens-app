@@ -34,6 +34,10 @@ module.exports.policies = {
         '*': ['bearerAuth', 'isWheel']
     },
 
+    ProjectController: {
+        '*': ['bearerAuth', 'isWheel']
+    },
+
     OperatorController: {
         '*': ['bearerAuth', 'isWheel'],
         find: 'bearerAuth',

@@ -9,6 +9,8 @@
         "subjects": "Subjects",
         "samples": "Samples",
         // views/templates/datatype-list.ejs
+        "selected-project":"Selected Project",
+        "data-type-list": "Data Type List",
         "id":"ID",
         // views/templates/datatype-edit.ejs
         "please-select": "Please Select",
@@ -78,8 +80,6 @@
         "create-a-new-operator" : "Create a New Operator",
         "m" : "M",
         "f" : "F",
-        "group-list": "Group List",
-        "new-group": "New Group",
         "xtens-login":"XTENS Login",
         /* views/templates/login.ejs */
         "username": "Username",
@@ -91,6 +91,7 @@
         "manager":"Manager",
         "standard":"Standard",
         "groups": "Groups",
+        "projects": "Projects",
         "operators": "Operators",
         "data-management": "Data Management",
         "search": "Search",
@@ -122,7 +123,10 @@
         "associate-datatype":"Associate a Datatype",
         "dissociate-datatype":"Dissociate a Datatype",
         /* views/templates/group-list.ejs */
-        "member":"Member",
+        "member-operators":"Members Operators",
+        "group-list": "Group List",
+        "data-type-privileges": "Data Type Privileges",
+        "new-group": "New Group",
         /* views/templates/group-edit.ejs */
         "privilege-level": "Privilege Level",
         "can-access-personal-data": "Can Access Personal Data",
@@ -131,6 +135,18 @@
         "group-deleted": "Group Deleted",
         "group-will-be-permanently-deleted-are-you-sure": "Group will be permanently deleted. Are you sure?",
         'group-correctly-stored-on-server': "Group correctly stored on server",
+        /* views/templates/project-edit.ejs */
+        "project-data-types": "Project Data Types",
+        "project-groups": "Project Groups",
+        "save-project": "Save Project",
+        "project-deleted": "Project Deleted",
+        "project-will-be-permanently-deleted-are-you-sure": "Project will be permanently deleted. Are you sure?",
+        'project-correctly-stored-on-server': "Project correctly stored on server",
+        /* views/templates/project-list.ejs */
+        "project-list": "Project List",
+        "new-project": "New Project",
+        "member-groups":"Member Groups",
+        "associated-data-type":"Associated Data Types",
         /*views/templates/association.ejs */
         "associated":"Associated",
         "no-associated":"Not Associated",
@@ -170,6 +186,7 @@
         /* views/templates/sample-edit.ejs */
         "sample-manager": "Sample Manager",
         "create-sample": "Create Sample",
+        "edit-sample": "Edit Sample",
         "update-sample": "Update Sample",
         "biobank": "Biobank",
         "biobank-code": "Biobank Code",

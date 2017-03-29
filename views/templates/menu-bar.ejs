@@ -6,6 +6,7 @@
     </a>
     <ul id="box" class="dropdown-menu">
       <% if (session.get("isWheel")) {%><h2 id="title"><%= __("super-user")%></h2>
+      <li><a href="#/projects"><%= __("projects") %></a></li>
       <li><a href="#/groups"><%= __("groups") %></a></li>
       <li><a href="#/operators"><%= __("operators") %></a></li>
       <li><a href="#/biobanks"><%= __("biobanks") %></a></li>

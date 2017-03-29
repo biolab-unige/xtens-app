@@ -1,0 +1,95 @@
+<div id="project">
+
+  <form name="Myform" class="form-horizontal edit-project-form" role="form" data-parsley-trigger="focusout" data-parsley-validate>
+
+    <legend class="legend text-center">
+      <%= project ? 'Edit' : 'New' %> Project</legend>
+
+    <div class="form-group row">
+      <label for="name" class="col-md-3 control-label"><%= __("name") %></label>
+      <div class="col-md-6">
+        <input required class="form-control" name="name" id="name" type="text" value="<%= project ? project.get('name') : '' %>">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="description" class="col-md-3 control-label"><%= __("description") %></label>
+      <div class="col-md-6">
+        <input class="form-control" name="description" id="description"></input>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <h4 class="text-center"> <%= __('data-types') %> </h4>
+      <div id="labelDTNotAssociated" class="col-md-5 col-md-offset-1 text-center">
+        <p> <label for="noassociatedDataTypes" id="label" class="control-label"><%= __("no-associated")%></label></p>
+      </div>
+      <div id="labelDTAssociated" class="col-md-5 col-md-offset-1 text-center">
+        <p> <label for="associatedDataTypes" class="control-label" id="label"><%= __("associated")%></label></p>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-md-5 col-md-offset-1 Table">
+        <ul id="noassociatedDataTypes" class="source connectedDt">
+          <% if (noAssDt && noAssDt.length > 0) {
+                  noAssDt.forEach(function(dt, i) { %>
+            <li class="text-center" draggable="true" value="<%= dt.id %> "><%= dt.name %></li>
+            <% })} %>
+        </ul>
+      </div>
+
+      <div class="col-md-5 col-md-offset-1 Table">
+        <ul id="associatedDataTypes" class="target connectedDt">
+          <% if ( assDt && assDt.length > 0) {
+                    assDt.forEach(function(dt, i) { %>
+            <li class="text-center" draggable="true" value="<%= dt.id %> "><%= dt.name %></li>
+            <% })} %>
+        </ul>
+      </div>
+    </div>
+    <div class="form-group row">
+      <h4 class="text-center"> <%= __('groups') %> </h4>
+      <div id="labelGroupNotAssociated" class="col-md-5 col-md-offset-1 text-center">
+        <p> <label for="noassociatedGroups" id="label" class="control-label"><%= __("no-associated")%></label></p>
+      </div>
+      <div id="labelGroupAssociated" class="col-md-5 col-md-offset-1 text-center">
+        <p> <label for="associatedGroups" class="control-label" id="label"><%= __("associated")%></label></p>
+      </div>
+    </div>
+
+    <div class="form-group row">
+
+      <div class="col-md-5 col-md-offset-1 Table">
+        <ul id="noassociatedGroups" class="source connectedGr">
+          <% if (noAssGr && noAssGr.length > 0) {
+                  noAssGr.forEach(function(gr, i) { %>
+            <li class="text-center" draggable="true" value="<%= gr.id %> "><%= gr.name %></li>
+            <% })} %>
+        </ul>
+      </div>
+      <div class="col-md-5 col-md-offset-1 Table">
+        <ul id="associatedGroups" class="target connectedGr">
+          <% if ( assGr && assGr.length > 0) {
+                  assGr.forEach(function(gr, i) { %>
+            <li class="text-center" draggable="true" value="<%= gr.id %> "><%= gr.name %></li>
+            <% })} %>
+        </ul>
+      </div>
+
+    </div>
+
+
+    <div id="buttonbardiv" class="row text-center">
+      <div class="btn-group btn-group-margin">
+        <input type="submit" id="save" class="btn btn-primary" value="<%= __('save-project') %>">
+        <% if(project) { %>
+          <input type="hidden" name="id" value="<%= project.id %>" />
+          <button id="delete" data-project-id="<%= project.id %>" class="btn btn-danger delete"><%= __('delete') %></button>
+          <% }; %>
+      </div>
+    </div>
+
+  </form>
+</div>
+<div class="project-modal"></div>

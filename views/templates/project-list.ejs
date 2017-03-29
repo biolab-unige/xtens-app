@@ -1,0 +1,50 @@
+<h2 class="legend" align="center"><%= __("project-list") %></h2>
+<div id="list">
+  <div class="table-responsive">
+    <table class="table striped">
+      <thead>
+
+        <tr>
+          <th>
+            <%= __("name") %>
+          </th>
+          <th></th>
+        </tr>
+      </thead>
+      <script type="text/css">
+        tbody{ background-color:blue; }
+      </script>
+
+
+      <tbody>
+        <% _.each(projects, function(project) { %>
+          <tr>
+            <td class="project_val"><%= project.get("name") %></td>
+            <td class="text-right">
+              <a id="edit" class="btn" href="#/projects/edit/<%= project.id %>">
+                <%=__("edit") %>
+              </a>
+            </td>
+            <td class="text-right">
+              <a id="groups" class="btn" href="#/groups?projects=<%= project.id %>">
+                <%=__("member-groups") %>
+              </a>
+            </td>
+            <td class="text-right">
+              <a id="dataTypes" class="btn" href="#/datatypes?project=<%= project.id %>">
+                <%=__("associated-data-type") %>
+              </a>
+            </td>
+
+
+          </tr>
+          <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <div id="buttonbardiv" class="row text-center">
+    <a href="#/projects/new" class="btn btn-primary">
+      <%= __("new-project")%>
+    </a>
+  </div>
+</div>
