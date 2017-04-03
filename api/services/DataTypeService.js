@@ -98,17 +98,17 @@ const coroutines = {
         const privilege = yield DataTypePrivileges.findOne({ id: privilegeId, group: groupId }).populate('dataType');
 
         return privilege.dataType;
-    }),
-
-    getDataTypesToEditProject: BluebirdPromise.coroutine(function *() {
-
-        let datatypes = yield DataType.find();
-        datatypes = _.find(datatypes, dt =>{
-            return dt.project === null;
-        });
-
-        return datatypes ? _.isArray(datatypes) ? datatypes : [datatypes] : [] ;
     })
+
+    // getDataTypesToEditProject: BluebirdPromise.coroutine(function *() {
+    //
+    //     let datatypes = yield DataType.find();
+    //     datatypes = _.find(datatypes, dt =>{
+    //         return dt.project === null;
+    //     });
+    //
+    //     return datatypes ? _.isArray(datatypes) ? datatypes : [datatypes] : [] ;
+    // })
 };
 
 let DataTypeService = {
@@ -164,7 +164,7 @@ let DataTypeService = {
             name: Joi.string().required(),
             model: Joi.string().required().valid(_.values(constants.DataTypeClasses)),
             schema: Joi.object().required(),
-            project: Joi.number().integer().allow(null),
+            project: Joi.number().integer().required(),
             parents: Joi.array().allow(null),
             children: Joi.array().allow(null),
             data: Joi.array().allow(null),
@@ -216,6 +216,7 @@ let DataTypeService = {
                 name: Joi.string().required(),
                 description: Joi.string().required(),
                 model: Joi.string().valid(_.values(constants.DataTypeClasses)),
+                project: Joi.number().integer().required(),
                 fileUpload: Joi.boolean().required(),
                 version: Joi.string().allow(""),
                 ontology: Joi.string().allow("")
@@ -431,7 +432,7 @@ let DataTypeService = {
         });
         let results = _.values(levels);
         return results;
-    },
+    }
 
     /**
      * @method
@@ -439,13 +440,13 @@ let DataTypeService = {
      * @description return the higher privileges in array
      * @return {Array} - Datatypes not yet associated with a project
      */
-    getDataTypesToEditProject: function() {
-        return coroutines.getDataTypesToEditProject()
-        .catch((err) => {
-            sails.log(err);
-            return err;
-        });
-    }
+    // getDataTypesToEditProject: function() {
+    //     return coroutines.getDataTypesToEditProject()
+    //     .catch((err) => {
+    //         sails.log(err);
+    //         return err;
+    //     });
+    // }
 
 
 };

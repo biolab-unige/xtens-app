@@ -153,6 +153,12 @@
      */
 
     DataType.Views.Edit = MetadataComponent.Views.Edit.fullExtend({
+        events: {
+            'submit .edit-datatype-form': 'saveDataType',
+            'click .add-metadata-group': 'addMetadataGroupOnClick',  // not used yet
+            'click button.delete': 'deleteDataType',
+            'change select#project': 'getProjectParents'
+        },
 
         tagName: 'div',
         className: 'dataType',
@@ -164,6 +170,7 @@
             this.nestedViews = [];
             this.idDataType = parseInt(options.params.id);
             this.existingDataTypes = options.dataTypes;
+            this.projects = options.projects;
             if (this.idDataType) {
                 var that =this;
                 this.model = new DataType.Model(_.find(this.existingDataTypes, function(dt){ return dt.id === that.idDataType; }));
@@ -191,6 +198,24 @@
                     }
                 }
             },
+            '#project': {
+                observe: 'project',
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
+                selectOptions: {
+                    collection: 'this.projects',
+                    labelPath: 'name',
+                    valuePath: 'id',
+                    defaultOption: {
+                        label: "",
+                        value: null
+                    }
+                },
+                onGet: function(val) {
+                    return val && val.id;
+                }
+            },
             '#parents': {
                 observe: 'parents',
                 initialize: function($el) {
@@ -208,13 +233,33 @@
                 getVal: function($el, ev, options) {
                     return $el.val() && $el.val().map(function(value) {
                         return _.findWhere(options.view.existingDataTypes, {id: parseInt(value)});
-                        // return _.parseInt(value);
                     });
                 },
                 onGet: function(vals, options) {
                     return (vals && vals.map(function(val) {return val.id; }));
                 }
             }
+        },
+
+        getProjectParents: function (ev) {
+            var selProject = _.parseInt(ev.target.value);
+            var filteredValues  = [], newColl = [];
+
+            this.existingDataTypes.forEach(function (dt) {
+                if (dt.project.id === selProject){
+                    newColl.push({label:dt.name,value:dt.id});
+                }
+            });
+            newColl.forEach(function (dt) {
+                _.find($('#parents').val(),function (val) {
+                    if(dt.value === _.parseInt(val)){
+                        filteredValues.push(val);
+                    }
+                });
+            });
+            var options = {selectOptions:{collection:newColl}};
+            Backbone.Stickit.getConfiguration($('#parents')).update($('#parents'),filteredValues,{},options);
+            $('#parents').val(filteredValues).trigger("change");
         },
 
         render: function() {
@@ -224,6 +269,7 @@
             this.$form.parsley(parsleyOpts);
             this.$modal = this.$(".datatype-modal");
             this.stickit();
+            this.model.id ? $('#project').prop('disabled', true) : null;
             if (this.model.get("schema") && _.isArray(this.model.get('schema').body)) {
                 var body = this.model.get('schema').body;
                 for (var i=0, len=body.length; i<len; i++) {
@@ -240,11 +286,6 @@
             alert(this.model.validationError[0].message);
         },
 
-        events: {
-            'submit .edit-datatype-form': 'saveDataType',
-            'click .add-metadata-group': 'addMetadataGroupOnClick',  // not used yet
-            'click button.delete': 'deleteDataType'
-        },
 
         serialize: function() {
             var metadataBody = [];
@@ -321,16 +362,18 @@
 
                 that.model.destroy({
                     success: function(model, res) {
-                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
-                        modal.title= i18n('ok');
-                        modal.body= i18n('datatype-deleted');
-                        that.$modal.append(modal.render().el);
-                        $('.modal-header').addClass('alert-success');
-                        modal.show();
-                        setTimeout(function(){ modal.hide(); }, 1200);
-                        that.$modal.on('hidden.bs.modal', function (e) {
-                            modal.remove();
-                            xtens.router.navigate('datatypes', {trigger: true});
+                        that.$modal.one('hidden.bs.modal', function (e) {
+                            modal.template= JST["views/templates/dialog-bootstrap.ejs"];
+                            modal.title= i18n('ok');
+                            modal.body= i18n('datatype-deleted');
+                            that.$modal.append(modal.render().el);
+                            $('.modal-header').addClass('alert-success');
+                            modal.show();
+                            setTimeout(function(){ modal.hide(); }, 1200);
+                            that.$modal.on('hidden.bs.modal', function (e) {
+                                modal.remove();
+                                xtens.router.navigate('datatypes', {trigger: true});
+                            });
                         });
                     },
                     error: function(model, res) {

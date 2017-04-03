@@ -66,6 +66,7 @@ describe('DataTypeController', function() {
             "name": "New DataType",
             "model": "Data",
             "version": "0.0.1",
+            "project":1,
             "ontology": "",
             "fileUpload": false,
             "description": "A new datatype for tests"
@@ -98,7 +99,8 @@ describe('DataTypeController', function() {
                 "parents": [1],
                 "name": "New DataType",
                 "schema": schemaMetadata,
-                "model": "Data"
+                "model": "Data",
+                "project": 1
 
             })
             .expect(201)
@@ -182,7 +184,8 @@ describe('DataTypeController', function() {
                 "name": "update DataType",
                 "id":7,
                 "schema": schemaMetadata,
-                "model": "Data"
+                "model": "Data",
+                "project": 1
             })
             .expect(200)
             .end(function(err, res) {

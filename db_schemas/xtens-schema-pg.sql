@@ -301,7 +301,7 @@ CREATE TABLE data_type (
     name text NOT NULL,
     model text NOT NULL,
     schema jsonb NOT NULL,
-    project integer,
+    project integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL
 );
@@ -2124,7 +2124,7 @@ ALTER TABLE ONLY datatype_groups__group_datatypes
 --
 
 ALTER TABLE ONLY data_type
-    ADD CONSTRAINT datatype_name_key UNIQUE (name);
+    ADD CONSTRAINT datatype_name_key UNIQUE (name,project);
 
 
 --

@@ -256,11 +256,11 @@
             dataTypes.fetch({
                 data:$.param({populate:['project','parents'], sort: 'id ASC'}),
                 success: function(dataTypes) {
-                    var projects = _.uniq(_.map(dataTypes.models,function (dt) {
+                    var projects = _.compact(_.uniq(_.map(dataTypes.models,function (dt) {
                         return dt.get('project');
                     }),function (x) {
-                        return x.id;
-                    });
+                        return x && x.id;
+                    }));
                     if (queryParams.project) {
                         var paramProject = _.find(projects,function (pr) {
                             return pr.id === _.parseInt(queryParams.project);
@@ -300,6 +300,7 @@
                 data: {id:id},
                 contentType: 'application/json',
                 success: function(results) {
+
                     that.loadView(new DataType.Views.Edit(results));
                 },
                 error: function(err) {

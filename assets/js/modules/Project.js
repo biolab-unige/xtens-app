@@ -73,7 +73,7 @@
             else {
                 this.model = new Project.Model();
             }
-            this.noAssDt = options.dataTypes;
+            // this.noAssDt = options.dataTypes;
             this.assDt = this.model.get('dataTypes');
             this.noAssGr = options.groups;
             this.assGr = this.model.get('groups');
@@ -88,44 +88,46 @@
 
             '#description': 'description'
 
+
         },
 
 
 
         render: function()  {
             var that = this;
-            this.$el.html(this.template({__:i18n, project: this.model, noAssDt: this.noAssDt, assDt: this.assDt, noAssGr: this.noAssGr, assGr: this.assGr}));
+            this.$el.html(this.template({__:i18n, project: this.model, assDt: this.assDt, noAssGr: this.noAssGr, assGr: this.assGr}));
             this.$modal = this.$(".project-modal");
             this.$form = this.$('form');
             this.$form.parsley(parsleyOpts);
-            this.dataTypesToBeSaved = _.map(this.assDt, 'id');
+            // this.dataTypesToBeSaved = _.map(this.assDt, 'id');
             this.groupsToBeSaved = _.map(this.assGr, 'id');
 
-            var noDT = document.getElementById('noassociatedDataTypes');
-            Sortable.create(noDT, {
-                group: 'dataType',
-                animation: 300
-            });
-            var assDT = document.getElementById('associatedDataTypes');
-            Sortable.create(assDT, {
-                group: 'dataType',
-                animation: 300,
-
-                // Element is dropped into the list from another list
-                onAdd: function (/**Event*/evt) {
-                    var itemEl = evt.item;  // dragged HTMLElement
-                    evt.from;  // previous list
-                    // + indexes from onEnd
-                    that.dataTypesToBeSaved.push(itemEl.value);
-                },
-                // Element is removed from the list into another list
-                onRemove: function (/**Event*/evt) {
-                  // same properties as onUpdate
-                    var itemEl = evt.item;
-                    var index = _.indexOf(that.dataTypesToBeSaved, itemEl.value);
-                    that.dataTypesToBeSaved.splice(index,1);
-                }
-            });
+            // var noDT = document.getElementById('noassociatedDataTypes');
+            // Sortable.create(noDT, {
+            //     group: 'dataType',
+            //     animation: 300
+            // });
+            // var assDT = document.getElementById('associatedDataTypes');
+            // Sortable.create(assDT, {
+            //     group: 'dataType',
+            //     animation: 300,
+            //     disabled:true
+            //
+            //     // Element is dropped into the list from another list
+            //     onAdd: function (/**Event*/evt) {
+            //         var itemEl = evt.item;  // dragged HTMLElement
+            //         evt.from;  // previous list
+            //         // + indexes from onEnd
+            //         that.dataTypesToBeSaved.push(itemEl.value);
+            //     },
+            //     // Element is removed from the list into another list
+            //     onRemove: function (/**Event*/evt) {
+            //       // same properties as onUpdate
+            //         var itemEl = evt.item;
+            //         var index = _.indexOf(that.dataTypesToBeSaved, itemEl.value);
+            //         that.dataTypesToBeSaved.splice(index,1);
+            //     }
+            // });
             var noGr = document.getElementById('noassociatedGroups');
             Sortable.create(noGr, {
                 group: 'groups',
@@ -159,7 +161,7 @@
         saveProject: function(ev) {
             var that = this;
             this.model.set('groups',this.groupsToBeSaved);
-            this.model.set('dataTypes',this.dataTypesToBeSaved);
+            this.model.unset('dataTypes');
             this.model.save(null, {
                 success: function(project) {
                     if (this.modal) {
@@ -203,20 +205,23 @@
 
             this.$('#confirm-delete').click( function (e) {
                 modal.hide();
+                $('.modal-backdrop').remove();
                 var targetRoute = $(ev.currentTarget).data('targetRoute') || 'data';
 
                 that.model.destroy({
                     success: function(model, res) {
-                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
-                        modal.title= i18n('ok');
-                        modal.body= i18n('project-deleted');
-                        that.$modal.append(modal.render().el);
-                        $('.modal-header').addClass('alert-success');
-                        modal.show();
-                        setTimeout(function(){ modal.hide(); }, 1200);
-                        that.$modal.on('hidden.bs.modal', function (e) {
-                            modal.remove();
-                            xtens.router.navigate('projects', {trigger: true});
+                        that.$modal.one('hidden.bs.modal', function (e) {
+                            modal.template= JST["views/templates/dialog-bootstrap.ejs"];
+                            modal.title= i18n('ok');
+                            modal.body= i18n('project-deleted');
+                            that.$modal.append(modal.render().el);
+                            $('.modal-header').addClass('alert-success');
+                            modal.show();
+                            setTimeout(function(){ modal.hide(); }, 1200);
+                            that.$modal.on('hidden.bs.modal', function (e) {
+                                modal.remove();
+                                xtens.router.navigate('projects', {trigger: true});
+                            });
                         });
                     },
                     error: function(model, res) {

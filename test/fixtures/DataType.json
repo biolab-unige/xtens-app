@@ -59,6 +59,7 @@
         "ontology": "",
         "fileUpload": false,
         "name": "Patient",
+        "project":1,
         "description": "Subject test model/schema",
         "model": "Subject"
       }
@@ -74,6 +75,7 @@
         "name": "Tissue",
         "fileUpload": true,
         "parents": "2",
+        "project":1,
         "description": "Test case for tissue sample",
         "version": "1.0",
         "ontology": "",
@@ -156,6 +158,7 @@
       "header": {
         "name": "Star",
         "fileUpload": true,
+        "project":1,
         "description": "A generic data type for a star",
         "version": "1.0",
         "ontology": "",
@@ -550,6 +553,7 @@
         "ontology": "",
         "fileUpload": false,
         "name": "Variant",
+        "project":1,
         "description": "variant call field",
         "model": "Data"
       }
@@ -647,6 +651,7 @@
         "fileUpload": false,
         "description": "Test case for fluid sample",
         "version": "1.0",
+        "project":1,
         "ontology": "",
         "model": "Sample"
       },

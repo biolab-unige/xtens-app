@@ -22,7 +22,7 @@ const coroutines = {
 
         const payload = yield BluebirdPromise.props({
             project: ProjectService.getOneAsync(params.id),
-            dataTypes: DataTypeService.getDataTypesToEditProject(),
+            // dataTypes: DataTypeService.getDataTypesToEditProject(),
             groups: GroupService.getGroupsToEditProject(params.id)
         });
 

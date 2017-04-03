@@ -123,7 +123,7 @@
         "associate-datatype":"Associate a Datatype",
         "dissociate-datatype":"Dissociate a Datatype",
         /* views/templates/group-list.ejs */
-        "member-operators":"Members Operators",
+        "member-operators":"Member Operators",
         "group-list": "Group List",
         "data-type-privileges": "Data Type Privileges",
         "new-group": "New Group",

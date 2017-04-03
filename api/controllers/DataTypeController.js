@@ -5,7 +5,7 @@
 * @help        :: See http://links.sailsjs.org/docs/controllers
 */
 /* jshint node: true */
-/* globals _, sails, DataType, DataTypeService, TokenService, Group */
+/* globals _, sails, DataType, DataTypeService, TokenService, Group, Project */
 "use strict";
 const ControllerOut = require("xtens-utils").ControllerOut, ValidationError = require('xtens-utils').Errors.ValidationError;
 const crudManager = sails.hooks.persistence.crudManager;
@@ -100,8 +100,25 @@ const coroutines = {
         dataType = yield crudManager.updateDataType(dataType);
         sails.log(dataType);
         return res.json(dataType);
-    })
+    }),
 
+    edit: BluebirdPromise.coroutine(function *(req, res) {
+        const operator = TokenService.getToken(req);
+        const params = req.allParams();
+        let projects = [];
+        sails.log.info("DataTypeController.edit - Decoded ID is: " + operator.id);
+
+        if(!operator.isWheel){
+            const groups = yield Group.find({id: operator.groups}).populate('projects');
+            projects = _.uniq(_.flatten(_.map(groups,'projects')),function (pr) {
+                return pr.id;
+            });
+        } else {
+            projects = yield Project.find().sort('id ASC');
+        }
+        const dataTypes= yield DataType.find({ project:_.map(projects,'id') }).populate(['project','parents']).sort('id ASC');
+        return res.json({params: params, dataTypes: dataTypes, projects: projects});
+    })
 };
 
 
@@ -187,14 +204,7 @@ const DataTypeController = {
     */
     edit: function(req, res) {
         let co = new ControllerOut(res);
-        let params = req.allParams();
-
-        DataType.find()
-
-        .then(function(result) {
-            return res.json({params: params, dataTypes: result});
-        })
-
+        coroutines.edit(req,res)
         .catch(function(err) {
             sails.log(err);
             return co.error(err);

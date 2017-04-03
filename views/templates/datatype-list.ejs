@@ -37,7 +37,7 @@
                         <td><%= JSON.stringify(dataType.get("schema")) %></td>
                         -->
                         <td><%= dataType.get("parents").map(function(parent) { return (" " + parent.name); }).toString().trim() %></td>
-                        <td><%= dataType.get("project").name %></td>
+                        <td><%= dataType.get("project") ? dataType.get("project").name : '' %></td>
                         <td><a class="btn" href="#/datatypes/edit/<%= dataType.id %>"><%=__("edit") %></a></td>
                     </tr>
                     <% }) %>
