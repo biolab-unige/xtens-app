@@ -62,7 +62,7 @@ module.exports = function filecontent(sails){
                 .then(result => {
                     return res.ok(); // res.json() ??
                 })
-                .catch(function(err) {
+                .catch(/* istanbul ignore next */ function(err) {
                     return co.error(err);
                 });
 
@@ -91,6 +91,7 @@ module.exports = function filecontent(sails){
                         cb(null, path.basename(__newFileStream.filename));
                     }
                 },function whenDone(err, files) {
+                  /* istanbul ignore if */
                     if (err) {
                         sails.log.error(err);
                         return res.negotiate(err);

@@ -14,8 +14,8 @@ let BluebirdPromise = require("bluebird");
 const coroutines = {
 
     getGroupsToEditProject: BluebirdPromise.coroutine(function *(idProject) {
-
         let groups = yield Group.find().populate('projects');
+        console.log("getGroupsToEditProject",groups);
         for (var i = groups.length - 1; i >= 0; i--) {
             if(_.indexOf(_.map(groups[i].projects,'id'), _.parseInt(idProject))>=0){
                 groups.splice(i, 1);

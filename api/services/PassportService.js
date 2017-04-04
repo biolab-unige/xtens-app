@@ -115,6 +115,7 @@ PassportService.connect = function (req, query, profile, next) {
         identifier : query.identifier.toString()
     }, function (err, passport) {
         // console.log(passport);
+        /* istanbul ignore if */
         if (err) {
             return next(err);
         }
@@ -163,12 +164,14 @@ PassportService.connect = function (req, query, profile, next) {
 
                 // Save any updates to the Passport before moving on
                 Passport.update({id: passport.id}, passport,function (err, passport) {
+                  /* istanbul ignore if */
                     if (err) {
                         return next(err);
                     }
 
                     // Fetch the user associated with the Passport
                     Operator.findOne({id: passport[0].user}, function (err,operator) {
+                      /* istanbul ignore if */
                         if (err) {
                             return next(err);
                         }
@@ -184,6 +187,7 @@ PassportService.connect = function (req, query, profile, next) {
 
                 Passport.create(query, function (err, passport) {
                     // If a passport wasn't created, bail out
+                    /* istanbul ignore if */
                     if (err) {
                         return next(err);
                     }
@@ -413,11 +417,13 @@ PassportService.disconnect = function (req, res, next) {
     query[provider === 'local' ? 'protocol' : 'provider'] = provider;
 
     Passport.findOne(query, function (err, passport) {
+      /* istanbul ignore if */
         if (err) {
             return next(err);
         }
 
         Passport.destroy(passport.id, function (error) {
+          /* istanbul ignore if */
             if (err) {
                 return next(err);
             }

@@ -29,7 +29,7 @@ var OperatorController = {
             sails.log(operator);
             return res.json(201, operator);
 
-        }).catch(function(error) {
+        }).catch(/* istanbul ignore next */ function(error) {
             sails.log(error.message);
             return co.error(error);
         });
@@ -53,7 +53,7 @@ var OperatorController = {
 
                 return res.json(204, null);
 
-            }).catch(function(error) {
+            }).catch(/* istanbul ignore next */ function(error) {
                 sails.log(error.message);
                 return co.error(error);
             });

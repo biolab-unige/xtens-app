@@ -312,9 +312,11 @@ let DataTypeService = {
         .then(function(inserted) {
             sails.log("new EavAttributes inserted: ", inserted);
         })
-        .catch(function(err) {
-            sails.log("DataTypeService.putMetadataFieldsIntoEAV - error caught: ", err);
-        });
+        .catch(
+          /* istanbul ignore next */
+          function(err) {
+              sails.log("DataTypeService.putMetadataFieldsIntoEAV - error caught: ", err);
+          });
 
     },
 
@@ -346,7 +348,7 @@ let DataTypeService = {
     getDataTypeToEditPrivileges: function(privilegeId, groupId) {
         sails.log("getDataTypeToEditPrivileges on privilege: ", privilegeId, " on group:", groupId);
         return coroutines.getDataTypeToEditPrivileges(privilegeId, groupId)
-        .catch((err) => {
+        .catch(/* istanbul ignore next */ function(err) {
             sails.log(err);
             return err;
         });
@@ -365,7 +367,7 @@ let DataTypeService = {
     getDataTypesToCreateNewPrivileges: function(groupId) {
         sails.log("getDataTypesToCreateNewPrivileges on groupId: " + groupId);
         return coroutines.getDataTypesToCreateNewPrivileges(groupId)
-        .catch((err) => {
+        .catch(/* istanbul ignore next */ function(err) {
             sails.log(err);
             return err;
         });
@@ -382,7 +384,7 @@ let DataTypeService = {
     getDataTypePrivilegeLevel: function(groupsId, dataTypesId) {
 
         return coroutines.getDataTypePrivilegeLevel(groupsId, dataTypesId)
-        .catch((err) => {
+        .catch(/* istanbul ignore next */ function(err) {
             sails.log(err);
             return err;
         });
@@ -398,7 +400,7 @@ let DataTypeService = {
     filterDataTypes: function(groupsId, dataTypes) {
 
         return coroutines.filterDataTypes(groupsId, dataTypes)
-        .catch((err) => {
+        .catch(/* istanbul ignore next */ function(err) {
             sails.log(err);
             return err;
         });
@@ -442,7 +444,7 @@ let DataTypeService = {
      */
     // getDataTypesToEditProject: function() {
     //     return coroutines.getDataTypesToEditProject()
-    //     .catch((err) => {
+    //     .catch(function(err) {
     //         sails.log(err);
     //         return err;
     //     });

@@ -213,6 +213,7 @@ module.exports = {
         const co = new ControllerOut(res);
         coroutines.findOne(req,res)
         .catch(error => {
+          /* istanbul ignore next */
             return co.error(error);
         });
 
@@ -279,6 +280,7 @@ module.exports = {
         const co = new ControllerOut(res);
         coroutines.edit(req,res)
         .catch(err => {
+          /* istanbul ignore next */
             sails.log.error(err);
             return co.error(err);
         });
@@ -350,7 +352,7 @@ module.exports = {
                     let json = {'links':links};
                     return res.json(json);
                 })
-                .catch(function(err){
+                .catch(/* istanbul ignore next */ function(err){
                     sails.log(err);
                     return co.error(err);
                 });
@@ -429,7 +431,7 @@ module.exports = {
                 let json = {'links':links};
                 return res.json(json);
             })
-            .catch(function(err){
+            .catch(/* istanbul ignore next */ function(err){
                 sails.log.error(err);
                 return co.error(err);
             });

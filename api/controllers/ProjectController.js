@@ -5,7 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
  /* jshint node: true */
- /* globals _, sails, ProjectService, GroupService, DataTypeService, TokenService */
+ /* globals _, sails, ProjectService, GroupService, TokenService */
 
 
 "use strict";
@@ -19,7 +19,6 @@ const coroutines = {
         const operator = TokenService.getToken(req);
         const params = req.allParams();
         sails.log.info("ProjectController.edit - Decoded ID is: " + operator.id);
-
         const payload = yield BluebirdPromise.props({
             project: ProjectService.getOneAsync(params.id),
             // dataTypes: DataTypeService.getDataTypesToEditProject(),
