@@ -64,7 +64,15 @@
 
             '#privilege-level': {
                 observe: 'privilegeLevel',
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
+
                 selectOptions: {
+                    defaultOption: {
+                        label: "",
+                        value: null
+                    },
                     collection: function() {
                         var coll = [];
                         _.each(GroupPrivilegeLevels, function(value) {
