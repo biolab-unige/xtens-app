@@ -35,12 +35,14 @@ const coroutines = {
         else {
             query = actionUtil.populateRequest(query, req);
         }
-
+        //populateRequest does not support array params on integer attribute so if there is project param and it is an array, it is parsed "manually"
         if (query._criteria.where && query._criteria.where.project ) {
             if (query._criteria.where.project[0] =="[") {
                 try {
                     query._criteria.where.project = JSON.parse(query._criteria.where.project);
-                } catch (e) {
+                }
+                catch (e) {
+                  /* istanbul ignore next */
                     res.json(400, "Error parsing project clause");
                 }
             }
@@ -69,7 +71,18 @@ const coroutines = {
 
         if (!dataType.name) dataType.name = dataType.schema && dataType.schema.name;
         if (!dataType.model) dataType.model = dataType.schema && dataType.schema.model;
-
+        if(dataType.parents){
+            const idParents = _.isObject(dataType.parents[0]) ? _.map(dataType.parents,'id') : dataType.parents;
+            const parents = yield DataType.find({ id:idParents });
+            const forbiddenParents = _.filter(parents, function (p) {
+                return p.project !== dataType.project;
+            });
+            if (forbiddenParents.length > 0 ) {
+                let dataTypesName = _.map(forbiddenParents,'name').join(", "), dataTypesId = _.map(forbiddenParents,'id').join(", ");
+                let error = 'ValidationError - Cannot set ' + dataTypesName +' ( id: ['+ dataTypesId +'] ) as parents - different projects';
+                throw new ValidationError(error);
+            }
+        }
         const validationRes = DataTypeService.validate(dataType, true);
 
         if (validationRes.error) {
@@ -93,7 +106,18 @@ const coroutines = {
 
         // Validate data type (schema included)
         const validationRes = DataTypeService.validate(dataType, true);
-
+        if(dataType.parents){
+            const idParents = _.isObject(dataType.parents[0]) ? _.map(dataType.parents,'id') : dataType.parents;
+            const parents = yield DataType.find({ id:idParents });
+            const forbiddenParents = _.filter(parents, function (p) {
+                return p.project !== dataType.project;
+            });
+            if (forbiddenParents.length > 0 ) {
+                let dataTypesName = _.map(forbiddenParents,'name').join(", "), dataTypesId = _.map(forbiddenParents,'id').join(", ");
+                let error = 'ValidationError - Cannot set ' + dataTypesName +' ( id: ['+ dataTypesId +'] ) as parents - different projects';
+                throw new ValidationError(error);
+            }
+        }
         if (validationRes.error) {
             throw new ValidationError(validationRes.error);
         }

@@ -5,7 +5,7 @@
         "privilegeLevel": "wheel",
         "canAccessPersonalData": true,
         "canAccessSensitiveData": true,
-        "projects":[1,2,3,4]
+        "projects":[1,2,3,4,5]
     },
     {
         "name": "biologist",
@@ -13,7 +13,7 @@
         "privilegeLevel": "admin",
         "canAccessPersonalData": false,
         "canAccessSensitiveData": true,
-        "projects":[1,2,3,4]
+        "projects":[1,2,3,4,5]
     },
     {
         "name": "guestDataSens",
@@ -21,7 +21,7 @@
         "privilegeLevel": "standard",
         "canAccessPersonalData": false,
         "canAccessSensitiveData": true,
-        "projects":[1,2,3,4]
+        "projects":[1,2,3,4,5]
     },
     {
         "name": "guestNoDataSens",
@@ -29,7 +29,7 @@
         "privilegeLevel": "standard",
         "canAccessPersonalData": false,
         "canAccessSensitiveData": false,
-        "projects":[1,2,3,4]
+        "projects":[1,2,3,4,5]
     },
     {
         "name": "guestNoPrivileges",
@@ -37,6 +37,6 @@
         "privilegeLevel": "standard",
         "canAccessPersonalData": false,
         "canAccessSensitiveData": true,
-        "projects":[1,2,3,4]
+        "projects":[1,2,3,4,5]
     }
 ]

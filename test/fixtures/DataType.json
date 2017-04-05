@@ -721,5 +721,42 @@
         }]
       }]
     }
+  },
+  {
+    "id": 7,
+    "name": "DataType",
+    "model": "Data",
+    "project":5,
+    "schema": {
+      "header": {
+        "name": "DataType",
+        "fileUpload": false,
+        "description": "Test case for fluid sample",
+        "version": "1.0",
+        "project":5,
+        "ontology": "",
+        "model": "Data"
+      },
+      "body": [{
+        "label": "METADATA GROUP",
+        "name": "Generic Info",
+        "content": [{
+          "label": "METADATA FIELD",
+          "fieldType": "Text",
+          "name": "Trial",
+          "formattedName": "trial",
+          "ontologyUri": null,
+          "customValue": null,
+          "required": false,
+          "sensitive": true,
+          "description":"Description",
+          "hasRange": false,
+          "isList": false,
+          "possibleValues": null,
+          "hasUnit": false,
+          "possibleUnits": null
+        }]
+      }]
+    }
   }
 ]

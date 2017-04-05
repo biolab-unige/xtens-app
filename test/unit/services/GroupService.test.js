@@ -14,7 +14,6 @@ describe('DataService', function() {
 
             GroupService.getGroupsToEditProject(idProject).then(function (err,res) {
 
-                console.log(err,res);
                 expect(res).to.be.empty;
                 done();
                 return;
@@ -22,7 +21,7 @@ describe('DataService', function() {
         });
 
         it("should return an array containg all existing groups beacuse no one is yet associated with project 5", function(done) {
-            var idProject = "5";
+            var idProject = "6";
             var expectedGroups = _.cloneDeep(fixtures.group);
             GroupService.getGroupsToEditProject(idProject).then(function (res) {
                 expect(res.length).to.eql(expectedGroups.length);
