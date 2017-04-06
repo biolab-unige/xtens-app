@@ -5,12 +5,13 @@
 * @help        :: See http://links.sailsjs.org/docs/controllers
 */
 /* jshint node: true */
-/* globals _, sails, DataType, DataTypeService, TokenService, Group, Project */
+/* globals _, sails, DataType, DataTypeService, TokenService, Group, Project, GroupService, DataTypePrivileges */
 "use strict";
 const ControllerOut = require("xtens-utils").ControllerOut, ValidationError = require('xtens-utils').Errors.ValidationError;
 const crudManager = sails.hooks.persistence.crudManager;
 const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 const BluebirdPromise = require('bluebird');
+const coo = require('co');
 
 const coroutines = {
 
@@ -67,6 +68,7 @@ const coroutines = {
     * @description coroutine for new DataType creation
     */
     create: BluebirdPromise.coroutine(function *(req, res) {
+        const operator = TokenService.getToken(req);
         let dataType = req.allParams();
 
         if (!dataType.name) dataType.name = dataType.schema && dataType.schema.name;
@@ -89,7 +91,17 @@ const coroutines = {
             throw new ValidationError(validationRes.error);
         }
         dataType = yield crudManager.createDataType(dataType);
-        sails.log(dataType);
+
+        //add edit privileges for manager and wheel groups of operator
+        let projectGroups= yield GroupService.getGroupsByProject(dataType.project);
+        let wheelGroups = _.map(_.where(projectGroups,{privilegeLevel:"wheel"}),'id');
+        projectGroups = _.map(projectGroups, 'id');
+        let adminValidGroups = _.intersection(projectGroups, operator.adminGroups);
+        let validGroups = _.union(adminValidGroups, wheelGroups);
+        for (let id of validGroups) {
+            yield DataTypePrivileges.create({privilegeLevel:'edit', group: id, dataType: dataType.id });
+        }
+
         res.set('Location', `${req.baseUrl}${req.url}/${dataType.id}`);
         return res.json(201, dataType);
     }),

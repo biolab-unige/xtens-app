@@ -32,4 +32,18 @@ describe('DataService', function() {
 
     });
 
+    describe('#getGroupsByProject', function() {
+
+        it("should return the right set of groups", function(done) {
+            var idProject = fixtures.project[0].id;
+            var expectedGroups = _.cloneDeep(fixtures.group);
+            GroupService.getGroupsByProject(idProject).then(function (res) {
+
+                expect(res.length).to.eql(expectedGroups.length);
+                done();
+                return;
+            });
+        });
+    });
+
 });

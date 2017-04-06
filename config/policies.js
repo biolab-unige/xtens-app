@@ -45,7 +45,7 @@ module.exports.policies = {
     },
 
     DataTypePrivilegesController: {
-        '*': ['bearerAuth', 'isWheel'],
+        '*': ['bearerAuth', 'isAdmin'],
         find: 'bearerAuth'
     },
 

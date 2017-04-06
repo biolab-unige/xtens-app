@@ -48,7 +48,7 @@ describe('DataTypePrivilege', function() {
                 let l = res.header.location;
                 let loc = l.split('/');
                 let location = '/' + loc[3]+ '/' + loc[4];
-                expect(location).to.equals(`/dataTypePrivileges/${existingPrivilegeCount+1}`);
+                expect(location).to.equals(`/dataTypePrivileges/${existingPrivilegeCount+2}`);
                 done();
                 return;
             });
@@ -139,7 +139,7 @@ describe('DataTypePrivilege', function() {
             //.send({id:1})
             .expect(200)
             .end(function(err, res) {
-                expect(res.body).to.have.length(fixtures.datatypeprivileges.length + 1);
+                expect(res.body).to.have.length(fixtures.datatypeprivileges.length + 2);
                 if (err) {
                     sails.log.error(err);
                     done(err);
@@ -174,7 +174,7 @@ describe('DataTypePrivilege', function() {
 
         it('Should return 200 OK with 1 deleted item if resource exists', function (done) {
             request(sails.hooks.http.app)
-            .delete('/dataTypePrivileges/22')
+            .delete('/dataTypePrivileges/28')
             .set('Authorization', `Bearer ${tokenSA}`)
             .send()
             .expect(200)
@@ -192,7 +192,7 @@ describe('DataTypePrivilege', function() {
 
         it('Should return 200 OK with 0 deleted items if resource does not exist', function (done) {
             request(sails.hooks.http.app)
-            .delete('/dataTypePrivileges/22')
+            .delete('/dataTypePrivileges/28')
             .set('Authorization', `Bearer ${tokenSA}`)
             .send()
             .expect(200)

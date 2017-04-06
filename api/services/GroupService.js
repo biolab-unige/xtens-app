@@ -15,9 +15,22 @@ const coroutines = {
 
     getGroupsToEditProject: BluebirdPromise.coroutine(function *(idProject) {
         let groups = yield Group.find().populate('projects');
-        console.log("getGroupsToEditProject",groups);
+
         for (var i = groups.length - 1; i >= 0; i--) {
             if(_.indexOf(_.map(groups[i].projects,'id'), _.parseInt(idProject))>=0){
+                groups.splice(i, 1);
+            }
+        }
+
+        return groups;
+
+    }),
+
+    getGroupsByProject: BluebirdPromise.coroutine(function *(idProject) {
+        let groups = yield Group.find().populate('projects');
+
+        for (var i = groups.length - 1; i >= 0; i--) {
+            if(groups[i].privilegeLevel !== "wheel" && _.indexOf(_.map(groups[i].projects,'id'), _.parseInt(idProject))<0){
                 groups.splice(i, 1);
             }
         }
@@ -27,12 +40,13 @@ const coroutines = {
 };
 
 
+
 var GroupService = BluebirdPromise.promisifyAll({
       /**
        * @method
-       * @name getDataTypesToEditProject
+       * @name getGroupsToEditProject
        * @param{ineger} id Project
-       * @description return the higher privileges in array
+       * @description return an array containing groups do not yet associate with project
        * @return {Array} - Datatypes not yet associated with a project
        */
     getGroupsToEditProject: function(idProject) {
@@ -41,6 +55,22 @@ var GroupService = BluebirdPromise.promisifyAll({
               sails.log(err);
               return err;
           });
+
+    },
+
+    /**
+     * @method
+     * @name getGroupsByProject
+     * @param{ineger} id Project
+     * @description return array containing groups associate with project
+     * @return {Array} - Datatypes not yet associated with a project
+     */
+    getGroupsByProject: function(idProject) {
+        return coroutines.getGroupsByProject(idProject)
+        .catch((err) => {
+            sails.log(err);
+            return err;
+        });
     }
 
 });
