@@ -171,6 +171,7 @@
             this.idDataType = parseInt(options.params.id);
             this.existingDataTypes = options.dataTypes;
             this.projects = options.projects;
+            this.isCreation = true;
             if (this.idDataType) {
                 var that =this;
                 this.model = new DataType.Model(_.find(this.existingDataTypes, function(dt){ return dt.id === that.idDataType; }));
@@ -242,7 +243,7 @@
         },
 
         getProjectParents: function (ev) {
-            var selProject = _.parseInt(ev.target.value);
+            var selProject = ev ? _.parseInt(ev.target.value) : _.parseInt($('#project').val());
             var filteredValues  = [], newColl = [];
 
             this.existingDataTypes.forEach(function (dt) {
@@ -269,7 +270,11 @@
             this.$form.parsley(parsleyOpts);
             this.$modal = this.$(".datatype-modal");
             this.stickit();
-            this.model.id ? $('#project').prop('disabled', true) : null;
+            if (this.idDataType) {
+                this.getProjectParents();
+                $('#project').prop('disabled', true);
+                this.isCreation = false;
+            }
             if (this.model.get("schema") && _.isArray(this.model.get('schema').body)) {
                 var body = this.model.get('schema').body;
                 for (var i=0, len=body.length; i<len; i++) {
@@ -297,9 +302,12 @@
 
 
         saveDataType: function(ev) {
+            ev.preventDefault();
             var id = $('#id').val();
             var header = this.$("#schemaHeader").find("select, input, textarea").serializeObject();
             header.fileUpload = header.fileUpload ? true : false;
+            header.project = this.model.get("project").id;
+
             var that = this;
             var body = this.serialize();
             var dataTypeDetails = {
@@ -311,6 +319,7 @@
                 }
             };
 
+            this.model.set("project", this.model.get("project").id);
             this.model.set("parents", _.map(this.model.get("parents"),'id'));
 
             this.model.save(dataTypeDetails, {
@@ -330,7 +339,11 @@
                     setTimeout(function(){ modal.hide(); }, 1200);
                     that.$('.datatype-modal').on('hidden.bs.modal', function (e) {
                         modal.remove();
-                        xtens.router.navigate('datatypes', {trigger: true});
+                        if (xtens.session.get("isWheel") || !this.isCreation) {
+                            router.navigate('datatypes', {trigger: true});
+                        }else {
+                            router.navigate('datatypeprivileges/new/0?dataTypeId=' + dataType.get("id"), {trigger: true});
+                        }
                     });
 
                 },

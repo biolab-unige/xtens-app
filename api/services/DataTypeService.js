@@ -75,13 +75,15 @@ const coroutines = {
     }),
 
     getDataTypesToCreateNewPrivileges: BluebirdPromise.coroutine(function *(groupId) {
-        if ( typeof groupId === 'undefined' || groupId === null  ) { return BluebirdPromise.resolve(undefined);}
+        let criteriaPriv = {}, criteriaGroup = {};
 
-        const groups = yield Group.find( {id : groupId} ).populate('projects');
+        if ( typeof groupId !== 'undefined' && groupId !== null  ) { criteriaPriv.group = groupId; criteriaGroup.id = groupId;}
+
+        const groups = yield Group.find( criteriaGroup ).populate('projects');
         let projectsGroups = _.map(groups, function (g) { return _.map(g.projects,'id'); });
         projectsGroups = _.uniq(_.flatten(projectsGroups));
 
-        const privileges = yield DataTypePrivileges.find({ where: {group: groupId} });
+        const privileges = yield DataTypePrivileges.find(criteriaPriv);
 
         let whereObj = _.isEmpty(privileges) ? {project: projectsGroups} : {
             id: {'!': _.map(privileges, 'dataType')},
@@ -322,17 +324,17 @@ let DataTypeService = {
 
     /**
      * @method
-     * @name getDataTypePrivileges
+     * @name getDataTypePrivilege
      * @param{integer} privilegesId - primary key
      * @param{function} next
      */
-    getDataTypePrivileges: function(privilegesId, next) {
-        sails.log("DataTypeService.getDataTypePrivileges - privilegesId: " + privilegesId);
-        if (!privilegesId) {
+    getDataTypePrivilege: function(privilegeId, next) {
+        sails.log("DataTypeService.getDataTypePrivilege - privilegesId: " + privilegeId);
+        if (!privilegeId) {
             return next();
         }
         else {
-            return DataTypePrivileges.findOne({id: privilegesId}).exec(next);
+            return DataTypePrivileges.findOne({id: privilegeId}).populate('dataType').exec(next);
         }
     },
 

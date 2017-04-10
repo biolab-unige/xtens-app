@@ -71,6 +71,18 @@ var GroupService = BluebirdPromise.promisifyAll({
             sails.log(err);
             return err;
         });
+    },
+
+    /**
+     * @description find a list of Groups
+     * @return {Array} - list of found Groups
+     */
+    get: function(idGroups, next) {
+        var criteriaObj = {};
+        if (idGroups) {
+            criteriaObj.id = idGroups;
+        }
+        Group.find(criteriaObj).populate('projects').exec(next);
     }
 
 });

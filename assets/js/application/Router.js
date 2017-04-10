@@ -99,9 +99,10 @@
             "projects":"projectList",
             "projects/new":"projectEdit",
             "projects/edit/:id":"projectEdit",
-            "datatypeprivileges/:groupId": "dataTypePrivilegesList",
-            "datatypeprivileges/new/:groupId": "dataTypePrivilegesEdit",
-            "datatypeprivileges/edit/:groupId/:privilegesId": "dataTypePrivilegesEdit",
+            "datatypeprivileges": "dataTypePrivilegesList",
+            "datatypeprivileges/edit/:id": "dataTypePrivilegesEdit",
+            "datatypeprivileges/new": "dataTypePrivilegesEdit",
+            "datatypeprivileges/new/:skipme?*queryString": "dataTypePrivilegesEdit",
             "downIrods":"downIrods",
             "datatypes/graph":"dataTypeGraph",
             "subjects/graph":"subjectGraph",
@@ -159,49 +160,51 @@
          * @method
          * @name dataTypePrivilegesList
          * @description opens the list view for DataTypePrivileges
-         * @param{integer} groupId - the ID of the user group
+         * @param{object} groupId - the ID of the user group
          */
-        dataTypePrivilegesList: function(groupId) {
+        dataTypePrivilegesList: function(queryString) {
+            var queryParams = parseQueryString(queryString);
+            var privilegesParams = {sort:'id ASC', populate:['dataType','group']};
+            queryParams.groupId ? privilegesParams.group = queryParams.groupId : null;
+            queryParams.dataTypeId ? privilegesParams.dataType = queryParams.dataTypeId : null;
             var that = this;
-            var group = new Group.Model({id: groupId});
+            var group = new Group.Model(queryParams.groupId ? {id: queryParams.groupId} : {});
             var privileges = new DataTypePrivileges.List();
-            var dataTypes = new DataType.List();
+            var dataTypes = new DataType.List(queryParams.dataTypeId ? {id: queryParams.dataTypeId} : {});
             var groupDeferred = group.fetch({
                 data: $.param({populate: ['dataTypes','projects']})
             });
             var privilegesDeferred = privileges.fetch({
-                data: $.param({group: groupId, sort:'id ASC'})
+                data: $.param(privilegesParams)
+            });
+            var dataTypesDeferred = dataTypes.fetch({
+                data: $.param({populate:['project']})
             });
 
-            $.when(groupDeferred, privilegesDeferred).then(function(groupRes, privilegesRes) {
-                var dataTypesDeferred = dataTypes.fetch({
-                    data: $.param({populate:['project']})
-                });
-                $.when(dataTypesDeferred).then(function(dataTypesRes) {
-
-                    that.loadView(new DataTypePrivileges.Views.List({
-                        group: new Group.Model(groupRes && groupRes[0]),
-                        privileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
-                        dataTypes: dataTypesRes
-                    }));
-                });
-            }, function(jqxhr) {
-                xtens.error(jqxhr);
+            $.when(groupDeferred, privilegesDeferred, dataTypesDeferred).then(function(groupRes, privilegesRes, dataTypesRes) {
+                that.loadView(new DataTypePrivileges.Views.List({
+                    params : queryParams,
+                    group: new Group.Model(groupRes && groupRes[0]),
+                    privileges: new DataTypePrivileges.List(privilegesRes && privilegesRes[0]),
+                    dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])
+                }));
             });
+        }, function(jqxhr) {
+            xtens.error(jqxhr);
         },
 
         /**
          * @method
          * @name dataTypePrivilegesEdit
          * @description opens the view to create/edit DataTypePrivileges for a user group
-         * @param{integer} groupId - the ID of the user group
          * @param{integer} dataTypePrivilegesId - the ID of the dataTypePrivileges
          */
-        dataTypePrivilegesEdit: function(groupId, dataTypePrivilegesId) {
-            var params = {
-                groupId: groupId,
-                id: dataTypePrivilegesId
-            };
+        dataTypePrivilegesEdit: function(id, queryString) {
+            // var dataTypes = new DataType.List();
+            var params = parseQueryString(queryString);
+            if (id && _.parseInt(id) > 0) {
+                params.id = id;
+            }
             var that = this;
             $.ajax({
                 url: '/dataTypePrivileges/edit',
@@ -212,6 +215,7 @@
                 data: params,
                 contentType: 'application/json',
                 success: function(results) {
+                    results.params = params;
                     that.loadView(new DataTypePrivileges.Views.Edit(results));
                 },
                 error: function(err) {

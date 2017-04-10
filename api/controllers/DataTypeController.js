@@ -68,16 +68,17 @@ const coroutines = {
     * @description coroutine for new DataType creation
     */
     create: BluebirdPromise.coroutine(function *(req, res) {
-        const operator = TokenService.getToken(req);
+        // const operator = TokenService.getToken(req);
         let dataType = req.allParams();
 
         if (!dataType.name) dataType.name = dataType.schema && dataType.schema.name;
         if (!dataType.model) dataType.model = dataType.schema && dataType.schema.model;
         if(dataType.parents){
             const idParents = _.isObject(dataType.parents[0]) ? _.map(dataType.parents,'id') : dataType.parents;
+            const idProject = _.isObject(dataType.project) ? dataType.project.id : dataType.project;
             const parents = yield DataType.find({ id:idParents });
             const forbiddenParents = _.filter(parents, function (p) {
-                return p.project !== dataType.project;
+                return p.project !== idProject;
             });
             if (forbiddenParents.length > 0 ) {
                 let dataTypesName = _.map(forbiddenParents,'name').join(", "), dataTypesId = _.map(forbiddenParents,'id').join(", ");
@@ -93,14 +94,14 @@ const coroutines = {
         dataType = yield crudManager.createDataType(dataType);
 
         //add edit privileges for manager and wheel groups of operator
-        let projectGroups= yield GroupService.getGroupsByProject(dataType.project);
-        let wheelGroups = _.map(_.where(projectGroups,{privilegeLevel:"wheel"}),'id');
-        projectGroups = _.map(projectGroups, 'id');
-        let adminValidGroups = _.intersection(projectGroups, operator.adminGroups);
-        let validGroups = _.union(adminValidGroups, wheelGroups);
-        for (let id of validGroups) {
-            yield DataTypePrivileges.create({privilegeLevel:'edit', group: id, dataType: dataType.id });
-        }
+        // let projectGroups= yield GroupService.getGroupsByProject(dataType.project);
+        // let wheelGroups = _.map(_.where(projectGroups,{privilegeLevel:"wheel"}),'id');
+        // projectGroups = _.map(projectGroups, 'id');
+        // let adminValidGroups = _.intersection(projectGroups, operator.adminGroups);
+        // let validGroups = _.union(adminValidGroups, wheelGroups);
+        // for (let id of validGroups) {
+        //     yield DataTypePrivileges.create({privilegeLevel:'edit', group: id, dataType: dataType.id });
+        // }
 
         res.set('Location', `${req.baseUrl}${req.url}/${dataType.id}`);
         return res.json(201, dataType);
@@ -120,9 +121,10 @@ const coroutines = {
         const validationRes = DataTypeService.validate(dataType, true);
         if(dataType.parents){
             const idParents = _.isObject(dataType.parents[0]) ? _.map(dataType.parents,'id') : dataType.parents;
+            const idProject = _.isObject(dataType.project) ? dataType.project.id : dataType.project;
             const parents = yield DataType.find({ id:idParents });
             const forbiddenParents = _.filter(parents, function (p) {
-                return p.project !== dataType.project;
+                return p.project !== idProject;
             });
             if (forbiddenParents.length > 0 ) {
                 let dataTypesName = _.map(forbiddenParents,'name').join(", "), dataTypesId = _.map(forbiddenParents,'id').join(", ");

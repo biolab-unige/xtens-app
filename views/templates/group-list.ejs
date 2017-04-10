@@ -24,7 +24,7 @@
               <td><%= _.map(group.get("projects"), 'name').join(" ") %></td>
               <td><a id="edit" class="btn" href="#/groups/edit/<%= group.id %>"><%=__("edit") %></a></td>
               <td><a id="edit" class="btn" href="#/groups/operator/<%= group.id %>"><%=__("member-operators") %></a></td>
-              <td><a id="edit" class="btn" href="#/datatypeprivileges/<%= group.id %>"><%=__("data-type-privileges") %></a></td>
+              <td><a id="edit" class="btn" href="#/datatypeprivileges?groupId=<%= group.id %>"><%=__("data-type-privileges") %></a></td>
             </tr>
             <% }) %>
             </tbody>

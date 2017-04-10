@@ -9,6 +9,7 @@
         "subjects": "Subjects",
         "samples": "Samples",
         // views/templates/datatype-list.ejs
+        "active-project":"Active Project",
         "selected-project":"Selected Project",
         "data-type-list": "Data Type List",
         "id":"ID",
@@ -276,6 +277,8 @@
         "data-type-name": "Data Type Name",
         "new-data-type-privilege": "New Data Type Privilege",
         /* views/templates/datatypeprivileges-edit.ejs */
+        "update-data-type-privileges": "Update Data Type Privilege",
+        "create-data-type-privileges": "Create Data Type Privilege",
         "privilege-deleted": "Privilege Deleted",
         "privilege-will-be-permanently-deleted-are-you-sure": "Privilege will be permanently deleted. Are you sure?",
         'privilege-correctly-stored-on-server': "Privilege correctly stored on server",

@@ -204,11 +204,11 @@ describe('DataTypeService', function() {
             });
         });
 
-        it("should return undefined", function(done) {
+        it("should return an empty array", function(done) {
 
             DataTypeService.getDataTypesToCreateNewPrivileges().then(function(result) {
 
-                expect(result).to.be.undefined;
+                expect(result).to.be.empty;
                 done();
             }).catch(function(err) {
                 done(err);
@@ -258,15 +258,15 @@ describe('DataTypeService', function() {
 
     });
 
-    describe('#getDataTypePrivileges', function() {
+    describe('#getDataTypePrivilege', function() {
 
         it("should return the right set of DataTypes", function(done) {
-            const expectedDataTypePrivilege = _.cloneDeep(fixtures.datatypeprivileges[0]);
-
-            DataTypeService.getDataTypePrivileges(1, function(err ,result) {
+            const expectedDataTypePrivilege = _.cloneDeep(fixtures.datatypeprivileges[0]),
+                expectedPrivilegeDataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: expectedDataTypePrivilege.dataType}));
+            DataTypeService.getDataTypePrivilege(1, function(err ,result) {
 
                 expect(result.id).be.equal(expectedDataTypePrivilege.id);
-                expect(result.dataType).be.equal(expectedDataTypePrivilege.dataType);
+                expect(result.dataType.id).be.equal(expectedPrivilegeDataType.id);
                 expect(result.group).be.equal(expectedDataTypePrivilege.group);
                 expect(result.group).be.equal(expectedDataTypePrivilege.group);
                 expect(result.privilegeLevel).be.equal(expectedDataTypePrivilege.privilegeLevel);
@@ -279,7 +279,7 @@ describe('DataTypeService', function() {
         it("should return undefined", function(done) {
             const expectedDataTypePrivilege = _.cloneDeep(fixtures.datatypeprivileges[0]);
 
-            DataTypeService.getDataTypePrivileges(false,function(err ,result) {
+            DataTypeService.getDataTypePrivilege(false,function(err ,result) {
 
                 expect(result).to.be.undefined;
 

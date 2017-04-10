@@ -1,4 +1,5 @@
-<h2><%= __("group") + ": " + group.get("name") %></h2>
+<h2><%=  params.groupId ?  __("group") + ": " + group.get("name") :
+    params.dataTypeId ? __("data-type") + ": " + privileges.models[0].get("dataType").name : ""%></h2>
 
 <div id="content">
   <div class="row">
@@ -16,6 +17,7 @@
               <table class="table">
                   <thead>
                       <tr>
+                          <th><%= __("group") %></th>
                           <th><%= __("data-type-name") %></th>
                           <th><%= __("privilege-level") %></th>
                           <th><%= __("project") %></th>
@@ -25,18 +27,19 @@
                   <tbody>
                   <% _.each(privileges.models, function(privilege) { %>
                   <tr class="content">
-                      <td><%= _.findWhere(group.get('dataTypes'), {'id': privilege.get("dataType")}).name %></td>
+                      <td><%= privilege.get("group").name %></td>
+                      <td><%= privilege.get("dataType").name %></td>
                       <td><%= privilege.get("privilegeLevel").toUpperCase().replace('_', ' ') %></td>
-                      <td><%= mapTypeProjects[privilege.get("dataType")] ? mapTypeProjects[privilege.get("dataType")] : "" %></td>
+                      <td><%= mapTypeProjects[privilege.get("dataType").id] ? mapTypeProjects[privilege.get("dataType").id] : "" %></td>
 
-                      <td><a class="btn" href="#/datatypeprivileges/edit/<%= group.id %>/<%= privilege.id %>"><%=__("edit") %></a></td>
+                      <td><a class="btn" href="#/datatypeprivileges/edit/<%= privilege.id %>"><%=__("edit") %></a></td>
                   </tr>
                   <%}) %>
                   </tbody>
               </table>
           </div>
           <div id="buttonbardiv" class="row text-center">
-          <a href="#/datatypeprivileges/new/<%= group.id %>" class="btn btn-primary"><%= __("new-data-type-privilege")%></a>
+            <a href="" id="newPrivilege" class="btn btn-primary"><%= __("new-data-type-privilege")%></a>
           </div>
       </div>
   </div>

@@ -1,11 +1,13 @@
 /* jshint node:true */
 /* jshint mocha: true */
-/* globals _, sails, fixtures, GroupService */
+/* globals _, sails, fixtures, GroupService, Group */
 "use strict";
 var chai = require("chai");
-var expect = chai.expect;
+var expect = chai.expect, sinon = require('sinon');
 
-describe('DataService', function() {
+var callback = sinon.stub();
+
+describe('GroupService', function() {
 
     describe('#getGroupsToEditProject', function() {
 
@@ -44,6 +46,31 @@ describe('DataService', function() {
                 return;
             });
         });
+    });
+
+    describe('#getAsync', function() {
+
+        var spy;
+
+        beforeEach(function() {
+            spy = sinon.spy(Group, "find");
+        });
+
+        afterEach(function() {
+            Group.find.restore();
+        });
+
+        it("should not fire the Group.find method with ", function() {
+            GroupService.get(null, callback);
+            GroupService.get(0, callback);
+            expect(spy.called).to.be.true;
+        });
+
+        it("should fire the Group.find operation", function() {
+            GroupService.getAsync(1, callback);
+            expect(spy.withArgs(1).calledOnce).to.be.false;
+        });
+
     });
 
 });
