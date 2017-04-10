@@ -39,6 +39,7 @@
     "pg": "^6.1.0",
     "rc": "~0.3.3",
     "react-dom": "^15.4.2",
+    "redux-form": "^6.6.2",
     "sails": "^0.12.13",
     "sails-disk": "~0.10.7",
     "sails-postgresql": "^0.11.4",
