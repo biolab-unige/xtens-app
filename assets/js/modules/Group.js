@@ -188,9 +188,6 @@
 
     Group.Views.List = Backbone.View.extend({
 
-        events: {
-            'change #projectSelector':'filterGroups'
-        },
         tagName: 'div',
         className: 'group',
 
@@ -201,23 +198,21 @@
         },
 
         render: function(options) {
+            var that = this;
+            this.$el.html(that.template({__: i18n, groups: options.groups}));
 
-            var _this = this;
-            this.$el.html(_this.template({__: i18n, groups: options.groups, projects:options.projects}));
-            $('.selectpicker').selectpicker();
-            if (options.paramProject) {
-                $('.selectpicker').selectpicker('val', options.paramProject.name);
-            }
-            $('.selectpicker').selectpicker('refresh');
-            this.filterGroups();
+            $('#project-selector').on('change.bs.select', function (e) {
+                that.filterGroups();
+            });
+
+            this.filterGroups(options.queryParams);
             return this;
         },
 
-        filterGroups: function(){
+        filterGroups: function(opt){
+            var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#project-selector').val());
 
-            var rex = new RegExp($('#projectSelector').val());
-
-            if(rex =="/all/"){this.clearFilter();}else{
+            if(rex =="/null/"){this.clearFilter();}else{
                 $('.group_val').hide();
                 $('.group_val').filter(function() {
                     return rex.test($(this).text());
@@ -225,7 +220,7 @@
             }
         },
         clearFilter: function(){
-            $('.projectSelector').val('');
+            $('#project-selector').val('');
             $('.group_val').show();
         }
 

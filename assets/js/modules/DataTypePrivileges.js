@@ -279,7 +279,6 @@
      */
     DataTypePrivileges.Views.List = Backbone.View.extend({
         events: {
-            'change #projectSelector':'filterDataTypes',
             'click #newPrivilege': 'openNewPrivilegeView'
         },
         tagName: 'div',
@@ -309,25 +308,27 @@
         },
 
         render: function() {
+            var that = this;
             this.$el.html(this.template({
                 __: i18n,
                 params: this.params,
                 group: this.group,
                 privileges: this.privileges,
-                projects : _.uniq(_.values(this.mapTypeProjects)),
                 dataTypes : this.dataTypes,
                 mapTypeProjects: this.mapTypeProjects
             }));
-            $('.selectpicker').selectpicker();
 
+            $('#project-selector').on('change.bs.select', function (e) {
+                that.filterPrivileges();
+            });
+            this.filterPrivileges(this.params);
             return this;
         },
 
-        filterDataTypes: function(){
+        filterPrivileges: function(opt){
+            var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#project-selector').val());
 
-            var rex = new RegExp($('#projectSelector').val());
-
-            if(rex =="/all/"){this.clearFilter();}else{
+            if(rex =="/null/"){this.clearFilter();}else{
                 $('.content').hide();
                 $('.content').filter(function() {
                     return rex.test($(this).text());
@@ -336,7 +337,7 @@
         },
 
         clearFilter: function(){
-            $('.projectSelector').val('');
+            $('#project-selector').val('');
             $('.content').show();
         },
 
@@ -347,7 +348,7 @@
             var privilegeLevelQuery = this.privilegeLevel ? 'privilegeLevel=' + this.privilegeLevel : '';
             var queryString = _.compact([dataTypeQuery, groupQuery,
                                         privilegeLevelQuery]).join('&');
-            var route = _.trim(['/datatypeprivileges/new', queryString].join('/0?'), '/0?');
+            var route = _.trim(['/datatypeprivileges/new', queryString].join('/0?'));
             xtens.router.navigate(route, {trigger: true});
             return false;
         }

@@ -170,7 +170,7 @@
             this.nestedViews = [];
             this.idDataType = parseInt(options.params.id);
             this.existingDataTypes = options.dataTypes;
-            this.projects = options.projects;
+            this.projects = xtens.session.get('projects');
             this.isCreation = true;
             if (this.idDataType) {
                 var that =this;
@@ -209,7 +209,7 @@
                     labelPath: 'name',
                     valuePath: 'id',
                     defaultOption: {
-                        label: "",
+                        label: '',
                         value: null
                     }
                 },
@@ -270,11 +270,22 @@
             this.$form.parsley(parsleyOpts);
             this.$modal = this.$(".datatype-modal");
             this.stickit();
+
+            if(xtens.session.get('activeProject') !== ''){
+                this.activeProject = _.find(this.projects, function (p) {
+                    return p.name === xtens.session.get('activeProject');
+                });
+                $('#project').val(this.activeProject.id).trigger('change');
+                $('#project').prop('disabled', true);
+                this.getProjectParents();
+            }
+
             if (this.idDataType) {
                 this.getProjectParents();
                 $('#project').prop('disabled', true);
                 this.isCreation = false;
             }
+
             if (this.model.get("schema") && _.isArray(this.model.get('schema').body)) {
                 var body = this.model.get('schema').body;
                 for (var i=0, len=body.length; i<len; i++) {
@@ -418,9 +429,7 @@
      *  This is the view to show in a table the full list of existing datatypes
      */
     DataType.Views.List = Backbone.View.extend({
-        events: {
-            'change #projectSelector':'filterDataTypes'
-        },
+
         tagName: 'div',
         className: 'dataTypes',
 
@@ -431,24 +440,21 @@
         },
 
         render: function(options) {
+            var that = this;
+            this.$el.html(this.template({__: i18n, dataTypes: options.dataTypes}));
 
-            this.$el.html(this.template({__: i18n, dataTypes: options.dataTypes, projects:options.projects}));
+            $('#project-selector').on('change.bs.select', function (e) {
+                that.filterDataTypes();
+            });
 
-            $('.selectpicker').selectpicker();
-            if (options.paramProject) {
-                $('.selectpicker').selectpicker('val', options.paramProject.name);
-            }
-            $('.selectpicker').selectpicker('refresh');
-            this.filterDataTypes();
-
+            this.filterDataTypes(options.queryParams);
             return this;
         },
 
-        filterDataTypes: function(){
+        filterDataTypes: function(opt){
+            var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#project-selector').val());
 
-            var rex = new RegExp($('#projectSelector').val());
-
-            if(rex =="/all/"){this.clearFilter();}else{
+            if(rex =="/null/"){this.clearFilter();}else{
                 $('.content').hide();
                 $('.content').filter(function() {
                     return rex.test($(this).text());
@@ -457,7 +463,7 @@
         },
 
         clearFilter: function(){
-            $('.projectSelector').val('');
+            $('#project-selector').val('');
             $('.content').show();
         }
     });

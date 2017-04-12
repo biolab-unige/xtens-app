@@ -82,6 +82,8 @@
         "m" : "M",
         "f" : "F",
         "xtens-login":"XTENS Login",
+        'please-select-a-project': "Please select a project",
+        'project-selection': "Project selection",
         /* views/templates/login.ejs */
         "username": "Username",
         "sign-in": "Sign in",
@@ -108,6 +110,7 @@
         /* views/templates/operator-edit.ejs */
         "operator-manager": "Operator Manager",
         "confirm-password": "Confirm Password",
+        "confirm": "Confirm",
         "min-8-characters": "Minimum of 8 characters",
         "create-operator": "Create Operator",
         "save-operator" : "Save Operator",

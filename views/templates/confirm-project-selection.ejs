@@ -1,0 +1,29 @@
+<div class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title"><%=__('default-title') %></h4>
+            </div>
+
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <select required id='project-selector' title="<%= __("please-select-a-project") %>" class="form-control selectpicker">
+                        <% _.each(xtens.session.get("projects"), function(project) {%>
+                          <option data-subtext="<%= project.description %>" value='<%= project.name %>'><%= project.name %></option>
+                        <% }) %>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+                <button disabled id="confirm-project" type="button" class="btn btn-"><%= __('confirm') %></button>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -573,7 +573,7 @@
             var parentDataTypeQuery = this.parentDataType ? 'parentDataType=' + this.parentDataType : '';
       // var queryString = _.trim([donorQuery, donorCodeQuery, parentSampleQuery].join('&'), '&');
             var queryString = _.compact([donorQuery, donorCodeQuery, parentSampleQuery, parentDataTypeQuery]).join('&');
-            var route = _.trim(['/samples/new', queryString].join('/0?'), '/0?');
+            var route = _.trim(['/samples/new', queryString].join('/0?'));
             xtens.router.navigate(route, {
                 trigger: true
             });

@@ -237,7 +237,9 @@
         className:'operator',
 
         events: {
-            'click #login': 'logIn'
+            'click #login': 'logIn',
+            'click #confirm-project': 'confirmProject'
+
         },
 
         initialize:function() {
@@ -248,6 +250,7 @@
 
         render: function() {
             this.$el.html(this.template({__:i18n}));
+            this.$modal = this.$(".project-modal");
             this.$('form').parsley(parsleyOpts);
             return this;
         },
@@ -264,8 +267,40 @@
                     identifier: username,
                     password: password
                 }, function(data, status, jqxhr) {
-                    xtens.session.load(data);
-                    router.navigate('#/homepage', {trigger: true});
+                    xtens.session.load(data, function () {
+                        if (xtens.session.get("isWheel")) {
+                            xtens.session.set('activeProject', 'all');
+                            router.navigate('homepage', {trigger: true});
+                        }
+                        else{
+                            var modal = new ModalDialog({
+                                title: i18n('project-selection'),
+                                template: JST["views/templates/confirm-project-selection.ejs"]
+                            });
+                            that.$modal.append(modal.render().el);
+                            $('.selectpicker').selectpicker();
+                        // $('.modal-header').addClass('alert-success');
+                            modal.show();
+
+                            that.$('#project-selector').on('change.bs.select', function (e) {
+
+                                xtens.session.set('activeProject', e.target.value);
+                                $('#confirm-project').text( i18n('confirm') + " " + e.target.value);
+                                $('#confirm-project').prop('disabled', false);
+                                $('#confirm-project').addClass('btn-success');
+                                that.$('#confirm-project').on('click.bs.button', function (e) {
+                                    e.preventDefault();
+
+                                    modal.hide();
+                                    that.$modal.on('hidden.bs.modal', function (e) {
+                                        modal.remove();
+                                        router.navigate('homepage', {trigger: true});
+                                    });
+
+                                });
+                            });
+                        }
+                    });
                 })
                 .fail(function(jqxhr) {
                     // alert("Error: " + res.responseJSON.error);
@@ -275,6 +310,10 @@
             }
             return false;
         }
+
+
+
+
 
     });
 

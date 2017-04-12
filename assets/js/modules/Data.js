@@ -1236,7 +1236,7 @@
             // var queryString = _.trim([parentSubjectQuery, parentSubjectCodeQuery, parentSampleQuery, parentDataQuery].join('&'), '&');
             var queryString = _.compact([parentSubjectQuery, parentSubjectCodeQuery,
                                         parentSampleQuery, parentDataQuery, parentDataTypeQuery]).join('&');
-            var route = _.trim(['/data/new', queryString].join('/0?'), '/0?');
+            var route = _.trim(['/data/new', queryString].join('/0?'));
             xtens.router.navigate(route, {trigger: true});
             return false;
         }

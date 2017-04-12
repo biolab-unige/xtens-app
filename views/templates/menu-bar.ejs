@@ -1,3 +1,6 @@
+<div class="row">
+  <div class="col-md-8">
+
 <ul id="left" class ="nav navbar-nav navbar-left">
     <li class="dropdown">
     <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" >
@@ -5,13 +8,13 @@
         <span class="fa fa-angle-down"></span>
     </a>
     <ul id="box" class="dropdown-menu">
-      <% if (session.get("isWheel")) {%><h2 id="title"><%= __("super-user")%></h2>
+      <% if (xtens.session.get("isWheel")) {%><h2 id="title"><%= __("super-user")%></h2>
       <li><a href="#/projects"><%= __("projects") %></a></li>
       <li><a href="#/groups"><%= __("groups") %></a></li>
       <li><a href="#/operators"><%= __("operators") %></a></li>
       <li><a href="#/biobanks"><%= __("biobanks") %></a></li>
       <li><a href="#/datatypes"><%= __("data-types") %></a></li><%}
-       else if (session.get("isAdmin")) {%><h2 id="title"><%= __("manager")%></h2>
+       else if (xtens.session.get("isAdmin")) {%><h2 id="title"><%= __("manager")%></h2>
        <li><a href="#/biobanks"><%= __("biobanks") %></a></li>
        <li><a href="#/datatypes"><%= __("data-types") %></a></li><%}
        else {%><h2 id="title"><%= __("standard")%></h2><%};%>
@@ -46,8 +49,25 @@
     </li>
 
 </ul>
-<div style="float:right">
+</div>
+
+
+<div class="col-md-3">
+    <label for="project-selector" class="text-uppercase"><%= __("active-project") %></label>
+    <select id='project-selector' class="form-group selectpicker" data-width="fit">
+      <% if (xtens.session.get("isWheel")) {%>
+      <option selected value=''>All</option>
+      <%}%>
+      <% _.each(xtens.session.get("projects"), function(project) {
+        var name = project.name ? project.name : project.get("name"); %>
+        <option value='<%= name %>'><%= name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-md-1" style="float:right">
+
     <label class="logoutLblPos">
         <a class="btn btn-default" href="#/logout"><%= __("logout") %></a>
     </label>
+</div>
 </div>

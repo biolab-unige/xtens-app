@@ -260,17 +260,7 @@
             dataTypes.fetch({
                 data:$.param({populate:['project','parents'], sort: 'id ASC'}),
                 success: function(dataTypes) {
-                    var projects = _.compact(_.uniq(_.map(dataTypes.models,function (dt) {
-                        return dt.get('project');
-                    }),function (x) {
-                        return x && x.id;
-                    }));
-                    if (queryParams.project) {
-                        var paramProject = _.find(projects,function (pr) {
-                            return pr.id === _.parseInt(queryParams.project);
-                        });
-                    }
-                    that.loadView(new DataType.Views.List({paramProject: paramProject, dataTypes: dataTypes.models, projects: projects}));
+                    that.loadView(new DataType.Views.List({queryParams: queryParams, dataTypes: dataTypes.models}));
                 },
                 error: function(err) {
                     xtens.error(err);
@@ -468,14 +458,7 @@
             groups.fetch({
                 data:$.param({populate:['projects'], sort: 'id ASC'}),
                 success: function(groups) {
-                    let projects = _.map(groups.models, function (g) { return g.get('projects'); });
-                    projects = _.uniq(_.flatten(projects), function (p) {return p.id;});
-                    if (queryParams.projects) {
-                        var paramProject = _.find(projects,function (pr) {
-                            return pr.id === _.parseInt(queryParams.projects);
-                        });
-                    }
-                    that.loadView(new Group.Views.List({paramProject: paramProject, groups: groups.models, projects: projects}));
+                    that.loadView(new Group.Views.List({queryParams: queryParams, groups: groups.models}));
                 },
                 error: function(err) {
                     xtens.error(err);
