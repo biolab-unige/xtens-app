@@ -5,13 +5,12 @@
 * @help        :: See http://links.sailsjs.org/docs/controllers
 */
 /* jshint node: true */
-/* globals _, sails, DataType, DataTypeService, TokenService, Group, Project, GroupService, DataTypePrivileges */
+/* globals _, sails, DataType, DataTypeService, TokenService, Group, Project */
 "use strict";
 const ControllerOut = require("xtens-utils").ControllerOut, ValidationError = require('xtens-utils').Errors.ValidationError;
 const crudManager = sails.hooks.persistence.crudManager;
 const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 const BluebirdPromise = require('bluebird');
-const coo = require('co');
 
 const coroutines = {
 
@@ -143,19 +142,19 @@ const coroutines = {
     edit: BluebirdPromise.coroutine(function *(req, res) {
         const operator = TokenService.getToken(req);
         const params = req.allParams();
-        let projects = [];
         sails.log.info("DataTypeController.edit - Decoded ID is: " + operator.id);
 
-        if(!operator.isWheel){
-            const groups = yield Group.find({id: operator.groups}).populate('projects');
-            projects = _.uniq(_.flatten(_.map(groups,'projects')),function (pr) {
-                return pr.id;
-            });
-        } else {
-            projects = yield Project.find().sort('id ASC');
-        }
+        const projects = yield Project.find().sort('id ASC');
+        // if(!operator.isWheel){
+        //     const groups = yield Group.find({id: operator.groups}).populate('projects');
+        //     projects = _.uniq(_.flatten(_.map(groups,'projects')),function (pr) {
+        //         return pr.id;
+        //     });
+        // } else {
+        //     projects = yield Project.find().sort('id ASC');
+        // }
         const dataTypes= yield DataType.find({ project:_.map(projects,'id') }).populate(['project','parents']).sort('id ASC');
-        return res.json({params: params, dataTypes: dataTypes, projects: projects});
+        return res.json({params: params, dataTypes: dataTypes});
     })
 };
 

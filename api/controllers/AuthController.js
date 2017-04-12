@@ -85,7 +85,7 @@ let AuthController = {
 
         .then(function(passport) {
             if (!passport) {
-                return res.json(400,"User not logged"); 
+                return res.json(400,"User not logged");
             }
             return res.ok("User successfully logged out.");
         })
