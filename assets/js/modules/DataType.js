@@ -317,7 +317,7 @@
             var id = $('#id').val();
             var header = this.$("#schemaHeader").find("select, input, textarea").serializeObject();
             header.fileUpload = header.fileUpload ? true : false;
-            header.project = this.model.get("project").id;
+            header.project = this.model.get("project");
 
             var that = this;
             var body = this.serialize();
@@ -330,7 +330,7 @@
                 }
             };
 
-            this.model.set("project", this.model.get("project").id);
+            // this.model.set("project", this.model.get("project").id);
             this.model.set("parents", _.map(this.model.get("parents"),'id'));
 
             this.model.save(dataTypeDetails, {
@@ -350,7 +350,7 @@
                     setTimeout(function(){ modal.hide(); }, 1200);
                     that.$('.datatype-modal').on('hidden.bs.modal', function (e) {
                         modal.remove();
-                        if (xtens.session.get("isWheel") || !this.isCreation) {
+                        if (xtens.session.get("isWheel") || !that.isCreation) {
                             router.navigate('datatypes', {trigger: true});
                         }else {
                             router.navigate('datatypeprivileges/new/0?dataTypeId=' + dataType.get("id"), {trigger: true});

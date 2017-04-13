@@ -36,12 +36,7 @@ describe('ProjectController', function() {
                 .send()
                 .expect(200)
                 .end(function(err, res) {
-                    // console.log(res.body);
                     expect(res.body.length).to.eql(expectedProjects.length);
-                    // expect(res.body.project.id).to.eql(1);
-                    // expect(res.body.groups).to.exist;
-                    // expect(res.body.groups).to.be.empty;
-
                     if (err) {
                         sails.log.error(err);
                         done(err);

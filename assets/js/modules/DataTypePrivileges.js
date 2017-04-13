@@ -196,7 +196,7 @@
             ev.preventDefault();
 
             var that = this;
-            this.model.set('dataType', this.model.get('dataType').id);
+            // this.model.set('dataType', this.model.get('dataType').id);
 
             this.model.save(null, {
                 success: function(dataTypePrivileges) {

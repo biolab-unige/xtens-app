@@ -145,14 +145,7 @@ const coroutines = {
         sails.log.info("DataTypeController.edit - Decoded ID is: " + operator.id);
 
         const projects = yield Project.find().sort('id ASC');
-        // if(!operator.isWheel){
-        //     const groups = yield Group.find({id: operator.groups}).populate('projects');
-        //     projects = _.uniq(_.flatten(_.map(groups,'projects')),function (pr) {
-        //         return pr.id;
-        //     });
-        // } else {
-        //     projects = yield Project.find().sort('id ASC');
-        // }
+  
         const dataTypes= yield DataType.find({ project:_.map(projects,'id') }).populate(['project','parents']).sort('id ASC');
         return res.json({params: params, dataTypes: dataTypes});
     })
