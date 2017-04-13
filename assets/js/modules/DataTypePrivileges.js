@@ -148,13 +148,25 @@
             },
             '#data-type': {
                 observe: 'dataType',
+
                 initialize: function($el) {
                     $el.select2({placeholder: i18n("please-select") });
                 },
                 selectOptions: {
-                    collection: 'this.dataTypes',
-                    labelPath: 'name',
-                    valuePath: 'id',
+                    collection: function() {
+                        var coll = [];
+                        _.each(this.dataTypes, function(dt) {
+                            var dtProject = _.find(xtens.session.get("projects"), {id: dt.project});
+                            if( xtens.session.get("activeProject") === '' || (dtProject && dtProject.name === xtens.session.get("activeProject"))){
+                                var xmlString = "<h1>" + dt.name.toUpperCase() + " - <small>" + dtProject.name.toLowerCase() + "</small></h1>";
+                                coll.push({
+                                    label: dt.name.toUpperCase() +" - "+  dtProject.name.toLowerCase(),
+                                    value: dt.id
+                                });
+                            }
+                        });
+                        return coll;
+                    },
                     defaultOption: {
                         label: "",
                         value: null
@@ -196,7 +208,8 @@
             ev.preventDefault();
 
             var that = this;
-            // this.model.set('dataType', this.model.get('dataType').id);
+            this.model.get("dataType").id ? this.model.set("dataType", this.model.get("dataType").id) : null;
+            this.model.get("group").id ? this.model.set("group", this.model.get("group").id) : null;
 
             this.model.save(null, {
                 success: function(dataTypePrivileges) {
