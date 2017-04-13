@@ -317,7 +317,7 @@
             var id = $('#id').val();
             var header = this.$("#schemaHeader").find("select, input, textarea").serializeObject();
             header.fileUpload = header.fileUpload ? true : false;
-            header.project = this.model.get("project");
+            this.model.get("project").id ? header.project = this.model.get("project").id : header.project = this.model.get("project");
 
             var that = this;
             var body = this.serialize();
@@ -332,6 +332,7 @@
 
             // this.model.set("project", this.model.get("project").id);
             this.model.set("parents", _.map(this.model.get("parents"),'id'));
+            this.model.get("project").id ? this.model.set("project", this.model.get("project").id) : null;
 
             this.model.save(dataTypeDetails, {
                 //  patch: true,
