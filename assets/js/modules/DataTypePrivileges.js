@@ -192,13 +192,11 @@
                     return newColl.push({label:gr.name,value:gr.id});
                 }
             });
-            newColl.forEach(function (gr) {
-                _.find($('#group').val(),function (val) {
-                    if(gr.value === _.parseInt(val)){
-                        filteredValues.push(val);
-                    }
-                });
-            });
+            if ($('#group').val() !== "") {
+                var found = _.find(newColl, {value : _.parseInt($('#group').val()) });
+                found ? filteredValues.push(found.value) : null;
+            }
+
             var options = {selectOptions:{collection: newColl}};
             Backbone.Stickit.getConfiguration($('#group')).update($('#group'),filteredValues,{},options);
             $('#group').val(filteredValues).trigger("change");
