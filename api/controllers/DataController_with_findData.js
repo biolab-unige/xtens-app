@@ -81,9 +81,10 @@ const coroutines = {
         let params = req.allParams();
         params.model = DATA;
         params.privilegeLevel = VIEW_OVERVIEW;
-        params.idOperator = operator.id;
-        let data = yield crudManager.findData(params);
 
+        let results = yield crudManager.findData(params);
+        let data = results.data;
+        const count = results.count;
         const dataTypesId = !_.isEmpty(data) ? _.isObject(data[0].type) ? _.uniq(_.map(_.map(data, 'type'), 'id')) : _.uniq(_.map(data, 'type')) : [];
 
         const pagePrivileges = allPrivileges.filter( obj => {
@@ -92,7 +93,7 @@ const coroutines = {
 
         const [payload, headerInfo]  = yield BluebirdPromise.all([
             DataService.filterListByPrivileges(data, dataTypesId, pagePrivileges, operator.canAccessSensitiveData),
-            QueryService.composeHeaderInfo(req, params)
+            QueryService.composeHeaderInfo(req, count)
         ]);
         return DataService.prepareAndSendResponse(res, payload, headerInfo);
 

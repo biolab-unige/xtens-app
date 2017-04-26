@@ -20,8 +20,6 @@
     var FileManager= xtens.module("filemanager");
     var Session = xtens.module("session");
 
-    var DEFAULT_LIMIT = 10;
-
     /**
      * @method
      * @name parseQueryString
@@ -294,7 +292,6 @@
                 data: {id:id},
                 contentType: 'application/json',
                 success: function(results) {
-
                     that.loadView(new DataType.Views.Edit(results));
                 },
                 error: function(err) {
@@ -324,6 +321,7 @@
             var operator = new Operator.List();
             var that = this;
 
+
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
@@ -340,12 +338,13 @@
                 // var $dataDeferred = data.fetch({
                 //     data: $.param(_.assign(_.omit(queryParams, ['parentDataType', 'parentSubjectCode']), { // omit "parentSubjectCode" as param in server-side GET request
                 //         populate: ['type'],
-                //         limit: DEFAULT_LIMIT,
+                //         limit: xtens.module("xtensconstants").DefaultLimit
                 //         sort: 'created_at DESC'
                 //     }))
                 // });
 
                 $.when($dataTypesDeferred, $privilegesDeferred).then(function(dataTypesRes, privilegesRes) {
+                    var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
                     $.ajax({
                         url: '/data',
                         type: 'GET',
@@ -356,8 +355,10 @@
                             parentData: queryParams.parentData,
                             parentSample: queryParams.parentSample,
                             parentSubject: queryParams.parentSubject,
+                            project: idProject,
                             populate: ['type'],
-                            limit: DEFAULT_LIMIT,
+                            limit: xtens.module("xtensconstants").DefaultLimit
+,
                             sort: 'created_at DESC'
                         },
                         contentType: 'application/json',
@@ -409,7 +410,9 @@
             if (id && _.parseInt(id) > 0) {
                 params.id = id;
             }
-            // var dataTypeParams = { classTemplate: xtens.module("xtensconstants").DataTypeClasses.GENERIC };
+            if(xtens.session.get('activeProject') !== 'all'){
+                params.project = _.parseInt(_.find(xtens.session.get('projects'),{name: xtens.session.get('activeProject')} ).id);
+            }
             var that = this;
             $.ajax({
                 url: '/data/edit',
@@ -586,6 +589,7 @@
                     data: $.param({ populate: ['children'] })
                 });
                 $.when($dataTypesDeferred, $privilegesDeferred).then(function(dataTypesRes, privilegesRes) {
+                    var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
                     $.ajax({
                         url: '/subject',
                         type: 'GET',
@@ -593,8 +597,9 @@
                             'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                         },
                         data: {
-                            populate: ['type', 'projects'],
-                            limit: DEFAULT_LIMIT,
+                            project: idProject,
+                            populate: ['type'],
+                            limit: xtens.module("xtensconstants").DefaultLimit,
                             sort: 'created_at DESC'
                         },
                         contentType: 'application/json',
@@ -634,6 +639,9 @@
             var params = {};
             if (id && _.parseInt(id) > 0) {
                 params.id = id;
+            }
+            if(xtens.session.get('activeProject') !== 'all'){
+                params.project = _.parseInt(_.find(xtens.session.get('projects'),{name: xtens.session.get('activeProject')} ).id);
             }
             var that = this;
             $.ajax({
@@ -676,8 +684,49 @@
          * @method
          * @name subjectGraph
          */
-        subjectGraph: function() {
-            this.loadView(new Subject.Views.Graph());
+        subjectGraph: function(queryString) {
+            var that = this;
+            var queryParams = parseQueryString(queryString);
+            if (queryParams.idPatient) {
+                this.loadView(new Subject.Views.Graph({
+                    idPatient: queryParams.idPatient
+                }));
+                return;
+            }
+            var dataTypes = new DataType.List();
+
+            // var $dataTypesDeferred = dataTypes.fetch({
+            //     data: $.param({ populate: ['children'] })
+            // });
+            // $.when($dataTypesDeferred).then(function(dataTypesRes) {
+            var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
+            $.ajax({
+                url: '/subject',
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + xtens.session.get("accessToken")
+                },
+                data: {
+                    project: idProject,
+                    populate: ['type'],
+                    limit: 10000,
+                    sort: 'created_at ASC'
+                },
+                contentType: 'application/json',
+                success: function(results, options, res) {
+                    that.loadView(new Subject.Views.Graph({
+                            // dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
+                        subjects: new Subject.List(results)
+                    }));
+                },
+                error: function(err) {
+                    xtens.error(err);
+                }
+            });
+
+            // }, function(jqxhr) {
+            //     xtens.error(jqxhr);
+            // });
         },
 
         /**
@@ -696,7 +745,6 @@
             var privileges = new DataTypePrivileges.List();
             var operator = new Operator.List();
             var dataTypes = new DataType.List();
-            var samples = new Sample.List();
             var that = this;
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
@@ -710,14 +758,10 @@
                 var $dataTypesDeferred = dataTypes.fetch({
                     data: $.param({populate:['children']})
                 });
-                // var $samplesDeferred = samples.fetch({
-                //     data: $.param(_.assign(_.omit(queryParams, ['parentDataType','donorCode']), {      // omit "donorCode" as param in server-side GET request
-                //         populate: ['type', 'biobank', 'donor'],
-                //         limit: DEFAULT_LIMIT,
-                //         sort: 'created_at DESC'
-                //     }))
-                // });
+
                 $.when($dataTypesDeferred, $privilegesDeferred).then( function(dataTypesRes, privilegesRes) {
+                    var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
+
                     $.ajax({
                         url: '/sample',
                         type: 'GET',
@@ -728,8 +772,10 @@
                             donor: queryParams.donor,
                             parentData: queryParams.parentData,
                             parentSample: queryParams.parentSample,
+                            project: idProject,
                             populate: ['type', 'donor'],
-                            limit: DEFAULT_LIMIT,
+                            limit: xtens.module("xtensconstants").DefaultLimit
+,
                             sort: 'created_at DESC'
                         },
                         contentType: 'application/json',
@@ -776,6 +822,10 @@
             if (id && _.parseInt(id) > 0) {
                 params.id = id;
             }
+            if(xtens.session.get('activeProject') !== 'all'){
+                params.project = _.parseInt(_.find(xtens.session.get('projects'),{name: xtens.session.get('activeProject')} ).id);
+            }
+
             var that = this;
             $.ajax({
                 url: '/sample/edit',
@@ -786,6 +836,7 @@
                 data: params,
                 contentType: 'application/json; charset=utf-8',
                 success: function(results) {
+                    results.params = params;
                     that.loadView(new Sample.Views.Edit(results));
                 },
                 error: function(jqxhr) {
@@ -844,6 +895,14 @@
             var dataTypes = new DataType.List();
             var biobanks = new Biobank.List();
             var that = this;
+            var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
+
+
+
+
+
+
+
 
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
@@ -854,7 +913,11 @@
                     data: $.param({group: groupId})
                 });
                 var $dataTypesDeferred = dataTypes.fetch({
-                    data: $.param({populate:['children']})
+                    data: $.param({
+                        populate:['children'],
+                        project: idProject,
+                        sort: 'created_at ASC'
+                    })
                 });
                 var $biobanksDeferred = biobanks.fetch();
                 $.when($dataTypesDeferred, $biobanksDeferred, $privilegesDeferred).then( function(dataTypesRes, biobanksRes, privilegesRes) {

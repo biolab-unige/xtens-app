@@ -321,7 +321,7 @@
         },
 
         render: function() {
-            var that = this;
+
             this.$el.html(this.template({
                 __: i18n,
                 params: this.params,
@@ -331,9 +331,6 @@
                 mapTypeProjects: this.mapTypeProjects
             }));
 
-            $('#project-selector').on('change.bs.select', function (e) {
-                that.filterPrivileges();
-            });
             this.filterPrivileges(this.params);
             return this;
         },
@@ -341,7 +338,7 @@
         filterPrivileges: function(opt){
             var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#project-selector').val());
 
-            if(rex =="/null/"){this.clearFilter();}else{
+            if(rex =="/all/"){this.clearFilter();}else{
                 $('.content').hide();
                 $('.content').filter(function() {
                     return rex.test($(this).text());
@@ -350,7 +347,7 @@
         },
 
         clearFilter: function(){
-            $('#project-selector').val('');
+            // $('#project-selector').val('');
             $('.content').show();
         },
 

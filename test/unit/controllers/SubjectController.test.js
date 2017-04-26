@@ -94,8 +94,8 @@ describe('SubjectController', function() {
             return;
         });
 
-        it('Should return 403 Forbidden - Authenticated user does not have edit privileges on the subject type 1', function (done) {
-            let expectedError = `Authenticated user does not have edit privileges on the subject type 1`;
+        it('Should return 403 Forbidden - Authenticated user has not edit privileges on the subject type 1', function (done) {
+            let expectedError = `Authenticated user has not edit privileges on the subject type 1`;
             request(sails.hooks.http.app)
             .post('/subject')
             .set('Authorization', `Bearer ${tokenNoPriv}`)
@@ -231,8 +231,8 @@ describe('SubjectController', function() {
                 });
         });
 
-        it('Should return 403 FORBIDDEN - Authenticated user does not have edit privileges on the subject type', function (done) {
-            let expectedError = "Authenticated user does not have edit privileges on the subject type 3";
+        it('Should return 403 FORBIDDEN - Authenticated user has not edit privileges on the subject type', function (done) {
+            let expectedError = "Authenticated user has not edit privileges on the subject type 3";
             request(sails.hooks.http.app)
                 .put('/subject/3')
                 .set('Authorization', `Bearer ${tokenNoPriv}`)
@@ -380,6 +380,7 @@ describe('SubjectController', function() {
             .set('Authorization', `Bearer ${tokenDataSens}`)
             .expect(200)
             .end(function(err, res) {
+                console.log(res.body);
                 expect(res.body).to.be.empty;
                 if (err) {
                     sails.log.error(err);
@@ -428,8 +429,8 @@ describe('SubjectController', function() {
                 return;
             });
         });
-        it('Should return 403 Forbidden - Authenticated user does not have edit privileges on the subject type', function (done) {
-            let expectedError = 'Authenticated user does not have edit privileges on the subject type 1';
+        it('Should return 403 Forbidden - Authenticated user has not edit privileges on the subject type', function (done) {
+            let expectedError = 'Authenticated user has not edit privileges on the subject type 1';
             request(sails.hooks.http.app)
             .delete('/subject/1')
             .set('Authorization', `Bearer ${tokenNoPriv}`)
@@ -510,8 +511,8 @@ describe('SubjectController', function() {
                 });
         });
 
-        it('Should return 403 FORBIDDEN - Authenticated user does not have edit privileges on any subject type', function (done) {
-            let expectedError = 'Authenticated user does not have edit privileges on any subject type';
+        it('Should return 403 FORBIDDEN - Authenticated user has not edit privileges on any subject type', function (done) {
+            let expectedError = 'Authenticated user has not edit privileges on any subject type';
 
             let stub = sinon.stub(sails.hooks.persistence.crudManager, "getDataTypesByRolePrivileges",function () {
                 return [];
@@ -535,8 +536,8 @@ describe('SubjectController', function() {
                 });
         });
 
-        it('Should return 403 FORBIDDEN - Authenticated user does not have edit privileges on the subject type', function (done) {
-            let expectedError = 'Authenticated user does not have edit privileges on the subject type';
+        it('Should return 403 FORBIDDEN - Authenticated user has not edit privileges on the subject type', function (done) {
+            let expectedError = 'Authenticated user has not edit privileges on the subject type';
 
             let prova = sinon.stub(sails.hooks.persistence.crudManager, "getDataTypesByRolePrivileges",function () {
                 return [2];
@@ -686,8 +687,8 @@ describe('SubjectController', function() {
             return;
         });
 
-        it('Should return Forbidden 403 FORBIDDEN - Authenticated user does not have privileges', function (done) {
-            let expectedError = 'Authenticated user does not have privileges';
+        it('Should return Forbidden 403 FORBIDDEN - Authenticated user has not privileges', function (done) {
+            let expectedError = 'Authenticated user has not privileges';
 
             request(sails.hooks.http.app)
             .post('/subjectGraph')
@@ -754,8 +755,8 @@ describe('SubjectController', function() {
         });
     });
 
-    it('Should return Forbidden 403 FORBIDDEN - Authenticated user does not have privileges', function (done) {
-        let expectedError = 'Authenticated user does not have privileges';
+    it('Should return Forbidden 403 FORBIDDEN - Authenticated user has not privileges', function (done) {
+        let expectedError = 'Authenticated user has not privileges';
 
         request(sails.hooks.http.app)
         .post('/subjectGraphSimple')

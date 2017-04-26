@@ -1,6 +1,7 @@
 // TODO: retrieve this info FROM DATABASE ideally or from the server-side anyway
 
 (function(xtens, XtensConstants) {
+    XtensConstants.DefaultLimit = 10;
 
     XtensConstants.Constants = {
         DATA: 'DATA',
@@ -36,7 +37,12 @@
         UNKNOWN: 'N.A.' /*,
         UNDIFFERENTIATED: 'UNDIFFERENTIATED' */
     };
-
+    XtensConstants.SexOptions = {
+        MALE: 'M',
+        FEMALE: 'F',
+        UNKNOWN: 'N.A.' /*,
+        UNDIFFERENTIATED: 'UNDIFFERENTIATED' */
+    };
     /**
      * @description available Group privilege statuses
      */

@@ -96,11 +96,16 @@
                 session: xtens.session
             }));
 
+
             $('#project-selector').selectpicker();
             if (xtens.session.get('activeProject')) {
                 $('#project-selector').selectpicker('val', xtens.session.get('activeProject'));
             }
             $('#project-selector').selectpicker('refresh');
+
+            $('#project-selector').on('change.bs.select', function () {
+                location.reload();
+            });
 
             return this;
         },

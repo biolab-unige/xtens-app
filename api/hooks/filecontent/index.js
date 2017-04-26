@@ -45,7 +45,7 @@ module.exports = function filecontent(sails){
                 .then(dataTypePrivilege => {
 
                     if(!dataTypePrivilege || (dataTypePrivilege.privilegeLevel !== DOWNLOAD && dataTypePrivilege.privilegeLevel !== EDIT)){
-                        throw new PrivilegesError(`Authenticated user does not have download privileges on the data type ${dataFile.data.id}`);
+                        throw new PrivilegesError(`Authenticated user has not download privileges on the data type ${dataFile.data.id}`);
                     }
 
                     sails.log.info("downloadFileContent - dataFile");

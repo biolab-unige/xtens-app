@@ -25,13 +25,11 @@
                             <select class="form-control" id="type" name="type"></select>
                         </div>
                     </div>
-                    <% if (data.get("donor")) {%>
                     <div class="form-group metadataform-group">
                         <label for="donor" class="data-label"><%= __('donor') %></label>
-                        <span class="data-span"><%= data.get("donor").code %></span>
-                        <button id="editDonor" class="btn btn-danger"><%= __("edit-donor") %></button>
+                        <span class="data-span"><%= data.get("donor") ? data.get("donor").code : __("select-a-type") %></span>
+                        <button disabled id="editDonor" class="btn btn-danger"><%= __("edit-donor") %></button>
                     </div>
-                    <%} %>
                     <% if (data.get("parentSample")) {%>
                     <div class="form-group metadataform-group">
                         <label for="parent-sample" class="data-label"><%= __('parent-sample') %></label>

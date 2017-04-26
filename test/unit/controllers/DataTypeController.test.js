@@ -115,7 +115,7 @@ describe('DataTypeController', function() {
                     done(err);
                 }
                 let resDataType = res.body;
-                // console.log(resDataType.id);
+                console.log(resDataType.id);
                 expect(resDataType.schema).to.eql(schemaMetadata);
                 done();
                 return;
@@ -289,6 +289,7 @@ describe('DataTypeController', function() {
             //.send({id:1})
             .expect(200)
             .end(function(err, res) {
+                console.log(res.body);
                 expect(res.body).to.have.length(fixtures.datatype.length);
                 if (err) {
                     sails.log.error(err);
@@ -307,7 +308,9 @@ describe('DataTypeController', function() {
             // .send()
             .expect(200)
             .end(function(err, res) {
-                expect(res.body).to.have.length(fixtures.datatype.length);
+                console.log(res.body);
+
+                expect(res.body).to.have.length(fixtures.datatype.length+1);
                 if (err) {
                     sails.log.error(err);
                     done(err);

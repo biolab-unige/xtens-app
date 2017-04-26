@@ -56,7 +56,7 @@
     <label for="project-selector" class="text-uppercase"><%= __("active-project") %></label>
     <select id='project-selector' class="form-group selectpicker" data-width="fit">
       <% if (xtens.session.get("isWheel")) {%>
-      <option selected value=''>All</option>
+      <option selected value='all'>All</option>
       <%}%>
       <% _.each(xtens.session.get("projects"), function(project) {
         var name = project.name ? project.name : project.get("name"); %>

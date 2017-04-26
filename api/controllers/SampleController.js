@@ -34,7 +34,7 @@ const coroutines = {
         const operator = TokenService.getToken(req);
         const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.groups, sample.type);
         if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT)) {
-            throw new PrivilegesError(`Authenticated user does not have edit privileges on the sample type ${sample.type}`);
+            throw new PrivilegesError(`Authenticated user has not edit privileges on the sample type ${sample.type}`);
         }
         SampleService.simplify(sample);
         const dataType = yield DataType.findOne(sample.type);
@@ -78,9 +78,12 @@ const coroutines = {
         const operator = TokenService.getToken(req);
         let allPrivileges = yield DataTypePrivileges.find({group:operator.groups});
         allPrivileges = operator.groups.length > 1 ? DataTypeService.getHigherPrivileges(allPrivileges) : allPrivileges;
-        let query = QueryService.composeFind(req, null, allPrivileges);
+        let params = req.allParams();
+        params.model = SAMPLE;
+        params.privilegeLevel = VIEW_OVERVIEW;
+        params.idOperator = operator.id;
 
-        let samples = yield BluebirdPromise.resolve(query);
+        let samples = yield crudManager.findData(params);
         const dataTypesId = !_.isEmpty(samples) ? _.isObject(samples[0].type) ? _.uniq(_.map(_.map(samples, 'type'), 'id')) : _.uniq(_.map(samples, 'type')) : [];
         const pagePrivileges = allPrivileges.filter( obj => {
             return _.find(dataTypesId, id =>{ return id === obj.dataType;});
@@ -88,7 +91,7 @@ const coroutines = {
 
         const [payload, headerInfo]  = yield BluebirdPromise.all([
             DataService.filterListByPrivileges(samples, dataTypesId, pagePrivileges, operator.canAccessSensitiveData),
-            QueryService.composeHeaderInfo(req, allPrivileges)
+            QueryService.composeHeaderInfo(req, params)
         ]);
         return DataService.prepareAndSendResponse(res, payload, headerInfo);
 
@@ -106,7 +109,7 @@ const coroutines = {
         const idSampleType = _.isObject(sample.type) ? sample.type.id : sample.type;
         const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.groups, idSampleType);
         if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
-            throw new PrivilegesError(`Authenticated user does not have edit privileges on the sample type ${sample.type}`);
+            throw new PrivilegesError(`Authenticated user has not edit privileges on the sample type ${sample.type}`);
         }
         SampleService.simplify(sample);
 
@@ -139,7 +142,7 @@ const coroutines = {
 
         const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.groups, idSampleType);
         if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
-            throw new PrivilegesError(`Authenticated user does not have edit privileges on the sample type ${sample.type}`);
+            throw new PrivilegesError(`Authenticated user has not edit privileges on the sample type ${sample.type}`);
         }
         sails.log.info(`Subject to be deleted:  ${sample.id}`);
 
@@ -160,6 +163,7 @@ const coroutines = {
                 model: SAMPLE,
                 idDataTypes: params.idDataTypes,
                 parentDataType: params.parentDataType,
+                project: params.project,
                 privilegeLevel: EDIT
             }),
             biobanks: BiobankService.getAsync(params),
@@ -168,7 +172,7 @@ const coroutines = {
         });
         // if(payload.sample){ throw new ValidationError('No sample found with id: ${params.id}'); }
               //if operator has not the privilege to EDIT datatype, then return forbidden
-        if (_.isEmpty(payload.dataTypes)){ throw new PrivilegesError(`Authenticated user does not have edit privileges on any sample type`); }
+        if (_.isEmpty(payload.dataTypes)){ throw new PrivilegesError(`Authenticated user has not edit privileges on any sample type`); }
 
 
         if (payload.sample){
@@ -179,7 +183,7 @@ const coroutines = {
                 // if edit sample exists and operator has not the privilege to EDIT datatype, then throw Privileges Error
             }
             if(_.isEmpty(payload.dataTypes) || !_.find(payload.dataTypes, {id : payload.sample.type.id})) {
-                throw new PrivilegesError(`Authenticated user does not have edit privileges on the sample type`);
+                throw new PrivilegesError(`Authenticated user has not edit privileges on the sample type`);
             }
         }
         return res.json(payload);

@@ -6,6 +6,7 @@
 /* globals _, sails*/
 "use strict";
 
+const crudManager = sails.hooks.persistence.crudManager;
 const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 const querystring = require('querystring');
 
@@ -38,14 +39,14 @@ const QueryService = {
      * @param{Request} req
      * @return{Promise/Object} all the info to be shipped as response header
      */
-    composeHeaderInfo: function(req, privileges) {
+    composeHeaderInfo: function(req, params) {
         const Model = actionUtil.parseModel(req);
         // sails.log.verbose('QueryService.composeHeaderInfo - Model is:');
         // sails.log.verbose(Model);
 
-        const params = QueryService.parseParams(req,privileges);
+        // const params = QueryService.parseParams(req,privileges);
 
-        return Model.count().where(params)
+        return crudManager.countData(params)
 
           .then(count => {
               const pageSize = actionUtil.parseLimit(req), skip = actionUtil.parseSkip(req),

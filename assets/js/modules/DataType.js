@@ -271,7 +271,7 @@
             this.$modal = this.$(".datatype-modal");
             this.stickit();
 
-            if(xtens.session.get('activeProject') !== ''){
+            if(xtens.session.get('activeProject') !== 'all'){
                 this.activeProject = _.find(this.projects, function (p) {
                     return p.name === xtens.session.get('activeProject');
                 });
@@ -444,10 +444,6 @@
             var that = this;
             this.$el.html(this.template({__: i18n, dataTypes: options.dataTypes}));
 
-            $('#project-selector').on('change.bs.select', function (e) {
-                that.filterDataTypes();
-            });
-
             this.filterDataTypes(options.queryParams);
             return this;
         },
@@ -455,7 +451,7 @@
         filterDataTypes: function(opt){
             var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#project-selector').val());
 
-            if(rex =="/null/"){this.clearFilter();}else{
+            if(rex =="/all/"){this.clearFilter();}else{
                 $('.content').hide();
                 $('.content').filter(function() {
                     return rex.test($(this).text());
@@ -464,7 +460,7 @@
         },
 
         clearFilter: function(){
-            $('#project-selector').val('');
+            // $('#project-selector').val('');
             $('.content').show();
         }
     });
@@ -486,10 +482,17 @@
         },
 
         render : function () {
+            var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
+
 
             var that = this;
             var dataTypes = new DataType.List();
             dataTypes.fetch({
+
+                data: $.param({
+                    project: idProject,
+                    sort: 'created_at ASC'
+                }),
 
                 success : function(dataTypes) {
                     that.$el.html(that.template({ __: i18n, dataTypes : dataTypes.models}));
@@ -498,6 +501,11 @@
                     that.$el.html(that.template({ __: i18n}));
                 }
             });
+
+            $('#project-selector').on('change.bs.select', function () {
+                location.reload();
+            });
+
             return this;
         },
 

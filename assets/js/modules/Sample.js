@@ -57,6 +57,7 @@
                 },
                 getVal: function($el, ev, options) {
                     var value = parseInt($el.val());
+                    value ? $('#editDonor').prop('disabled',false) : null;
                     return _.isNaN(value) ? null : value;
           // return _.findWhere(options.view.dataTypes, {id: value });
                 },
@@ -202,14 +203,14 @@
             "click button.delete": "deleteSample"
         },
 
-    /**
-     * @method
-     * @name saveData
-     * @description retrieve all the Sample properties from the form (the metadata value(s)-unit(s) pairs, the files' paths, etc...)
-     *              and save the Sample model on the server
-     * @param {event} - the form submission event
-     * @return {false} - to suppress the HTML form submission
-     */
+        /**
+         * @method
+         * @name saveData
+         * @description retrieve all the Sample properties from the form (the metadata value(s)-unit(s) pairs, the files' paths, etc...)
+         *              and save the Sample model on the server
+         * @param {event} - the form submission event
+         * @return {false} - to suppress the HTML form submission
+         */
         saveSample: function(ev) {
             var targetRoute = $(ev.currentTarget).data('targetRoute') || 'samples';
             if (this.schemaView && this.schemaView.serialize) {
@@ -303,11 +304,11 @@
 
         },
 
-    /**
-     * @method
-     * @name dataTypeOnChange
-     */
-    // TODO check this one!!
+      /**
+       * @method
+       * @name dataTypeOnChange
+       */
+
         dataTypeOnChange: function() {
             Data.Views.Edit.prototype.dataTypeOnChange.call(this);
             var typeName = this.$('#type :selected').text(),
@@ -316,21 +317,26 @@
             if (parentSample && parentSample.biobankCode) {
                 this.model.set('biobankCode', biobankCodeMap[typeName] + parentSample.biobankCode);
             }
+            if (this.subjects.length > 0) {
+                this.fetchDonorsOnSuccess(this.subjects, $('#donor'));
+            }
 
         },
 
-    /**
-     * @method
-     * @name editDonor
-     *
-     */
+      /**
+       * @method
+       * @name editDonor
+       *
+       */
         editDonor: function(ev) {
             var donors = new Subject.List(),
                 that = this;
+            var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
+
             donors.fetch({
                 data: $.param({
                     select: JSON.stringify(["id", "code", "personalInfo", "type"]),
-                    limit: 2000
+                    project: idProject
                 }),
                 success: function(donors) {
                     that.fetchDonorsOnSuccess(donors, ev.target);
@@ -341,16 +347,20 @@
         },
 
         fetchDonorsOnSuccess: function(donors, targetElem) {
-            console.log(donors.length);
-            this.subjects = donors.toJSON();
-
+            this.subjects = donors.models ? donors.toJSON() : donors;
+            var dataTypeSample = _.find(this.dataTypes, {id: _.parseInt($('#type').val())});
+            if(dataTypeSample){
+                this.filteredSubjects = _.filter(this.subjects, function (subj) {
+                    return subj.project === dataTypeSample.project;
+                });
+            }
             var $div = $('<div>').addClass('data-input-div');
             var $select = $('<select>').addClass('form-control').attr({
                 'id': 'donor',
                 'name': 'donor'
             });
 
-            var parent = targetElem.parentNode;
+            var parent = targetElem.parentNode ? targetElem.parentNode : targetElem.closest('.form-group')[0];
 
       // remove all subelements but the label
             while (parent.children.length > 1) {
@@ -365,9 +375,9 @@
                 observe: 'donor',
                 selectOptions: {
                     collection: function() {
-                        return this.subjects.map(function(subj) {
-                            var label = subj.personalInfo ? subj.code + ": " + subj.personalInfo.surname +
-                " " + subj.personalInfo.givenName : subj.code;
+                        return this.filteredSubjects.map(function(subj) {
+                            var label = subj.given_name && subj.surname ? subj.code + ": " + subj.surname +
+                " " + subj.given_name : subj.code;
                             return {
                                 label: label,
                                 value: subj.id
@@ -407,10 +417,10 @@
    */
     Sample.Views.Details = Data.Views.Details.fullExtend({
 
-    /**
-     * @method
-     * @name initialize
-     */
+      /**
+       * @method
+       * @name initialize
+       */
         initialize: function(options) {
             $("#main").html(this.el);
             this.template = JST["views/templates/sample-details.ejs"];
@@ -468,20 +478,20 @@
         addLinksToModels: function() {
             _.each(this.samples.models, function(sample) {
                 var privilege = _.find(this.dataTypePrivileges, function(model) {
-                    return model.get('dataType') === sample.get("type").id;
+                    return model.get('dataType') === sample.get("type");
                 });
                 if (privilege.get('privilegeLevel') === "edit") {
                     sample.set("editLink", "#/samples/edit/" + sample.id);
                 }
-                var typeId = sample.get("type").id;
+                var typeId = sample.get("type");
                 var type = this.dataTypes.get(typeId);
-                if (type.get("children") && type.get("children").length > 0) {
+                if (type && type.get("children") && type.get("children").length > 0) {
                     var sampleTypeChildren = _.where(type.get("children"), {
                         "model": Classes.SAMPLE
                     });
                     if (sampleTypeChildren.length > 0) {
                         var sids = _.map(sampleTypeChildren, 'id').join();
-                        sample.set("newDerivativeLink", "#/samples/new/0?idDataTypes=" + sids + "&parentSample=" + sample.id + "&donor=" + sample.get("donor").id);
+                        sample.set("newDerivativeLink", "#/samples/new/0?idDataTypes=" + sids + "&parentSample=" + sample.id + "&donor=" + sample.get("parent_subject"));
                     }
                     var dataTypeChildren = _.where(type.get("children"), {
                         "model": Classes.DATA
@@ -495,25 +505,47 @@
         },
 
         render: function(options) {
+
             this.addLinksToModels();
             this.$el.html(this.template({
                 __: i18n,
                 samples: this.samples.models,
-                dataTypePrivileges: this.dataTypePrivileges
+                dataTypePrivileges: this.dataTypePrivileges,
+                dataTypes: this.dataTypes.models
             }));
             this.table = this.$('.table').DataTable({
                 "paging": false,
                 "info": false
             });
+
+            this.filterSamples(this.params);
+
             $('#pagination').append(JST["views/templates/pagination-bar.ejs"]({
                 __: i18n,
-                headers: this.headers
+                headers: this.headers,
+                rowsLenght: this.samples.models.length,
+                DEFAULT_LIMIT: xtens.module("xtensconstants").DefaultLimit
             }));
             this.setPaginationInfo();
-
             return this;
         },
 
+        filterSamples: function(opt){
+            var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#project-selector').val());
+
+            if(rex =="/all/"){this.clearFilter();}else{
+                $('.content').hide();
+                $('.content').filter(function() {
+                    return rex.test($(this).text());
+                }).show();
+            }
+            this.headers.notFiltered = $('tr').filter(function() { return $(this).css('display') !== 'none'; }).length - 1;
+        },
+
+        clearFilter: function(){
+            // $('#project-selector').val('');
+            $('.content').show();
+        },
         changePage: function(ev) {
             ev.preventDefault();
             var that = this;

@@ -34,7 +34,7 @@ const coroutines = {
         const operator = TokenService.getToken(req);
         const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.groups, subject.type);
         if (!dataTypePrivilege || _.isEmpty(dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT)) {
-            throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type ${subject.type}`);
+            throw new PrivilegesError(`Authenticated user has not edit privileges on the subject type ${subject.type}`);
         }
         SubjectService.simplify(subject);
         const dataType = yield DataType.findOne(subject.type);
@@ -58,6 +58,10 @@ const coroutines = {
         let query = Subject.findOne(id);
         query = actionUtil.populateRequest(query, req);
 
+        if (operator.canAccessPersonalData) {
+            query.populate('personalInfo');
+        }
+
         let subject = yield BluebirdPromise.resolve(query);
         const idSubjectType = subject ? _.isObject(subject.type) ? subject.type.id :  subject.type : undefined;
         const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.groups, idSubjectType);
@@ -78,9 +82,17 @@ const coroutines = {
         const operator = TokenService.getToken(req);
         let allPrivileges = yield DataTypePrivileges.find({group:operator.groups});
         allPrivileges = operator.groups.length > 1 ? DataTypeService.getHigherPrivileges(allPrivileges) : allPrivileges;
-        let query = QueryService.composeFind(req, null, allPrivileges);
 
-        let subjects = yield BluebirdPromise.resolve(query);
+        let params = req.allParams();
+        params.model = SUBJECT;
+        params.privilegeLevel = VIEW_OVERVIEW;
+        params.idOperator = operator.id;
+        if (operator.canAccessPersonalData) {
+            params.canAccessPersonalData = true;
+        }
+
+        let subjects = yield crudManager.findData(params);
+        // let subjects = yield BluebirdPromise.resolve(query);
         const dataTypesId = !_.isEmpty(subjects) ? _.isObject(subjects[0].type) ? _.uniq(_.map(_.map(subjects, 'type'), 'id')) : _.uniq(_.map(subjects, 'type')) : [];
         const pagePrivileges = allPrivileges.filter( obj => {
             return _.find(dataTypesId, id =>{ return id === obj.dataType;});
@@ -88,7 +100,7 @@ const coroutines = {
 
         const [payload, headerInfo]  = yield BluebirdPromise.all([
             DataService.filterListByPrivileges(subjects, dataTypesId, pagePrivileges, operator.canAccessSensitiveData),
-            QueryService.composeHeaderInfo(req, allPrivileges)
+            QueryService.composeHeaderInfo(req, params)
         ]);
         return DataService.prepareAndSendResponse(res, payload, headerInfo);
 
@@ -106,7 +118,7 @@ const coroutines = {
         const idSubjectType = _.isObject(subject.type) ? subject.type.id : subject.type;
         const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.groups, idSubjectType);
         if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
-            throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type ${subject.type}`);
+            throw new PrivilegesError(`Authenticated user has not edit privileges on the subject type ${subject.type}`);
         }
         SubjectService.simplify(subject);
 
@@ -139,7 +151,7 @@ const coroutines = {
 
         const dataTypePrivilege = yield DataTypeService.getDataTypePrivilegeLevel(operator.groups, idSubjectType);
         if (!dataTypePrivilege || dataTypePrivilege.privilegeLevel != EDIT) {
-            throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type ${subject.type}`);
+            throw new PrivilegesError(`Authenticated user has not edit privileges on the subject type ${subject.type}`);
         }
         sails.log.info(`Subject to be deleted:  ${subject.id}`);
 
@@ -150,7 +162,7 @@ const coroutines = {
 
     edit: BluebirdPromise.coroutine(function *(req, res) {
         const operator = TokenService.getToken(req);
-        const id = req.param("id"), code = req.param("code");
+        const id = req.param("id"), code = req.param("code"), project = req.param("project");
         sails.log.info("SubjectController.edit - Decoded ID is: " + operator.id);
 
         const payload = yield BluebirdPromise.props({
@@ -158,13 +170,12 @@ const coroutines = {
             dataTypes: crudManager.getDataTypesByRolePrivileges({
                 idOperator: operator.id,
                 model: SUBJECT,
+                project: project,
                 privilegeLevel: EDIT
             })
         });
-        // if(payload.subject){ throw new ValidationError('No subject found with id: ${params.id}'); }
-              //if operator has not the privilege to EDIT datatype, then return forbidden
-        if (_.isEmpty(payload.dataTypes)){ throw new PrivilegesError(`Authenticated user does not have edit privileges on any subject type`); }
 
+        if (_.isEmpty(payload.dataTypes)){ throw new PrivilegesError(`Authenticated user has not edit privileges on any subject type`); }
 
         if (payload.subject){
           // if operator has not access to Sensitive Data and dataType has sensitive data, then return forbidden
@@ -174,7 +185,7 @@ const coroutines = {
                 // if edit subject exists and operator has not the privilege to EDIT datatype, then throw Privileges Error
             }
             if(_.isEmpty(payload.dataTypes) || !_.find(payload.dataTypes, {id : payload.subject.type.id})) {
-                throw new PrivilegesError(`Authenticated user does not have edit privileges on the subject type`);
+                throw new PrivilegesError(`Authenticated user has not edit privileges on the subject type`);
             }
         }
         return res.json(payload);
@@ -305,9 +316,9 @@ module.exports = {
         .then(results => {
 
             dataTypePrivileges = results;
-            // operator has not the privilege to EDIT datatype, then throw Privileges Error
+            // operator has not privileges on datatype, then throw Privileges Error
             if (_.isEmpty(dataTypePrivileges)) {
-                throw new PrivilegesError(`Authenticated user does not have privileges`);
+                throw new PrivilegesError(`Authenticated user has not privileges`);
             }
             return fetchSubjectDataTree(idSubject, subjectTreeCb);
 
@@ -325,30 +336,39 @@ module.exports = {
             }
 
             else {
-                let links = [];
-
+                let links = [], idRows = [];
+                _.forEach(resp.rows,function (row) {
+                    _.find(dataTypePrivileges, function (d) {
+                        if (d.dataType.name === row.type) {
+                            idRows.push(row.id);
+                        }
+                    });
+                });
                 BluebirdPromise.map(resp.rows, function(row) {
                     let privilege;
                     if(_.find(dataTypePrivileges, function (d) {
                         privilege = d;
                         return privilege.dataType.name === row.type;
+
                     })){
                         if(privilege.privilegeLevel === VIEW_OVERVIEW){ row.metadata = {};}
-                        if (row.parent_data !== null) {
+                        if (row.parent_data !== null && _.find(idRows, function(i){return i === row.parent_data;})) {
                             return {'source':row.parent_data,'target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata};
                         }
-                        else if(row.parent_sample !== null) {
+                        else if(row.parent_sample !== null && _.find(idRows, function(i){return i === row.parent_sample;})) {
                             return {'source':row.parent_sample,'target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata};
                         }
                         else {
                             return {'source':'Patient','target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata};
+                            console.log(privilege);
                         }
                     }
 
                 })
                 .then(function(link){
 
-                    links = _.reject(link, function(l){ return l === undefined; });
+                    links = _.compact(link);
+                    links = links && links.length > 0 ? links : [{'source':'Patient','target':null,'name': idSubject, 'type': 'Patient', 'metadata': {}}];
                     let json = {'links':links};
                     return res.json(json);
                 })
@@ -382,7 +402,7 @@ module.exports = {
             dataTypePrivileges = results;
             // operator has not the privilege to EDIT datatype, then throw Privileges Error
             if (_.isEmpty(dataTypePrivileges)) {
-                throw new PrivilegesError(`Authenticated user does not have privileges`);
+                throw new PrivilegesError(`Authenticated user has not privileges`);
             }
             return fetchSubjectDataTreeSimple(idSubject, subjectTreeSimpleCb);
 

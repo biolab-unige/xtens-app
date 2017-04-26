@@ -176,6 +176,7 @@
         "new-subject": "New Subject",
         "more-data": "More Data",
         "subject-graph": "Subject Graph",
+        "select-a-patient": "Select a Patient",
         /* views/templates/subject-edit.ejs */
         "subject-manager": "Subject Manager",
         "create-subject": "Create Subject",
@@ -196,6 +197,7 @@
         "biobank-code": "Biobank Code",
         "material-type": "Material Type",
         "donor": "Donor",
+        "select-a-type": "Select a Type",
         "edit-donor": "Edit Donor",
         "parent-sample": "Parent Sample",
         "sample-deleted": "Sample Deleted",

@@ -1150,12 +1150,12 @@
 
         addLinksToModels: function() {
             _.each(this.data.models, function(data) {
-                var privilege = _.find(this.dataTypePrivileges, function(model){ return model.get('dataType') === data.get("type").id;});
+                var privilege = _.find(this.dataTypePrivileges, function(model){ return model.get('dataType') === data.get("type");});
                 if(privilege.get('privilegeLevel') === "edit" ){
                     data.set("editLink", "#/data/edit/" + data.id);}
                 if(privilege.get('privilegeLevel') !== "view_overview" ){
                     data.set("detailsLink", "#/data/details/" + data.id);}
-                var type = this.dataTypes.get(data.get("type").id);
+                var type = this.dataTypes.get(data.get("type"));
                 var dataTypeChildren = _.where(type.get("children"), {"model": Classes.DATA});
                 if (dataTypeChildren.length > 0) {
                     var dids = _.map(dataTypeChildren, 'id').join();
@@ -1166,15 +1166,44 @@
 
         render: function() {
             this.addLinksToModels();
-            this.$el.html(this.template({__: i18n, data: this.data.models, dataTypePrivileges: this.dataTypePrivileges}));
+            this.$el.html(this.template({__: i18n, data: this.data.models, dataTypePrivileges: this.dataTypePrivileges, dataTypes: this.dataTypes.models}));
             this.table = this.$('.table').DataTable({
                 "paging": false,
                 "info": false
             });
-            $('#pagination').append(JST["views/templates/pagination-bar.ejs"]({__: i18n, headers:this.headers}));
-            this.setPaginationInfo();
 
+            $('#project-selector').on('change.bs.select', function () {
+                location.reload();
+            });
+            this.filterData(this.params);
+
+            $('#pagination').append(JST["views/templates/pagination-bar.ejs"]({
+                __: i18n,
+                headers: this.headers,
+                rowsLenght: this.data.models.length,
+                DEFAULT_LIMIT: xtens.module("xtensconstants").DefaultLimit
+            }));
+            this.setPaginationInfo();
             return this;
+        },
+
+        filterData: function(opt){
+            var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#project-selector').val());
+
+            if(rex =="/all/"){
+                this.clearFilter();
+            }else{
+                $('.content').hide();
+                $('.content').filter(function() {
+                    return rex.test($(this).text());
+                }).show();
+            }
+            this.headers.notFiltered = $('tr').filter(function() { return $(this).css('display') !== 'none'; }).length - 1;
+        },
+
+        clearFilter: function(){
+            // $('#project-selector').val('');
+            $('.content').show();
         },
 
         changePage: function (ev) {
@@ -1202,6 +1231,7 @@
                     headers['endRow'] = endRow;
                     that.headers = headers;
                     that.data.reset(results);
+                    that.filterData();
                 },
                 error: function(err) {
                     xtens.error(err);

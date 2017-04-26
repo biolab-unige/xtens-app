@@ -201,10 +201,6 @@
             var that = this;
             this.$el.html(that.template({__: i18n, groups: options.groups}));
 
-            $('#project-selector').on('change.bs.select', function (e) {
-                that.filterGroups();
-            });
-
             this.filterGroups(options.queryParams);
             return this;
         },
@@ -212,7 +208,7 @@
         filterGroups: function(opt){
             var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#project-selector').val());
 
-            if(rex =="/null/"){this.clearFilter();}else{
+            if(rex =="/all/"){this.clearFilter();}else{
                 $('.group_val').hide();
                 $('.group_val').filter(function() {
                     return rex.test($(this).text());
@@ -220,7 +216,7 @@
             }
         },
         clearFilter: function(){
-            $('#project-selector').val('');
+            // $('#project-selector').val('');
             $('.group_val').show();
         }
 

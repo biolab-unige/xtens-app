@@ -47,7 +47,8 @@
               "click .xtenstable-edit": "showEditView",
               "click .xtenstable-files": "showFileList",
               "click .xtenstable-derivedsamples": "showDerivedSampleList",
-              "click .xtenstable-deriveddata": "showDerivedDataList"
+              "click .xtenstable-deriveddata": "showDerivedDataList",
+              "click .xtenstable-subjectgraph": "showSubjectGraph"
           },
 
           tagName: 'table',
@@ -368,10 +369,11 @@
           addLinks: function(options) {
 
               var btnGroupTemplate = JST["views/templates/xtenstable-buttongroup.ejs"];
-
+              var that = this;
               _.each(this.data, function(datum) {
                   datum._links = btnGroupTemplate({
                       __:i18n,
+                      dataTypeModel: that.dataType.get("model"),
                       privilegeLevel : options.dataTypePrivilege.privilegeLevel,
                       hasDataSensitive: options.hasDataSensitive,
                       fileUpload: options.fileUpload,
@@ -441,6 +443,21 @@
             // TODO change "code" to "subjectCode" for sake of clarity
               path += data.code ? "&parentSubjectCode=" + data.code : '';
               path += "&parentDataType=" + this.dataType.id;
+
+              xtens.router.navigate(path, {trigger: true});
+              return false;
+          },
+
+          /**
+           * @method
+           * @name showSubjectGraph
+           * @param{Object} ev - the current event
+           * @description returns a graph of the subject selected
+           */
+          showSubjectGraph: function(ev) {
+              var currRow = this.table.row($(ev.currentTarget).parents('tr'));
+              var data = currRow.data();
+              var path = "subjects/graph?idPatient=" + data.id;
 
               xtens.router.navigate(path, {trigger: true});
               return false;

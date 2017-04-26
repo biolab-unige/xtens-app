@@ -59,6 +59,7 @@ var jsFilesToInject = [
     'dependencies/**/buttons.colvis.js',
     'dependencies/**/async.js',
     'dependencies/**/d3.js',
+    'dependencies/d3-tip/index.js',
     'dependencies/**/Sortable.js',
     '/dependencies/**/bootstrap-select.js',
     // Customised client-side js files
