@@ -43,6 +43,9 @@ config/local.js
 coverage/*
 assets/dataFiles
 assets.json
+config/autoreload.js
+config/ssl/
+.bowerrc
 
 ################################################
 # Dependencies
