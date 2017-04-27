@@ -359,7 +359,6 @@
 
         events: {
             'submit .edit-password-form':'updatePassword'
-            // 'change input':'checkInput'
         },
 
         initialize: function(options) {
@@ -378,23 +377,6 @@
             return this;
         },
 
-        // checkInput: function() {
-        //     $('input').keyup(function() {
-        //
-        //         var empty = false;
-        //         $('input').each(function() {
-        //             if (this.value.length < 7) {
-        //                 empty = true;
-        //             }
-        //         });
-        //         if (empty) {
-        //             $('#update').attr('disabled', 'disabled');
-        //         } else {
-        //             $('#update').removeAttr('disabled');
-        //         }
-        //     });
-        // },
-
         updatePassword: function(ev) {
             ev.preventDefault();
             var that = this;
@@ -412,7 +394,7 @@
                     newPass: newPass,
                     cnewPass: cnewPass
                 }),
-                contentType: 'application/json;charset:utf-8',
+                contentType: 'application/json',
 
                 error: function(err) {
                     if (that.modal)
