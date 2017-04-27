@@ -896,14 +896,11 @@
             var biobanks = new Biobank.List();
             var that = this;
             var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
-
-
-
-
-
-
-
-
+            var criteria = {
+                populate:['children'],
+                sort: 'created_at ASC'
+            };
+            idProject ? criteria.project = idProject : null;
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
@@ -912,13 +909,7 @@
                 var $privilegesDeferred = privileges.fetch({
                     data: $.param({group: groupId})
                 });
-                var $dataTypesDeferred = dataTypes.fetch({
-                    data: $.param({
-                        populate:['children'],
-                        project: idProject,
-                        sort: 'created_at ASC'
-                    })
-                });
+                var $dataTypesDeferred = dataTypes.fetch({ data: $.param(criteria) });
                 var $biobanksDeferred = biobanks.fetch();
                 $.when($dataTypesDeferred, $biobanksDeferred, $privilegesDeferred).then( function(dataTypesRes, biobanksRes, privilegesRes) {
                     that.loadView(new Query.Views.Builder({

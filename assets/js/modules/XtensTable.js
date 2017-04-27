@@ -209,7 +209,7 @@
                       columnOpts.data = "metadata." + fieldName + ".values";
                       var data = columnOpts.data;
                       columnOpts.render = function (data, type, row) {
-                          return  type === 'export' ? data.join() : data && data.length > 2 ? '<span>List on Details button</span>' : data.join();
+                          return  type === 'export' ? data.join() : data ? data.length > 2 ? '<span>List on Details button</span>' : data.join() : null;
                       };
                       // columnOpts.render = function ( data ) {
                       //     return  data && data.length > 2 ? '<span>List on Details button</span>' : data.join();

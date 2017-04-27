@@ -483,17 +483,15 @@
 
         render : function () {
             var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
-
+            var criteria = {
+                sort: 'created_at ASC'
+            };
+            idProject ? criteria.project = idProject : null;
 
             var that = this;
             var dataTypes = new DataType.List();
             dataTypes.fetch({
-
-                data: $.param({
-                    project: idProject,
-                    sort: 'created_at ASC'
-                }),
-
+                data: $.param(criteria),
                 success : function(dataTypes) {
                     that.$el.html(that.template({ __: i18n, dataTypes : dataTypes.models}));
                 },

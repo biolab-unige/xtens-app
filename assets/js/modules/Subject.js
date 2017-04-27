@@ -300,12 +300,11 @@
             this.dataTypePrivileges = options.dataTypePrivileges.models;
             this.params = options.params;
             this.template = JST["views/templates/subject-list.ejs"];
-            this.addLinksToModels();
             this.render();
         },
 
-        addLinksToModels: function() {
-            _.each(this.subjects.models, function(subject) {
+        addLinksToModels: function(subjects) {
+            _.each(subjects ? subjects : this.subjects.models, function(subject) {
                 var privilege = _.find(this.dataTypePrivileges, function(model){ return model.get('dataType') === subject.get("type");});
                 if(privilege.get('privilegeLevel') === "edit" ){
                     subject.set("editLink", "#/subjects/edit/" + subject.id);}
@@ -327,6 +326,7 @@
 
         render: function(options) {
             var that = this;
+            this.addLinksToModels();
             this.$el.html(this.template({__: i18n, subjects: this.subjects.models, dataTypePrivileges: this.dataTypePrivileges, dataTypes:this.dataTypes.models}));
             this.table = this.$('.table').DataTable({
                 "paging": false,
@@ -385,6 +385,8 @@
                     headers['startRow'] = startRow;
                     headers['endRow'] = endRow;
                     that.headers = headers;
+                    // var subjects =  new Subject.List(results);
+                    // that.addLinksToModels(subjects);
                     that.subjects.reset(results);
                 },
                 error: function(err) {
