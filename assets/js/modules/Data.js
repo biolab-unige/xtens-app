@@ -624,6 +624,18 @@
             }
         },
 
+        /**
+         * @method
+         * @name setValidationOptions
+         * @description add HTML5/data tags to the metadata field for client-side validation
+         *              with Parsley
+         */
+        setValidationOptions: function() {
+            if (this.component.required) {
+                this.$fieldValue.prop('required', true);
+            }
+        },
+
         initialize: function(options) {
             this.template = JST["views/templates/metadatafieldselect-form.ejs"];
             this.component = options.component;

@@ -157,7 +157,7 @@
                         var coll = [];
                         _.each(this.dataTypes, function(dt) {
                             var dtProject = _.find(xtens.session.get("projects"), {id: dt.project});
-                            if( xtens.session.get("activeProject") === '' || (dtProject && dtProject.name === xtens.session.get("activeProject"))){
+                            if( xtens.session.get("activeProject") === 'all' || (dtProject && dtProject.name === xtens.session.get("activeProject"))){
                                 var xmlString = "<h1>" + dt.name.toUpperCase() + " - <small>" + dtProject.name.toLowerCase() + "</small></h1>";
                                 coll.push({
                                     label: dt.name.toUpperCase() +" - "+  dtProject.name.toLowerCase(),

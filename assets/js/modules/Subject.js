@@ -105,16 +105,67 @@
             this.personalDetailsView = null;
             this.schemaView = null;
             // this.projects = options.projects;
+            if(xtens.session.get('activeProject') !== 'all'){
+                this.project = _.parseInt(_.find(xtens.session.get('projects'),{name: xtens.session.get('activeProject')} ).id);
+                this.dataType = _.find(this.dataTypes, {'project' : this.project} );
+            }
             if (options.subject) {
                 this.model = new Subject.Model(options.subject);
             }
             else {
-                this.model = new Subject.Model({type: _.last(this.dataTypes).id});
+                this.model = new Subject.Model();
             }
             this.render();
+            !options.subject ? this.dataType ? this.model.set("type", this.dataType.id) : this.setDataTypeSelection() : null;
             if (xtens.session.get('canAccessPersonalData')) {
                 this.addPersonalDetailsView();
             }
+        },
+
+        setDataTypeSelection: function() {
+            var $divForm = $('<div>').addClass('form-group metadataform-group');
+            var $divInput = $('<div>').addClass('data-input-div');
+
+            var $select = $('<select>').addClass('form-control').attr({
+                'id': 'data-type',
+                'name': 'data-type'
+            });
+            $divInput.append($select);
+            var $label = $('<label>').addClass('data-label').attr({'for': 'data-type'}).text( i18n("data-type") );
+            $divForm.append($label).append($divInput);
+            $('#personal-details').after($divForm);
+            this.addBinding(null, '#data-type', {
+                observe: 'type',
+
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
+                selectOptions: {
+                    collection: function() {
+                        var coll = [];
+                        _.each(this.dataTypes, function(dt) {
+                            var dtProject = _.find(xtens.session.get("projects"), {id: dt.project});
+                            if( xtens.session.get("activeProject") === 'all' || (dtProject && dtProject.name === xtens.session.get("activeProject"))){
+                                coll.push({
+                                    label: dt.name.toUpperCase() +" - "+  dtProject.name.toLowerCase(),
+                                    value: dt.id
+                                });
+                            }
+                        });
+                        return coll;
+                    },
+                    defaultOption: {
+                        label: "",
+                        value: null
+                    }
+                },
+                getVal: function($el) {
+                    return $el.val() && _.parseInt($el.val());
+                },
+                onGet: function(val) {
+                    return  val && _.isObject(val) ? val.id : val;
+                }
+            });
         },
 
         // render : function () {

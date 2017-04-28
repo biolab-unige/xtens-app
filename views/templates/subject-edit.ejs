@@ -1,7 +1,7 @@
 <h1><%= __("subject-manager") %></h1>
 <h2><%= data.id ? __("update-subject") : __("create-subject") %></h2>
 <div id="content">
-    <form class="form-horizontal edit-subject-form" role="form" data-parsley-trigger="focusout" data-parsley-validate>
+    <form class="form-horizontal edit-subject-form" role="form" data-parsley-focus="first" data-parsley-trigger="focusout" data-parsley-validate>
         <!--
         <div class="form-group">
             <label for="dataType" class="data-label"><%= __("select-a-data-type") %></label>
