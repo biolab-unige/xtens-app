@@ -1,0 +1,66 @@
+<div class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title"><%=__('default-title') %></h4>
+            </div>
+
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-xs-2">
+                  <label for="project-source"><%=__('from') %></label>
+                </div>
+                <div class="col-xs-9 col-offset-xs-1">
+                  <div class="form-group">
+                    <select required id='project-source' title="<%= __('please-select-source-project') %>" class="form-control selectpicker">
+                        <% _.each(xtens.session.get("projects"), function(project) {%>
+                          <option data-subtext="<%= project.description %>" value='<%= project.id %>'><%= project.name %></option>
+                        <% }) %>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-2">
+                  <label hidden for="data-type"><%=__('data-type') %></label>
+                </div>
+                <div class="col-xs-9 col-offset-xs-1">
+                  <div class="form-group">
+                    <select required id='data-type-selector' title="<%= __('please-select-a-data-type') %>" class="form-control selectpicker">
+                        <% _.each(xtens.session.get("projects"), function(project) {%>
+                          <optgroup label="<%= project.name %>" id="<%= project.id %>">
+                            <% var dtProject = _.filter( dataTypes, function(dt){ return dt.project.id === project.id} )
+                            _.each(dtProject, function(dt) {%>
+                            <option data-subtext="<%= dt.description %>" value='<%= dt.id %>'><%= dt.name %></option>
+                            <% }) %>
+                          </optgroup>
+                        <% }) %>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-2">
+                  <label hidden for="project-dest"><%=__('to') %></label>
+                </div>
+                <div class="col-xs-9 col-offset-xs-1">
+                  <div class="form-group">
+                    <select required id='project-dest' title="<%= __('please-select-destination-project') %>" class="form-control selectpicker">
+                        <% _.each(xtens.session.get("projects"), function(project) {%>
+                          <option data-subtext="<%= project.description %>" value='<%= project.id %>'><%= project.name %></option>
+                        <% }) %>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button disabled id="confirm-duplication" type="button" class="btn btn-"><%= __('edit-data-type') %></button>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -13,6 +13,14 @@
         "selected-project":"Selected Project",
         "data-type-list": "Data Type List",
         "id":"ID",
+        "duplicate-data-type": "Duplicate Data Type",
+        // views/templates/datatype-duplicate.ejs
+        "edit-data-type":"Edit Data Type",
+        "from": "From",
+        "to": "To",
+        "please-select-source-project": "Please select Source project",
+        "please-select-a-data-type": "Please select a Data Type",
+        "please-select-destination-project": "Please select Destination project",
         // views/templates/datatype-edit.ejs
         "please-select": "Please Select",
         "data-type-manager": "Data Type Manager",

@@ -8,16 +8,28 @@
         <span class="fa fa-angle-down"></span>
     </a>
     <ul id="box" class="dropdown-menu">
-      <% if (xtens.session.get("isWheel")) {%><h2 id="title"><%= __("super-user")%></h2>
+      <% if (xtens.session.get("isWheel")) {%>
+      <h2 id="title"><%= __("super-user")%></h2>
       <li><a href="#/projects"><%= __("projects") %></a></li>
       <li><a href="#/groups"><%= __("groups") %></a></li>
       <li><a href="#/operators"><%= __("operators") %></a></li>
       <li><a href="#/biobanks"><%= __("biobanks") %></a></li>
       <li><a href="#/datatypes"><%= __("data-types") %></a></li><%}
-       else if (xtens.session.get("isAdmin")) {%><h2 id="title"><%= __("manager")%></h2>
+
+       else if (xtens.session.get("isAdmin")) {
+         var adminProjects = xtens.session.get("adminProjects");
+         var idProject = _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id;
+         var isAdminProject = _.find(adminProjects, function(pr){ return pr === idProject});
+         if(isAdminProject) { %>
+       <h2 id="title"><%= __("manager")%></h2>
        <li><a href="#/biobanks"><%= __("biobanks") %></a></li>
-       <li><a href="#/datatypes"><%= __("data-types") %></a></li><%}
-       else {%><h2 id="title"><%= __("standard")%></h2><%};%>
+       <li><a href="#/datatypes"><%= __("data-types") %></a></li>
+       <%}else{%>
+         <h2 id="title"><%= __("standard")%></h2>
+         <%}}
+       else {%>
+         <h2 id="title"><%= __("standard")%></h2>
+         <%};%>
         <li><a href="#/operators/updatePassword"><%= __("change-password") %></a></li>
     </ul>
 

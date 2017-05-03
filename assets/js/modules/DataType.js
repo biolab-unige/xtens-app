@@ -168,17 +168,27 @@
             $("#main").html(this.el);
             this.template = JST["views/templates/datatype-edit.ejs"];
             this.nestedViews = [];
-            this.idDataType = parseInt(options.params.id);
+            this.idDataType = parseInt(options.params.id) ? parseInt(options.params.id) : parseInt(options.params.duplicate);
+
             this.existingDataTypes = options.dataTypes;
             this.projects = xtens.session.get('projects');
             this.isCreation = true;
             if (this.idDataType) {
                 var that =this;
                 this.model = new DataType.Model(_.find(this.existingDataTypes, function(dt){ return dt.id === that.idDataType; }));
+                if(options.params.duplicate) {
+                    this.model.unset('id');
+                    var project = _.find(this.projects, {'id': _.parseInt(options.params.projectDest)});
+                    this.model.set('project', project);
+                }
             }
             else {
                 this.model = new DataType.Model();
             }
+
+            // TODO: if options.object duplicate set model with object
+
+
             this.render();
             this.listenTo(this.model, 'invalid', this.handleValidationErrors);
         },
@@ -430,20 +440,25 @@
      *  This is the view to show in a table the full list of existing datatypes
      */
     DataType.Views.List = Backbone.View.extend({
+        events:{
+            'click #duplicate': 'setDuplicationParams'
+        },
 
         tagName: 'div',
         className: 'dataTypes',
 
         initialize: function(options) {
             $("#main").html(this.el);
+            this.dataTypes = options.dataTypes;
             this.template = JST["views/templates/datatype-list.ejs"];
             this.render(options);
         },
 
         render: function(options) {
             var that = this;
-            this.$el.html(this.template({__: i18n, dataTypes: options.dataTypes}));
-
+            this.$el.html(this.template({ __: i18n, dataTypes: this.dataTypes.models}));
+            this.$modal = this.$(".data-type-modal");
+            xtens.session.get("projects").length < 2 ? $('#duplicate').prop('disabled',true) :null;
             this.filterDataTypes(options.queryParams);
             return this;
         },
@@ -462,7 +477,67 @@
         clearFilter: function(){
             // $('#project-selector').val('');
             $('.content').show();
+        },
+
+        setDuplicationParams: function(ev){
+            ev.preventDefault();
+            var that = this;
+            //create and render the modal
+            var modal = new ModalDialog({
+                title: i18n('duplicate-data-type'),
+                template: JST["views/templates/datatype-duplicate.ejs"],
+                data: { __: i18n, dataTypes: this.dataTypes.toJSON()}
+            });
+            this.$modal.append(modal.render().el);
+
+            //initalize select forms
+            $('#project-source').selectpicker();
+            $('#data-type-selector').selectpicker('hide');
+            $('#project-dest').selectpicker('hide');
+
+            modal.show();
+
+            $('#project-source').on('change.bs.select', function (e) {
+                var projectSource= $('#project-source').val();
+                $("label[for='data-type']").prop('hidden',false);
+                $('#data-type-selector').selectpicker('show');
+                $('#data-type-selector optgroup').prop('disabled', true);
+                $('#data-type-selector optgroup#'+projectSource).prop('disabled', false);
+                $('#data-type-selector').selectpicker('refresh');
+                $('#project-dest option[value='+projectSource +']').prop('disabled', true);
+                $('#project-dest').selectpicker('refresh');
+
+                $('#data-type-selector').on('change.bs.select', function (e) {
+                    var dataTypeSelected= $('#data-type-selector').val();
+                    $("label[for='project-dest']").prop('hidden',false);
+                    // if (xtens.session.get('activeProject') !== 'all') {
+                    //     var project = xtens.session.get('activeProject');
+                    //     $('#project-dest').selectpicker('val', project);
+                    //     $('#project-dest').selectpicker('refresh');
+                    // }
+                    $('#project-dest').selectpicker('show');
+
+                    $('#project-dest').on('change.bs.select', function (e) {
+                        var projectDest= $('#project-dest').val();
+
+                        // $('#confirm-duplication').text( i18n('confirm') + " " + e.target.value);
+                        $('#confirm-duplication').prop('disabled', false);
+                        $('#confirm-duplication').addClass('btn-success');
+                        that.$('#confirm-duplication').on('click.bs.button', function (e) {
+                            e.preventDefault();
+
+                            modal.hide();
+                            that.$modal.on('hidden.bs.modal', function (e) {
+                                modal.remove();
+                                router.navigate('#/datatypes/new?duplicate='+dataTypeSelected+'&projectDest='+projectDest, {trigger: true});
+                            });
+                        });
+                    });
+                });
+            });
         }
+
+
     });
 
     DataType.Views.Graph = Backbone.View.extend({

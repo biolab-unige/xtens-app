@@ -68,9 +68,9 @@ const coroutines = {
         let id = _.map(projects, function (p) { return _.map(p.dataTypes,'id'); });
         id = _.uniq(_.flatten(id));
         const dataTypePrivileges = yield DataTypePrivileges.find({ where: {group: groupsId, dataType:id} });
-        let results =_.uniq( _.map(dataTypePrivileges,function (dtp) {
+        let results =_.compact(_.uniq( _.map(dataTypePrivileges,function (dtp) {
             return _.findWhere(dataTypesFilteredByProjects, {id: dtp.dataType} );
-        }));
+        })));
         return results;
     }),
 
@@ -413,7 +413,7 @@ let DataTypeService = {
      * @name getHigherPrivileges
      * @param{array} privileges
      * @description return the higher privileges in array
-     * @return {Object} - the found DataType
+     * @return {array} - privileges
      */
     getHigherPrivileges: function(privileges) {
         let levels = {};
@@ -436,21 +436,28 @@ let DataTypeService = {
         });
         let results = _.values(levels);
         return results;
-    }
+    },
 
     /**
      * @method
-     * @name getDataTypesToEditProject
-     * @description return the higher privileges in array
-     * @return {Array} - Datatypes not yet associated with a project
+     * @name parseProject
+     * @description return the query object with the project array parsed if exists
+     * @return {object} - query
      */
-    // getDataTypesToEditProject: function() {
-    //     return coroutines.getDataTypesToEditProject()
-    //     .catch(function(err) {
-    //         sails.log(err);
-    //         return err;
-    //     });
-    // }
+    parseProject: function(query) {
+        if (query._criteria.where && query._criteria.where.project ) {
+            if (query._criteria.where.project[0] =="[") {
+                try {
+                    query._criteria.where.project = JSON.parse(query._criteria.where.project);
+                }
+              catch (e) {
+                /* istanbul ignore next */
+                  throw new Error("Error parsing project clause");
+              }
+            }
+        }
+        return query;
+    }
 
 
 };

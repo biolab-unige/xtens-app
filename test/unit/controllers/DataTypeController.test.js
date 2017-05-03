@@ -142,6 +142,7 @@ describe('DataTypeController', function() {
                 if (err) {
                     sails.log.error(err);
                     done(err);
+                    return;
                 }
                 // let resDataType = res.body;
                 // expect(resDataType.schema).to.eql(schemaMetadata);
@@ -150,52 +151,23 @@ describe('DataTypeController', function() {
             });
         });
 
-        it('Should return 400, metadata required', function (done) {
+        it('Should return 400, schema required', function (done) {
             request(sails.hooks.http.app)
             .post('/dataType')
             .set('Authorization', `Bearer ${tokenA}`)
             .send({
+                "project": 1,
                 "model": "Data",
                 "parents": [1],
-                "name": "New DataType",
-                "schema": {
-                    body:{
-                        "name": "Group one",
-                        "label": "METADATA GROUP",
-                        "content": [
-                            {
-                                "name": "Metadata 1",
-                                "label": "METADATA FIELD",
-                                "_group": "Group one",
-                                "isList": false,
-                                "hasUnit": false,
-                                "visible": true,
-                                "hasRange": false,
-                                "required": true,
-                                "fieldType": "wrongTypeFiled",
-                                "sensitive": false,
-                                "customValue": null,
-                                "ontologyUri": null,
-                                "formattedName": "metadata_1",
-                                "possibleUnits": null,
-                                "caseInsensitive": false
-                            }]
-                    },
-                    header:{
-                        "name": "New DataType",
-                        "model": "Data",
-                        "version": "0.0.1",
-                        "ontology": "",
-                        "fileUpload": false,
-                        "description": "A new datatype for tests"
-                    }
-                }
+                "name": "New DataType"
+
             })
             .expect(400)
             .end(function(err, res) {
                 if (err) {
                     sails.log.error(err);
                     done(err);
+                    return;
                 }
                 expect(res).to.be.error;
                 done();

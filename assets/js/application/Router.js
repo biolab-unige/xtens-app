@@ -258,7 +258,13 @@
             dataTypes.fetch({
                 data:$.param({populate:['project','parents'], sort: 'id ASC'}),
                 success: function(dataTypes) {
-                    that.loadView(new DataType.Views.List({queryParams: queryParams, dataTypes: dataTypes.models}));
+                    let adminProjects = xtens.session.get("adminProjects");
+                    dataTypes.models = _.filter(dataTypes.models,function (dt) {
+                        if(_.find(adminProjects, function(pr){ return pr === dt.get("project").id;})){
+                            return dt;
+                        }
+                    });
+                    that.loadView(new DataType.Views.List({queryParams: queryParams, dataTypes: dataTypes}));
                 },
                 error: function(err) {
                     xtens.error(err);
@@ -281,6 +287,8 @@
          * @param{Integer} id - the dataType ID
          */
         dataTypeEdit: function(id) {
+            var params = parseQueryString(id);
+
             var model, that = this;
             var dataTypes = new DataType.List();
             $.ajax({
@@ -289,9 +297,10 @@
                 headers: {
                     'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                 },
-                data: {id:id},
+                data: {id: params.duplicate ? params.duplicate : id},
                 contentType: 'application/json',
                 success: function(results) {
+                    params.duplicate ? results.params = params : null;
                     that.loadView(new DataType.Views.Edit(results));
                 },
                 error: function(err) {
@@ -898,7 +907,7 @@
             var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
             var criteria = {
                 populate:['children'],
-                sort: 'created_at ASC'
+                sort: 'id ASC'
             };
             idProject ? criteria.project = idProject : null;
             var $operatorDeferred = operator.fetch({

@@ -1,5 +1,5 @@
 /* jshint node: true */
-/* globals _, __filename__, sails, Project, Subject, Data, isEmail, Operator,Passport, DataType, SubjectService, TokenService, QueryService, DataService */
+/* globals _, sails, Group, Operator, Passport, TokenService */
 'use strict';
 let validator = require('validator');
 let crypto = require('crypto');
@@ -174,6 +174,7 @@ exports.login = function(req, identifier, password, next) {
         }, function(err, passport) {
             if (passport) {
                 passport.validatePassword(password, function(err, res) {
+                    let idGroups = _.map(user.groups, 'id');
                     if (err) {
                         return next(err);
                     }
@@ -183,12 +184,17 @@ exports.login = function(req, identifier, password, next) {
                         err.code = 401;
                         return next(err, false);
                     } else {
-                        return next(null, user);
+                        Group.find(idGroups).populate('projects').exec(function(err, groups) {
+                            _.forEach(groups,function (gr,key) {
+                                groups[key] = gr.toJSON();
+                            });
+                            return next(null, {user: user, groups: groups});
+                        });
                     }
                 });
             } else {
-        // next line commented out by Massi
-        // req.flash('error', 'Error.Passport.Password.NotSet');
+                  // next line commented out by Massi
+                  // req.flash('error', 'Error.Passport.Password.NotSet');
                 return next({err:err,code:500}, false);
             }
         });

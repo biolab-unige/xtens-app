@@ -8,6 +8,7 @@
 /* globals _, sails, DataType, DataTypeService, TokenService, Group, Project */
 "use strict";
 const ControllerOut = require("xtens-utils").ControllerOut, ValidationError = require('xtens-utils').Errors.ValidationError;
+const PrivilegesError = require('xtens-utils').Errors.PrivilegesError;
 const crudManager = sails.hooks.persistence.crudManager;
 const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 const BluebirdPromise = require('bluebird');
@@ -36,17 +37,7 @@ const coroutines = {
             query = actionUtil.populateRequest(query, req);
         }
         //populateRequest does not support array params on integer attribute so if there is project param and it is an array, it is parsed "manually"
-        if (query._criteria.where && query._criteria.where.project ) {
-            if (query._criteria.where.project[0] =="[") {
-                try {
-                    query._criteria.where.project = JSON.parse(query._criteria.where.project);
-                }
-                catch (e) {
-                  /* istanbul ignore next */
-                    res.json(400, "Error parsing project clause");
-                }
-            }
-        }
+        query = DataTypeService.parseProject(query);
         let dataTypes = yield BluebirdPromise.resolve(query);
 
         let groups = yield Group.find(operator.groups);
@@ -55,7 +46,6 @@ const coroutines = {
             dataTypes = yield DataTypeService.filterDataTypes(operator.groups, dataTypes);
         }
 
-        sails.log(dataTypes);
         return res.json(dataTypes);
     }),
 
@@ -67,8 +57,14 @@ const coroutines = {
     * @description coroutine for new DataType creation
     */
     create: BluebirdPromise.coroutine(function *(req, res) {
-        // const operator = TokenService.getToken(req);
+        const operator = TokenService.getToken(req);
         let dataType = req.allParams();
+      //if user tries to create a datatype in a project where is not ADMIN it will throw a Privilege error
+        let adminGroups = yield Group.find(operator.adminGroups).populate('projects');
+        const adminProjects = _.uniq(_.flatten(_.map(_.flatten(_.map(adminGroups, 'projects')), 'id')));
+        if (!_.find(adminProjects, function(dt){ return dt === _.parseInt(dataType.project);})) {
+            throw new PrivilegesError('User has not privilege as Admin on this data type');
+        }
 
         if (!dataType.name) dataType.name = dataType.schema && dataType.schema.name;
         if (!dataType.model) dataType.model = dataType.schema && dataType.schema.model;
@@ -90,6 +86,7 @@ const coroutines = {
         if (validationRes.error) {
             throw new ValidationError(validationRes.error);
         }
+
         dataType = yield crudManager.createDataType(dataType);
 
         //add edit privileges for manager and wheel groups of operator
@@ -115,6 +112,15 @@ const coroutines = {
     */
     update: BluebirdPromise.coroutine(function *(req, res) {
         let dataType = req.allParams();
+        const operator = TokenService.getToken(req);
+      //if user tries to update a datatype in a project where is not ADMIN it will throw a Privilege error
+        let adminGroups = yield Group.find(operator.adminGroups).populate('projects');
+        const adminProjects = _.uniq(_.flatten(_.map(_.flatten(_.map(adminGroups, 'projects')), 'id')));
+        let adminDataTypes = yield DataType.find({project:adminProjects});
+
+        if (!_.find(adminDataTypes, function(dt){ return dt.id === _.parseInt(dataType.id);})) {
+            throw new PrivilegesError('User has not privilege as Admin on this data type');
+        }
 
         // Validate data type (schema included)
         const validationRes = DataTypeService.validate(dataType, true);
@@ -145,9 +151,29 @@ const coroutines = {
         sails.log.info("DataTypeController.edit - Decoded ID is: " + operator.id);
 
         const projects = yield Project.find().sort('id ASC');
-  
+
         const dataTypes= yield DataType.find({ project:_.map(projects,'id') }).populate(['project','parents']).sort('id ASC');
         return res.json({params: params, dataTypes: dataTypes});
+    }),
+
+    destroy: BluebirdPromise.coroutine(function *(req, res, co) {
+        const id = req.param('id');
+        if (!id) {
+            return co.badRequest({message: 'Missing dataType ID on DELETE request'});
+        }
+      //if user tries to destroy a datatype in a project where is not ADMIN it will throw a Privilege error
+        const operator = TokenService.getToken(req);
+        sails.log.info("DataTypeController.destroy - Decoded ID is: " + operator.id);
+        let adminGroups = yield Group.find(operator.adminGroups).populate('projects');
+        const adminProjects = _.uniq(_.flatten(_.map(_.flatten(_.map(adminGroups, 'projects')), 'id')));
+        let adminDataTypes = yield DataType.find({project:adminProjects});
+
+        if (!_.find(adminDataTypes, function(dt){ return dt.id === _.parseInt(id);})) {
+            throw new PrivilegesError('User has not privilege as Admin on this data type');
+        }
+
+        const deleted = yield crudManager.deleteDataType(id);
+        return res.json({deleted: deleted});
     })
 };
 
@@ -206,22 +232,11 @@ const DataTypeController = {
     * @description DELETE /dataType/:id
     */
     destroy: function(req, res) {
-        const co = new ControllerOut(res);
-        const id = req.param('id');
 
-        if (!id) {
-            return co.badRequest({message: 'Missing dataType ID on DELETE request'});
-        }
-
-        return crudManager.deleteDataType(id)
-
-        .then(function(deleted) {
-            return res.json({
-                deleted: deleted
-            });
-        })
-
+        let co = new ControllerOut(res);
+        coroutines.destroy(req,res,co)
         .catch(function(err) {
+            sails.log(err);
             return co.error(err);
         });
 

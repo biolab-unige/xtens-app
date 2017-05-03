@@ -25,7 +25,7 @@ let AuthController = {
 
         let protocol = req.param("protocol") || 'local';
 
-        PassportService.callback(req, res, function (err, operator) {
+        PassportService.callback(req, res, function (err, results) {
             // If an error was thrown, return the JSON content of the error
             /* istanbul ignore if */
             if (err) {
@@ -46,8 +46,10 @@ let AuthController = {
             else {
                 // Upon successful login, send back user data and JWT token
                 // sails.services.logger.login(user, req);
-
+                let operator = results.user;
                 let payload = operator.formatForTokenPayload();
+                operator = operator.toJSON();
+                operator.groups = results.groups;
                 console.log("AuthController - successfully logged in");
                 return res.json(200, {
                     user: operator,
