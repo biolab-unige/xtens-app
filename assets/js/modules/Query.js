@@ -929,10 +929,6 @@
         render: function() {
             this.$el.html(this.template({__: i18n }));
 
-            $('#project-selector').on('change.bs.select', function () {
-                location.reload();
-            });
-
             return this;
         },
 

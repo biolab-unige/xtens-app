@@ -575,10 +575,6 @@
                 }
             });
 
-            $('#project-selector').on('change.bs.select', function () {
-                location.reload();
-            });
-
             return this;
         },
 

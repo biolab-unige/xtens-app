@@ -82,29 +82,6 @@
 
         isAuthenticated: function() {
             return Boolean(this.get("accessToken"));
-        },
-
-        getHigherPrivileges: function(groups) {
-            let levels = {};
-            if (!groups || _.isEmpty(groups)) {return [];}
-            if ( groups.length === 1 ) { return groups;}
-
-            var groupedPriv = _.mapValues(_.groupBy(groups, 'id'));
-            _.forEach(groupedPriv, function (list,key) {
-                levels[key] = {};
-                _.forEach(list, function (el) {
-                    if(!levels[key].privilegeLevel || el.privilegeLevel === EDIT){
-                        levels[key] = el;
-                        if( levels[key].privilegeLevel === EDIT){ return false; }
-                    }
-                    else if (levels[key].privilegeLevel === VIEW_OVERVIEW && (el.privilegeLevel === VIEW_DETAILS || el.privilegeLevel === DOWNLOAD)) {
-                        levels[key] = el;
-                    }
-                    else if (levels[key].privilegeLevel === VIEW_DETAILS && el.privilegeLevel === DOWNLOAD) { levels[key] = el; }
-                });
-            });
-            let results = _.values(levels);
-            return results;
         }
 
     });
@@ -128,21 +105,24 @@
         },
 
         render: function() {
+
+
+            if (xtens.session.get('activeProject') !== 'all') {
+                var adminProjects = xtens.session.get("adminProjects");
+                var idProject = _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id;
+                var isAdminProject = _.find(adminProjects, function(pr){ return pr === idProject;});
+                xtens.session.set("isAdmin", isAdminProject ? true : false);
+            }
+
             this.$el.html(this.template({
                 __:i18n,
                 session: xtens.session
             }));
-
-
             $('#project-selector').selectpicker();
-            if (xtens.session.get('activeProject')) {
-                $('#project-selector').selectpicker('val', xtens.session.get('activeProject'));
-            }
+            $('#project-selector').selectpicker('val', xtens.session.get('activeProject'));
             $('#project-selector').selectpicker('refresh');
-
-            $('#project-selector').on('change.bs.select', function () {
-                location.reload();
-            });
+            // $('#project-selector').on('change.bs.select', function () {
+            // });
 
             return this;
         },
@@ -151,6 +131,7 @@
             ev.preventDefault();
 
             xtens.session.set('activeProject', ev.target.value);
+            location.reload();
 
         }
 

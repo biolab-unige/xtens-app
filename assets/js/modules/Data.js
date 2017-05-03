@@ -1161,9 +1161,6 @@
                 "info": false
             });
 
-            $('#project-selector').on('change.bs.select', function () {
-                location.reload();
-            });
             this.filterData(this.params);
 
             $('#pagination').append(JST["views/templates/pagination-bar.ejs"]({
