@@ -176,6 +176,8 @@
             if (this.idDataType) {
                 var that =this;
                 this.model = new DataType.Model(_.find(this.existingDataTypes, function(dt){ return dt.id === that.idDataType; }));
+
+                // if options.params.duplicate exist unset id and set the right project
                 if(options.params.duplicate) {
                     this.model.unset('id');
                     var project = _.find(this.projects, {'id': _.parseInt(options.params.projectDest)});
@@ -185,9 +187,6 @@
             else {
                 this.model = new DataType.Model();
             }
-
-            // TODO: if options.object duplicate set model with object
-
 
             this.render();
             this.listenTo(this.model, 'invalid', this.handleValidationErrors);
@@ -340,7 +339,6 @@
                 }
             };
 
-            // this.model.set("project", this.model.get("project").id);
             this.model.set("parents", _.map(this.model.get("parents"),'id'));
             this.model.get("project").id ? this.model.set("project", this.model.get("project").id) : null;
 
@@ -455,7 +453,7 @@
         },
 
         render: function(options) {
-            var that = this;
+
             this.$el.html(this.template({ __: i18n, dataTypes: this.dataTypes.models}));
             this.$modal = this.$(".data-type-modal");
             xtens.session.get("projects").length < 2 ? $('#duplicate').prop('disabled',true) :null;

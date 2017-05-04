@@ -38,7 +38,7 @@
                         <td class="text-right">
                           <% var privilege = dataTypePrivileges.find(function(model) {
                             return model.get('dataType') === subject.get("type"); });
-                           if(privilege.get("privilegeLevel") === "edit" ){ %>
+                           if(privilege && privilege.get("privilegeLevel") === "edit" ){ %>
                             <a class="btn" href="<%= subject.get("editLink") %>" ><%=__("edit") %></a>
                             <%} %>
                             <% if (subject.get("newSampleLink") && subject.get("newSampleLink").length) {%>

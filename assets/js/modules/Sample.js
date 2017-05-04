@@ -480,7 +480,7 @@
                 var privilege = _.find(this.dataTypePrivileges, function(model) {
                     return model.get('dataType') === sample.get("type");
                 });
-                if (privilege.get('privilegeLevel') === "edit") {
+                if (privilege && privilege.get('privilegeLevel') === "edit") {
                     sample.set("editLink", "#/samples/edit/" + sample.id);
                 }
                 var typeId = sample.get("type");
@@ -535,7 +535,7 @@
 
             if(rex =="/all/"){this.clearFilter();}else{
                 $('.content').hide();
-                $('.content').filter(function() {
+                $('.cprivilege &&ontent').filter(function() {
                     return rex.test($(this).text());
                 }).show();
             }

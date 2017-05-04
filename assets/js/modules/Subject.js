@@ -357,7 +357,7 @@
         addLinksToModels: function(subjects) {
             _.each(subjects ? subjects : this.subjects.models, function(subject) {
                 var privilege = _.find(this.dataTypePrivileges, function(model){ return model.get('dataType') === subject.get("type");});
-                if(privilege.get('privilegeLevel') === "edit" ){
+                if( privilege && privilege.get('privilegeLevel') === "edit" ){
                     subject.set("editLink", "#/subjects/edit/" + subject.id);}
                 var type = this.dataTypes.get(subject.get("type"));
                 if (type && type.get("children") && type.get("children").length > 0) {

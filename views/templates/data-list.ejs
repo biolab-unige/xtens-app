@@ -46,10 +46,10 @@
                         <td class="text-right">
                           <% var privilege = dataTypePrivileges.find(function(model) {
                             return model.get('dataType') === data.get("type"); });
-                           if(privilege.get("privilegeLevel") !== "view_overview" ){ %>
+                           if( privilege && privilege.get("privilegeLevel") !== "view_overview" ){ %>
                             <a class="btn" href="<%= data.get("detailsLink") %>"><%=__("data-details") %>
                           <%} %>
-                          <% if(privilege.get("privilegeLevel") === "edit" ){ %>
+                          <% if( privilege && privilege.get("privilegeLevel") === "edit" ){ %>
                             <a class="btn" href="<%= data.get("editLink") %>"><%=__("edit") %></a>
                             <%} %>
                             <% if (data.get("newDataLink") && data.get("newDataLink").length > 0) { %>
