@@ -502,6 +502,7 @@
                 $('#data-type-selector optgroup').prop('disabled', true);
                 $('#data-type-selector optgroup#'+projectSource).prop('disabled', false);
                 $('#data-type-selector').selectpicker('refresh');
+                $('#project-dest option').prop('disabled', false);
                 $('#project-dest option[value='+projectSource +']').prop('disabled', true);
                 $('#project-dest').selectpicker('refresh');
 

@@ -102,6 +102,7 @@
         "manager":"Manager",
         "standard":"Standard",
         "groups": "Groups",
+        "warning-change-project": "Changing project, all unsaved data will be lost",
         "projects": "Projects",
         "operators": "Operators",
         "data-management": "Data Management",

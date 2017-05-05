@@ -1,79 +1,93 @@
 <div class="row">
-  <div class="col-md-8">
+  <div class="col-md-7">
 
-<ul id="left" class ="nav navbar-nav navbar-left">
-    <li class="dropdown">
-    <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" >
-        <%= __("management")%>
-        <span class="fa fa-angle-down"></span>
-    </a>
-    <ul id="box" class="dropdown-menu">
-      <% if (xtens.session.get("isWheel")) {%>
+    <ul id="left" class ="nav navbar-nav navbar-left">
+      <li class="dropdown">
+  <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown">
+    <%= __("management")%>
+      <span class="fa fa-angle-down"></span>
+  </a>
+  <ul id="box" class="dropdown-menu">
+    <% if (xtens.session.get("isWheel")) {%>
       <h2 id="title"><%= __("super-user")%></h2>
-      <li><a href="#/projects"><%= __("projects") %></a></li>
-      <li><a href="#/groups"><%= __("groups") %></a></li>
-      <li><a href="#/operators"><%= __("operators") %></a></li>
-      <li><a href="#/biobanks"><%= __("biobanks") %></a></li>
-      <li><a href="#/datatypes"><%= __("data-types") %></a></li><%}
+      <li> <a href="#/projects"> <%= __("projects") %></a> </li>
+      <li> <a href="#/groups"> <%= __("groups") %></a> </li>
+      <li> <a href="#/operators">   <%= __("operators") %></a> </li>
+      <li> <a href="#/biobanks">   <%= __("biobanks") %></a> </li>
+      <li> <a href="#/datatypes">   <%= __("data-types") %></a> </li>
+      <%}
+  else if (xtens.session.get("isAdmin")) {%>
+      <h2 id="title"><%= __("manager")%></h2>
+      <li><a href="#/biobanks"> <%= __("biobanks") %></a> </li>
+      <li><a href="#/datatypes"> <%= __("data-types") %></a> </li>
+      <%}
+  else {%>
+      <h2 id="title"><%= __("standard")%></h2>
+      <%};%>
+      <li><a href="#/operators/updatePassword"> <%= __("change-password") %></a> </li>
+  </ul>
 
-       else if (xtens.session.get("isAdmin")) {%>
-       <h2 id="title"><%= __("manager")%></h2>
-       <li><a href="#/biobanks"><%= __("biobanks") %></a></li>
-       <li><a href="#/datatypes"><%= __("data-types") %></a></li>
-       <%}
-       else {%>
-         <h2 id="title"><%= __("standard")%></h2>
-         <%};%>
-        <li><a href="#/operators/updatePassword"><%= __("change-password") %></a></li>
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown"> <%= __("data-management") %> <span class="fa fa-angle-down"></span> </a>
+    <ul id="box" class="dropdown-menu">
+      <h2 id="title"> <%= __("data-management") %> </h2>
+      <li> <a href="#/subjects"> <%= __("subjects") %></a> </li>
+      <li> <a href="#/samples"> <%= __("samples") %></a> </li>
+      <li> <a href="#/data"> <%= __("data") %></a> </li>
+      <li> <a href="#/data/dedicated"> <%= __("customised-data") %> </a> </li>
     </ul>
+  </li>
 
-    <li class="dropdown">
-    <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown">
-        <%= __("data-management") %>
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" data-toggle="collapse">
+      <%= __("search") %>
         <span class="fa fa-angle-down"></span>
     </a>
     <ul id="box" class="dropdown-menu">
-        <h2 id="title"><%= __("data-management") %></h2>
-        <li><a href="#/subjects"><%= __("subjects") %></a></li>
-        <li><a href="#/samples"><%= __("samples") %></a></li>
-        <li><a href="#/data"><%= __("data") %></a></li>
-        <li><a href="#/data/dedicated"><%= __("customised-data") %></a></li>
+      <h2 id="title"><%= __("search").toUpperCase() %></h2>
+      <li>
+        <a href="#/query">
+          <%= __("advanced-search") %>
+        </a>
+      </li>
     </ul>
 
     </li>
 
-    <li class="dropdown">
-    <a  href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" data-toggle="collapse">
-        <%= __("search") %>
-        <span class="fa fa-angle-down"></span>
-    </a>
-    <ul id="box" class="dropdown-menu">
-        <h2 id="title"><%= __("search").toUpperCase() %></h2>
-        <li><a href="#/query"><%= __("advanced-search") %></a></li>
-    </ul>
-
-    </li>
-
-</ul>
-</div>
+  </ul>
+  </div>
 
 
-<div class="col-md-3">
-    <label for="project-selector" class="text-uppercase"><%= __("active-project") %></label>
-    <select id='project-selector' class="form-group selectpicker" data-width="fit">
-      <% if (xtens.session.get("isWheel")) {%>
-      <option selected value='all'>All</option>
-      <%}%>
-      <% _.each(xtens.session.get("projects"), function(project) {
-        var name = project.name ? project.name : project.get("name"); %>
-        <option value='<%= name %>'><%= name %></option>
-        <% }) %>
-      </select>
-    </div>
-    <div class="col-md-1" style="float:right">
+  <div class="col-md-4">
+      <div class="col-md-5">
+        <label id="label-project-selector" for="project-selector" class="text-uppercase"><%= __("active-project") %></label>
+      </div>
+      <div class="col-md-7">
+        <%var projects = xtens.session.get("projects");
+        if (projects.length > 1) { %>
+
+          <div class="form-group">
+            <select id='project-selector' class="form-control selectpicker" data-header="<i class='fa fa-exclamation-triangle'></i><%= __('warning-change-project') %>">
+              <% if (xtens.session.get("isWheel")) {%>
+                <option selected value='all'>All</option>
+              <%}
+            _.each(projects, function(project) {
+                var name = project.name ? project.name : project.get("name");%>
+                <option value='<%= name %>'><%= name %></option>
+            <%}) %>
+            </select>
+        <%}
+        else if(projects.length === 1){
+          var name = projects[0].name ? projects[0].name : projects[0].get("name");%>
+          <a class="btn btn-default"><%= name %></a>
+        <%}%>
+        </div>
+      </div>
+  </div>
+  <div class="col-md-1" style="float:right">
 
     <label class="logoutLblPos">
-        <a class="btn btn-default" href="#/logout"><%= __("logout") %></a>
+      <a class="btn btn-default" href="#/logout"><%= __("logout") %></a>
     </label>
-</div>
+  </div>
 </div>
