@@ -7,7 +7,7 @@ var config = require('./webpack.config.base.js');
 
 config.devtool = 'source-map';
 
-config.output.publicPath = '/assets/bundles/';
+config.output.publicPath = '/bundles/';
 config.output.sourceMapFilename = '[name].js.map';
 
 /*

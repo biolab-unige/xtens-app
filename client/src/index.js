@@ -8,7 +8,9 @@ import store from './store';
 
 ReactDOM.render(<Provider store={store}>
     <Router basename='app' >
-        <Route exact path='/' component={null} />
-        <Route exact path='/login' component={null} />
+        <div>
+            <Route exact path='/' component={null} />
+            <Route exact path='/login' component={null} />
+        </div>
     </Router>
 </Provider>, document.getElementById('reactCnt'));
