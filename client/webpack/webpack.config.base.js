@@ -3,6 +3,8 @@
  */
 const path = require('path');
 // const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 
 module.exports = {
 
@@ -13,10 +15,14 @@ module.exports = {
         // To the `dist` folder
         path: path.resolve(__dirname, '..', '..', 'assets', 'bundles'),
         // With the filename `build.js` so it's dist/build.js
-        filename: '[name]-[hash].js'
+        filename: '[name].js'
     },
 
-    plugins: [],
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, '..', 'index.html')
+        })
+    ],
 
     module: {
 
@@ -91,7 +97,7 @@ module.exports = {
 
     resolve: {
         modules: ['node_modules'],
-        extensions: ['', '.js', '.jsx']
+        extensions: ['.js', '.jsx']
     }
 
 };
