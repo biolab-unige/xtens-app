@@ -268,8 +268,13 @@
                     password: password
                 }, function(data, status, jqxhr) {
                     xtens.session.load(data, function () {
+                        var projects = xtens.session.get("projects");
                         if (xtens.session.get("isWheel")) {
                             xtens.session.set('activeProject', 'all');
+                            router.navigate('homepage', {trigger: true});
+                        }
+                        else if (projects.length < 2 ) {
+                            xtens.session.set('activeProject', projects[0].name);
                             router.navigate('homepage', {trigger: true});
                         }
                         else{

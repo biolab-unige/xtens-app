@@ -8,7 +8,7 @@
     var i18n = xtens.module("i18n").en;
     var GroupPrivilegeLevels = xtens.module("xtensconstants").GroupPrivilegeLevels;
     var Project = xtens.module("project");
-    var Group = xtens.module("group");
+    var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
 
     /**
      * @class
@@ -94,8 +94,10 @@
      */
     Session.Views.MenuBar = Backbone.View.extend({
         events:{
-            'change #project-selector': 'setSessionProject'
+            'change #project-selector': 'setSessionProject',
+            'click #btn-project': 'selectionProjectModal'
         },
+
         el: '#menuBarNav',
 
         initialize : function(){
@@ -114,15 +116,17 @@
                 xtens.session.set("isAdmin", isAdminProject ? true : false);
             }
 
+            var projects = xtens.session.get("projects");
+
             this.$el.html(this.template({
                 __:i18n,
-                session: xtens.session
+                session: xtens.session,
+                projectLength: projects.length
             }));
-            $('#project-selector').selectpicker();
-            $('#project-selector').selectpicker('val', xtens.session.get('activeProject'));
-            $('#project-selector').selectpicker('refresh');
-            // $('#project-selector').on('change.bs.select', function () {
-            // });
+
+            if (projects.length > 1) {
+                $('#btn-project').tooltip();
+            }
 
             return this;
         },
@@ -133,6 +137,51 @@
             xtens.session.set('activeProject', ev.target.value);
             location.reload();
 
+        },
+
+        selectionProjectModal: function (ev) {
+            ev.stopPropagation();
+
+            var projects = xtens.session.get("projects");
+            if (projects.length > 1) {
+                var modal = new ModalDialog({
+                    title: i18n('project-selection'),
+                    template: JST["views/templates/project-modal.ejs"],
+                    data: { __: i18n, projects: projects}
+                });
+                $('#project-selector').selectpicker('hide');
+
+                $('#main').append(modal.render().el);
+                modal.show();
+
+                $("#checkbox").change(function() {
+                    if(this.checked) {
+                        $('#project-selector').selectpicker('show');
+                        $('#project-selector').on('change.bs.select', function (e) {
+                            $('#confirm-project').prop('disabled', false);
+                            $('#confirm-project').addClass('btn-success');
+                            $('#confirm-project').on('click.bs.button', function (e) {
+                                e.preventDefault();
+                                var projectSelected = $('#project-selector').val();
+                                modal.hide();
+                                $('.xtens-modal').on('hidden.bs.modal', function (e) {
+
+                                    modal.remove();
+                                    $(this).data('bs.modal', null);
+
+                                    xtens.session.set('activeProject', projectSelected);
+                                    location.reload();
+                                });
+                            });
+                        });
+
+
+                    }
+                    else {
+                        $('#project-selector').selectpicker('hide');
+                    }
+                });
+            }
         }
 
 

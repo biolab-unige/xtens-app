@@ -1,0 +1,49 @@
+<div class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h4 class="modal-title"><%=__('default-title') %></h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="row text-center">
+          <!-- <div class="row text-center"> -->
+          <i class='fa fa-exclamation-triangle' />
+          <%= __('warning-change-project') %>
+            <!-- </div> -->
+            <div class="checkbox">
+              <label>
+                  <input id="checkbox" type="checkbox" value="">
+                  <%= __('ok') %>, <%= __('i-confirm') %>
+                </label>
+            </div>
+        </div>
+        <div class="row text-center">
+          <div class="col-md-offset-2 col-md-8">
+            <div class="form-group">
+              <select id='project-selector' class="form-control selectpicker" title="<%=__('please-select-a-project')%>">
+                <% if (xtens.session.get("isWheel") && xtens.session.get('activeProject')!=='all') {%>
+                  <option value='all'><%=__("all-projects")%></option>
+                <%}
+              _.each(projects, function(project) {
+                  var name = project.name ? project.name : project.get("name");
+                  if(name!==xtens.session.get('activeProject')){%>
+                  <option value='<%= name %>'><%= name %></option>
+                  <%}%>
+              <%}) %>
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button disabled id="confirm-project" type="button" class="btn btn-"><%= __('change-project') %></button>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,5 +1,15 @@
-<div class="row">
-  <div class="col-md-7">
+<div class="row text-center">
+    <label id="label-project-selector" for="project-selector" class="text-uppercase"><%= __("active-project") %>:</label>
+    <% var project = session.get("activeProject");
+     if (projectLength > 1) {%>
+    <a id="btn-project" class="btn btn-default" data-placement="right" data-toggle="tooltip" title="<%= __('click-to-change-project')%>"><%= project !== 'all' ? project : __('all-projects') %></a>
+    <%}
+    else{%>
+      <%= project !== 'all' ? project.toUpperCase() : __('all-projects') %>
+    <%}%>
+</div>
+  <div class="row">
+  <div class="col-md-11">
 
     <ul id="left" class ="nav navbar-nav navbar-left">
       <li class="dropdown">
@@ -8,7 +18,7 @@
       <span class="fa fa-angle-down"></span>
   </a>
   <ul id="box" class="dropdown-menu">
-    <% if (xtens.session.get("isWheel")) {%>
+    <% if (session.get("isWheel")) {%>
       <h2 id="title"><%= __("super-user")%></h2>
       <li> <a href="#/projects"> <%= __("projects") %></a> </li>
       <li> <a href="#/groups"> <%= __("groups") %></a> </li>
@@ -16,14 +26,14 @@
       <li> <a href="#/biobanks">   <%= __("biobanks") %></a> </li>
       <li> <a href="#/datatypes">   <%= __("data-types") %></a> </li>
       <%}
-  else if (xtens.session.get("isAdmin")) {%>
+  else if (session.get("isAdmin")) {%>
       <h2 id="title"><%= __("manager")%></h2>
       <li><a href="#/biobanks"> <%= __("biobanks") %></a> </li>
       <li><a href="#/datatypes"> <%= __("data-types") %></a> </li>
       <%}
   else {%>
       <h2 id="title"><%= __("standard")%></h2>
-      <%};%>
+      <%}%>
       <li><a href="#/operators/updatePassword"> <%= __("change-password") %></a> </li>
   </ul>
 
@@ -57,33 +67,6 @@
   </ul>
   </div>
 
-
-  <div class="col-md-4">
-      <div class="col-md-5">
-        <label id="label-project-selector" for="project-selector" class="text-uppercase"><%= __("active-project") %></label>
-      </div>
-      <div class="col-md-7">
-        <%var projects = xtens.session.get("projects");
-        if (projects.length > 1) { %>
-
-          <div class="form-group">
-            <select id='project-selector' class="form-control selectpicker" data-header="<i class='fa fa-exclamation-triangle'></i><%= __('warning-change-project') %>">
-              <% if (xtens.session.get("isWheel")) {%>
-                <option selected value='all'>All</option>
-              <%}
-            _.each(projects, function(project) {
-                var name = project.name ? project.name : project.get("name");%>
-                <option value='<%= name %>'><%= name %></option>
-            <%}) %>
-            </select>
-        <%}
-        else if(projects.length === 1){
-          var name = projects[0].name ? projects[0].name : projects[0].get("name");%>
-          <a class="btn btn-default"><%= name %></a>
-        <%}%>
-        </div>
-      </div>
-  </div>
   <div class="col-md-1" style="float:right">
 
     <label class="logoutLblPos">
