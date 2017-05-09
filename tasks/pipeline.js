@@ -40,6 +40,7 @@ var jsFilesToInject = [
     'dependencies/**/fetch.js',
     'dependencies/http/http.js',
     // 'dependencies/**/underscore.js',
+    'dependencies/bootstrap/js/tooltip.js',
     'dependencies/bootstrap/js/*.js',
     'dependencies/**/lodash.js',
     'dependencies/**/backbone.js',
