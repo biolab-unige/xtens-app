@@ -94,8 +94,7 @@
      */
     Session.Views.MenuBar = Backbone.View.extend({
         events:{
-            'change #project-selector': 'setSessionProject',
-            'click #btn-project': 'selectionProjectModal'
+            'change #project-selector': 'setSessionProject'
         },
 
         el: '#menuBarNav',
@@ -107,7 +106,7 @@
         },
 
         render: function() {
-
+            var that = this;
 
             if (xtens.session.get('activeProject') !== 'all') {
                 var adminProjects = xtens.session.get("adminProjects");
@@ -128,6 +127,58 @@
                 $('#btn-project').tooltip();
             }
 
+            this.$modal = this.$(".project-modal");
+
+            //change project
+            this.$('#btn-project').click( function (ev) {
+                ev.stopPropagation();
+
+                var projects = xtens.session.get("projects");
+                if (projects.length > 1) {
+                    if (that.modal) {
+                        that.modal.hide();
+                    }
+                    var modal = new ModalDialog({
+                        title: i18n('project-selection'),
+                        template: JST["views/templates/project-modal.ejs"],
+                        data: { __: i18n, projects: projects}
+                    });
+                    $('#project-selector').selectpicker('hide');
+
+                    that.$modal.append(modal.render().el);
+                    modal.show();
+
+                    $("#checkbox").change(function() {
+                        if(this.checked) {
+                            $('#project-selector').selectpicker('show');
+                            $('#project-selector').on('change.bs.select', function (e) {
+                                e.stopPropagation();
+                                $('#confirm-project').prop('disabled', false);
+                                $('#confirm-project').addClass('btn-success');
+                                $('#confirm-project').one('click.bs.button', function (e) {
+                                    e.preventDefault();
+                                    var projectSelected = $('#project-selector').val();
+                                    modal.hide();
+
+                                    xtens.session.set('activeProject', projectSelected);
+                                    location.reload();
+                                });
+
+                            });
+
+                            that.$('.project-modal').on('hidden.bs.modal', function (e) {
+
+                                modal.remove();
+                                $('.modal-backdrop').remove();
+                            });
+                        }
+                        else {
+                            $('#project-selector').selectpicker('hide');
+                        }
+                    });
+                }
+            });
+
             return this;
         },
 
@@ -137,52 +188,9 @@
             xtens.session.set('activeProject', ev.target.value);
             location.reload();
 
-        },
-
-        selectionProjectModal: function (ev) {
-            ev.stopPropagation();
-
-            var projects = xtens.session.get("projects");
-            if (projects.length > 1) {
-                var modal = new ModalDialog({
-                    title: i18n('project-selection'),
-                    template: JST["views/templates/project-modal.ejs"],
-                    data: { __: i18n, projects: projects}
-                });
-                $('#project-selector').selectpicker('hide');
-
-                $('#main').append(modal.render().el);
-                modal.show();
-
-                $("#checkbox").change(function() {
-                    if(this.checked) {
-                        $('#project-selector').selectpicker('show');
-                        $('#project-selector').on('change.bs.select', function (e) {
-                            $('#confirm-project').prop('disabled', false);
-                            $('#confirm-project').addClass('btn-success');
-                            $('#confirm-project').on('click.bs.button', function (e) {
-                                e.preventDefault();
-                                var projectSelected = $('#project-selector').val();
-                                modal.hide();
-                                $('.xtens-modal').on('hidden.bs.modal', function (e) {
-
-                                    modal.remove();
-                                    $(this).data('bs.modal', null);
-
-                                    xtens.session.set('activeProject', projectSelected);
-                                    location.reload();
-                                });
-                            });
-                        });
-
-
-                    }
-                    else {
-                        $('#project-selector').selectpicker('hide');
-                    }
-                });
-            }
         }
+
+
 
 
     });
