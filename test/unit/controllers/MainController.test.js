@@ -70,4 +70,18 @@ describe('OperatorController', function() {
 
         });
     });
+
+    describe('GET /app', function() {
+
+        it('Should correctly serve the index file', function(done) {
+            request(sails.hooks.http.app)
+            .get('/app')
+            .expect(200)
+            .end((err, res) => {
+                done(err);
+                return;
+            });
+        });
+        
+    });
 });
