@@ -29,7 +29,9 @@ const coroutines = {
         .limit(actionUtil.parseLimit(req))
         .skip(actionUtil.parseSkip(req))
         .sort(actionUtil.parseSort(req));
-
+        if (!req.param('limit')) {
+            query.limit(1000);  // default limit for dataTypes
+        }
         if (!req.param('populate')) {
             query.populate('parents');  // by default populate only with 'parents' dataTypes
         }
@@ -62,7 +64,7 @@ const coroutines = {
       //if user tries to create a datatype in a project where is not ADMIN it will throw a Privilege error
         let adminGroups = yield Group.find(operator.adminGroups).populate('projects');
         const adminProjects = _.uniq(_.flatten(_.map(_.flatten(_.map(adminGroups, 'projects')), 'id')));
-        if (!_.find(adminProjects, function(dt){ return dt === _.parseInt(dataType.project);})) {
+        if (!operator.isWheel && !_.find(adminProjects, function(dt){ return dt === _.parseInt(dataType.project);})) {
             throw new PrivilegesError('User has not privilege as Admin on this data type');
         }
 
@@ -118,28 +120,28 @@ const coroutines = {
         const adminProjects = _.uniq(_.flatten(_.map(_.flatten(_.map(adminGroups, 'projects')), 'id')));
         let adminDataTypes = yield DataType.find({project:adminProjects});
 
-        if (!_.find(adminDataTypes, function(dt){ return dt.id === _.parseInt(dataType.id);})) {
+        if (!operator.isWheel && !_.find(adminDataTypes, function(dt){ return dt.id === _.parseInt(dataType.id);})) {
             throw new PrivilegesError('User has not privilege as Admin on this data type');
         }
 
         // Validate data type (schema included)
-        const validationRes = DataTypeService.validate(dataType, true);
-        if(dataType.parents){
-            const idParents = _.isObject(dataType.parents[0]) ? _.map(dataType.parents,'id') : dataType.parents;
-            const idProject = _.isObject(dataType.project) ? dataType.project.id : dataType.project;
-            const parents = yield DataType.find({ id:idParents });
-            const forbiddenParents = _.filter(parents, function (p) {
-                return p.project !== idProject;
-            });
-            if (forbiddenParents.length > 0 ) {
-                let dataTypesName = _.map(forbiddenParents,'name').join(", "), dataTypesId = _.map(forbiddenParents,'id').join(", ");
-                let error = 'ValidationError - Cannot set ' + dataTypesName +' ( id: ['+ dataTypesId +'] ) as parents - different projects';
-                throw new ValidationError(error);
-            }
-        }
-        if (validationRes.error) {
-            throw new ValidationError(validationRes.error);
-        }
+        // const validationRes = DataTypeService.validate(dataType, true);
+        // if(dataType.parents){
+        //     const idParents = _.isObject(dataType.parents[0]) ? _.map(dataType.parents,'id') : dataType.parents;
+        //     const idProject = _.isObject(dataType.project) ? dataType.project.id : dataType.project;
+        //     const parents = yield DataType.find({ id:idParents });
+        //     const forbiddenParents = _.filter(parents, function (p) {
+        //         return p.project !== idProject;
+        //     });
+        //     if (forbiddenParents.length > 0 ) {
+        //         let dataTypesName = _.map(forbiddenParents,'name').join(", "), dataTypesId = _.map(forbiddenParents,'id').join(", ");
+        //         let error = 'ValidationError - Cannot set ' + dataTypesName +' ( id: ['+ dataTypesId +'] ) as parents - different projects';
+        //         throw new ValidationError(error);
+        //     }
+        // }
+        // if (validationRes.error) {
+        //     throw new ValidationError(validationRes.error);
+        // }
         dataType = yield crudManager.updateDataType(dataType);
         sails.log(dataType);
         return res.json(dataType);
@@ -168,7 +170,7 @@ const coroutines = {
         const adminProjects = _.uniq(_.flatten(_.map(_.flatten(_.map(adminGroups, 'projects')), 'id')));
         let adminDataTypes = yield DataType.find({project:adminProjects});
 
-        if (!_.find(adminDataTypes, function(dt){ return dt.id === _.parseInt(id);})) {
+        if (!operator.isWheel && !_.find(adminDataTypes, function(dt){ return dt.id === _.parseInt(id);})) {
             throw new PrivilegesError('User has not privilege as Admin on this data type');
         }
 

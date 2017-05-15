@@ -93,9 +93,9 @@
      * @description session-related menu bar
      */
     Session.Views.MenuBar = Backbone.View.extend({
-        events:{
-            'change #project-selector': 'setSessionProject'
-        },
+        // events:{
+        //     'change #project-selector': 'setSessionProject'
+        // },
 
         el: '#menuBarNav',
 
@@ -125,16 +125,15 @@
 
             if (projects.length > 1) {
                 $('#btn-project').tooltip();
-            }
 
-            this.$modal = this.$(".project-modal");
+                that.$modal = that.$(".project-modal");
 
             //change project
-            this.$('#btn-project').click( function (ev) {
-                ev.stopPropagation();
+                that.$('#btn-project').click( function (ev) {
+                    ev.stopPropagation();
 
-                var projects = xtens.session.get("projects");
-                if (projects.length > 1) {
+                    var projects = xtens.session.get("projects");
+                // if (projects.length > 1) {
                     if (that.modal) {
                         that.modal.hide();
                     }
@@ -161,13 +160,14 @@
                                     modal.hide();
 
                                     xtens.session.set('activeProject', projectSelected);
+                                    if (location.href.includes("/#query/%7B%22queryArgs")) {
+                                        location.href = location.href.split("/%7B%22queryArgs")[0];
+                                    }
                                     location.reload();
                                 });
-
                             });
 
                             that.$('.project-modal').on('hidden.bs.modal', function (e) {
-
                                 modal.remove();
                                 $('.modal-backdrop').remove();
                             });
@@ -176,19 +176,20 @@
                             $('#project-selector').selectpicker('hide');
                         }
                     });
-                }
-            });
+                    // }
+                });
+            }
 
             return this;
-        },
-
-        setSessionProject: function (ev) {
-            ev.preventDefault();
-
-            xtens.session.set('activeProject', ev.target.value);
-            location.reload();
-
         }
+
+        // setSessionProject: function (ev) {
+        //     ev.preventDefault();
+        //
+        //     xtens.session.set('activeProject', ev.target.value);
+        //     location.reload();
+        //
+        // }
 
 
 

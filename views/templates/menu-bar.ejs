@@ -1,12 +1,7 @@
 <div class="row text-center">
     <label id="label-project-selector" for="project-selector" class="text-uppercase"><%= __("active-project") %>:</label>
-    <% var project = session.get("activeProject");
-     if (projectLength > 1) {%>
-    <a id="btn-project" class="btn btn-default" data-placement="right" data-toggle="tooltip" title="<%= __('click-to-change-project')%>"><%= project !== 'all' ? project : __('all-projects') %></a>
-    <%}
-    else{%>
-      <%= project !== 'all' ? project.toUpperCase() : __('all-projects') %>
-    <%}%>
+    <% var project = session.get("activeProject");%>
+    <button id="btn-project" value="<%=project%>" class="btn btn-default" data-placement="right" data-toggle="tooltip" title="<%= __('click-to-change-project')%>"><%= project !== 'all' ? project : __('all-projects') %></button>
 </div>
   <div class="row">
   <div class="col-md-11">

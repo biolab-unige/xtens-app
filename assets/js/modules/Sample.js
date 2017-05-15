@@ -531,11 +531,11 @@
         },
 
         filterSamples: function(opt){
-            var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#project-selector').val());
+            var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#btn-project').val());
 
             if(rex =="/all/"){this.clearFilter();}else{
                 $('.content').hide();
-                $('.cprivilege &&ontent').filter(function() {
+                $('.content').filter(function() {
                     return rex.test($(this).text());
                 }).show();
             }

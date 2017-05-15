@@ -162,7 +162,7 @@
          */
         dataTypePrivilegesList: function(queryString) {
             var queryParams = parseQueryString(queryString);
-            var privilegesParams = {sort:'id ASC', populate:['dataType','group']};
+            var privilegesParams = {sort:'id ASC', populate:['dataType','group'], limit:100};
             queryParams.groupId ? privilegesParams.group = queryParams.groupId : null;
             queryParams.dataTypeId ? privilegesParams.dataType = queryParams.dataTypeId : null;
             var that = this;
@@ -341,7 +341,7 @@
                     data: $.param({ populate: ['children'] })
                 });
                 var $privilegesDeferred = privileges.fetch({
-                    data: $.param({group: groupId})
+                    data: $.param({group: groupId, limit:100})
                 });
 
                 // var $dataDeferred = data.fetch({
@@ -592,7 +592,7 @@
             $.when($operatorDeferred).then(function(operatorRes) {
                 var groupId = operatorRes && operatorRes[0].groups[0].id;
                 var $privilegesDeferred = privileges.fetch({
-                    data: $.param({group: groupId})
+                    data: $.param({group: groupId, limit:100})
                 });
                 var $dataTypesDeferred = dataTypes.fetch({
                     data: $.param({ populate: ['children'] })
@@ -762,7 +762,7 @@
             $.when($operatorDeferred).then( function(operatorRes) {
                 var groupId = operatorRes && operatorRes[0].groups[0].id;
                 var $privilegesDeferred = privileges.fetch({
-                    data: $.param({group: groupId})
+                    data: $.param({group: groupId, limit:100})
                 });
                 var $dataTypesDeferred = dataTypes.fetch({
                     data: $.param({populate:['children']})
@@ -916,7 +916,7 @@
             $.when($operatorDeferred).then( function(operatorRes) {
                 var groupId = operatorRes && operatorRes[0].groups[0].id;
                 var $privilegesDeferred = privileges.fetch({
-                    data: $.param({group: groupId})
+                    data: $.param({group: groupId, limit:100})
                 });
                 var $dataTypesDeferred = dataTypes.fetch({ data: $.param(criteria) });
                 var $biobanksDeferred = biobanks.fetch();
