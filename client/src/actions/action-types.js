@@ -1,0 +1,3 @@
+// main
+export const SEND_REMOTE_REQUEST = 'SEND_REMOTE_REQUEST';
+export const GET_REMOTE_ERROR = 'GET_REMOTE_ERROR';

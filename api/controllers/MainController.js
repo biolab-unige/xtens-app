@@ -9,10 +9,11 @@
 /* globals _, sails */
 "use strict";
 
-let ControllerOut = require("xtens-utils").ControllerOut;
-let DEFAULT_LOCAL_STORAGE = sails.config.xtens.constants.DEFAULT_LOCAL_STORAGE;
+const path = require('path');
+const ControllerOut = require("xtens-utils").ControllerOut;
+const DEFAULT_LOCAL_STORAGE = sails.config.xtens.constants.DEFAULT_LOCAL_STORAGE;
 
-let MainController = {
+const MainController = {
 
     /**
      * @method
@@ -26,34 +27,43 @@ let MainController = {
 
     /**
      * @method
+     * @name getAppUI
+     * @description ships the index.html file
+     */
+    getAppUI: function(req, res) {
+        return res.sendfile(path.resolve(__dirname, '..' , '..', 'assets', 'bundles', 'index.html'));
+    },
+
+    /**
+     * @method
      * @name excuteCustomDataMangement
      */
     executeCustomDataManagement: function(req, res) {
         let error="";
         let co = new ControllerOut(res);
         let key = req.param('dataType');
-        console.log("MainController.executeCustomDataManagement - executing customised function");
+        sails.log("MainController.executeCustomDataManagement - executing customised function");
         const ps = require("child_process").spawn(sails.config.xtens.customisedDataMap.get(key), {});
         ps.stdout.on('data', (data) => {
-            console.log(`stdout: ${data}`);
+            sails.log(`stdout: ${data}`);
         });
 
         ps.stderr.on('data', (data) => {
-            console.log(`stderr: ${data}`);
+            sails.log(`stderr: ${data}`);
             error += data.toString();
         });
 
         ps.on('close', (code) => {
-            console.log(`child process exited with code ${code}`);
+            sails.log(`child process exited with code ${code}`);
 
             let cmd = 'rm ' + DEFAULT_LOCAL_STORAGE + '/tmp/*';
             require("child_process").exec(cmd, function(err, stdout, stderr) {
-                console.log('stdout: ' + stdout);
-                console.log('stderr: ' + stderr);
+                sails.log('stdout: ' + stdout);
+                sails.log('stderr: ' + stderr);
                 if ((code !== 0 && error)) {
                     return co.error(error);
                 }
-                console.log("MainController.executeCustomDataManagement - all went fine!");
+                sails.log("MainController.executeCustomDataManagement - all went fine!");
                 return res.ok();
             });
         });
