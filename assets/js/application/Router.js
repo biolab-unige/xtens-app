@@ -9,7 +9,6 @@
     var Data = xtens.module("data");
     var Subject = xtens.module("subject");
     var Project = xtens.module("project");
-    var MaterialType = xtens.module("materialtype");
     var Sample = xtens.module("sample");
     var Biobank = xtens.module("biobank");
     var Query = xtens.module("query");
@@ -187,8 +186,6 @@
                     dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0])
                 }));
             });
-        }, function(jqxhr) {
-            xtens.error(jqxhr);
         },
 
         /**
@@ -258,7 +255,7 @@
             dataTypes.fetch({
                 data:$.param({populate:['project','parents'], sort: 'id ASC'}),
                 success: function(dataTypes) {
-                    let adminProjects = xtens.session.get("adminProjects");
+                    var adminProjects = xtens.session.get("adminProjects");
                     dataTypes.models = _.filter(dataTypes.models,function (dt) {
                         if(_.find(adminProjects, function(pr){ return pr === dt.get("project").id;})){
                             return dt;
