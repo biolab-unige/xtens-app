@@ -130,5 +130,8 @@
     "url-loader": "https://registry.npmjs.org/url-loader/-/url-loader-0.5.8.tgz",
     "webpack": "^2.3.3",
     "webpack-bundle-tracker": "^0.2.0"
+  },
+  "optionalDependencies":{
+    "fsevents": "*"
   }
 }
