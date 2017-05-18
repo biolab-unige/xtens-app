@@ -125,23 +125,23 @@ const coroutines = {
         }
 
         // Validate data type (schema included)
-        // const validationRes = DataTypeService.validate(dataType, true);
-        // if(dataType.parents){
-        //     const idParents = _.isObject(dataType.parents[0]) ? _.map(dataType.parents,'id') : dataType.parents;
-        //     const idProject = _.isObject(dataType.project) ? dataType.project.id : dataType.project;
-        //     const parents = yield DataType.find({ id:idParents });
-        //     const forbiddenParents = _.filter(parents, function (p) {
-        //         return p.project !== idProject;
-        //     });
-        //     if (forbiddenParents.length > 0 ) {
-        //         let dataTypesName = _.map(forbiddenParents,'name').join(", "), dataTypesId = _.map(forbiddenParents,'id').join(", ");
-        //         let error = 'ValidationError - Cannot set ' + dataTypesName +' ( id: ['+ dataTypesId +'] ) as parents - different projects';
-        //         throw new ValidationError(error);
-        //     }
-        // }
-        // if (validationRes.error) {
-        //     throw new ValidationError(validationRes.error);
-        // }
+        const validationRes = DataTypeService.validate(dataType, true);
+        if(dataType.parents){
+            const idParents = _.isObject(dataType.parents[0]) ? _.map(dataType.parents,'id') : dataType.parents;
+            const idProject = _.isObject(dataType.project) ? dataType.project.id : dataType.project;
+            const parents = yield DataType.find({ id:idParents });
+            const forbiddenParents = _.filter(parents, function (p) {
+                return p.project !== idProject;
+            });
+            if (forbiddenParents.length > 0 ) {
+                let dataTypesName = _.map(forbiddenParents,'name').join(", "), dataTypesId = _.map(forbiddenParents,'id').join(", ");
+                let error = 'ValidationError - Cannot set ' + dataTypesName +' ( id: ['+ dataTypesId +'] ) as parents - different projects';
+                throw new ValidationError(error);
+            }
+        }
+        if (validationRes.error) {
+            throw new ValidationError(validationRes.error);
+        }
         dataType = yield crudManager.updateDataType(dataType);
         sails.log(dataType);
         return res.json(dataType);
