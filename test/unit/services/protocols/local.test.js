@@ -217,7 +217,7 @@ describe("PassportService protocol Local", function() {
                     sails.log.error(err);
                     done(err);
                 }
-                expect(res.id).to.eql(operator.id);
+                expect(res.user.id).to.eql(operator.id);
                 done();
                 return;
             });

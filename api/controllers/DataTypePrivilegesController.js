@@ -6,7 +6,7 @@
  */
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, Group, DataTypePrivileges, DataTypeService, QueryService */
+/* globals , _, DataTypePrivileges, DataTypeService, GroupService, TokenService */
 "use strict";
 const ControllerOut = require("xtens-utils").ControllerOut;
 const BluebirdPromise = require("bluebird");
@@ -62,6 +62,7 @@ let DataTypePrivilegesController = {
         query = actionUtil.populateRequest(query, req);
 
         query.then(function(result) {
+          
             return res.json(result);
         })
 
@@ -79,13 +80,14 @@ let DataTypePrivilegesController = {
      */
     find: function(req, res) {
         const co = new ControllerOut(res);
-        // const query = QueryService.composeFind(req);
 
         let query = DataTypePrivileges.find()
            .where(actionUtil.parseCriteria(req))
            .limit(actionUtil.parseLimit(req))
            .skip(actionUtil.parseSkip(req))
            .sort(actionUtil.parseSort(req));
+
+        query = actionUtil.populateRequest(query, req);
 
         query.then(function(data) {
             res.json(data);
@@ -111,7 +113,7 @@ let DataTypePrivilegesController = {
             updatedAt: Joi.date()
         };
         let payload = req.body;
-        Joi.validateAsync(req.body, validationSchema)
+        Joi.validateAsync(payload, validationSchema)
 
         .then(function(validatedBody) {
             return DataTypePrivileges.update({id: validatedBody.id}, validatedBody);
@@ -156,17 +158,19 @@ let DataTypePrivilegesController = {
      */
     edit: function(req, res) {
         let co = new ControllerOut(res);
+        const operator = TokenService.getToken(req);
+
         let params = req.allParams();
-        let getDataTypePrivileges = BluebirdPromise.promisify(DataTypeService.getDataTypePrivileges);
+        let getDataTypePrivilege = BluebirdPromise.promisify(DataTypeService.getDataTypePrivilege);
 
         return BluebirdPromise.props({
-            group: Group.findOne({id: params.groupId}),
+            // group: Group.findOne({id: params.groupId}),
+            groups: GroupService.getAsync(!operator.isWheel ? operator.adminGroups : null),
             // retrieve all dataTypes not yet authorized for this group
             dataTypes: DataTypeService.getDataTypesToCreateNewPrivileges(params.groupId),
-            dataType: DataTypeService.getDataTypeToEditPrivileges(params.id),
-            dataTypePrivileges: getDataTypePrivileges(params.id)
+            // dataType: DataTypeService.getDataTypeToEditPrivileges(params.id),
+            dataTypePrivilege: getDataTypePrivilege(params.id)
         })
-
 
         .then(function(result) {
             sails.log(result);

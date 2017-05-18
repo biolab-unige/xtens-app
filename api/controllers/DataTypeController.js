@@ -5,9 +5,10 @@
 * @help        :: See http://links.sailsjs.org/docs/controllers
 */
 /* jshint node: true */
-/* globals _, sails, DataType, DataTypeService, QueryService, TokenService */
+/* globals _, sails, DataType, DataTypeService, TokenService, Group, Project */
 "use strict";
 const ControllerOut = require("xtens-utils").ControllerOut, ValidationError = require('xtens-utils').Errors.ValidationError;
+const PrivilegesError = require('xtens-utils').Errors.PrivilegesError;
 const crudManager = sails.hooks.persistence.crudManager;
 const actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 const BluebirdPromise = require('bluebird');
@@ -28,17 +29,26 @@ const coroutines = {
         .limit(actionUtil.parseLimit(req))
         .skip(actionUtil.parseSkip(req))
         .sort(actionUtil.parseSort(req));
-
+        if (!req.param('limit')) {
+            query.limit(1000);  // default limit for dataTypes
+        }
         if (!req.param('populate')) {
             query.populate('parents');  // by default populate only with 'parents' dataTypes
         }
         else {
             query = actionUtil.populateRequest(query, req);
         }
-        const dataTypes = yield BluebirdPromise.resolve(query);
-        const filteredDataTypes = yield DataTypeService.filterDataTypes(operator.id, dataTypes);
-        sails.log(filteredDataTypes);
-        return res.json(filteredDataTypes);
+        //populateRequest does not support array params on integer attribute so if there is project param and it is an array, it is parsed "manually"
+        query = DataTypeService.parseProject(query);
+        let dataTypes = yield BluebirdPromise.resolve(query);
+
+        let groups = yield Group.find(operator.groups);
+        let privilegeLevelGroups = _.uniq(_.flatten(_.map(groups, 'privilegeLevel')));
+        if(_.indexOf(privilegeLevelGroups, 'wheel') < 0){
+            dataTypes = yield DataTypeService.filterDataTypes(operator.groups, dataTypes);
+        }
+
+        return res.json(dataTypes);
     }),
 
     /**
@@ -49,18 +59,48 @@ const coroutines = {
     * @description coroutine for new DataType creation
     */
     create: BluebirdPromise.coroutine(function *(req, res) {
+        const operator = TokenService.getToken(req);
         let dataType = req.allParams();
+      //if user tries to create a datatype in a project where is not ADMIN it will throw a Privilege error
+        let adminGroups = yield Group.find(operator.adminGroups).populate('projects');
+        const adminProjects = _.uniq(_.flatten(_.map(_.flatten(_.map(adminGroups, 'projects')), 'id')));
+        if (!operator.isWheel && !_.find(adminProjects, function(dt){ return dt === _.parseInt(dataType.project);})) {
+            throw new PrivilegesError('User has not privilege as Admin on this data type');
+        }
 
         if (!dataType.name) dataType.name = dataType.schema && dataType.schema.name;
         if (!dataType.model) dataType.model = dataType.schema && dataType.schema.model;
-
+        if(dataType.parents){
+            const idParents = _.isObject(dataType.parents[0]) ? _.map(dataType.parents,'id') : dataType.parents;
+            const idProject = _.isObject(dataType.project) ? dataType.project.id : dataType.project;
+            const parents = yield DataType.find({ id:idParents });
+            const forbiddenParents = _.filter(parents, function (p) {
+                return p.project !== idProject;
+            });
+            if (forbiddenParents.length > 0 ) {
+                let dataTypesName = _.map(forbiddenParents,'name').join(", "), dataTypesId = _.map(forbiddenParents,'id').join(", ");
+                let error = 'ValidationError - Cannot set ' + dataTypesName +' ( id: ['+ dataTypesId +'] ) as parents - different projects';
+                throw new ValidationError(error);
+            }
+        }
         const validationRes = DataTypeService.validate(dataType, true);
 
         if (validationRes.error) {
             throw new ValidationError(validationRes.error);
         }
+
         dataType = yield crudManager.createDataType(dataType);
-        sails.log(dataType);
+
+        //add edit privileges for manager and wheel groups of operator
+        // let projectGroups= yield GroupService.getGroupsByProject(dataType.project);
+        // let wheelGroups = _.map(_.where(projectGroups,{privilegeLevel:"wheel"}),'id');
+        // projectGroups = _.map(projectGroups, 'id');
+        // let adminValidGroups = _.intersection(projectGroups, operator.adminGroups);
+        // let validGroups = _.union(adminValidGroups, wheelGroups);
+        // for (let id of validGroups) {
+        //     yield DataTypePrivileges.create({privilegeLevel:'edit', group: id, dataType: dataType.id });
+        // }
+
         res.set('Location', `${req.baseUrl}${req.url}/${dataType.id}`);
         return res.json(201, dataType);
     }),
@@ -74,18 +114,69 @@ const coroutines = {
     */
     update: BluebirdPromise.coroutine(function *(req, res) {
         let dataType = req.allParams();
+        const operator = TokenService.getToken(req);
+      //if user tries to update a datatype in a project where is not ADMIN it will throw a Privilege error
+        let adminGroups = yield Group.find(operator.adminGroups).populate('projects');
+        const adminProjects = _.uniq(_.flatten(_.map(_.flatten(_.map(adminGroups, 'projects')), 'id')));
+        let adminDataTypes = yield DataType.find({project:adminProjects});
+
+        if (!operator.isWheel && !_.find(adminDataTypes, function(dt){ return dt.id === _.parseInt(dataType.id);})) {
+            throw new PrivilegesError('User has not privilege as Admin on this data type');
+        }
 
         // Validate data type (schema included)
         const validationRes = DataTypeService.validate(dataType, true);
-
+        if(dataType.parents){
+            const idParents = _.isObject(dataType.parents[0]) ? _.map(dataType.parents,'id') : dataType.parents;
+            const idProject = _.isObject(dataType.project) ? dataType.project.id : dataType.project;
+            const parents = yield DataType.find({ id:idParents });
+            const forbiddenParents = _.filter(parents, function (p) {
+                return p.project !== idProject;
+            });
+            if (forbiddenParents.length > 0 ) {
+                let dataTypesName = _.map(forbiddenParents,'name').join(", "), dataTypesId = _.map(forbiddenParents,'id').join(", ");
+                let error = 'ValidationError - Cannot set ' + dataTypesName +' ( id: ['+ dataTypesId +'] ) as parents - different projects';
+                throw new ValidationError(error);
+            }
+        }
         if (validationRes.error) {
             throw new ValidationError(validationRes.error);
         }
         dataType = yield crudManager.updateDataType(dataType);
         sails.log(dataType);
         return res.json(dataType);
-    })
+    }),
 
+    edit: BluebirdPromise.coroutine(function *(req, res) {
+        const operator = TokenService.getToken(req);
+        const params = req.allParams();
+        sails.log.info("DataTypeController.edit - Decoded ID is: " + operator.id);
+
+        const projects = yield Project.find().sort('id ASC');
+
+        const dataTypes= yield DataType.find({ project:_.map(projects,'id') }).populate(['project','parents']).sort('id ASC');
+        return res.json({params: params, dataTypes: dataTypes});
+    }),
+
+    destroy: BluebirdPromise.coroutine(function *(req, res, co) {
+        const id = req.param('id');
+        if (!id) {
+            return co.badRequest({message: 'Missing dataType ID on DELETE request'});
+        }
+      //if user tries to destroy a datatype in a project where is not ADMIN it will throw a Privilege error
+        const operator = TokenService.getToken(req);
+        sails.log.info("DataTypeController.destroy - Decoded ID is: " + operator.id);
+        let adminGroups = yield Group.find(operator.adminGroups).populate('projects');
+        const adminProjects = _.uniq(_.flatten(_.map(_.flatten(_.map(adminGroups, 'projects')), 'id')));
+        let adminDataTypes = yield DataType.find({project:adminProjects});
+
+        if (!operator.isWheel && !_.find(adminDataTypes, function(dt){ return dt.id === _.parseInt(id);})) {
+            throw new PrivilegesError('User has not privilege as Admin on this data type');
+        }
+
+        const deleted = yield crudManager.deleteDataType(id);
+        return res.json({deleted: deleted});
+    })
 };
 
 
@@ -143,22 +234,11 @@ const DataTypeController = {
     * @description DELETE /dataType/:id
     */
     destroy: function(req, res) {
-        const co = new ControllerOut(res);
-        const id = req.param('id');
 
-        if (!id) {
-            return co.badRequest({message: 'Missing dataType ID on DELETE request'});
-        }
-
-        return crudManager.deleteDataType(id)
-
-        .then(function(deleted) {
-            return res.json({
-                deleted: deleted
-            });
-        })
-
+        let co = new ControllerOut(res);
+        coroutines.destroy(req,res,co)
         .catch(function(err) {
+            sails.log(err);
             return co.error(err);
         });
 
@@ -171,14 +251,7 @@ const DataTypeController = {
     */
     edit: function(req, res) {
         let co = new ControllerOut(res);
-        let params = req.allParams();
-
-        DataType.find()
-
-        .then(function(result) {
-            return res.json({params: params, dataTypes: result});
-        })
-
+        coroutines.edit(req,res)
         .catch(function(err) {
             sails.log(err);
             return co.error(err);
@@ -193,15 +266,22 @@ const DataTypeController = {
     */
 
     buildGraph : function(req,res) {
-
-        const name = req.param("idDataType");
+        const idGroups = TokenService.getToken(req).groups;
+        const idDataType = req.param("idDataType");
         const fetchDataTypeTree = sails.hooks['persistence'].getDatabaseManager().recursiveQueries.fetchDataTypeTree;
         sails.log(req.param("idDataType"));
 
-        return DataType.findOne({name:name})
+        return Group.find({id:idGroups}).populate('projects').then(function (groups) {
 
+            let projectsGroups = _.map(groups, function (g) { return _.map(g.projects,'id'); });
+            projectsGroups = _.uniq(_.flatten(projectsGroups));
+
+            return DataType.findOne({id: idDataType, project: projectsGroups});
+        })
         .then(function(result) {
             const id = result.id;
+            const name = result.name;
+
             const template = result.model;
 
             // This query returns the parent-child associations among the datatypes

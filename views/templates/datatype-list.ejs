@@ -1,4 +1,4 @@
-<h2><%= __("data-type-list") %></h2>
+<h2 class="legend" align="center"><%= __("data-type-list") %></h2>
 
 <div id="content">
     <div class="row">
@@ -14,12 +14,13 @@
                             <th><%= __("json-schema") %></th>
                             -->
                             <th><%= __("parent") %></th>
+                            <th><%= __("project") %></th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                     <% _.each(dataTypes, function(dataType) { %>
-                    <tr>
+                    <tr class="content">
                         <td><%= dataType.id %></td>
                         <td><%= dataType.get("name") %></td>
                         <td><%= dataType.get("model") %></td>
@@ -27,6 +28,7 @@
                         <td><%= JSON.stringify(dataType.get("schema")) %></td>
                         -->
                         <td><%= dataType.get("parents").map(function(parent) { return (" " + parent.name); }).toString().trim() %></td>
+                        <td><%= dataType.get("project") ? dataType.get("project").name : '' %></td>
                         <td><a class="btn" href="#/datatypes/edit/<%= dataType.id %>"><%=__("edit") %></a></td>
                     </tr>
                     <% }) %>
@@ -35,8 +37,10 @@
             </div>
             <div id="outer">
               <div id="buttonbardiv" class="inner"><a href="#/datatypes/new" class="btn btn-primary"><%= __("new-data-type")%></a></div>
+              <div id="buttonbardiv" class="inner"><a id="duplicate" class="btn btn-primary"><%= __("duplicate-data-type")%></a></div>
               <div id="buttonbardiv" class="inner"><a href="#datatypes/graph" class="btn btn-primary"><%= __("datatype-graph")%></a></div>
             </div>
         </div>
     </div>
 </div>
+<div class="data-type-modal"></div>

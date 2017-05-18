@@ -6,37 +6,43 @@
             <div class="table-responsive">
                 <table class="table">
                     <thead>
-                        <tr>
+                        <tr class="text-center">
                             <th><%= __("code") %></th>
+                            <% if (xtens.session.get("canAccessPersonalData")) {%>
                             <th><%= __("given-name") %></th>
                             <th><%= __("surname") %></th>
                             <th><%= __("birth-date") %></th>
+                            <%} %>
                             <th><%= __("sex") %></th>
-                            <th><%= __("project") %></th>
+                            <th style="display:none;"><%= __("project") %></th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                     <% var date; %>
-                    <% _.each(subjects, function(subject) { %>
-                    <tr>
+                    <% _.each(subjects, function(subject) {
+                      var dataType = _.find(dataTypes, {id : subject.get('type')});
+                      var subjProject = _.find(xtens.session.get("projects"), {id : dataType.get('project')}); %>
+                    <tr class="content">
                         <td><%= subject.get("code") %></td>
-                        <td><%= subject.get("personalInfo") && subject.get("personalInfo").givenName %></td>
-                        <td><%= subject.get("personalInfo") && subject.get("personalInfo").surname %></td>
+                        <% if (xtens.session.get("canAccessPersonalData")) {%>
+                        <td><%= subject.get("given_name") && subject.get("given_name") %></td>
+                        <td><%= subject.get("surname") && subject.get("surname") %></td>
                         <td>
-                            <% date = subject.get("personalInfo") && subject.get("personalInfo").birthDate; %>
+                            <% date = subject.get("birth_date") && subject.get("birth_date"); %>
                             <%= date ? moment(date).lang("it").format('L') : ' ' %>
                         </td>
+                        <%} %>
                         <td><%= subject.get("sex") %></td>
-                        <td><%= subject.get("projects").map(function(project) {return (" " + project.name); }).toString().trim() %></td>
-                        <td>
+                        <td style="display:none;"><%= subjProject ? subjProject.name : null %></td>
+                        <td class="text-right">
                           <% var privilege = dataTypePrivileges.find(function(model) {
-                            return model.get('dataType') === subject.get("type").id; });
-                           if(privilege.get("privilegeLevel") === "edit" ){ %>
+                            return model.get('dataType') === subject.get("type"); });
+                           if(privilege && privilege.get("privilegeLevel") === "edit" ){ %>
                             <a class="btn" href="<%= subject.get("editLink") %>" ><%=__("edit") %></a>
                             <%} %>
                             <% if (subject.get("newSampleLink") && subject.get("newSampleLink").length) {%>
-                                <a class="btn" href="<%= subject.get("newSampleLink") %>"><%=__("new-sample") %></a>
+                                <a class="btn" href="<%= subject.get("newSampleLink") %>"><%=__("new-derivative-sample") %></a>
                             <%} %>
                             <% if (subject.get("newDataLink") && subject.get("newDataLink").length) {%>
                                 <a class="btn" href="<%= subject.get("newDataLink") %>"><%=__("new-data") %></a>

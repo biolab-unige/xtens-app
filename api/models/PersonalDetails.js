@@ -14,7 +14,7 @@ module.exports = {
             required: true,
             max: 64,
             alpha: true,
-            columnName: 'given_name',
+            columnName: 'given_name'
         },
 
         surname: {

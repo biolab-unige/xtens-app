@@ -5,7 +5,7 @@
  */
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, sails, Subject, DataType, DataService, DataTypeService, QueryService, TokenService */
+/* globals _, sails, Subject, DataService, DataTypeService*/
 "use strict";
 
 let XRegExp = require('xregexp');
@@ -30,19 +30,19 @@ let SubjectService = BluebirdPromise.promisifyAll({
         });
 
         // replace each project with its ID
-        if (_.isArray(subject.projects)) {
-
-            let simplifiedProjects = [];
-
-            subject.projects.forEach(function(project) {
-                simplifiedProjects.push(project.id || project);
-            });
-
-            subject.projects = simplifiedProjects;
-
-        }
-
-        console.log("simplified project array: " + subject.projects);
+        // if (_.isArray(subject.projects)) {
+        //
+        //     let simplifiedProjects = [];
+        //
+        //     subject.projects.forEach(function(project) {
+        //         simplifiedProjects.push(project.id || project);
+        //     });
+        //
+        //     subject.projects = simplifiedProjects;
+        //
+        // }
+        //
+        // console.log("simplified project array: " + subject.projects);
 
     },
 
@@ -79,7 +79,7 @@ let SubjectService = BluebirdPromise.promisifyAll({
             code: Joi.string().uppercase(),
             sex: Joi.string().required().valid(_.values(sails.config.xtens.constants.SexOptions)),
             personalInfo: Joi.object().keys(personalInfoValidationSchema).allow(null),
-            projects: Joi.array().allow(null),
+            // projects: Joi.array().allow(null),
             samples: Joi.array().allow(null),
             childrenData: Joi.array().allow(null),
             tags: Joi.array().allow(null),

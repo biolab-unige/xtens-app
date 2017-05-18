@@ -1,6 +1,16 @@
 <div class="col-sm-6 text-left" style="margin-top:2%;">
-  <% if (headers['X-Total-Count'] !== 0) {%>
-  Showing <%= headers['startRow']%> to <%= headers['endRow']%> of <%= headers['X-Total-Count']%> rows
+  <% if (headers['X-Total-Count'] !== 0 && (headers.notFiltered === DEFAULT_LIMIT || rowsLenght < DEFAULT_LIMIT) ){%>
+    Showing <%= headers['startRow']%> to
+    <% if (rowsLenght < DEFAULT_LIMIT) {%>
+      <%= headers['X-Total-Count']%>
+      <%}
+      else {%>
+        <%= headers['endRow']%>
+        <%}%>
+    of <%= headers['X-Total-Count']%> rows
+  <%}
+  else if (headers['X-Total-Count'] !== 0 && headers.notFiltered < DEFAULT_LIMIT && headers.notFiltered > 0 ){%>
+  Showing <%= headers['startRow']%> to <%= headers['endRow']%> of <%= headers['X-Total-Count']%> rows (<%= DEFAULT_LIMIT - headers.notFiltered %> filtered by Project)
   <%}
   else{%>
     <%= headers['X-Total-Count']%> rows

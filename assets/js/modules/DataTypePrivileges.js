@@ -60,18 +60,27 @@
 
         events: {
             'submit .edit-datatypeprivileges-form': 'privilegesOnSave',
-            'click .delete': 'privilegesOnDelete'
+            'click .delete': 'privilegesOnDelete',
+            'change select#data-type': 'setGroupByDataTypeProject'
         },
 
         initialize: function(options) {
             $("#main").html(this.el);
             this.dataTypes = options.dataTypes;
-            this.dataType = options.dataType;
-            this.group = options.group;
-            this.model = new DataTypePrivileges.Model(_.assign({
-                group: this.group.id,
-                privilegeLevel: DataTypePrivilegeLevels.VIEW_OVERVIEW
-            }, options.dataTypePrivileges));
+            this.dataType =  options.params.dataTypeId;
+            this.group = options.params.groupId;
+            this.groups = options.groups;
+            if (options.dataTypePrivilege) {
+                // var that =this;
+                this.model = new DataTypePrivileges.Model(options.dataTypePrivilege);
+                this.dataTypes.push(options.dataTypePrivilege.dataType);
+            }
+            else {
+                this.model = new DataTypePrivileges.Model({
+                    dataType: this.dataType ? _.parseInt(this.dataType) : null,
+                    group: this.group ? _.parseInt(this.group) : null,
+                    privilegeLevel: DataTypePrivilegeLevels.VIEW_OVERVIEW});
+            }
             this.template = JST["views/templates/datatypeprivileges-edit.ejs"];
             this.render();
         },
@@ -79,30 +88,18 @@
         render: function() {
             this.$el.html(this.template({
                 __:i18n,
-                privilege: this.model,
-                group: this.group,
-                dataType: this.dataType || {},
-                privilegeLevels: _.values(DataTypePrivilegeLevels)
+                privilege: this.model
+                // group: this.group,
+                // dataType: this.dataType || {},
+                // privilegeLevels: _.values(DataTypePrivilegeLevels)
             }));
             this.$modal = this.$(".privilege-modal");
             this.stickit();
-            if (!this.model.id) {
-                this.addBinding(null, '#data-type', {
-                    observe: "dataType",
-                    initialize: function($el) {
-                        $el.select2({placeholder: i18n("please-select") });
-                    },
-                    selectOptions: {
-                        collection: 'this.dataTypes',
-                        labelPath: 'name',
-                        valuePath: 'id',
-                        defaultOption: {
-                            label: "",
-                            value: null
-                        }
-                    }
-                });
+            if (this.dataType) {
+                this.setGroupByDataTypeProject();
             }
+            $('#group').val() ? $('#group').prop('disabled',true) : null;
+            $('#data-type').val() ? $('#data-type').prop('disabled',true) : null;
             this.$form = this.$('form');
             this.$form.parsley(parsleyOpts);
             return this;
@@ -127,13 +124,91 @@
                         return coll;
                     }
                 }
+            },
+            '#group': {
+                observe: 'group',
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
+                selectOptions: {
+                    collection: 'this.groups',
+                    labelPath: 'name',
+                    valuePath: 'id',
+                    defaultOption: {
+                        label: "",
+                        value: null
+                    }
+                },
+                getVal: function($el) {
+                    return $el.val() && _.parseInt($el.val());
+                },
+                onGet: function(val) {
+                    return  val && _.isObject(val) ? val.id : val;
+                }
+            },
+            '#data-type': {
+                observe: 'dataType',
+
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
+                selectOptions: {
+                    collection: function() {
+                        var coll = [];
+                        _.each(this.dataTypes, function(dt) {
+                            var dtProject = _.find(xtens.session.get("projects"), {id: dt.project});
+                            if( xtens.session.get("activeProject") === 'all' || (dtProject && dtProject.name === xtens.session.get("activeProject"))){
+                                var xmlString = "<h1>" + dt.name.toUpperCase() + " - <small>" + dtProject.name.toLowerCase() + "</small></h1>";
+                                coll.push({
+                                    label: dt.name.toUpperCase() +" - "+  dtProject.name.toLowerCase(),
+                                    value: dt.id
+                                });
+                            }
+                        });
+                        return coll;
+                    },
+                    defaultOption: {
+                        label: "",
+                        value: null
+                    }
+                },
+                getVal: function($el) {
+                    return $el.val() && _.parseInt($el.val());
+                },
+                onGet: function(val) {
+                    return  val && _.isObject(val) ? val.id : val;
+                }
             }
 
         },
 
+        setGroupByDataTypeProject: function (ev) {
+            var selDatatype = ev ? _.parseInt(ev.target.value) : _.parseInt($('#data-type').val());
+            var dt = _.findWhere(this.dataTypes, {id:selDatatype});
+            var filteredValues  = [], newColl = [];
+
+            this.groups.forEach(function (gr) {
+                if( _.findWhere(gr.projects, {id: dt.project})){
+                    return newColl.push({label:gr.name,value:gr.id});
+                }
+            });
+            if ($('#group').val() !== "") {
+                var found = _.find(newColl, {value : _.parseInt($('#group').val()) });
+                found ? filteredValues.push(found.value) : null;
+            }
+
+            var options = {selectOptions:{collection: newColl}};
+            Backbone.Stickit.getConfiguration($('#group')).update($('#group'),filteredValues,{},options);
+            $('#group').val(filteredValues).trigger("change");
+        },
+
         privilegesOnSave: function(ev) {
-            var groupId = this.group.id;
+            ev.preventDefault();
+
             var that = this;
+            this.model.get("dataType").id ? this.model.set("dataType", this.model.get("dataType").id) : null;
+            this.model.get("group").id ? this.model.set("group", this.model.get("group").id) : null;
+
             this.model.save(null, {
                 success: function(dataTypePrivileges) {
                     if (that.modal) {
@@ -150,7 +225,11 @@
                     setTimeout(function(){ modal.hide(); }, 1200);
                     that.$('.privilege-modal').on('hidden.bs.modal', function (e) {
                         modal.remove();
-                        router.navigate('datatypeprivileges/' + groupId, {trigger: true});
+                        if (xtens.session.get("isWheel")) {
+                            router.navigate('datatypeprivileges?groupId=' + dataTypePrivileges.get("group"), {trigger: true});
+                        }else {
+                            router.navigate('datatypes', {trigger: true});
+                        }
                     });
                 },
                 error: function(model, res) {
@@ -162,7 +241,7 @@
 
         privilegesOnDelete: function(ev) {
             ev.preventDefault();
-            var groupId = this.group.id;
+            var groupId = this.model.get("group");
             var that = this;
             if (this.modal) {
                 this.modal.hide();
@@ -182,16 +261,18 @@
 
                 that.model.destroy({
                     success: function(model, res) {
-                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
-                        modal.title= i18n('ok');
-                        modal.body= i18n('privilege-deleted');
-                        that.$modal.append(modal.render().el);
-                        $('.modal-header').addClass('alert-success');
-                        modal.show();
-                        setTimeout(function(){ modal.hide(); }, 1200);
-                        that.$modal.on('hidden.bs.modal', function (e) {
-                            modal.remove();
-                            router.navigate('datatypeprivileges/' + groupId, {trigger: true});
+                        that.$modal.one('hidden.bs.modal', function (e) {
+                            modal.template= JST["views/templates/dialog-bootstrap.ejs"];
+                            modal.title= i18n('ok');
+                            modal.body= i18n('privilege-deleted');
+                            that.$modal.append(modal.render().el);
+                            $('.modal-header').addClass('alert-success');
+                            modal.show();
+                            setTimeout(function(){ modal.hide(); }, 1200);
+                            that.$modal.on('hidden.bs.modal', function (e) {
+                                modal.remove();
+                                router.navigate('datatypeprivileges?groupId=' + groupId, {trigger: true});
+                            });
                         });
                     },
                     error: function(model, res) {
@@ -210,7 +291,9 @@
      * @extends Backbone.View
      */
     DataTypePrivileges.Views.List = Backbone.View.extend({
-
+        events: {
+            'click #newPrivilege': 'openNewPrivilegeView'
+        },
         tagName: 'div',
         className: 'dataTypePrivileges',
 
@@ -223,17 +306,61 @@
             $("#main").html(this.el);
             this.template = JST["views/templates/datatypeprivileges-list.ejs"];
             this.group = options.group;
+            this.dataTypes = options.dataTypes;
             this.privileges = options.privileges;
+            this.params = options.params;
+            var mapTypeProjects = {};
+            _.forEach(this.privileges.models,function (priv) {
+                var dt = _.find(options.dataTypes.models,function (dt) {
+                    return dt.id === priv.get('dataType').id;
+                });
+                dt ? mapTypeProjects[dt.id] = dt.get("project").name : null;
+            });
+            this.mapTypeProjects = mapTypeProjects;
             this.render();
         },
 
         render: function() {
+
             this.$el.html(this.template({
                 __: i18n,
+                params: this.params,
                 group: this.group,
-                privileges: this.privileges
+                privileges: this.privileges,
+                dataTypes : this.dataTypes,
+                mapTypeProjects: this.mapTypeProjects
             }));
+
+            this.filterPrivileges(this.params);
             return this;
+        },
+
+        filterPrivileges: function(opt){
+            var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#btn-project').val());
+
+            if(rex =="/all/"){this.clearFilter();}else{
+                $('.content').hide();
+                $('.content').filter(function() {
+                    return rex.test($(this).text());
+                }).show();
+            }
+        },
+
+        clearFilter: function(){
+            // $('#project-selector').val('');
+            $('.content').show();
+        },
+
+        openNewPrivilegeView: function(ev) {
+            ev.preventDefault();
+            var dataTypeQuery = this.params.dataTypeId ? 'dataTypeId=' + this.params.dataTypeId : '';
+            var groupQuery = this.params.groupId ? 'groupId=' + this.params.groupId : '';
+            var privilegeLevelQuery = this.privilegeLevel ? 'privilegeLevel=' + this.privilegeLevel : '';
+            var queryString = _.compact([dataTypeQuery, groupQuery,
+                                        privilegeLevelQuery]).join('&');
+            var route = _.trim(['/datatypeprivileges/new', queryString].join('/0?'));
+            xtens.router.navigate(route, {trigger: true});
+            return false;
         }
     });
 

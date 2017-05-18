@@ -64,7 +64,15 @@
 
             '#privilege-level': {
                 observe: 'privilegeLevel',
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
+
                 selectOptions: {
+                    defaultOption: {
+                        label: "",
+                        value: null
+                    },
                     collection: function() {
                         var coll = [];
                         _.each(GroupPrivilegeLevels, function(value) {
@@ -155,16 +163,18 @@
 
                 that.model.destroy({
                     success: function(model, res) {
-                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
-                        modal.title= i18n('ok');
-                        modal.body= i18n('group-deleted');
-                        that.$modal.append(modal.render().el);
-                        $('.modal-header').addClass('alert-success');
-                        modal.show();
-                        setTimeout(function(){ modal.hide(); }, 1200);
-                        that.$modal.on('hidden.bs.modal', function (e) {
-                            modal.remove();
-                            xtens.router.navigate('groups', {trigger: true});
+                        that.$modal.one('hidden.bs.modal', function (e) {
+                            modal.template= JST["views/templates/dialog-bootstrap.ejs"];
+                            modal.title= i18n('ok');
+                            modal.body= i18n('group-deleted');
+                            that.$modal.append(modal.render().el);
+                            $('.modal-header').addClass('alert-success');
+                            modal.show();
+                            setTimeout(function(){ modal.hide(); }, 1200);
+                            that.$modal.on('hidden.bs.modal', function (e) {
+                                modal.remove();
+                                xtens.router.navigate('groups', {trigger: true});
+                            });
                         });
                     },
                     error: function(model, res) {
@@ -181,24 +191,33 @@
         tagName: 'div',
         className: 'group',
 
-        initialize: function() {
+        initialize: function(options) {
             $("#main").html(this.el);
             this.template = JST["views/templates/group-list.ejs"];
-            this.render();
+            this.render(options);
         },
 
         render: function(options) {
+            var that = this;
+            this.$el.html(that.template({__: i18n, groups: options.groups}));
 
-            var _this = this;
-            var groups= new Group.List();
-            groups.fetch({
-                success: function(groups) {
-                    _this.$el.html(_this.template({__: i18n, groups: groups.models}));
-                    return _this;
-                },
-                error: 	xtens.error
-            });
+            this.filterGroups(options.queryParams);
             return this;
+        },
+
+        filterGroups: function(opt){
+            var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#btn-project').val());
+
+            if(rex =="/all/"){this.clearFilter();}else{
+                $('.group_val').hide();
+                $('.group_val').filter(function() {
+                    return rex.test($(this).text());
+                }).show();
+            }
+        },
+        clearFilter: function(){
+            // $('#project-selector').val('');
+            $('.group_val').show();
         }
 
     });

@@ -5,8 +5,7 @@
         "privilegeLevel": "wheel",
         "canAccessPersonalData": true,
         "canAccessSensitiveData": true,
-        "createdAt": "2015-10-22T09:01:28.000Z",
-        "updatedAt": "2015-10-22T13:08:49.000Z"
+        "projects":[1,2,3,4,5]
     },
     {
         "name": "biologist",
@@ -14,8 +13,7 @@
         "privilegeLevel": "admin",
         "canAccessPersonalData": false,
         "canAccessSensitiveData": true,
-        "createdAt": "2015-10-22T09:01:28.000Z",
-        "updatedAt": "2015-10-22T13:08:49.000Z"
+        "projects":[1,2,3,4,5]
     },
     {
         "name": "guestDataSens",
@@ -23,8 +21,7 @@
         "privilegeLevel": "standard",
         "canAccessPersonalData": false,
         "canAccessSensitiveData": true,
-        "createdAt": "2015-10-22T09:01:28.000Z",
-        "updatedAt": "2015-10-22T13:08:49.000Z"
+        "projects":[1,2,3,4,5]
     },
     {
         "name": "guestNoDataSens",
@@ -32,8 +29,7 @@
         "privilegeLevel": "standard",
         "canAccessPersonalData": false,
         "canAccessSensitiveData": false,
-        "createdAt": "2015-10-22T09:01:28.000Z",
-        "updatedAt": "2015-10-22T13:08:49.000Z"
+        "projects":[1,2,3,4,5]
     },
     {
         "name": "guestNoPrivileges",
@@ -41,7 +37,6 @@
         "privilegeLevel": "standard",
         "canAccessPersonalData": false,
         "canAccessSensitiveData": true,
-        "createdAt": "2015-10-22T09:01:28.000Z",
-        "updatedAt": "2015-10-22T13:08:49.000Z"
+        "projects":[1,2,3,4,5]
     }
 ]

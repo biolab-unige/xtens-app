@@ -481,6 +481,7 @@
         },
 
         render: function() {
+            var that = this;
             this.$el.html(this.template({ __:i18n, component: this.component, format: replaceUnderscoreAndCapitalize}));
             this.stickit();
             if (!_.isEmpty(this.component.possibleUnits)) {
@@ -496,6 +497,15 @@
             this.$fieldValue = this.$("[name='fieldValue']");
             if (this.setValidationOptions) {
                 this.setValidationOptions();
+            }
+            if (this.component.description) {
+                var btnDescription =  JST["views/templates/field-description-button.ejs"]({__:i18n, component: this.component});
+                $(this.el.children).append(btnDescription);
+
+                this.$el.hover(
+                  function(){ $('.'+ that.component.formattedName).popover('show'); },
+                  function(){ $('.'+ that.component.formattedName).popover('hide'); }
+                );
             }
             return this;
         },
@@ -611,6 +621,18 @@
                 initialize: function($el) {
                     $el.select2({ placeholder: i18n("please-select")});
                 }
+            }
+        },
+
+        /**
+         * @method
+         * @name setValidationOptions
+         * @description add HTML5/data tags to the metadata field for client-side validation
+         *              with Parsley
+         */
+        setValidationOptions: function() {
+            if (this.component.required) {
+                this.$fieldValue.prop('required', true);
             }
         },
 
@@ -861,16 +883,18 @@
 
                 that.model.destroy({
                     success: function(model, res) {
-                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
-                        modal.title= i18n('ok');
-                        modal.body= i18n('data-deleted');
-                        that.$modal.append(modal.render().el);
-                        $('.modal-header').addClass('alert-success');
-                        modal.show();
-                        setTimeout(function(){ modal.hide(); }, 1200);
-                        that.$modal.on('hidden.bs.modal', function (e) {
-                            modal.remove();
-                            xtens.router.navigate(targetRoute, {trigger: true});
+                        that.$modal.one('hidden.bs.modal', function (e) {
+                            modal.template= JST["views/templates/dialog-bootstrap.ejs"];
+                            modal.title= i18n('ok');
+                            modal.body= i18n('data-deleted');
+                            that.$modal.append(modal.render().el);
+                            $('.modal-header').addClass('alert-success');
+                            modal.show();
+                            setTimeout(function(){ modal.hide(); }, 1200);
+                            that.$modal.on('hidden.bs.modal', function (e) {
+                                modal.remove();
+                                xtens.router.navigate(targetRoute, {trigger: true});
+                            });
                         });
                     },
                     error: function(model, res) {
@@ -1115,12 +1139,12 @@
 
         addLinksToModels: function() {
             _.each(this.data.models, function(data) {
-                var privilege = _.find(this.dataTypePrivileges, function(model){ return model.get('dataType') === data.get("type").id;});
+                var privilege = _.find(this.dataTypePrivileges, function(model){ return model.get('dataType') === data.get("type");});
                 if(privilege.get('privilegeLevel') === "edit" ){
                     data.set("editLink", "#/data/edit/" + data.id);}
                 if(privilege.get('privilegeLevel') !== "view_overview" ){
                     data.set("detailsLink", "#/data/details/" + data.id);}
-                var type = this.dataTypes.get(data.get("type").id);
+                var type = this.dataTypes.get(data.get("type"));
                 var dataTypeChildren = _.where(type.get("children"), {"model": Classes.DATA});
                 if (dataTypeChildren.length > 0) {
                     var dids = _.map(dataTypeChildren, 'id').join();
@@ -1131,15 +1155,41 @@
 
         render: function() {
             this.addLinksToModels();
-            this.$el.html(this.template({__: i18n, data: this.data.models, dataTypePrivileges: this.dataTypePrivileges}));
+            this.$el.html(this.template({__: i18n, data: this.data.models, dataTypePrivileges: this.dataTypePrivileges, dataTypes: this.dataTypes.models}));
             this.table = this.$('.table').DataTable({
                 "paging": false,
                 "info": false
             });
-            $('#pagination').append(JST["views/templates/pagination-bar.ejs"]({__: i18n, headers:this.headers}));
-            this.setPaginationInfo();
 
+            this.filterData(this.params);
+
+            $('#pagination').append(JST["views/templates/pagination-bar.ejs"]({
+                __: i18n,
+                headers: this.headers,
+                rowsLenght: this.data.models.length,
+                DEFAULT_LIMIT: xtens.module("xtensconstants").DefaultLimit
+            }));
+            this.setPaginationInfo();
             return this;
+        },
+
+        filterData: function(opt){
+            var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#btn-project').val());
+
+            if(rex =="/all/"){
+                this.clearFilter();
+            }else{
+                $('.content').hide();
+                $('.content').filter(function() {
+                    return rex.test($(this).text());
+                }).show();
+            }
+            this.headers.notFiltered = $('tr').filter(function() { return $(this).css('display') !== 'none'; }).length - 1;
+        },
+
+        clearFilter: function(){
+            // $('#project-selector').val('');
+            $('.content').show();
         },
 
         changePage: function (ev) {
@@ -1167,6 +1217,7 @@
                     headers['endRow'] = endRow;
                     that.headers = headers;
                     that.data.reset(results);
+                    that.filterData();
                 },
                 error: function(err) {
                     xtens.error(err);
@@ -1201,7 +1252,7 @@
             // var queryString = _.trim([parentSubjectQuery, parentSubjectCodeQuery, parentSampleQuery, parentDataQuery].join('&'), '&');
             var queryString = _.compact([parentSubjectQuery, parentSubjectCodeQuery,
                                         parentSampleQuery, parentDataQuery, parentDataTypeQuery]).join('&');
-            var route = _.trim(['/data/new', queryString].join('/0?'), '/0?');
+            var route = _.trim(['/data/new', queryString].join('/0?'));
             xtens.router.navigate(route, {trigger: true});
             return false;
         }

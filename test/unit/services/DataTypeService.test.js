@@ -1,3 +1,6 @@
+/* jshint node:true */
+/* jshint mocha: true */
+/* globals _, sails, fixtures, DataType, DataTypeService */
 "use strict";
 var chai = require("chai");
 var chaiAsPromised = require("chai-as-promised");
@@ -164,7 +167,7 @@ describe('DataTypeService', function() {
         it("should return the right DataType of the given Privilege", function(done) {
             const expectedDataType = _.cloneDeep(fixtures.datatype[0]);
 
-            DataTypeService.getDataTypeToEditPrivileges(1).then(function(result) {
+            DataTypeService.getDataTypeToEditPrivileges(1,1).then(function(result) {
 
                 expect(result.id).to.be.equal(expectedDataType.id);
                 expect(result.model).to.be.equal(expectedDataType.model);
@@ -201,11 +204,11 @@ describe('DataTypeService', function() {
             });
         });
 
-        it("should return undefined", function(done) {
+        it("should return an empty array", function(done) {
 
             DataTypeService.getDataTypesToCreateNewPrivileges().then(function(result) {
 
-                expect(result).to.be.undefined;
+                expect(result).to.be.empty;
                 done();
             }).catch(function(err) {
                 done(err);
@@ -255,15 +258,15 @@ describe('DataTypeService', function() {
 
     });
 
-    describe('#getDataTypePrivileges', function() {
+    describe('#getDataTypePrivilege', function() {
 
         it("should return the right set of DataTypes", function(done) {
-            const expectedDataTypePrivilege = _.cloneDeep(fixtures.datatypeprivileges[0]);
-
-            DataTypeService.getDataTypePrivileges(1, function(err ,result) {
+            const expectedDataTypePrivilege = _.cloneDeep(fixtures.datatypeprivileges[0]),
+                expectedPrivilegeDataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: expectedDataTypePrivilege.dataType}));
+            DataTypeService.getDataTypePrivilege(1, function(err ,result) {
 
                 expect(result.id).be.equal(expectedDataTypePrivilege.id);
-                expect(result.dataType).be.equal(expectedDataTypePrivilege.dataType);
+                expect(result.dataType.id).be.equal(expectedPrivilegeDataType.id);
                 expect(result.group).be.equal(expectedDataTypePrivilege.group);
                 expect(result.group).be.equal(expectedDataTypePrivilege.group);
                 expect(result.privilegeLevel).be.equal(expectedDataTypePrivilege.privilegeLevel);
@@ -276,13 +279,111 @@ describe('DataTypeService', function() {
         it("should return undefined", function(done) {
             const expectedDataTypePrivilege = _.cloneDeep(fixtures.datatypeprivileges[0]);
 
-            DataTypeService.getDataTypePrivileges(false,function(err ,result) {
+            DataTypeService.getDataTypePrivilege(false,function(err ,result) {
 
                 expect(result).to.be.undefined;
 
                 done();
                 return;
             });
+        });
+    });
+
+    describe('#getHigherPrivileges', function() {
+
+        it("should return the right set of privileges", function(done) {
+            const dataTypePrivileges = [
+                {
+                    "id": 1,
+                    "dataType": 1,
+                    "group": 1,
+                    "privilegeLevel": "edit"
+                },
+                {
+                    "id": 2,
+                    "dataType": 2,
+                    "group": 1,
+                    "privilegeLevel": "download"
+                },
+                {
+                    "id": 3,
+                    "dataType": 3,
+                    "group": 1,
+                    "privilegeLevel": "view_overview"
+                },
+                {
+                    "id": 4,
+                    "dataType": 4,
+                    "group": 1,
+                    "privilegeLevel": "view_overview"
+                },
+                {
+                    "id": 8,
+                    "dataType": 3,
+                    "group": 2,
+                    "privilegeLevel": "view_details"
+                },
+                {
+                    "id": 9,
+                    "dataType": 6,
+                    "group": 2,
+                    "privilegeLevel": "view_overview"
+                },
+                {
+                    "id": 10,
+                    "dataType": 5,
+                    "group": 2,
+                    "privilegeLevel": "view_details"
+                },
+                {
+                    "id": 13,
+                    "dataType": 3,
+                    "group": 3,
+                    "privilegeLevel": "download"
+                },
+                {
+                    "id": 14,
+                    "dataType": 6,
+                    "group": 3,
+                    "privilegeLevel": "download"
+                }
+            ];
+            const expectedDataTypePrivileges = [
+              { id: 1, dataType: 1, group: 1, privilegeLevel: 'edit' },
+              { id: 2, dataType: 2, group: 1, privilegeLevel: 'download' },
+              { id: 13, dataType: 3, group: 3, privilegeLevel: 'download' },
+              { id: 4, dataType: 4, group: 1, privilegeLevel: 'view_overview' },
+              { id: 10, dataType: 5, group: 2, privilegeLevel: 'view_details' },
+              { id: 14, dataType: 6, group: 3, privilegeLevel: 'download' }
+            ];
+            let results = DataTypeService.getHigherPrivileges(dataTypePrivileges);
+            expect(results).to.be.eql(expectedDataTypePrivileges);
+
+            done();
+            return;
+
+        });
+
+        it("should return an empty array", function(done) {
+            const expectedDataTypePrivilege = [];
+
+            let result = DataTypeService.getHigherPrivileges([]);
+            expect(result).to.be.empty;
+
+            done();
+            return;
+
+        });
+
+        it("should return the same privilege in input", function(done) {
+            const expectedDataTypePrivilege = [_.cloneDeep(fixtures.datatypeprivileges[0])];
+
+            let result = DataTypeService.getHigherPrivileges(expectedDataTypePrivilege);
+            expect(result).to.be.eql(expectedDataTypePrivilege);
+
+            done();
+            return;
+
         });
     });
 });

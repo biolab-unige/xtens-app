@@ -20,13 +20,13 @@ before(function(done) {
         console.log("sails was lifted");
     // Load fixtures
         var barrels = new Barrels();
-        var loadingOrder = [ 'group', 'datatype', 'datatypeprivileges', 'operator', 'passport', 'subject', 'sample', 'data', 'datafile','biobank'];
+        var loadingOrder = [ 'project', 'group', 'datatype', 'datatypeprivileges', 'operator', 'passport', 'subject', 'sample', 'data', 'datafile','biobank'];
     // Save original objects in fixtures variable
         fixtures = barrels.data;
 
         sails = res;
         sails.config.pathGeneFile = path.join('test', 'resources', 'gene-file-test.csv');
-        
+
         barrels.populate(loadingOrder, function(err){
             if (err) {
                 console.log(err);

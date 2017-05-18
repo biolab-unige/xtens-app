@@ -7,33 +7,36 @@
 
 module.exports = {
 
-  attributes: {
+    attributes: {
 
-      name: {
-        type: 'string',
-        unique: true,
-      },
+        name: {
+            type: 'string',
+            unique: true
+        },
 
-      description: {
-        type: 'string'
-      },
+        description: {
+            type: 'string'
+        },
 
-      subjects: {
-        collection: 'subject',
-        via: 'projects',
-        dominant: true
-      },
+        dataTypes: {
+            collection: 'dataType',
+            via: 'project'
+        },
 
-    createdAt: {
-        type: 'datetime',
-        columnName: 'created_at'
-    },
-        
-    updatedAt: {
-        type: 'datetime',
-        columnName: 'updated_at'
+        groups:{
+            collection:'group',
+            via:'projects'
+        },
+
+        createdAt: {
+            type: 'datetime',
+            columnName: 'created_at'
+        },
+
+        updatedAt: {
+            type: 'datetime',
+            columnName: 'updated_at'
+        }
+
     }
-
-  }
 };
-

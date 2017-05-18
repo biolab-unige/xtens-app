@@ -25,7 +25,8 @@ module.exports = {
         "moment":true,
         "Pikaday":true,
         "Dropzone":true,
-        "ParsleyUI":true
+        "ParsleyUI":true,
+        "Sortable":true
 
     },
 

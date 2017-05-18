@@ -9,7 +9,18 @@
         "subjects": "Subjects",
         "samples": "Samples",
         // views/templates/datatype-list.ejs
+        "active-project":"Active Project",
+        "selected-project":"Selected Project",
+        "data-type-list": "Data Type List",
         "id":"ID",
+        "duplicate-data-type": "Duplicate Data Type",
+        // views/templates/datatype-duplicate.ejs
+        "edit-data-type":"Edit Data Type",
+        "from": "From",
+        "to": "To",
+        "please-select-source-project": "Please select Source project",
+        "please-select-a-data-type": "Please select a Data Type",
+        "please-select-destination-project": "Please select Destination project",
         // views/templates/datatype-edit.ejs
         "please-select": "Please Select",
         "data-type-manager": "Data Type Manager",
@@ -78,9 +89,9 @@
         "create-a-new-operator" : "Create a New Operator",
         "m" : "M",
         "f" : "F",
-        "group-list": "Group List",
-        "new-group": "New Group",
         "xtens-login":"XTENS Login",
+        'please-select-a-project': "Please select a project",
+        'project-selection': "Project selection",
         /* views/templates/login.ejs */
         "username": "Username",
         "sign-in": "Sign in",
@@ -91,11 +102,17 @@
         "manager":"Manager",
         "standard":"Standard",
         "groups": "Groups",
+        "all-projects": "All projects",
+        "i-confirm":"I confirm",
+        "warning-change-project": "Changing project, all unsaved data will be lost",
+        "projects": "Projects",
         "operators": "Operators",
+        "click-to-change-project":"Click to change project",
         "data-management": "Data Management",
         "search": "Search",
         "advanced-search": "Advanced Search",
         "logout": "Logout",
+        "change-project":"Change Project",
         /* views/templates/data-edit.ejs */
         "data-manager": "Data Manager",
         "select-a-data-type": "Select a Data Type",
@@ -106,6 +123,7 @@
         /* views/templates/operator-edit.ejs */
         "operator-manager": "Operator Manager",
         "confirm-password": "Confirm Password",
+        "confirm": "Confirm",
         "min-8-characters": "Minimum of 8 characters",
         "create-operator": "Create Operator",
         "save-operator" : "Save Operator",
@@ -122,7 +140,10 @@
         "associate-datatype":"Associate a Datatype",
         "dissociate-datatype":"Dissociate a Datatype",
         /* views/templates/group-list.ejs */
-        "member":"Member",
+        "member-operators":"Member Operators",
+        "group-list": "Group List",
+        "data-type-privileges": "Data Type Privileges",
+        "new-group": "New Group",
         /* views/templates/group-edit.ejs */
         "privilege-level": "Privilege Level",
         "can-access-personal-data": "Can Access Personal Data",
@@ -131,6 +152,18 @@
         "group-deleted": "Group Deleted",
         "group-will-be-permanently-deleted-are-you-sure": "Group will be permanently deleted. Are you sure?",
         'group-correctly-stored-on-server': "Group correctly stored on server",
+        /* views/templates/project-edit.ejs */
+        "project-data-types": "Project Data Types",
+        "project-groups": "Project Groups",
+        "save-project": "Save Project",
+        "project-deleted": "Project Deleted",
+        "project-will-be-permanently-deleted-are-you-sure": "Project will be permanently deleted. Are you sure?",
+        'project-correctly-stored-on-server': "Project correctly stored on server",
+        /* views/templates/project-list.ejs */
+        "project-list": "Project List",
+        "new-project": "New Project",
+        "member-groups":"Member Groups",
+        "associated-data-type":"Associated Data Types",
         /*views/templates/association.ejs */
         "associated":"Associated",
         "no-associated":"Not Associated",
@@ -156,6 +189,7 @@
         "new-subject": "New Subject",
         "more-data": "More Data",
         "subject-graph": "Subject Graph",
+        "select-a-patient": "Select a Patient",
         /* views/templates/subject-edit.ejs */
         "subject-manager": "Subject Manager",
         "create-subject": "Create Subject",
@@ -170,11 +204,13 @@
         /* views/templates/sample-edit.ejs */
         "sample-manager": "Sample Manager",
         "create-sample": "Create Sample",
+        "edit-sample": "Edit Sample",
         "update-sample": "Update Sample",
         "biobank": "Biobank",
         "biobank-code": "Biobank Code",
         "material-type": "Material Type",
         "donor": "Donor",
+        "select-a-type": "Select a Type",
         "edit-donor": "Edit Donor",
         "parent-sample": "Parent Sample",
         "sample-deleted": "Sample Deleted",
@@ -259,6 +295,8 @@
         "data-type-name": "Data Type Name",
         "new-data-type-privilege": "New Data Type Privilege",
         /* views/templates/datatypeprivileges-edit.ejs */
+        "update-data-type-privileges": "Update Data Type Privilege",
+        "create-data-type-privileges": "Create Data Type Privilege",
         "privilege-deleted": "Privilege Deleted",
         "privilege-will-be-permanently-deleted-are-you-sure": "Privilege will be permanently deleted. Are you sure?",
         'privilege-correctly-stored-on-server': "Privilege correctly stored on server",

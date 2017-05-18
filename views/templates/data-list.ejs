@@ -14,14 +14,17 @@
                             <th><%= __("metadata") %></th>
                             -->
                             <th><%= __("notes") %></th>
+                            <th style="display:none;"><%= __("project") %></th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                     <% var metadata, date;
-                    _.each(data, function(data) { %>
-                    <tr>
-                        <td><%= data.get("type").name %></td>
+                    _.each(data, function(data) {
+                      var dataType = _.find(dataTypes, {id : data.get('type')});
+                      var dataProject = _.find(xtens.session.get("projects"), {id : dataType.get("project")}); %>
+                      <tr class="content">
+                        <td><%= dataType.get("name") %></td>
                         <td>
                             <% date = data.get("date") %>
                             <%= date ? moment(date).lang("it").format('L') : '' %>
@@ -39,20 +42,21 @@
                         </td>
                         -->
                         <td><%= data.get("notes") %></td>
+                        <td style="display:none;"><%= dataProject ? dataProject.name : null %></td>
                         <td class="text-right">
                           <% var privilege = dataTypePrivileges.find(function(model) {
-                            return model.get('dataType') === data.get("type").id; });
-                           if(privilege.get("privilegeLevel") !== "view_overview" ){ %>
+                            return model.get('dataType') === data.get("type"); });
+                           if( privilege && privilege.get("privilegeLevel") !== "view_overview" ){ %>
                             <a class="btn" href="<%= data.get("detailsLink") %>"><%=__("data-details") %>
                           <%} %>
-                          <% if(privilege.get("privilegeLevel") === "edit" ){ %>
+                          <% if( privilege && privilege.get("privilegeLevel") === "edit" ){ %>
                             <a class="btn" href="<%= data.get("editLink") %>"><%=__("edit") %></a>
                             <%} %>
                             <% if (data.get("newDataLink") && data.get("newDataLink").length > 0) { %>
                             <a class="btn" href="<%= data.get("newDataLink") %>"><%=__("new-data") %></a>
                             <%}%>
                         </td>
-                    </tr>
+                      </tr>
                     <% }) %>
                     </tbody>
                 </table>

@@ -52,13 +52,13 @@ describe('SubjectService', function() {
                 schema: {"header": {}, "body": []},
                 classTemplate: "SUBJECT"
             },
-            projects: [{
-                name: "MIMAS",
-                description: "MIMAS",
-                id: 1,
-                createdAt: "2015-09-08T10:13:32.000Z",
-                updatedAt: "2015-09-08T10:13:32.000Z"
-            }],
+            // projects: [{
+            //     name: "MIMAS",
+            //     description: "MIMAS",
+            //     id: 1,
+            //     createdAt: "2015-09-08T10:13:32.000Z",
+            //     updatedAt: "2015-09-08T10:13:32.000Z"
+            // }],
             createdAt: new Date(),
             updatedAt: new Date()
         };
@@ -69,7 +69,7 @@ describe('SubjectService', function() {
             console.log("Simplified Subject: ");
             console.log(populatedSubject);
             expect(populatedSubject.type).to.equals(testId);
-            expect(populatedSubject.projects).to.eql([1]);
+            // expect(populatedSubject.projects).to.eql([1]);
         });
 
     });

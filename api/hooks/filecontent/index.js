@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, sails, Data, DataFile, DataService, DataTypeService, SubjectService, SampleService, QueryService, TokenService, MigrateService, GeneratedDataService */
+/* globals _, sails, DataFile, DataTypeService, TokenService*/
 "use strict";
 
 // lib/hooks/myhook.js
@@ -40,12 +40,12 @@ module.exports = function filecontent(sails){
                     dataFile = result;
                     dataFile.data[0] ? idDataType = dataFile.data[0].type :
                     dataFile.samples[0] ? idDataType = dataFile.samples[0].type : undefined;
-                    return DataTypeService.getDataTypePrivilegeLevel(operator.id, idDataType);
+                    return DataTypeService.getDataTypePrivilegeLevel(operator.groups, idDataType);
                 })
                 .then(dataTypePrivilege => {
 
                     if(!dataTypePrivilege || (dataTypePrivilege.privilegeLevel !== DOWNLOAD && dataTypePrivilege.privilegeLevel !== EDIT)){
-                        throw new PrivilegesError(`Authenticated user does not have download privileges on the data type ${dataFile.data.id}`);
+                        throw new PrivilegesError(`Authenticated user has not download privileges on the data type ${dataFile.data.id}`);
                     }
 
                     sails.log.info("downloadFileContent - dataFile");
@@ -62,7 +62,7 @@ module.exports = function filecontent(sails){
                 .then(result => {
                     return res.ok(); // res.json() ??
                 })
-                .catch(function(err) {
+                .catch(/* istanbul ignore next */ function(err) {
                     return co.error(err);
                 });
 
@@ -91,6 +91,7 @@ module.exports = function filecontent(sails){
                         cb(null, path.basename(__newFileStream.filename));
                     }
                 },function whenDone(err, files) {
+                  /* istanbul ignore if */
                     if (err) {
                         sails.log.error(err);
                         return res.negotiate(err);

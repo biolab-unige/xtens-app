@@ -175,16 +175,18 @@
                 modal.hide();
                 that.model.destroy({
                     success: function(model, res) {
-                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
-                        modal.title= i18n('ok');
-                        modal.body= i18n('operator-deleted');
-                        that.$modal.append(modal.render().el);
-                        $('.modal-header').addClass('alert-success');
-                        modal.show();
-                        setTimeout(function(){ modal.hide(); }, 1200);
-                        that.$modal.on('hidden.bs.modal', function (e) {
-                            modal.remove();
-                            xtens.router.navigate('operators', {trigger: true});
+                        that.$modal.one('hidden.bs.modal', function (e) {
+                            modal.template= JST["views/templates/dialog-bootstrap.ejs"];
+                            modal.title= i18n('ok');
+                            modal.body= i18n('operator-deleted');
+                            that.$modal.append(modal.render().el);
+                            $('.modal-header').addClass('alert-success');
+                            modal.show();
+                            setTimeout(function(){ modal.hide(); }, 1200);
+                            that.$modal.on('hidden.bs.modal', function (e) {
+                                modal.remove();
+                                xtens.router.navigate('operators', {trigger: true});
+                            });
                         });
                     },
                     error: function(model, res) {
@@ -235,7 +237,9 @@
         className:'operator',
 
         events: {
-            'click #login': 'logIn'
+            'click #login': 'logIn',
+            'click #confirm-project': 'confirmProject'
+
         },
 
         initialize:function() {
@@ -246,6 +250,7 @@
 
         render: function() {
             this.$el.html(this.template({__:i18n}));
+            this.$modal = this.$(".project-modal");
             this.$('form').parsley(parsleyOpts);
             return this;
         },
@@ -262,8 +267,45 @@
                     identifier: username,
                     password: password
                 }, function(data, status, jqxhr) {
-                    xtens.session.load(data);
-                    router.navigate('#/homepage', {trigger: true});
+                    xtens.session.load(data, function () {
+                        var projects = xtens.session.get("projects");
+                        if (xtens.session.get("isWheel")) {
+                            xtens.session.set('activeProject', 'all');
+                            router.navigate('homepage', {trigger: true});
+                        }
+                        else if (projects.length < 2 ) {
+                            xtens.session.set('activeProject', projects[0].name);
+                            router.navigate('homepage', {trigger: true});
+                        }
+                        else{
+                            var modal = new ModalDialog({
+                                title: i18n('project-selection'),
+                                template: JST["views/templates/confirm-project-selection.ejs"]
+                            });
+                            that.$modal.append(modal.render().el);
+                            $('.selectpicker').selectpicker();
+                        // $('.modal-header').addClass('alert-success');
+                            modal.show();
+
+                            that.$('#project-selector').on('change.bs.select', function (e) {
+
+                                xtens.session.set('activeProject', e.target.value);
+                                $('#confirm-project').text( i18n('confirm') + " " + e.target.value);
+                                $('#confirm-project').prop('disabled', false);
+                                $('#confirm-project').addClass('btn-success');
+                                that.$('#confirm-project').on('click.bs.button', function (e) {
+                                    e.preventDefault();
+
+                                    modal.hide();
+                                    that.$modal.on('hidden.bs.modal', function (e) {
+                                        modal.remove();
+                                        router.navigate('homepage', {trigger: true});
+                                    });
+
+                                });
+                            });
+                        }
+                    });
                 })
                 .fail(function(jqxhr) {
                     // alert("Error: " + res.responseJSON.error);
@@ -273,6 +315,10 @@
             }
             return false;
         }
+
+
+
+
 
     });
 
@@ -318,7 +364,6 @@
 
         events: {
             'submit .edit-password-form':'updatePassword'
-            // 'change input':'checkInput'
         },
 
         initialize: function(options) {
@@ -337,23 +382,6 @@
             return this;
         },
 
-        // checkInput: function() {
-        //     $('input').keyup(function() {
-        //
-        //         var empty = false;
-        //         $('input').each(function() {
-        //             if (this.value.length < 7) {
-        //                 empty = true;
-        //             }
-        //         });
-        //         if (empty) {
-        //             $('#update').attr('disabled', 'disabled');
-        //         } else {
-        //             $('#update').removeAttr('disabled');
-        //         }
-        //     });
-        // },
-
         updatePassword: function(ev) {
             ev.preventDefault();
             var that = this;
@@ -371,7 +399,7 @@
                     newPass: newPass,
                     cnewPass: cnewPass
                 }),
-                contentType: 'application/json;charset:utf-8',
+                contentType: 'application/json',
 
                 error: function(err) {
                     if (that.modal)

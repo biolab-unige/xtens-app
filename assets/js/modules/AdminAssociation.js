@@ -55,12 +55,14 @@
             if (_.find(members, function (m) { return m.id === parseInt(idToAssociate); })){
                 return;
             }
-            ev.target.appendChild(document.getElementById(idToAssociate));
             var nondominants = this.dominant.get(this.nondominantName);
             nondominants.push(idToAssociate);
             this.dominant.set({ nondominantName:nondominants });
             this.dominant.save(null,{
-                success:function(result){console.log(result);},
+                success:function(result){
+                    console.log(result);
+                    ev.target.appendChild(document.getElementById(idToAssociate));
+                },
                 error:function(err){console.log(err);}
             });
 

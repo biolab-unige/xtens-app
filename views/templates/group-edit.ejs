@@ -1,11 +1,4 @@
 <div id="group">
-    <script>
-        $(document).ready(function() { $("select#association").select2(); });
-        $(document).ready(function() { $("select#dissociation").select2(); });
-        $(document).ready(function() { $("select#associationop").select2(); });
-        $(document).ready(function() { $("select#dissociationop").select2(); });
-    </script>
-
     <form name = "Myform" class="form-horizontal edit-group-form" role="form" data-parsley-trigger="focusout" data-parsley-validate>
 
         <legend class="legend"align="center"><%= group ? 'Edit' : 'New' %> Group</legend>
@@ -20,7 +13,7 @@
         <div class="form-group row">
             <label for="privilege-level" class="col-md-3 control-label"><%= __("privilege-level") %></label>
             <div class="col-md-6">
-                <select class ="form-control" name="privilege-level" id="privilege-level" ></select>
+                <select required class ="form-control" name="privilege-level" id="privilege-level" ></select>
             </div>
         </div>
 
@@ -51,5 +44,5 @@
         </div>
 
     </form>
+    <div class="group-modal"></div>
 </div>
-<div class="group-modal"></div>

@@ -88,8 +88,8 @@ describe('SampleController', function() {
             return;
         });
 
-        it('Should return 403 Forbidden - Authenticated user does not have edit privileges on the sample type 2', function (done) {
-            let expectedError = `Authenticated user does not have edit privileges on the sample type 2`;
+        it('Should return 403 Forbidden - Authenticated user has not edit privileges on the sample type 2', function (done) {
+            let expectedError = `Authenticated user has not edit privileges on the sample type 2`;
             request(sails.hooks.http.app)
             .post('/sample')
             .set('Authorization', `Bearer ${tokenNoPriv}`)
@@ -221,8 +221,8 @@ describe('SampleController', function() {
                 });
         });
 
-        it('Should return 403 FORBIDDEN - Authenticated user does not have edit privileges on the sample type', function (done) {
-            let expectedError = "Authenticated user does not have edit privileges on the sample type 2";
+        it('Should return 403 FORBIDDEN - Authenticated user has not edit privileges on the sample type', function (done) {
+            let expectedError = "Authenticated user has not edit privileges on the sample type 2";
             request(sails.hooks.http.app)
                 .put('/sample/3')
                 .set('Authorization', `Bearer ${tokenNoPriv}`)
@@ -417,8 +417,8 @@ describe('SampleController', function() {
             });
         });
 
-        it('Should return 403 Forbidden - Authenticated user does not have edit privileges on the sample type', function (done) {
-            let expectedError = 'Authenticated user does not have edit privileges on the sample type 2';
+        it('Should return 403 Forbidden - Authenticated user has not edit privileges on the sample type', function (done) {
+            let expectedError = 'Authenticated user has not edit privileges on the sample type 2';
             request(sails.hooks.http.app)
             .delete('/sample/1')
             .set('Authorization', `Bearer ${tokenNoPriv}`)
@@ -501,8 +501,8 @@ describe('SampleController', function() {
                 });
         });
 
-        it('Should return 403 FORBIDDEN - Authenticated user does not have edit privileges on any sample type', function (done) {
-            let expectedError = 'Authenticated user does not have edit privileges on any sample type';
+        it('Should return 403 FORBIDDEN - Authenticated user has not edit privileges on any sample type', function (done) {
+            let expectedError = 'Authenticated user has not edit privileges on any sample type';
 
             let stub = sinon.stub(sails.hooks.persistence.crudManager, "getDataTypesByRolePrivileges",function () {
                 return [];
@@ -526,8 +526,8 @@ describe('SampleController', function() {
                 });
         });
 
-        it('Should return 403 FORBIDDEN - Authenticated user does not have edit privileges on the sample type', function (done) {
-            let expectedError = 'Authenticated user does not have edit privileges on the sample type';
+        it('Should return 403 FORBIDDEN - Authenticated user has not edit privileges on the sample type', function (done) {
+            let expectedError = 'Authenticated user has not edit privileges on the sample type';
 
             let prova = sinon.stub(sails.hooks.persistence.crudManager, "getDataTypesByRolePrivileges",function () {
                 return [2];

@@ -26,8 +26,8 @@
         urlRoot: '/subject',
 
         defaults: {
-            sex: sexOptions.UNKNOWN,
-            projects: []
+            sex: sexOptions.UNKNOWN
+            // projects: []
         }
     });
 
@@ -40,30 +40,30 @@
 
         bindings: {
 
-            '#projects': {
-                observe: 'projects',
-                initialize: function($el, model, option) {
-                    $el.select2({ placeholder: i18n("please-select") });
-                },
-                selectOptions: {
-                    collection: 'this.projects',
-                    labelPath: 'name',
-                    valuePath: 'id',
-                    defaultOption: {
-                        label: "",
-                        value: null
-                    }
-                },
-                getVal: function($el, ev, options) {
-                    return $el.val().map(function(value) {
-                        // return _.findWhere(options.view.projects, {id: parseInt(value)});
-                        return _.parseInt(value);
-                    });
-                },
-                onGet: function(vals, options) {
-                    return (vals && vals.map(function(val){return val.id; }));
-                }
-            },
+            // '#projects': {
+            //     observe: 'projects',
+            //     initialize: function($el, model, option) {
+            //         $el.select2({ placeholder: i18n("please-select") });
+            //     },
+            //     selectOptions: {
+            //         collection: 'this.projects',
+            //         labelPath: 'name',
+            //         valuePath: 'id',
+            //         defaultOption: {
+            //             label: "",
+            //             value: null
+            //         }
+            //     },
+            //     getVal: function($el, ev, options) {
+            //         return $el.val().map(function(value) {
+            //             // return _.findWhere(options.view.projects, {id: parseInt(value)});
+            //             return _.parseInt(value);
+            //         });
+            //     },
+            //     onGet: function(vals, options) {
+            //         return (vals && vals.map(function(val){return val.id; }));
+            //     }
+            // },
 
             '#code': {
                 observe: 'code'
@@ -104,17 +104,68 @@
             this.template = JST["views/templates/subject-edit.ejs"];
             this.personalDetailsView = null;
             this.schemaView = null;
-            this.projects = options.projects;
+            // this.projects = options.projects;
+            if(xtens.session.get('activeProject') !== 'all'){
+                this.project = _.parseInt(_.find(xtens.session.get('projects'),{name: xtens.session.get('activeProject')} ).id);
+                this.dataType = _.find(this.dataTypes, {'project' : this.project} );
+            }
             if (options.subject) {
                 this.model = new Subject.Model(options.subject);
             }
             else {
-                this.model = new Subject.Model({type: _.last(this.dataTypes).id});
+                this.model = new Subject.Model();
             }
             this.render();
+            !options.subject ? this.dataType ? this.model.set("type", this.dataType.id) : this.setDataTypeSelection() : null;
             if (xtens.session.get('canAccessPersonalData')) {
                 this.addPersonalDetailsView();
             }
+        },
+
+        setDataTypeSelection: function() {
+            var $divForm = $('<div>').addClass('form-group metadataform-group');
+            var $divInput = $('<div>').addClass('data-input-div');
+
+            var $select = $('<select>').addClass('form-control').attr({
+                'id': 'data-type',
+                'name': 'data-type'
+            });
+            $divInput.append($select);
+            var $label = $('<label>').addClass('data-label').attr({'for': 'data-type'}).text( i18n("data-type") );
+            $divForm.append($label).append($divInput);
+            $('#personal-details').after($divForm);
+            this.addBinding(null, '#data-type', {
+                observe: 'type',
+
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
+                selectOptions: {
+                    collection: function() {
+                        var coll = [];
+                        _.each(this.dataTypes, function(dt) {
+                            var dtProject = _.find(xtens.session.get("projects"), {id: dt.project});
+                            if( xtens.session.get("activeProject") === 'all' || (dtProject && dtProject.name === xtens.session.get("activeProject"))){
+                                coll.push({
+                                    label: dt.name.toUpperCase() +" - "+  dtProject.name.toLowerCase(),
+                                    value: dt.id
+                                });
+                            }
+                        });
+                        return coll;
+                    },
+                    defaultOption: {
+                        label: "",
+                        value: null
+                    }
+                },
+                getVal: function($el) {
+                    return $el.val() && _.parseInt($el.val());
+                },
+                onGet: function(val) {
+                    return  val && _.isObject(val) ? val.id : val;
+                }
+            });
         },
 
         // render : function () {
@@ -197,16 +248,18 @@
 
                 that.model.destroy({
                     success: function(model, res) {
-                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
-                        modal.title= i18n('ok');
-                        modal.body= i18n('subject-deleted');
-                        that.$modal.append(modal.render().el);
-                        $('.modal-header').addClass('alert-success');
-                        modal.show();
-                        setTimeout(function(){ modal.hide(); }, 1200);
-                        that.$modal.on('hidden.bs.modal', function (e) {
-                            modal.remove();
-                            xtens.router.navigate(targetRoute, {trigger: true});
+                        that.$modal.one('hidden.bs.modal', function (e) {
+                            modal.template= JST["views/templates/dialog-bootstrap.ejs"];
+                            modal.title= i18n('ok');
+                            modal.body= i18n('subject-deleted');
+                            that.$modal.append(modal.render().el);
+                            $('.modal-header').addClass('alert-success');
+                            modal.show();
+                            setTimeout(function(){ modal.hide(); }, 1200);
+                            that.$modal.on('hidden.bs.modal', function (e) {
+                                modal.remove();
+                                xtens.router.navigate(targetRoute, {trigger: true});
+                            });
                         });
                     },
                     error: function(model, res) {
@@ -298,17 +351,16 @@
             this.dataTypePrivileges = options.dataTypePrivileges.models;
             this.params = options.params;
             this.template = JST["views/templates/subject-list.ejs"];
-            this.addLinksToModels();
             this.render();
         },
 
-        addLinksToModels: function() {
-            _.each(this.subjects.models, function(subject) {
-                var privilege = _.find(this.dataTypePrivileges, function(model){ return model.get('dataType') === subject.get("type").id;});
-                if(privilege.get('privilegeLevel') === "edit" ){
+        addLinksToModels: function(subjects) {
+            _.each(subjects ? subjects : this.subjects.models, function(subject) {
+                var privilege = _.find(this.dataTypePrivileges, function(model){ return model.get('dataType') === subject.get("type");});
+                if( privilege && privilege.get('privilegeLevel') === "edit" ){
                     subject.set("editLink", "#/subjects/edit/" + subject.id);}
-                var type = this.dataTypes.get(subject.get("type").id);
-                if (type.get("children") && type.get("children").length > 0) {
+                var type = this.dataTypes.get(subject.get("type"));
+                if (type && type.get("children") && type.get("children").length > 0) {
                     var sampleTypeChildren = _.where(type.get("children"), {"model": Classes.SAMPLE});
                     if (sampleTypeChildren.length) {
                         var sids = _.map(sampleTypeChildren, 'id').join();
@@ -316,22 +368,48 @@
                     }
                     var dataTypeChildren = _.where(type.get("children"), {"model": Classes.DATA});
                     if (dataTypeChildren.length) {
-                        subject.set("newDataLink", "#/data/new/0?parentSubject=" + subject.id);
+                        var dids = _.map(dataTypeChildren, 'id').join();
+                        subject.set("newDataLink", "#/data/new/0?idDataTypes="+dids+"&parentSubject=" + subject.id);
                     }
                 }
             }, this);
         },
 
         render: function(options) {
-            this.$el.html(this.template({__: i18n, subjects: this.subjects.models, dataTypePrivileges: this.dataTypePrivileges}));
+            var that = this;
+            this.addLinksToModels();
+            this.$el.html(this.template({__: i18n, subjects: this.subjects.models, dataTypePrivileges: this.dataTypePrivileges, dataTypes:this.dataTypes.models}));
             this.table = this.$('.table').DataTable({
                 "paging": false,
                 "info": false
             });
-            $('#pagination').append(JST["views/templates/pagination-bar.ejs"]({__: i18n, headers:this.headers}));
-            this.setPaginationInfo();
 
+            this.filterSubjects(this.params);
+            $('#pagination').append(JST["views/templates/pagination-bar.ejs"]({
+                __: i18n,
+                headers: this.headers,
+                rowsLenght: this.subjects.models.length,
+                DEFAULT_LIMIT: xtens.module("xtensconstants").DefaultLimit
+            }));
+            this.setPaginationInfo();
             return this;
+        },
+
+        filterSubjects: function(opt){
+            var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#btn-project').val());
+
+            if(rex =="/all/"){this.clearFilter();}else{
+                $('.content').hide();
+                $('.content').filter(function() {
+                    return rex.test($(this).text());
+                }).show();
+            }
+            this.headers.notFiltered = $('tr').filter(function() { return $(this).css('display') !== 'none'; }).length - 1;
+        },
+
+        clearFilter: function(){
+            // $('#project-selector').val('');
+            $('.content').show();
         },
 
         changePage: function (ev) {
@@ -343,9 +421,6 @@
                 type: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + xtens.session.get("accessToken")
-                },
-                data:{
-                    populate:'projects'
                 },
                 contentType: 'application/json',
                 success: function(results, options, res) {
@@ -361,6 +436,8 @@
                     headers['startRow'] = startRow;
                     headers['endRow'] = endRow;
                     that.headers = headers;
+                    // var subjects =  new Subject.List(results);
+                    // that.addLinksToModels(subjects);
                     that.subjects.reset(results);
                 },
                 error: function(err) {
@@ -399,29 +476,40 @@
             'click #graph': 'createGraph'
         },
 
-        initialize: function() {
+        initialize: function(options) {
             $("#main").html(this.el);
             this.template = JST["views/templates/subject-graph.ejs"];
+            this.idPatient = options.idPatient || undefined;
+            // this.dataTypes = options.dataTypes.models || undefined;
+            this.subjects = options.subjects && options.subjects.toJSON() || undefined;
             this.render();
         },
 
-        render: function(options) {
+        render: function() {
             var that = this;
-            that.$el.html(that.template({__: i18n}));
+            that.$el.html(that.template({__: i18n, idPatient:this.idPatient, subjects:this.subjects}));
+
+
+
+            $('#subject-selector').selectpicker();
+
+            if (this.idPatient) {
+                this.createGraph();
+            }
             return this;
         },
 
         createGraph : function () {
-            var patient = document.getElementById('select').value;
+            var idPatient = $('#subject-selector').val();
 
-            // retrieve all the descendant subjects and data for the given patient
+            // retrieve all the descendant subjects and data for the given idPatient
             $.ajax({
                 url: '/subjectGraph',
                 type: 'POST',
                 headers: {
                     'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                 },
-                data: { idPatient: patient },
+                data: { idPatient: idPatient },
                 success: function(err,res,body){
 
                     // clean the previous graph if present
@@ -446,7 +534,7 @@
                             return d.name+"<br />" +dato;
                         }
                         else
-                            return 'Patient'+" " +patient;
+                            return 'Patient'+" " +idPatient;
                     });
 
                     // generate a data hierarchy tree
@@ -462,11 +550,11 @@
                     });
 
                     // x and y required by d3.tip() function
-                    var x = d3.scale.ordinal()
-                    .rangeRoundBands([0, width], 0.1);
-
-                    var y = d3.scale.linear()
-                    .range([height, 0]);
+                    // var x = d3.scale.ordinal()
+                    // .rangeRoundBands([0, width], 0.1);
+                    //
+                    // var y = d3.scale.linear()
+                    // .range([height, 0]);
 
                     // create the svg container
                     var svg = d3.select("#main").append("svg")
@@ -510,6 +598,9 @@
                             if(node.name===links[i].target.name){
                                 node.type = links[i].type;
                                 node.metadata = links[i].metadata;
+                            }
+                            if (isNaN(node.x)) {
+                                node.x = width/2;
                             }
                         }
                     });

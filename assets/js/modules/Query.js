@@ -643,7 +643,7 @@
                 },
                 selectOptions: {
                     collection: function() {
-                        return this.dataTypes.map(function(dataType) {
+                        return this.dataTypes.models.map(function(dataType) {
                             return {
                                 label: dataType.get("name"),
                                 value: dataType.id
@@ -928,6 +928,7 @@
 
         render: function() {
             this.$el.html(this.template({__: i18n }));
+
             return this;
         },
 

@@ -153,6 +153,12 @@
      */
 
     DataType.Views.Edit = MetadataComponent.Views.Edit.fullExtend({
+        events: {
+            'submit .edit-datatype-form': 'saveDataType',
+            'click .add-metadata-group': 'addMetadataGroupOnClick',  // not used yet
+            'click button.delete': 'deleteDataType',
+            'change select#project': 'getProjectParents'
+        },
 
         tagName: 'div',
         className: 'dataType',
@@ -162,15 +168,26 @@
             $("#main").html(this.el);
             this.template = JST["views/templates/datatype-edit.ejs"];
             this.nestedViews = [];
-            this.idDataType = parseInt(options.params.id);
+            this.idDataType = parseInt(options.params.id) ? parseInt(options.params.id) : parseInt(options.params.duplicate);
+
             this.existingDataTypes = options.dataTypes;
+            this.projects = xtens.session.get('projects');
+            this.isCreation = true;
             if (this.idDataType) {
                 var that =this;
                 this.model = new DataType.Model(_.find(this.existingDataTypes, function(dt){ return dt.id === that.idDataType; }));
+
+                // if options.params.duplicate exist unset id and set the right project
+                if(options.params.duplicate) {
+                    this.model.unset('id');
+                    var project = _.find(this.projects, {'id': _.parseInt(options.params.projectDest)});
+                    this.model.set('project', project);
+                }
             }
             else {
                 this.model = new DataType.Model();
             }
+
             this.render();
             this.listenTo(this.model, 'invalid', this.handleValidationErrors);
         },
@@ -191,6 +208,24 @@
                     }
                 }
             },
+            '#project': {
+                observe: 'project',
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
+                selectOptions: {
+                    collection: 'this.projects',
+                    labelPath: 'name',
+                    valuePath: 'id',
+                    defaultOption: {
+                        label: '',
+                        value: null
+                    }
+                },
+                onGet: function(val) {
+                    return val && val.id;
+                }
+            },
             '#parents': {
                 observe: 'parents',
                 initialize: function($el) {
@@ -208,13 +243,33 @@
                 getVal: function($el, ev, options) {
                     return $el.val() && $el.val().map(function(value) {
                         return _.findWhere(options.view.existingDataTypes, {id: parseInt(value)});
-                        // return _.parseInt(value);
                     });
                 },
                 onGet: function(vals, options) {
                     return (vals && vals.map(function(val) {return val.id; }));
                 }
             }
+        },
+
+        getProjectParents: function (ev) {
+            var selProject = ev ? _.parseInt(ev.target.value) : _.parseInt($('#project').val());
+            var filteredValues  = [], newColl = [];
+
+            this.existingDataTypes.forEach(function (dt) {
+                if (dt.project.id === selProject){
+                    newColl.push({label:dt.name,value:dt.id});
+                }
+            });
+            newColl.forEach(function (dt) {
+                _.find($('#parents').val(),function (val) {
+                    if(dt.value === _.parseInt(val)){
+                        filteredValues.push(val);
+                    }
+                });
+            });
+            var options = {selectOptions:{collection:newColl}};
+            Backbone.Stickit.getConfiguration($('#parents')).update($('#parents'),filteredValues,{},options);
+            $('#parents').val(filteredValues).trigger("change");
         },
 
         render: function() {
@@ -224,6 +279,22 @@
             this.$form.parsley(parsleyOpts);
             this.$modal = this.$(".datatype-modal");
             this.stickit();
+
+            if(xtens.session.get('activeProject') !== 'all'){
+                this.activeProject = _.find(this.projects, function (p) {
+                    return p.name === xtens.session.get('activeProject');
+                });
+                $('#project').val(this.activeProject.id).trigger('change');
+                $('#project').prop('disabled', true);
+                this.getProjectParents();
+            }
+
+            if (this.idDataType) {
+                this.getProjectParents();
+                $('#project').prop('disabled', true);
+                this.isCreation = false;
+            }
+
             if (this.model.get("schema") && _.isArray(this.model.get('schema').body)) {
                 var body = this.model.get('schema').body;
                 for (var i=0, len=body.length; i<len; i++) {
@@ -240,11 +311,6 @@
             alert(this.model.validationError[0].message);
         },
 
-        events: {
-            'submit .edit-datatype-form': 'saveDataType',
-            'click .add-metadata-group': 'addMetadataGroupOnClick',  // not used yet
-            'click button.delete': 'deleteDataType'
-        },
 
         serialize: function() {
             var metadataBody = [];
@@ -256,9 +322,12 @@
 
 
         saveDataType: function(ev) {
+            ev.preventDefault();
             var id = $('#id').val();
             var header = this.$("#schemaHeader").find("select, input, textarea").serializeObject();
             header.fileUpload = header.fileUpload ? true : false;
+            this.model.get("project").id ? header.project = this.model.get("project").id : header.project = this.model.get("project");
+
             var that = this;
             var body = this.serialize();
             var dataTypeDetails = {
@@ -271,6 +340,7 @@
             };
 
             this.model.set("parents", _.map(this.model.get("parents"),'id'));
+            this.model.get("project").id ? this.model.set("project", this.model.get("project").id) : null;
 
             this.model.save(dataTypeDetails, {
                 //  patch: true,
@@ -289,7 +359,11 @@
                     setTimeout(function(){ modal.hide(); }, 1200);
                     that.$('.datatype-modal').on('hidden.bs.modal', function (e) {
                         modal.remove();
-                        xtens.router.navigate('datatypes', {trigger: true});
+                        if (xtens.session.get("isWheel") || !that.isCreation) {
+                            router.navigate('datatypes', {trigger: true});
+                        }else {
+                            router.navigate('datatypeprivileges/new/0?dataTypeId=' + dataType.get("id"), {trigger: true});
+                        }
                     });
 
                 },
@@ -321,16 +395,18 @@
 
                 that.model.destroy({
                     success: function(model, res) {
-                        modal.template= JST["views/templates/dialog-bootstrap.ejs"];
-                        modal.title= i18n('ok');
-                        modal.body= i18n('datatype-deleted');
-                        that.$modal.append(modal.render().el);
-                        $('.modal-header').addClass('alert-success');
-                        modal.show();
-                        setTimeout(function(){ modal.hide(); }, 1200);
-                        that.$modal.on('hidden.bs.modal', function (e) {
-                            modal.remove();
-                            xtens.router.navigate('datatypes', {trigger: true});
+                        that.$modal.one('hidden.bs.modal', function (e) {
+                            modal.template= JST["views/templates/dialog-bootstrap.ejs"];
+                            modal.title= i18n('ok');
+                            modal.body= i18n('datatype-deleted');
+                            that.$modal.append(modal.render().el);
+                            $('.modal-header').addClass('alert-success');
+                            modal.show();
+                            setTimeout(function(){ modal.hide(); }, 1200);
+                            that.$modal.on('hidden.bs.modal', function (e) {
+                                modal.remove();
+                                xtens.router.navigate('datatypes', {trigger: true});
+                            });
                         });
                     },
                     error: function(model, res) {
@@ -362,28 +438,105 @@
      *  This is the view to show in a table the full list of existing datatypes
      */
     DataType.Views.List = Backbone.View.extend({
+        events:{
+            'click #duplicate': 'setDuplicationParams'
+        },
+
         tagName: 'div',
         className: 'dataTypes',
 
-        initialize: function() {
+        initialize: function(options) {
             $("#main").html(this.el);
+            this.dataTypes = options.dataTypes;
             this.template = JST["views/templates/datatype-list.ejs"];
-            this.render();
+            this.render(options);
         },
 
         render: function(options) {
-            var that = this;
-            var dataTypes = new DataType.List();
-            dataTypes.fetch({
-                success: function(dataTypes) {
-                    that.$el.html(that.template({__: i18n, dataTypes: dataTypes.models}));
-                },
-                error: function() {
-                    that.$el.html(that.template({__: i18n}));
-                }
-            });
+
+            this.$el.html(this.template({ __: i18n, dataTypes: this.dataTypes.models}));
+            this.$modal = this.$(".data-type-modal");
+            xtens.session.get("projects").length < 2 ? $('#duplicate').prop('disabled',true) :null;
+            this.filterDataTypes(options.queryParams);
             return this;
+        },
+
+        filterDataTypes: function(opt){
+            var rex = opt && opt.projects ? new RegExp(opt.projects) : new RegExp($('#btn-project').val());
+
+            if(rex =="/all/"){this.clearFilter();}else{
+                $('.content').hide();
+                $('.content').filter(function() {
+                    return rex.test($(this).text());
+                }).show();
+            }
+        },
+
+        clearFilter: function(){
+            // $('#project-selector').val('');
+            $('.content').show();
+        },
+
+        setDuplicationParams: function(ev){
+            ev.preventDefault();
+            var that = this;
+            //create and render the modal
+            var modal = new ModalDialog({
+                title: i18n('duplicate-data-type'),
+                template: JST["views/templates/datatype-duplicate.ejs"],
+                data: { __: i18n, dataTypes: this.dataTypes.toJSON()}
+            });
+            this.$modal.append(modal.render().el);
+
+            //initalize select forms
+            $('#project-source').selectpicker();
+            $('#data-type-selector').selectpicker('hide');
+            $('#project-dest').selectpicker('hide');
+
+            modal.show();
+
+            $('#project-source').on('change.bs.select', function (e) {
+                var projectSource= $('#project-source').val();
+                $("label[for='data-type']").prop('hidden',false);
+                $('#data-type-selector').selectpicker('show');
+                $('#data-type-selector optgroup').prop('disabled', true);
+                $('#data-type-selector optgroup#'+projectSource).prop('disabled', false);
+                $('#data-type-selector').selectpicker('refresh');
+                $('#project-dest option').prop('disabled', false);
+                $('#project-dest option[value='+projectSource +']').prop('disabled', true);
+                $('#project-dest').selectpicker('refresh');
+
+                $('#data-type-selector').on('change.bs.select', function (e) {
+                    var dataTypeSelected= $('#data-type-selector').val();
+                    $("label[for='project-dest']").prop('hidden',false);
+                    // if (xtens.session.get('activeProject') !== 'all') {
+                    //     var project = xtens.session.get('activeProject');
+                    //     $('#project-dest').selectpicker('val', project);
+                    //     $('#project-dest').selectpicker('refresh');
+                    // }
+                    $('#project-dest').selectpicker('show');
+
+                    $('#project-dest').on('change.bs.select', function (e) {
+                        var projectDest= $('#project-dest').val();
+
+                        // $('#confirm-duplication').text( i18n('confirm') + " " + e.target.value);
+                        $('#confirm-duplication').prop('disabled', false);
+                        $('#confirm-duplication').addClass('btn-success');
+                        that.$('#confirm-duplication').on('click.bs.button', function (e) {
+                            e.preventDefault();
+
+                            modal.hide();
+                            that.$modal.on('hidden.bs.modal', function (e) {
+                                modal.remove();
+                                router.navigate('#/datatypes/new?duplicate='+dataTypeSelected+'&projectDest='+projectDest, {trigger: true});
+                            });
+                        });
+                    });
+                });
+            });
         }
+
+
     });
 
     DataType.Views.Graph = Backbone.View.extend({
@@ -403,11 +556,16 @@
         },
 
         render : function () {
+            var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
+            var criteria = {
+                sort: 'created_at ASC'
+            };
+            idProject ? criteria.project = idProject : null;
 
             var that = this;
             var dataTypes = new DataType.List();
             dataTypes.fetch({
-
+                data: $.param(criteria),
                 success : function(dataTypes) {
                     that.$el.html(that.template({ __: i18n, dataTypes : dataTypes.models}));
                 },
@@ -415,12 +573,14 @@
                     that.$el.html(that.template({ __: i18n}));
                 }
             });
+
             return this;
         },
 
         createGraph: function() {
-            var nameDatatype = document.getElementById('select1').value;
-
+            var selectedDatatype = document.getElementById('select1').value.split('-@#@-');
+            var idDatatype = selectedDatatype[0];
+            var nameDatatype = selectedDatatype[1];
             // retrieve all the descendant samples and data for the given datatype
 
             $.ajax({
@@ -429,7 +589,7 @@
                 headers: {
                     'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                 },
-                data: {idDataType: nameDatatype},
+                data: {idDataType: idDatatype},
 
                 success: function (res, textStatus, jqXHR) {
                     //Get parentWidth

@@ -31,7 +31,7 @@ ellipse {
         <div class="col-md-4">
         <select class="form-control" id="select1">
             <% _.each(dataTypes,function(dataType){ %>
-            <option id = "dataType"><%= dataType.get("name")%></option>
+            <option  id = "dataType" value="<%= dataType.get('id')%>-@#@-<%= dataType.get("name")%>" ><%= dataType.get("name")%></option>
             <%})%>
         </select>
         </div>
@@ -40,5 +40,3 @@ ellipse {
     </div>
     </div>
 </div>
-
-

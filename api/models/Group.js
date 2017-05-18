@@ -52,6 +52,11 @@ var Group = {
             via:'groups'
         },
 
+        projects:{
+            collection:'project',
+            via:'groups'
+        },
+
         dataTypes: {
             collection: 'dataType',
             via: 'groups',

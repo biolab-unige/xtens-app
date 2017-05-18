@@ -20,6 +20,7 @@ before_script:
   - mkdir logs
 script:
   - nv=$(node -v)
+  - npm run-script build:test
   - npm run-script test:v6-travis
 after_success:
   - npm run-script upload-to-coveralls

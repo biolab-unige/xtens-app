@@ -16,6 +16,7 @@
 //  to change `assets/styles/importer.less` instead.)
 var cssFilesToInject = [
     'styles/importer.css',
+    'dependencies/bootstrap-select/css/bootstrap-select.css',
     'dependencies/font-awesome/styles/font-awesome.css',
     'dependencies/select2/select2.css',
     'dependencies/datatables/styles/jquery.dataTables.css',
@@ -39,9 +40,8 @@ var jsFilesToInject = [
     'dependencies/**/fetch.js',
     'dependencies/http/http.js',
     // 'dependencies/**/underscore.js',
-    'dependencies/bootstrap/**/modal.js',
-    'dependencies/bootstrap/**/tooltip.js',
-    'dependencies/bootstrap/**/popover.js',
+    'dependencies/bootstrap/js/tooltip.js',
+    'dependencies/bootstrap/js/*.js',
     'dependencies/**/lodash.js',
     'dependencies/**/backbone.js',
     'dependencies/**/backbone.stickit.js',
@@ -60,7 +60,9 @@ var jsFilesToInject = [
     'dependencies/**/buttons.colvis.js',
     'dependencies/**/async.js',
     'dependencies/**/d3.js',
-
+    'dependencies/d3-tip/index.js',
+    'dependencies/**/Sortable.js',
+    '/dependencies/**/bootstrap-select.js',
     // Customised client-side js files
 
     'js/application/xtens.js',

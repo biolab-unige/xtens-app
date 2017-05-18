@@ -24,22 +24,25 @@
     "backbone": "~1.1.2",
     "backbone.stickit": "~0.9.2",
     "bootstrap": "~3.3.5",
-    "d3": "~3.4.13",
+    "bootstrap-select": "^1.12.2",
+    "d3": "~3.5.17",
+    "d3-tip":"~0.6.8",
     "datatables": "https://github.com/gicaz/DataTables.git#1.10.14-dev",
-    "datatables.net":"https://github.com/gicaz/Dist-DataTables.git#1.10.13",
+    "datatables.net": "https://github.com/gicaz/Dist-DataTables.git#1.10.13",
     "datatables-buttons": "~1.0.3",
     "datatables-plugins": "~1.10.7",
     "datatables.net-fixedcolumns": "^3.2.2",
     "dropzone": "~4.0.1",
     "font-awesome": "~4.2.0",
-    "jquery": "~1.11.3",
+    "jquery": "~3.1.0",
     "jszip": "Stuk/jszip#~2.5.0",
     "lodash": "~3.10.0",
     "moment": "~2.8.3",
     "parsleyjs": "~2.0.5",
     "pikaday": "https://github.com/dbushell/Pikaday.git#~1.2.0",
     "select2": "https://github.com/ivaynberg/select2.git#~3.5.3",
-    "select2-bootstrap-css": "https://github.com/t0m/select2-bootstrap-css.git#~1.4.1"
+    "select2-bootstrap-css": "https://github.com/t0m/select2-bootstrap-css.git#~1.4.1",
+    "Sortable": "sortablejs#^1.5.1"
   },
   "exportsOverride": {
     "jquery": {
@@ -47,7 +50,11 @@
     },
     "bootstrap": {
       "less": "less",
-      "js": "js/**/*.js"
+      "js": "dist/js/bootstrap.js"
+    },
+    "bootstrap-select": {
+      "css": "dist/css/bootstrap-select.css",
+      "js": "dist/js/bootstrap-select.js"
     },
     "underscore": {
       "js": "**/underscore.js"

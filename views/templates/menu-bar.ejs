@@ -1,52 +1,72 @@
-<ul id="left" class ="nav navbar-nav navbar-left">
-    <li class="dropdown">
-    <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" >
-        <%= __("management")%>
-        <span class="fa fa-angle-down"></span>
-    </a>
-    <ul id="box" class="dropdown-menu">
-      <% if (session.get("isWheel")) {%><h2 id="title"><%= __("super-user")%></h2>
-      <li><a href="#/groups"><%= __("groups") %></a></li>
-      <li><a href="#/operators"><%= __("operators") %></a></li>
-      <li><a href="#/biobanks"><%= __("biobanks") %></a></li>
-      <li><a href="#/datatypes"><%= __("data-types") %></a></li><%}
-       else if (session.get("isAdmin")) {%><h2 id="title"><%= __("manager")%></h2>
-       <li><a href="#/biobanks"><%= __("biobanks") %></a></li>
-       <li><a href="#/datatypes"><%= __("data-types") %></a></li><%}
-       else {%><h2 id="title"><%= __("standard")%></h2><%};%>
-        <li><a href="#/operators/updatePassword"><%= __("change-password") %></a></li>
-    </ul>
-
-    <li class="dropdown">
-    <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown">
-        <%= __("data-management") %>
-        <span class="fa fa-angle-down"></span>
-    </a>
-    <ul id="box" class="dropdown-menu">
-        <h2 id="title"><%= __("data-management") %></h2>
-        <li><a href="#/subjects"><%= __("subjects") %></a></li>
-        <li><a href="#/samples"><%= __("samples") %></a></li>
-        <li><a href="#/data"><%= __("data") %></a></li>
-        <li><a href="#/data/dedicated"><%= __("customised-data") %></a></li>
-    </ul>
-
-    </li>
-
-    <li class="dropdown">
-    <a  href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" data-toggle="collapse">
-        <%= __("search") %>
-        <span class="fa fa-angle-down"></span>
-    </a>
-    <ul id="box" class="dropdown-menu">
-        <h2 id="title"><%= __("search").toUpperCase() %></h2>
-        <li><a href="#/query"><%= __("advanced-search") %></a></li>
-    </ul>
-
-    </li>
-
-</ul>
-<div style="float:right">
-    <label class="logoutLblPos">
-        <a class="btn btn-default" href="#/logout"><%= __("logout") %></a>
-    </label>
+<div class="row text-center">
+    <label id="label-project-selector" for="project-selector" class="text-uppercase"><%= __("active-project") %>:</label>
+    <% var project = session.get("activeProject");%>
+    <button id="btn-project" value="<%=project%>" class="btn btn-default" data-placement="right" data-toggle="tooltip" title="<%= __('click-to-change-project')%>"><%= project !== 'all' ? project : __('all-projects') %></button>
 </div>
+  <div class="row">
+  <div class="col-md-11">
+
+    <ul id="left" class ="nav navbar-nav navbar-left">
+      <li class="dropdown">
+  <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown">
+    <%= __("management")%>
+      <span class="fa fa-angle-down"></span>
+  </a>
+  <ul id="box" class="dropdown-menu">
+    <% if (session.get("isWheel")) {%>
+      <h2 id="title"><%= __("super-user")%></h2>
+      <li> <a href="#/projects"> <%= __("projects") %></a> </li>
+      <li> <a href="#/groups"> <%= __("groups") %></a> </li>
+      <li> <a href="#/operators">   <%= __("operators") %></a> </li>
+      <li> <a href="#/biobanks">   <%= __("biobanks") %></a> </li>
+      <li> <a href="#/datatypes">   <%= __("data-types") %></a> </li>
+      <%}
+  else if (session.get("isAdmin")) {%>
+      <h2 id="title"><%= __("manager")%></h2>
+      <li><a href="#/biobanks"> <%= __("biobanks") %></a> </li>
+      <li><a href="#/datatypes"> <%= __("data-types") %></a> </li>
+      <%}
+  else {%>
+      <h2 id="title"><%= __("standard")%></h2>
+      <%}%>
+      <li><a href="#/operators/updatePassword"> <%= __("change-password") %></a> </li>
+  </ul>
+
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown"> <%= __("data-management") %> <span class="fa fa-angle-down"></span> </a>
+    <ul id="box" class="dropdown-menu">
+      <h2 id="title"> <%= __("data-management") %> </h2>
+      <li> <a href="#/subjects"> <%= __("subjects") %></a> </li>
+      <li> <a href="#/samples"> <%= __("samples") %></a> </li>
+      <li> <a href="#/data"> <%= __("data") %></a> </li>
+      <li> <a href="#/data/dedicated"> <%= __("customised-data") %> </a> </li>
+    </ul>
+  </li>
+
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" id="search" data-toggle="dropdown" data-toggle="collapse">
+      <%= __("search") %>
+        <span class="fa fa-angle-down"></span>
+    </a>
+    <ul id="box" class="dropdown-menu">
+      <h2 id="title"><%= __("search").toUpperCase() %></h2>
+      <li>
+        <a href="#/query">
+          <%= __("advanced-search") %>
+        </a>
+      </li>
+    </ul>
+
+    </li>
+
+  </ul>
+  </div>
+
+  <div class="col-md-1" style="float:right">
+
+    <label class="logoutLblPos">
+      <a class="btn btn-default" href="#/logout"><%= __("logout") %></a>
+    </label>
+  </div>
+</div>
+<div class="project-modal" />

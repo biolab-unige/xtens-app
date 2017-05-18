@@ -301,6 +301,7 @@ CREATE TABLE data_type (
     name text NOT NULL,
     model text NOT NULL,
     schema jsonb NOT NULL,
+    project integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL
 );
@@ -1518,23 +1519,23 @@ ALTER SEQUENCE project_id_seq OWNED BY project.id;
 
 
 --
--- Name: project_subjects__subject_projects; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
+-- Name: group_projects__project_groups; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
-CREATE TABLE project_subjects__subject_projects (
+CREATE TABLE group_projects__project_groups (
     id integer NOT NULL,
-    project_subjects integer NOT NULL,
-    subject_projects integer NOT NULL
+    project_groups integer NOT NULL,
+    group_projects integer NOT NULL
 );
 
 
-ALTER TABLE project_subjects__subject_projects OWNER TO xtenspg;
+ALTER TABLE group_projects__project_groups OWNER TO xtenspg;
 
 --
--- Name: project_subjects__subject_projects_id_seq; Type: SEQUENCE; Schema: public; Owner: xtenspg
+-- Name: group_projects__project_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: xtenspg
 --
 
-CREATE SEQUENCE project_subjects__subject_projects_id_seq
+CREATE SEQUENCE group_projects__project_groups_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1542,13 +1543,13 @@ CREATE SEQUENCE project_subjects__subject_projects_id_seq
     CACHE 1;
 
 
-ALTER TABLE project_subjects__subject_projects_id_seq OWNER TO xtenspg;
+ALTER TABLE group_projects__project_groups_id_seq OWNER TO xtenspg;
 
 --
--- Name: project_subjects__subject_projects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: xtenspg
+-- Name: group_projects__project_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: xtenspg
 --
 
-ALTER SEQUENCE project_subjects__subject_projects_id_seq OWNED BY project_subjects__subject_projects.id;
+ALTER SEQUENCE group_projects__project_groups_id_seq OWNED BY group_projects__project_groups.id;
 
 
 --
@@ -1975,7 +1976,7 @@ ALTER TABLE ONLY project ALTER COLUMN id SET DEFAULT nextval('project_id_seq'::r
 -- Name: id; Type: DEFAULT; Schema: public; Owner: xtenspg
 --
 
-ALTER TABLE ONLY project_subjects__subject_projects ALTER COLUMN id SET DEFAULT nextval('project_subjects__subject_projects_id_seq'::regclass);
+ALTER TABLE ONLY group_projects__project_groups ALTER COLUMN id SET DEFAULT nextval('group_projects__project_groups_id_seq'::regclass);
 
 
 --
@@ -2123,7 +2124,7 @@ ALTER TABLE ONLY datatype_groups__group_datatypes
 --
 
 ALTER TABLE ONLY data_type
-    ADD CONSTRAINT datatype_name_key UNIQUE (name);
+    ADD CONSTRAINT datatype_name_key UNIQUE (name,project);
 
 
 --
@@ -2407,19 +2408,19 @@ ALTER TABLE ONLY project
 
 
 --
--- Name: project_subjects__subject_projects_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
+-- Name: group_projects__project_groups_key; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
-ALTER TABLE ONLY project_subjects__subject_projects
-    ADD CONSTRAINT project_subjects__subject_projects_key UNIQUE (project_subjects, subject_projects);
+ALTER TABLE ONLY group_projects__project_groups
+    ADD CONSTRAINT group_projects__project_groups_key UNIQUE (project_groups, group_projects);
 
 
 --
--- Name: project_subjects__subject_projects_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
+-- Name: group_projects__project_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
-ALTER TABLE ONLY project_subjects__subject_projects
-    ADD CONSTRAINT project_subjects__subject_projects_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY group_projects__project_groups
+    ADD CONSTRAINT group_projects__project_groups_pkey PRIMARY KEY (id);
 
 
 --
@@ -2530,6 +2531,13 @@ ALTER TABLE ONLY data_files__datafile_data
 
 ALTER TABLE ONLY datatype_privileges
     ADD CONSTRAINT data_type_fkey FOREIGN KEY (data_type) REFERENCES data_type(id) MATCH FULL ON DELETE CASCADE;
+
+--
+-- Name: project_fkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
+--
+
+ALTER TABLE ONLY data_type
+    ADD CONSTRAINT project_fkey FOREIGN KEY (project) REFERENCES project(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2656,8 +2664,8 @@ ALTER TABLE ONLY subject
 -- Name: project_subjects_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
 --
 
-ALTER TABLE ONLY project_subjects__subject_projects
-    ADD CONSTRAINT project_subjects_fkey FOREIGN KEY (project_subjects) REFERENCES project(id) MATCH FULL ON DELETE CASCADE;
+ALTER TABLE ONLY group_projects__project_groups
+    ADD CONSTRAINT project_groups_fkey FOREIGN KEY (project_groups) REFERENCES project(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -2672,8 +2680,8 @@ ALTER TABLE ONLY datafile_samples__sample_files
 -- Name: subject_projects_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
 --
 
-ALTER TABLE ONLY project_subjects__subject_projects
-    ADD CONSTRAINT subject_projects_fkey FOREIGN KEY (subject_projects) REFERENCES subject(id) MATCH FULL ON DELETE CASCADE;
+ALTER TABLE ONLY group_projects__project_groups
+    ADD CONSTRAINT group_projects_fkey FOREIGN KEY (group_projects) REFERENCES xtens_group(id) MATCH FULL ON DELETE CASCADE;
 
 
 --
@@ -3405,21 +3413,21 @@ GRANT ALL ON SEQUENCE project_id_seq TO xtenspg;
 
 
 --
--- Name: project_subjects__subject_projects; Type: ACL; Schema: public; Owner: xtenspg
+-- Name: group_projects__project_groups; Type: ACL; Schema: public; Owner: xtenspg
 --
 
-REVOKE ALL ON TABLE project_subjects__subject_projects FROM PUBLIC;
-REVOKE ALL ON TABLE project_subjects__subject_projects FROM xtenspg;
-GRANT ALL ON TABLE project_subjects__subject_projects TO xtenspg;
+REVOKE ALL ON TABLE group_projects__project_groups FROM PUBLIC;
+REVOKE ALL ON TABLE group_projects__project_groups FROM xtenspg;
+GRANT ALL ON TABLE group_projects__project_groups TO xtenspg;
 
 
 --
--- Name: project_subjects__subject_projects_id_seq; Type: ACL; Schema: public; Owner: xtenspg
+-- Name: group_projects__project_groups_id_seq; Type: ACL; Schema: public; Owner: xtenspg
 --
 
-REVOKE ALL ON SEQUENCE project_subjects__subject_projects_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE project_subjects__subject_projects_id_seq FROM xtenspg;
-GRANT ALL ON SEQUENCE project_subjects__subject_projects_id_seq TO xtenspg;
+REVOKE ALL ON SEQUENCE group_projects__project_groups_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE group_projects__project_groups_id_seq FROM xtenspg;
+GRANT ALL ON SEQUENCE group_projects__project_groups_id_seq TO xtenspg;
 
 
 --
@@ -3492,7 +3500,6 @@ GRANT ALL ON TABLE xtens_group TO xtenspg;
 REVOKE ALL ON SEQUENCE xtens_group_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE xtens_group_id_seq FROM xtenspg;
 GRANT ALL ON SEQUENCE xtens_group_id_seq TO xtenspg;
-
 
 --
 -- PostgreSQL database dump complete

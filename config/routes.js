@@ -82,6 +82,7 @@ module.exports.routes = {
     // PersonalDetails Controller
 
     // Project Controller
+    'GET /project/edit': {controller: 'project', action: 'edit'},
 
     // Query Controller
     // Advanced Search API
@@ -93,7 +94,12 @@ module.exports.routes = {
     // Subject Controller
     'GET /subject/edit': {controller: 'subject', action: 'edit'},
     'POST /subjectGraph':{controller:'subject',action:'createGraph'},
-    'POST /subjectGraphSimple':{controller:'subject',action:'createGraphSimple'}
+    'POST /subjectGraphSimple':{controller:'subject',action:'createGraphSimple'},
+
+    'GET /app': {
+        controller: 'main',
+        action: 'getAppUI'
+    }
 
 
 

@@ -130,5 +130,29 @@
         "dataType": 5,
         "group": 1,
         "privilegeLevel": "edit"
+    },
+    {
+        "id": 23,
+        "dataType": 7,
+        "group": 1,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 24,
+        "dataType": 7,
+        "group": 2,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 25,
+        "dataType": 7,
+        "group": 3,
+        "privilegeLevel": "edit"
+    },
+    {
+        "id": 26,
+        "dataType": 7,
+        "group": 4,
+        "privilegeLevel": "edit"
     }
 ]

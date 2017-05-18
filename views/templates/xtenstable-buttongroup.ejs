@@ -56,4 +56,7 @@
     <% if(hasDataChildren){ %>
     <button type="button" class="btn btn-xs btn-default xtenstable-deriveddata"><%= __('derived-data') %></button>
     <%}%>
+    <% if(dataTypeModel === "Subject"){ %>
+    <button type="button" class="btn btn-xs btn-default xtenstable-subjectgraph"><%= __('subject-graph') %></button>
+    <%}%>
 </div>

@@ -14,24 +14,29 @@
                             <th><%= __("donor") %></th>
                             <th><%= __("diagnosis") %></th>
                             <th><%= __("anatomical-position")%></th>
+                            <th style="display: none;"><%= __("project") %></th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                     <% _.each(samples, function(sample) {
-                    var metadata = sample.get("metadata") %>
-                    <tr>
-                        <td><%= sample.get("biobank") && sample.get("biobank").acronym %></td>
+                    var metadata = sample.get("metadata")
+                    var dataType = _.find(dataTypes, {id : sample.get('type')});
+                    var sampleProject = _.find(xtens.session.get("projects"), {id :  dataType.get("project")}); %>
+
+                    <tr class="content">
+                        <td><%= sample.get("acronym") %></td>
                         <td><%= metadata.arrival_code && metadata.arrival_code.value %></td>
-                        <td><%= sample.get("biobankCode") %></td>
-                        <td><%= sample.get("type").name %></td>
-                        <td><%= sample.get("donor") && sample.get("donor").code %></td>
+                        <td><%= sample.get("biobank_code") %></td>
+                        <td><%= dataType.get("name") %></td>
+                        <td><%= sample.get("code") %></td>
                         <td><%= metadata.pathology &&  metadata.pathology.value %></td>
                         <td><%= metadata.sample_codification && metadata.sample_codification.value %></td>
+                        <td style="display:none;"><%= sampleProject ? sampleProject.name : null %></td>
                         <td  class="text-right">
                           <% var privilege = dataTypePrivileges.find(function(model) {
-                            return model.get('dataType') === sample.get("type").id; });
-                           if(privilege.get("privilegeLevel") === "edit" ){ %>
+                            return model.get('dataType') === sample.get("type"); });
+                           if(privilege && privilege.get("privilegeLevel") === "edit" ){ %>
                             <a class="btn" href="<%= sample.get("editLink") %>"><%=__("edit") %></a>
                             <%} %>
                             <% if (sample.get("newDerivativeLink") && sample.get("newDerivativeLink").length > 0) {%>
@@ -41,7 +46,7 @@
                             <a class="btn" href="<%= sample.get("newDataLink") %>"><%= __("new-data") %></a>
                             <%} %>
                         </td>
-                    </tr>
+                      </tr>
                     <% }) %>
                     </tbody>
                 </table>

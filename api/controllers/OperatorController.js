@@ -10,11 +10,9 @@
 'use strict';
 
 const ControllerOut = require('xtens-utils').ControllerOut;
-const crudManager = sails.hooks.persistence.crudManager;
 const BluebirdPromise = require('bluebird');
 const createUser = BluebirdPromise.promisify(PassportService.protocols.local.createUser);
 const updatePassword = BluebirdPromise.promisify(PassportService.protocols.local.updatePassword);
-const ValidationError = require('xtens-utils').Errors.ValidationError;
 
 var OperatorController = {
 
@@ -31,7 +29,7 @@ var OperatorController = {
             sails.log(operator);
             return res.json(201, operator);
 
-        }).catch(function(error) {
+        }).catch(/* istanbul ignore next */ function(error) {
             sails.log(error.message);
             return co.error(error);
         });
@@ -55,7 +53,7 @@ var OperatorController = {
 
                 return res.json(204, null);
 
-            }).catch(function(error) {
+            }).catch(/* istanbul ignore next */ function(error) {
                 sails.log(error.message);
                 return co.error(error);
             });

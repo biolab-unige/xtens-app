@@ -42,7 +42,11 @@
 config/local.js
 coverage/*
 assets/dataFiles
+assets/bundles
 assets.json
+config/autoreload.js
+config/ssl/
+.bowerrc
 
 ################################################
 # Dependencies

@@ -8,9 +8,9 @@ const request = require('supertest');
 const loginHelper = require('./loginHelper');
 const sinon = require('sinon');
 
-describe('DataController', function() {
+describe('DataTypeController', function() {
 
-    let tokenA, tokenS;
+    let tokenSA, tokenA, tokenS;
 
     const schemaMetadata = {
         "body": [
@@ -30,6 +30,7 @@ describe('DataController', function() {
                         "fieldType": "Integer",
                         "sensitive": false,
                         "customValue": null,
+                        "description":"Description metadata 1",
                         "ontologyUri": null,
                         "formattedName": "metadata_1",
                         "possibleUnits": null,
@@ -46,6 +47,7 @@ describe('DataController', function() {
                         "required": false,
                         "fieldType": "Text",
                         "sensitive": false,
+                        "description":"Description metadata 2",
                         "customValue": null,
                         "ontologyUri": null,
                         "formattedName": "metadata_2",
@@ -64,6 +66,7 @@ describe('DataController', function() {
             "name": "New DataType",
             "model": "Data",
             "version": "0.0.1",
+            "project":1,
             "ontology": "",
             "fileUpload": false,
             "description": "A new datatype for tests"
@@ -71,15 +74,20 @@ describe('DataController', function() {
     };
 
     before(function(done) {
-        loginHelper.loginAdminUser(request, function (bearerToken) {
-            tokenA = bearerToken;
-            sails.log.debug(`Got tokenA: ${tokenA}`);
+        loginHelper.loginSuperAdmin(request, function (bearerToken) {
+            tokenSA = bearerToken;
+            sails.log.debug(`Got tokenA: ${tokenSA}`);
 
-            loginHelper.loginAnotherStandardUserNoDataSens(request, function (bearerToken2) {
-                tokenS = bearerToken2;
-                sails.log.debug(`Got token: ${tokenS}`);
-                done();
-                return;
+            loginHelper.loginAdminUser(request, function (bearerToken) {
+                tokenA = bearerToken;
+                sails.log.debug(`Got tokenA: ${tokenA}`);
+
+                loginHelper.loginAnotherStandardUserNoDataSens(request, function (bearerToken2) {
+                    tokenS = bearerToken2;
+                    sails.log.debug(`Got token: ${tokenS}`);
+                    done();
+                    return;
+                });
             });
         });
     });
@@ -96,7 +104,8 @@ describe('DataController', function() {
                 "parents": [1],
                 "name": "New DataType",
                 "schema": schemaMetadata,
-                "model": "Data"
+                "model": "Data",
+                "project": 1
 
             })
             .expect(201)
@@ -106,59 +115,59 @@ describe('DataController', function() {
                     done(err);
                 }
                 let resDataType = res.body;
-                // console.log(resDataType.id);
+                console.log(resDataType.id);
                 expect(resDataType.schema).to.eql(schemaMetadata);
                 done();
                 return;
             });
         });
 
-        it('Should return 400, metadata required', function (done) {
+        it('Should return ValidationError 400, parent of different project', function (done) {
+
+            // sails.log.debug(metadata);
+
             request(sails.hooks.http.app)
             .post('/dataType')
             .set('Authorization', `Bearer ${tokenA}`)
             .send({
-                "model": "Data",
-                "parents": [1],
+                "parents": [1,7],
                 "name": "New DataType",
-                "schema": {
-                    body:{
-                        "name": "Group one",
-                        "label": "METADATA GROUP",
-                        "content": [
-                            {
-                                "name": "Metadata 1",
-                                "label": "METADATA FIELD",
-                                "_group": "Group one",
-                                "isList": false,
-                                "hasUnit": false,
-                                "visible": true,
-                                "hasRange": false,
-                                "required": true,
-                                "fieldType": "wrongTypeFiled",
-                                "sensitive": false,
-                                "customValue": null,
-                                "ontologyUri": null,
-                                "formattedName": "metadata_1",
-                                "possibleUnits": null,
-                                "caseInsensitive": false
-                            }]
-                    },
-                    header:{
-                        "name": "New DataType",
-                        "model": "Data",
-                        "version": "0.0.1",
-                        "ontology": "",
-                        "fileUpload": false,
-                        "description": "A new datatype for tests"
-                    }
-                }
+                "schema": schemaMetadata,
+                "model": "Data",
+                "project": 1
+
             })
             .expect(400)
             .end(function(err, res) {
                 if (err) {
                     sails.log.error(err);
                     done(err);
+                    return;
+                }
+                // let resDataType = res.body;
+                // expect(resDataType.schema).to.eql(schemaMetadata);
+                done();
+                return;
+            });
+        });
+
+        it('Should return 400, schema required', function (done) {
+            request(sails.hooks.http.app)
+            .post('/dataType')
+            .set('Authorization', `Bearer ${tokenA}`)
+            .send({
+                "project": 1,
+                "model": "Data",
+                "parents": [1],
+                "name": "New DataType"
+
+            })
+            .expect(400)
+            .end(function(err, res) {
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
                 }
                 expect(res).to.be.error;
                 done();
@@ -178,9 +187,10 @@ describe('DataController', function() {
             .send({
                 "parents": [1],
                 "name": "update DataType",
-                "id":7,
+                "id":8,
                 "schema": schemaMetadata,
-                "model": "Data"
+                "model": "Data",
+                "project": 1
             })
             .expect(200)
             .end(function(err, res) {
@@ -193,6 +203,34 @@ describe('DataController', function() {
                 done();
                 return;
             });
+
+        });
+
+        it('Should return 400, parent of different project', function (done) {
+            const name = "update DataType";
+
+            request(sails.hooks.http.app)
+                .put('/dataType/7')
+                .set('Authorization', `Bearer ${tokenA}`)
+                .send({
+                    "parents": [1,7],
+                    "name": "update DataType",
+                    "id":8,
+                    "schema": schemaMetadata,
+                    "model": "Data",
+                    "project": 1
+                })
+                .expect(400)
+                .end(function(err, res) {
+                    // console.log(res);
+                    // expect(res.body.name).to.eql(name);
+                    if (err) {
+                        done(err);
+                        return;
+                    }
+                    done();
+                    return;
+                });
 
         });
 
@@ -223,7 +261,28 @@ describe('DataController', function() {
             //.send({id:1})
             .expect(200)
             .end(function(err, res) {
+                console.log(res.body);
                 expect(res.body).to.have.length(fixtures.datatype.length);
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
+                }
+                done();
+                return;
+            });
+        });
+
+        it('Should return OK 200 and expected n° of dataType', function (done) {
+            request(sails.hooks.http.app)
+            .get('/dataType/?project=[1,2,3,4,5]&populate=project')
+            .set('Authorization', `Bearer ${tokenSA}`)
+            // .send()
+            .expect(200)
+            .end(function(err, res) {
+                console.log(res.body);
+
+                expect(res.body).to.have.length(fixtures.datatype.length+1);
                 if (err) {
                     sails.log.error(err);
                     done(err);
@@ -258,7 +317,7 @@ describe('DataController', function() {
 
         it('Should return 200 OK with 1 deleted item if resource exists', function (done) {
             request(sails.hooks.http.app)
-            .delete('/dataType/7')
+            .delete('/dataType/8')
             .set('Authorization', `Bearer ${tokenA}`)
             .send()
             .expect(200)
@@ -302,14 +361,36 @@ describe('DataController', function() {
         it('Should return 200 OK with an object containing all information required', function (done) {
             let expectedDataTypes = _.clone(fixtures.datatype);
             request(sails.hooks.http.app)
-                .get('/dataType/edit?id=2')
+                .get('/dataType/edit?id=1')
                 .set('Authorization', `Bearer ${tokenA}`)
                 .send()
                 .expect(200)
                 .end(function(err, res) {
-                    // console.log(res.body);
+                    // console.log(res.body.dataTypes);
                     expect(res.body.params).to.exist;
-                    expect(res.body.params.id).to.eql('2');
+                    expect(res.body.params.id).to.eql('1');
+                    expect(res.body.dataTypes).to.exist;
+                    expect(res.body.dataTypes.length).to.eql(expectedDataTypes.length);
+                    if (err) {
+                        sails.log.error(err);
+                        done(err);
+                        return;
+                    }
+                    done();
+                    return;
+                });
+        });
+
+        it('Should return 200 OK with an object containing all information required', function (done) {
+            let expectedDataTypes = _.clone(fixtures.datatype);
+            request(sails.hooks.http.app)
+                .get('/dataType/edit?id=1')
+                .set('Authorization', `Bearer ${tokenSA}`)
+                .send()
+                .expect(200)
+                .end(function(err, res) {
+                    expect(res.body.params).to.exist;
+                    expect(res.body.params.id).to.eql('1');
                     expect(res.body.dataTypes).to.exist;
                     expect(res.body.dataTypes.length).to.eql(expectedDataTypes.length);
                     if (err) {
@@ -460,7 +541,7 @@ describe('DataController', function() {
             .post('/graph')
             .set('Authorization', `Bearer ${tokenA}`)
             .send({
-                "idDataType":"Patient"
+                "idDataType":"1"
             })
             .expect(200)
             .end(function(err,res) {

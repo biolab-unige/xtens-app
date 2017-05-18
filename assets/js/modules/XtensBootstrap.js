@@ -12,7 +12,7 @@
      * @description A class to implement a modal dialog based on Bootstrap Library
      */
     XtensBootstrap.Views.ModalDialog = Backbone.View.extend({
-  
+
         className: 'xtens-modal',
 
         events: {
@@ -23,10 +23,11 @@
             options.template ? this.template = options.template: this.template = JST['views/templates/dialog-bootstrap.ejs'];
             this.title = options.title;
             this.body = options.body;
+            this.data = options.data ? options.data : { __: i18n };
         },
 
         render: function() {
-            this.$el.html(this.template({ __: i18n }));
+            this.$el.html(this.template(this.data));
             this.$modal = this.$("div.modal");
             if (this.title) {
                 this.$(".modal-title").html(this.title);

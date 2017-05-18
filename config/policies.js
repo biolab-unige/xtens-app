@@ -31,7 +31,14 @@ module.exports.policies = {
     },
 
     GroupController: {
-        '*': ['bearerAuth', 'isWheel']
+        '*': ['bearerAuth', 'isWheel'],
+        find: ['bearerAuth', 'isAdmin'],
+        findOne: ['bearerAuth', 'isAdmin']
+    },
+
+    ProjectController: {
+        '*': ['bearerAuth', 'isWheel'],
+        find: 'bearerAuth'
     },
 
     OperatorController: {
@@ -42,6 +49,9 @@ module.exports.policies = {
 
     DataTypePrivilegesController: {
         '*': ['bearerAuth', 'isWheel'],
+        findOne: ['bearerAuth', 'isAdmin'],
+        'edit': ['bearerAuth', 'isAdmin'],
+        create: ['bearerAuth', 'isAdmin'],
         find: 'bearerAuth'
     },
 
