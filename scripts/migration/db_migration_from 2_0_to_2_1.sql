@@ -175,7 +175,7 @@ CREATE OR REPLACE FUNCTION dt_creation(default_project int) RETURNS integer AS $
     -- build data_types tree for every project
       FOR new_data_type IN SELECT * FROM data_type as dt WHERE dt.project != default_project ORDER BY id LOOP
 
-          FOR children in SELECT dt.id as parent, dt.name as name_parent, dt_2.name as name_child FROM data_type dt INNER JOIN datatype_children__datatype_parents dt_pc ON dt_pc.datatype_children = dt.id INNER JOIN data_type dt_2 ON dt_pc.datatype_parents = dt_2.id  WHERE dt.project = 5 AND dt.name = 'Patient' ORDER BY dt_2.id LOOP
+          FOR children in SELECT dt.id as parent, dt.name as name_parent, dt_2.name as name_child FROM data_type dt INNER JOIN datatype_children__datatype_parents dt_pc ON dt_pc.datatype_children = dt.id INNER JOIN data_type dt_2 ON dt_pc.datatype_parents = dt_2.id  WHERE dt.project = default_project AND dt.name = new_data_type.name ORDER BY dt_2.id LOOP
 
           SELECT * INTO child FROM data_type as dt WHERE dt.project = new_data_type.project AND dt.name = children.name_child;
 
