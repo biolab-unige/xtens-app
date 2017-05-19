@@ -785,7 +785,7 @@
             if (modelQueryView) {
                 this.addSubqueryView(modelQueryView);
             }
-            if (this.selectedPrivilege.get('privilegeLevel') !== VIEW_OVERVIEW) {
+            if (xtens.session.get("isWheel") || this.selectedPrivilege.get('privilegeLevel') !== VIEW_OVERVIEW) {
                 this.$addFieldButton.removeClass('hidden');
             }
             this.$addNestedButton.removeClass('hidden');
@@ -819,7 +819,7 @@
                 }, this);
             }
             else {
-                if (this.selectedPrivilege.get('privilegeLevel') !== VIEW_OVERVIEW) {
+                if (xtens.session.get("isWheel") || this.selectedPrivilege.get('privilegeLevel') !== VIEW_OVERVIEW) {
                     childView = new Query.Views.Row({fieldList: flattenedFields, model: new Query.RowModel()});
                     this.$el.append(childView.render().el);
                     this.add(childView);

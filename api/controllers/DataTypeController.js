@@ -65,7 +65,7 @@ const coroutines = {
         let adminGroups = yield Group.find(operator.adminGroups).populate('projects');
         const adminProjects = _.uniq(_.flatten(_.map(_.flatten(_.map(adminGroups, 'projects')), 'id')));
         if (!operator.isWheel && !_.find(adminProjects, function(dt){ return dt === _.parseInt(dataType.project);})) {
-            throw new PrivilegesError('User has not privilege as Admin on this data type');
+            throw new PrivilegesError('User has not privilege as Admin on this project');
         }
 
         if (!dataType.name) dataType.name = dataType.schema && dataType.schema.name;
@@ -121,7 +121,7 @@ const coroutines = {
         let adminDataTypes = yield DataType.find({project:adminProjects});
 
         if (!operator.isWheel && !_.find(adminDataTypes, function(dt){ return dt.id === _.parseInt(dataType.id);})) {
-            throw new PrivilegesError('User has not privilege as Admin on this data type');
+            throw new PrivilegesError('User has not privilege as Admin on this project');
         }
 
         // Validate data type (schema included)
@@ -171,7 +171,7 @@ const coroutines = {
         let adminDataTypes = yield DataType.find({project:adminProjects});
 
         if (!operator.isWheel && !_.find(adminDataTypes, function(dt){ return dt.id === _.parseInt(id);})) {
-            throw new PrivilegesError('User has not privilege as Admin on this data type');
+            throw new PrivilegesError('User has not privilege as Admin on this project');
         }
 
         const deleted = yield crudManager.deleteDataType(id);

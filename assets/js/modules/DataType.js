@@ -169,7 +169,7 @@
             this.template = JST["views/templates/datatype-edit.ejs"];
             this.nestedViews = [];
             this.idDataType = parseInt(options.params.id) ? parseInt(options.params.id) : parseInt(options.params.duplicate);
-
+            this.duplicate =  options.params.duplicate ? options.params.duplicate : false;
             this.existingDataTypes = options.dataTypes;
             this.projects = xtens.session.get('projects');
             this.isCreation = true;
@@ -178,7 +178,7 @@
                 this.model = new DataType.Model(_.find(this.existingDataTypes, function(dt){ return dt.id === that.idDataType; }));
 
                 // if options.params.duplicate exist unset id and set the right project
-                if(options.params.duplicate) {
+                if(this.duplicate) {
                     this.model.unset('id');
                     var project = _.find(this.projects, {'id': _.parseInt(options.params.projectDest)});
                     this.model.set('project', project);
@@ -280,7 +280,7 @@
             this.$modal = this.$(".datatype-modal");
             this.stickit();
 
-            if(xtens.session.get('activeProject') !== 'all'){
+            if(xtens.session.get('activeProject') !== 'all' && !this.duplicate){
                 this.activeProject = _.find(this.projects, function (p) {
                     return p.name === xtens.session.get('activeProject');
                 });
