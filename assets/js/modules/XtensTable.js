@@ -498,41 +498,46 @@
          * @description returns the list of files associated to the current data instance
          */
           showFileList: function(ev) {
-              var that = this;
-              var currRow = this.table.row($(ev.currentTarget).parents('tr'));
-              var id = currRow.data().id;
-              var model = this.dataType.get("model");
+            // if there is any open popover destroy it
+              if (!$('div.popover:visible').length){
+                  $('[data-original-title]').popover('hide');
+              }
+              else {
+                  var that = this;
+                  var currRow = this.table.row($(ev.currentTarget).parents('tr'));
+                  var id = currRow.data().id;
+                  var model = this.dataType.get("model");
 
             // subject has no associated files (at the moment)
-              if (model === Classes.SUBJECT)
-                  return false;
+                  if (model === Classes.SUBJECT)
+                      return false;
 
-              var data = model === Classes.SAMPLE ? new Sample.Model() : new Data.Model();
+                  var data = model === Classes.SAMPLE ? new Sample.Model() : new Data.Model();
 
-              data.set("id", currRow.data().id);
-              data.fetch({
-                  data: $.param({populate: ['files']}),
-                  success: function(result) {
-                      var files = result.get("files");
-                      var dataFiles = new DataFile.List(files);
-                      var view = new DataFile.Views.List({collection: dataFiles});
-                      console.log(dataFiles);
+                  data.set("id", currRow.data().id);
+                  data.fetch({
+                      data: $.param({populate: ['files']}),
+                      success: function(result) {
+                          var files = result.get("files");
+                          var dataFiles = new DataFile.List(files);
+                          var view = new DataFile.Views.List({collection: dataFiles});
+                          // console.log(dataFiles);
 
-                    // if there is any open popover destroy it
-                      $('[data-original-title]').popover('destroy');
-
-                      $(ev.currentTarget).popover({
-                          html: true,
-                          content: view.render().el,
-                          placement: 'auto right'
-                      }).popover('show');
-                      that.listenTo(view, 'closeMe', that.removeChild);
-                      that.childrenViews.push(view);
-                  },
-                  error: function(model, err) {
-                      console.log(err);
-                  }
-              });
+                          $(ev.currentTarget).popover({
+                              trigger:'click',
+                              container: 'body',
+                              html: true,
+                              content: view.render().el,
+                              placement: 'auto right'
+                          }).popover('show');
+                          that.listenTo(view, 'closeMe', that.removeChild);
+                          that.childrenViews.push(view);
+                      },
+                      error: function(model, err) {
+                          // console.log(err);
+                      }
+                  });
+              }
           },
 
         /**
