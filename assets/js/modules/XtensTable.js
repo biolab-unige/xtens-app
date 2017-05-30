@@ -499,7 +499,7 @@
          */
           showFileList: function(ev) {
             // if there is any open popover destroy it
-              if (!$('div.popover:visible').length){
+              if ($('div.popover:visible').length){
                   $('[data-original-title]').popover('hide');
               }
               else {
