@@ -48,7 +48,8 @@
     "xtens-fs": "git+https://github.com/biolab-unige/xtens-fs.git",
     "xtens-pg": "git+https://git@github.com/biolab-unige/xtens-pg.git",
     "xtens-utils": "git+https://github.com/biolab-unige/xtens-utils.git",
-    "xtens-waterline": "git+https://github.com/biolab-unige/xtens-waterline.git"
+    "xtens-waterline": "git+https://github.com/biolab-unige/xtens-waterline.git",
+    "waterline": "0.11.9"  
   },
   "scripts": {
     "start": "node app.js",
