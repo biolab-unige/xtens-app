@@ -43,9 +43,6 @@
   <% if(privilegeLevel !== "view_overview"){ %>
       <button type="button" class="btn btn-xs btn-default xtenstable-details"><%= __('details') %></button>
 
-      <% if((privilegeLevel === "download" || privilegeLevel === "edit") && fileUpload){ %>
-      <button type="button" class="btn btn-xs btn-default xtenstable-files"><%= __('files') %></button>
-      <%}%>
       <% if(privilegeLevel === "edit" && (xtens.session.get("canAccessSensitiveData") || !hasDataSensitive)){ %>
       <button type="button" class="btn btn-xs btn-default xtenstable-edit"><%= __('edit') %></button>
       <%}%>
@@ -59,4 +56,7 @@
     <% if(dataTypeModel === "Subject"){ %>
     <button type="button" class="btn btn-xs btn-default xtenstable-subjectgraph"><%= __('subject-graph') %></button>
     <%}%>
+    <% if((privilegeLevel === "download" || privilegeLevel === "edit") && fileUpload){ %>
+      <button type="button" class="btn btn-xs btn-default xtenstable-files"><%= __('files') %></button>
+      <%}%>
 </div>

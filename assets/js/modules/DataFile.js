@@ -1,33 +1,33 @@
 /**
  * @author  Massimiliano Izzo
  * @description This file contains the Backbone classes for handling DataType
- *              models, collections and views  
+ *              models, collections and views
  */
 (function(xtens, DataFile) {
 
     var i18n = xtens.module("i18n").en;
     var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
     /**
-     * @class 
+     * @class
      * @name DataFile.Model
      *
      */
     DataFile.Model = Backbone.Model.extend({
-        
+
         urlRoot: '/dataFile'
 
     });
-    
+
     /**
      * @class
      * @name DataFile.List
      */
     DataFile.List = Backbone.Collection.extend({
-    
+
         url: '/dataFile'
 
     });
-    
+
     /**
      * @class
      * @name DataFile.Views.List
@@ -38,10 +38,10 @@
         className: 'dataFile',
 
         events: {
-            'click .remove-me': 'closeMe',
+            // 'click .remove-me': 'closeMe',
             'click a.download-file-content': 'downloadFileContentOnClick'
         },
-        
+
         initialize: function() {
             this.template = JST["views/templates/datafile-list.ejs"];
         },
@@ -51,15 +51,15 @@
             this.$queryModal = this.$(".query-modal");
             return this;
         },
-        
+
         /**
          * @method
          * @name closeMe
          * @description trigger a 'closeMe' for the parent view to get it and close this child
          */
-        closeMe: function(ev) {
-            this.trigger("closeMe", this);
-        },
+        // closeMe: function(ev) {
+        //     this.trigger("closeMe", this);
+        // },
 
 
         /**
@@ -83,7 +83,7 @@
          * @link http://stackoverflow.com/questions/16086162/handle-file-download-from-ajax-post
          */
         downloadFileContent: function(idFile) {
-            
+
             var that = this;
             var xhr = new XMLHttpRequest();
             var url = 'fileContent?id=' + idFile;
@@ -100,13 +100,13 @@
                         matches = fileNameRegex.exec(disposition);
                         if (matches != null && matches[1]) {
                             fileName = matches[1].replace(/['"]/g, '');
-                        }  
+                        }
                     }
                     type = xhr.getResponseHeader('Content-Type');
                     blob = new Blob([this.response], {type: type});
 
                     if (typeof window.navigator.msSaveBlob !== 'undefined') {
-                        // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. 
+                        // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created.
                         // These URLs will no longer resolve as the data backing the URL has been freed."
                         window.navigator.msSaveBlob(blob, fileName);
                     }

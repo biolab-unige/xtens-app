@@ -45,7 +45,7 @@
           events: {
               "click .xtenstable-details": "showDetailsView",
               "click .xtenstable-edit": "showEditView",
-              "click .xtenstable-files": "showFileList",
+              "mouseover .xtenstable-files": "showFileList",
               "click .xtenstable-derivedsamples": "showDerivedSampleList",
               "click .xtenstable-deriveddata": "showDerivedDataList",
               "click .xtenstable-subjectgraph": "showSubjectGraph"
@@ -62,7 +62,7 @@
             // console.log(options.data);
               this.data = options.data;
               this.dataTypePrivilege = options.dataTypePrivilege;
-              this.childrenViews = [];
+              // this.childrenViews = [];
               this.prepareDataForRenderingJSON(this.dataTypePrivilege);
             // this.render();
           },
@@ -499,16 +499,11 @@
          */
           showFileList: function(ev) {
             // if there is any open popover destroy it
-              if ($('div.popover:visible').length){
-                  $('[data-original-title]').popover('hide');
-              }
-              else {
-                  var that = this;
-                  var currRow = this.table.row($(ev.currentTarget).parents('tr'));
-                  var id = currRow.data().id;
-                  var model = this.dataType.get("model");
-
-            // subject has no associated files (at the moment)
+              var that = this;
+              var currRow = this.table.row($(ev.currentTarget).parents('tr'));
+              var id = currRow.data().id;
+              var model = this.dataType.get("model");
+              if (!this[id]){
                   if (model === Classes.SUBJECT)
                       return false;
 
@@ -521,22 +516,35 @@
                           var files = result.get("files");
                           var dataFiles = new DataFile.List(files);
                           var view = new DataFile.Views.List({collection: dataFiles});
-                          // console.log(dataFiles);
 
                           $(ev.currentTarget).popover({
-                              trigger:'click',
-                              container: 'body',
+                              trigger:'manual',
+                              container: '.query',
                               html: true,
                               content: view.render().el,
-                              placement: 'auto right'
+                              placement: 'auto left'
+                          }).on("mouseenter", function () {
+                              var _this = this;
+                              $(this).popover("show");
+                              $(".popover").on("mouseleave", function () {
+                                  $(_this).popover('hide');
+                              });
+                          }).on("mouseleave", function () {
+                              var _this = this;
+                              setTimeout(function () {
+                                  if (!$(".popover:hover").length) {
+                                      $(_this).popover("hide");
+                                  }
+                              }, 100);
                           }).popover('show');
-                          that.listenTo(view, 'closeMe', that.removeChild);
-                          that.childrenViews.push(view);
+                          // that.listenTo(view, 'closeMe', that.removeChild);
+                          // that.childrenViews.push(view);
                       },
                       error: function(model, err) {
-                          // console.log(err);
+                        // console.log(err);
                       }
                   });
+                  this[id] = true;
               }
           },
 
