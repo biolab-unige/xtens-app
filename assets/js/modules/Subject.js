@@ -530,8 +530,13 @@
                     .offset([-10, 0])
                     .html(function(d) {
                         if(d.metadata!==undefined){
-                            var dato = (JSON.stringify(d.metadata)).replace(/,/g,"<br />");
-                            return d.name+"<br />" +dato;
+                            var dato = "";
+                            _.mapValues(d.metadata,function (m,key) {
+                                dato += key.replace("_", " ").toUpperCase() + ": " ;
+                                m.values ? dato += m.values.length + " Values" : dato += m.value;
+                                m.unit ? dato +=" " + m.unit + "<br />" : dato += "<br />";
+                            });
+                            return d.name+"<br />" + dato;
                         }
                         else
                             return 'Patient'+" " +idPatient;

@@ -45,11 +45,14 @@ const MainController = {
         sails.log("MainController.executeCustomDataManagement - executing customised function");
         const ps = require("child_process").spawn(sails.config.xtens.customisedDataMap.get(key), {});
         ps.stdout.on('data', (data) => {
+            console.log(data.toString());
+          
             sails.log(`stdout: ${data}`);
         });
 
         ps.stderr.on('data', (data) => {
             sails.log(`stderr: ${data}`);
+            console.log(data.toString());
             error += data.toString();
         });
 

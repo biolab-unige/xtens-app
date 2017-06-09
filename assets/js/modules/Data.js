@@ -1268,7 +1268,7 @@
     Data.Views.DedicatedManagement = Backbone.View.extend({
 
         events: {
-            'click #save': 'saveCustomisedData'
+            'submit .edit-data-form': 'saveCustomisedData'
         },
 
         tagName: 'div',
@@ -1292,6 +1292,8 @@
 
         render: function() {
             this.$el.html(this.template({__: i18n}));
+            $("#dataType").selectpicker();
+            this.$('form').parsley(parsleyOpts);
             this.dropzone = new Dropzone(this.$(".dropzone")[0], this.dropzoneOpts);
 
             this.dropzone.on("sending", function(file, xhr, formData) {
@@ -1328,10 +1330,13 @@
                 success: this.saveOnSuccess,
 
                 error: function(err) {
-                    if (that.modal)
+                    if (that.modal){
                         that.modal.hide();
-                    xtens.error(err);
-                    that.dropzone.removeAllFiles(true);
+                    }
+                    that.$modal.one('hidden.bs.modal', function (e) {
+                        xtens.error(err);
+                        that.dropzone.removeAllFiles(true);
+                    });
                 }
             });
             this.modal = new ModalDialog({
@@ -1344,19 +1349,23 @@
         },
 
         saveOnSuccess: function() {
+            var that = this;
             if (this.modal) {
                 this.modal.hide();
             }
-            var modal = new ModalDialog({
-                title: i18n('ok'),
-                body: i18n('data-correctly-stored-on-server')
-            });
-            this.$modal.append(modal.render().el);
-            modal.show();
+            this.$modal.one('hidden.bs.modal', function (e) {
+                that.modal.title= i18n('ok');
+                that.modal.body= i18n('data-correctly-stored-on-server');
 
-            this.$('.xtens-modal').on('hidden.bs.modal', function (e) {
-                modal.remove();
-                xtens.router.navigate('data', {trigger: true});
+                that.$modal.append(that.modal.render().el);
+                $('.modal-header').addClass('alert-success');
+                that.modal.show();
+
+                setTimeout(function(){ that.modal.hide(); }, 1200);
+                that.$modal.on('hidden.bs.modal', function (e) {
+                    that.modal.remove();
+                    xtens.router.navigate('data', {trigger: true});
+                });
             });
         }
 

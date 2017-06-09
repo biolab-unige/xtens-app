@@ -1,13 +1,13 @@
 <h1><%= __("customised-data-management") %></h1>
 <div id="content">
-    <form class="form-horizontal edit-data-form" role="form">
+    <form class="form-horizontal edit-data-form" role="form" data-parsley-focus="first" data-parsley-validate>
         <div id="data-header-row" class="row data-header-row">
-            <div class="form-group">
+            <div class="form-group dedicated-data-select">
                 <label for="dataType" class="data-label"><%= __("select-a-data-type") %></label>
                 <div class="data-input-div">
-                    <select class="form-control" id="dataType" name="dataType" required>
-                        <option value="CGH" selected="true">CGH</option>
-                        <option value="CBINFO" selected="true">NB Clinical information</option>
+                  <select required id='dataType' name="dataType" title="<%= __('please-select') %>" data-width="400px" class="form-control selectpicker">
+                        <option value="CGH">CGH</option>
+                        <option value="CBINFO">NB Clinical information</option>
                     </select>
                 </div>
             </div>
