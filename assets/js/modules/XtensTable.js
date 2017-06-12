@@ -526,17 +526,18 @@
                           }).on("mouseenter", function () {
                               var _this = this;
                               $(this).popover("show");
-                              $(".popover").on("mouseleave", function () {
-                                  if (!$(".xtenstable-files:hover").length) {
-                                      $(_this).popover("hide");
-                                  }
-                              });
                           }).on("mouseleave", function () {
                               var _this = this;
                               if (!$(".popover:hover").length && !$(".xtenstable-files:hover").length) {
                                   $(_this).popover("hide");
                               }
                           }).popover('show');
+
+                          $(".popover").on("mouseleave", function () {
+                              if (!$(".xtenstable-files:hover").length) {
+                                  $(ev.currentTarget).popover("hide");
+                              }
+                          });
                           // that.listenTo(view, 'closeMe', that.removeChild);
                           // that.childrenViews.push(view);
                       },
