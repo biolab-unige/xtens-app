@@ -3,11 +3,16 @@
 [![Build Status](https://travis-ci.org/biolab-unige/xtens-app.svg?branch=master)](https://travis-ci.org/biolab-unige/xtens-app)
 [![Coverage Status](https://coveralls.io/repos/github/biolab-unige/xtens-app/badge.svg?branch=master&etc=1)](https://coveralls.io/github/biolab-unige/xtens-app?branch=master)
 
+
+To migrate from XTENS 2.0 to **2.1** follow the link: [guide](https://github.com/biolab-unige/xtens-app/blob/master/docs/migration_guide_to_2_1.md)
+
+
 XTENS 2 is an open source web-based digital repository for heterogeneous data in life science.
 
 It is designed with the following features:
 
 * Define simply and quickly complex hierarchical structures without any code updating
+* _new v2.1_ Handle multiple projects. For each project, you can define a different Data type structure
 * Manage heterogenous data (subjects, samples, any type of data)
 * Roles and privileges system to handle data access and allowed operations for any authenticated user
 * Allows to handle binary data, organizing them in a distributed storage between all different centers of research
