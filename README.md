@@ -3,11 +3,16 @@
 [![Build Status](https://travis-ci.org/biolab-unige/xtens-app.svg?branch=master)](https://travis-ci.org/biolab-unige/xtens-app)
 [![Coverage Status](https://coveralls.io/repos/github/biolab-unige/xtens-app/badge.svg?branch=master&etc=1)](https://coveralls.io/github/biolab-unige/xtens-app?branch=master)
 
+
+To migrate from XTENS 2.0 to **2.1** follow the link: [guide](https://github.com/biolab-unige/xtens-app/blob/master/docs/migration_guide_to_2_1.md)
+
+
 XTENS 2 is an open source web-based digital repository for heterogeneous data in life science.
 
 It is designed with the following features:
 
 * Define simply and quickly complex hierarchical structures without any code updating
+* _new v2.1_ Handle multiple projects. For each project, you can define a different Data type structure
 * Manage heterogenous data (subjects, samples, any type of data)
 * Roles and privileges system to handle data access and allowed operations for any authenticated user
 * Allows to handle binary data, organizing them in a distributed storage between all different centers of research
@@ -23,7 +28,7 @@ The following software packages are required to be installed on your system:
 
 * <a href="https://sailsjs.com"><img src="https://cloud.githubusercontent.com/assets/14332186/22330446/8e8e29a4-e3c6-11e6-9e97-bb246d4c8049.png" width="100"></a>   [Sails.js 0.11+](http://sailjs.com);
 
-* <a href="https://www.postgresql.org/"><img src="https://cloud.githubusercontent.com/assets/14332186/22330780/2e1b4b4a-e3c8-11e6-84f0-6cf256719e01.png" width="60"></a>   [PostgreSQL 9.4+](http://www.postgresql.org/);
+* <a href="https://www.postgresql.org/"><img src="https://cloud.githubusercontent.com/assets/14332186/22330780/2e1b4b4a-e3c8-11e6-84f0-6cf256719e01.png" width="60"></a>   [PostgreSQL 9.5+](http://www.postgresql.org/);
 
 * <a href="http://bower.io/"><img src="https://cloud.githubusercontent.com/assets/14332186/22330443/8bda895a-e3c6-11e6-9809-2d0e50c537b6.png" width="50"></a>   [Bower](http://bower.io/). 
 
