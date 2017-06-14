@@ -494,8 +494,11 @@
             $('#subject-selector').selectpicker();
 
             if (this.idPatient) {
+                $('#subject-selector').val(this.idPatient);
+                $('#subject-selector').selectpicker('refresh');
                 this.createGraph();
             }
+
             return this;
         },
 
@@ -517,8 +520,8 @@
 
                     // set margins, width and height of the svg container
                     var margin = {top: 40, right: 120, bottom: 40, left: 120},
-                        width = 1000 - margin.left - margin.right,
-                        height = 800 - margin.top - margin.bottom;
+                        width = $('.subject').width() - margin.left - margin.right,
+                        height = $('#wrapper').height() - $('#header').height() - $('.subject').height() - margin.top - margin.bottom;
 
                     var color = d3.scale.category20();
 
@@ -544,7 +547,7 @@
 
                     // generate a data hierarchy tree
                     var tree = d3.layout.tree()
-                    .size([width, height])
+                    .size([width - 200, height])
                     // decrease the separation among nodes dividing the distance by a factor 2 for each level
                     .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
 
@@ -603,6 +606,7 @@
                             if(node.name===links[i].target.name){
                                 node.type = links[i].type;
                                 node.metadata = links[i].metadata;
+                                node.privilege = links[i].privilege;
                             }
                             if (isNaN(node.x)) {
                                 node.x = width/2;
@@ -666,7 +670,27 @@
                         }
                     })
                     .on('mouseover', tip.show)
-                    .on('mouseout', tip.hide);
+                    .on('mouseout', tip.hide)
+                    .on('click', function (e) {
+                        if (e.privilege !== "view_overview") {
+
+                            var splitted = e.name.split("_");
+                            var model = splitted[0];
+                            var id = splitted[1];
+                            switch (model) {
+                                case "s":
+                                    $('.d3-tip').remove();
+                                    xtens.router.navigate('samples/details/'+ id, {trigger: true});
+                                    break;
+                                case "d":
+                                    $('.d3-tip').remove();
+                                    xtens.router.navigate('data/details/'+ id, {trigger: true});
+                                    break;
+                                default:
+
+                            }
+                        }
+                    });
 
                     // add the colour legend
                     var legend = svg.selectAll(".legend")

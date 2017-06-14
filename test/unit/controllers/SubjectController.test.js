@@ -608,11 +608,14 @@ describe('SubjectController', function() {
                 "metadata":{},
                 "parent_sample": null,
                 "parent_data": null } ];
+
+
         const expectedRes = {
             "links": [
                 {
                     "source": "d_1",
                     "target": "s_2",
+                    "privilege": "edit",
                     "name": "s_2",
                     "type": "Tissue",
                     "metadata": {}
@@ -620,6 +623,7 @@ describe('SubjectController', function() {
                 {
                     "source": "s_4",
                     "target": "s_5",
+                    "privilege": "edit",
                     "name": "s_5",
                     "type": "Tissue",
                     "metadata": {}
@@ -627,6 +631,7 @@ describe('SubjectController', function() {
                 {
                     "source": "d_1",
                     "target": "s_3",
+                    "privilege": "view_overview",
                     "name": "s_3",
                     "type": "Fluid",
                     "metadata": {}
@@ -634,6 +639,7 @@ describe('SubjectController', function() {
                 {
                     "source": "s_4",
                     "target": "s_6",
+                    "privilege": "view_overview",
                     "name": "s_6",
                     "type": "Fluid",
                     "metadata": {}
@@ -642,12 +648,14 @@ describe('SubjectController', function() {
                     "source": "Patient",
                     "target": "d_1",
                     "name": "d_1",
+                    "privilege": "edit",
                     "type": "Star",
                     "metadata": {}
                 },
                 {
                     "source": "Patient",
                     "target": "s_4",
+                    "privilege": "edit",
                     "name": "s_4",
                     "type": "Tissue",
                     "metadata": {}

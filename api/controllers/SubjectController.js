@@ -353,14 +353,14 @@ module.exports = {
                     })){
                         if(privilege.privilegeLevel === VIEW_OVERVIEW){ row.metadata = {};}
                         if (row.parent_data !== null && _.find(idRows, function(i){return i === row.parent_data;})) {
-                            return {'source':row.parent_data,'target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata};
+                            return {'source':row.parent_data,'target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata, privilege: privilege.privilegeLevel};
                         }
                         else if(row.parent_sample !== null && _.find(idRows, function(i){return i === row.parent_sample;})) {
-                            return {'source':row.parent_sample,'target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata};
+                            return {'source':row.parent_sample,'target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata, privilege: privilege.privilegeLevel};
                         }
                         else {
-                            return {'source':'Patient','target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata};
-                            console.log(privilege);
+                            return {'source':'Patient','target':row.id,'name':row.id,'type':row.type,'metadata':row.metadata, privilege: privilege.privilegeLevel};
+                            // console.log(privilege);
                         }
                     }
 

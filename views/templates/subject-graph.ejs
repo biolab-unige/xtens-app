@@ -38,16 +38,11 @@ ellipse {
     <div class="row">
         <div class="col-md-4">
           <select id='subject-selector' class="form-group selectpicker" data-live-search="true" data-width="fit">
-            <% if (idPatient) {%>
-            <option selected value='<%= idPatient %>'>id - <%= idPatient %></option>
-            <%} else {%>
             <% _.each(subjects, function(subject) {
               var label = subject.given_name && subject.surname ? subject.code + ": " + subject.surname + " " + subject.given_name : subject.code; %>
               <option value='<%= subject.id %>'><%= label %></option>
-              <% }) %>
-            <%}%>
-
-            </select>
+            <% }) %>
+          </select>
     </div>
     <div class="col-md-4">
         <a id="graph" class="btn btn-primary">Generate Graph</a>

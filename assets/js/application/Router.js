@@ -693,13 +693,12 @@
         subjectGraph: function(queryString) {
             var that = this;
             var queryParams = parseQueryString(queryString);
-            if (queryParams.idPatient) {
-                this.loadView(new Subject.Views.Graph({
-                    idPatient: queryParams.idPatient
-                }));
-                return;
-            }
-            var dataTypes = new DataType.List();
+            // if (queryParams.idPatient) {
+            //     this.loadView(new Subject.Views.Graph({
+            //
+            //     }));
+            //
+            // }
 
             // var $dataTypesDeferred = dataTypes.fetch({
             //     data: $.param({ populate: ['children'] })
@@ -722,6 +721,7 @@
                 success: function(results, options, res) {
                     that.loadView(new Subject.Views.Graph({
                             // dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
+                        idPatient: queryParams.idPatient ? queryParams.idPatient :  undefined,
                         subjects: new Subject.List(results)
                     }));
                 },
