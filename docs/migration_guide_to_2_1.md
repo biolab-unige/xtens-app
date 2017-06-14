@@ -1,10 +1,42 @@
 # Guide to migrate from XTENS 2.0 TO 2.1
 
+## System Prerequisites:
+The following software packages are required to be installed on your system:
+
+* <a href="https://nodejs.org"><img src="https://cloud.githubusercontent.com/assets/14332186/22329480/bf0228ec-e3c1-11e6-9d8b-7840838e177e.png" width="100"></a>   [Node.js v6+](http://nodejs.org/);
+
+* <a href="https://sailsjs.com"><img src="https://cloud.githubusercontent.com/assets/14332186/22330446/8e8e29a4-e3c6-11e6-9e97-bb246d4c8049.png" width="100"></a>   [Sails.js 0.11+](http://sailjs.com);
+
+* <a href="https://www.postgresql.org/"><img src="https://cloud.githubusercontent.com/assets/14332186/22330780/2e1b4b4a-e3c8-11e6-84f0-6cf256719e01.png" width="60"></a>   [PostgreSQL 9.5+](http://www.postgresql.org/) (be sure that postgresql version is >= 9.5. Migration script will fail with previous versions);
+
+* <a href="http://bower.io/"><img src="https://cloud.githubusercontent.com/assets/14332186/22330443/8bda895a-e3c6-11e6-9809-2d0e50c537b6.png" width="50"></a>   [Bower](http://bower.io/). 
+
+* <a href="https://gruntjs.com/"><img src="https://cloud.githubusercontent.com/assets/14332186/23852502/76eeb570-07e8-11e7-9643-fc6ee8f58a84.png" width="50"></a>   [Grunt](https://gruntjs.com/). 
  
-* Download the release 2.1 and extract the files
+ ## Installation (ubuntu server):
 
-* Run all preliminar commands to install dependencies and packages [link](https://github.com/biolab-unige/xtens-app#installation-ubuntu-server)
+* [Download](https://github.com/biolab-unige/xtens-app/releases/tag/2.1.0) the release 2.1
 
+
+* Move into xtens-app directory:
+
+        cd xtens-app
+        
+* Install npm packages:
+        
+        npm install && npm install sails
+        
+* Install bower packages:
+
+        bower install
+        
+* Load the bower packages:
+
+        grunt bower
+        
+* Create logs folder
+
+        mkdir logs
 
 ### Istructions for Database 
 
