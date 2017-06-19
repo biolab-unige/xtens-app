@@ -669,8 +669,13 @@
                             return "blue"; // if subject colour it with blue
                         }
                     })
-                    .on('mouseover', tip.show)
-                    .on('mouseout', tip.hide)
+                    .on('mouseover', function (e) {
+                        e.type ? d3.select(this).style("stroke", color(e.type)) : d3.select(this).style("stroke", "blue");
+                        tip.show(e);
+                    })
+                    .on('mouseout',  function (e) {
+                        tip.hide(e);
+                    })
                     .on('click', function (e) {
                         if (e.privilege !== "view_overview") {
 
@@ -687,6 +692,10 @@
                                     xtens.router.navigate('data/details/'+ id, {trigger: true});
                                     break;
                                 default:
+                                    $('.d3-tip').remove();
+                                    var idSubj = $('#subject-selector').val();
+                                    xtens.router.navigate('subjects/details/'+ idSubj, {trigger: true});
+                                    break;
 
                             }
                         }

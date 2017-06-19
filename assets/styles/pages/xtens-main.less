@@ -260,6 +260,16 @@ div.metadataloop-body > div.metadatacomponent-body {
   padding: 15px;
 }
 
+svg .node{
+  cursor: pointer;
+  stroke: black;
+  stroke-width: 4px;
+  stroke-opacity:0.0;
+  transition: stroke-opacity .1s ease;
+}
+
+svg .node:hover { stroke-opacity: 1; }
+
 // Drag and Drop css
 ul.source, ul.target {
   min-height: 50px;
