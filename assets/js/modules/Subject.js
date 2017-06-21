@@ -643,7 +643,7 @@
                     svg.selectAll(".node")
                     .data(nodes.filter(function(d){ return d.name;}))
                     .enter().append("circle")
-                    .attr("class", "node")
+                    .attr("class", "subject-node")
                     .attr("r",function(d){
                         if (d.metadata === undefined){
                             return 10; // for the subject use double node size
@@ -669,6 +669,8 @@
                             return "blue"; // if subject colour it with blue
                         }
                     })
+                    .style("cursor", "pointer")
+                    .style("stroke-width", "10px")
                     .on('mouseover', function (e) {
                         e.type ? d3.select(this).style("stroke", color(e.type)) : d3.select(this).style("stroke", "blue");
                         tip.show(e);
