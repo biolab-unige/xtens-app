@@ -6,6 +6,8 @@
     "firstName": "default administrator",
     "lastName": "sysadmin",
     "birthDate": "1970-01-01T00:00:00.000Z",
+    "laboratory": "Laboratory",
+    "phone": "0001 3237632",
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [1]
@@ -18,6 +20,8 @@
     "firstName": "default adminuser",
     "lastName": "demo adminuser",
     "birthDate": "1970-01-01T00:00:00.000Z",
+    "laboratory": "Laboratory",
+    "phone": "0001 3237632",
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [2]
@@ -30,6 +34,8 @@
     "firstName": "default user",
     "lastName": "demo user",
     "birthDate": "1970-01-01T00:00:00.000Z",
+    "laboratory": "Laboratory",
+    "phone": "0001 3237632",
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [3]
@@ -42,6 +48,8 @@
     "firstName": "default user",
     "lastName": "demo user",
     "birthDate": "1970-01-01T00:00:00.000Z",
+    "laboratory": "Laboratory",
+    "phone": "0001 3237632",
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [3]
@@ -54,6 +62,8 @@
     "firstName": "default user",
     "lastName": "demo user",
     "birthDate": "1970-01-01T00:00:00.000Z",
+    "laboratory": "Laboratory",
+    "phone": "0001 3237632",
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [4]
@@ -66,6 +76,8 @@
     "firstName": "login user",
     "lastName": "logout user",
     "birthDate": "1970-01-01T00:00:00.000Z",
+    "laboratory": "Laboratory",
+    "phone": "0001 3237632",
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [4]
@@ -78,6 +90,8 @@
     "firstName": "Passport",
     "lastName": "Service",
     "birthDate": "1970-01-01T00:00:00.000Z",
+    "laboratory": "Laboratory",
+    "phone": "0001 3237632",
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [5]
@@ -90,6 +104,8 @@
     "firstName": "user",
     "lastName": "NoPrivileges",
     "birthDate": "1970-01-01T00:00:00.000Z",
+    "laboratory": "Laboratory",
+    "phone": "0001 3237632",
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [5]

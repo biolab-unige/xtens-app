@@ -108,6 +108,14 @@
                 observe: 'email'
             },
 
+            '#laboratory': {
+                observe: 'laboratory'
+            },
+
+            '#phone': {
+                observe: 'phone'
+            },
+
             '#login': 'login'
 
 

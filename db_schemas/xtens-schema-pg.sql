@@ -302,6 +302,7 @@ CREATE TABLE data_type (
     model text NOT NULL,
     schema jsonb NOT NULL,
     project integer NOT NULL,
+    owner integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL
 );
@@ -1375,6 +1376,8 @@ CREATE TABLE operator (
     birth_date timestamp with time zone NOT NULL,
     sex text NOT NULL,
     email text NOT NULL,
+    laboratory text NOT NULL,
+    phone text NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL
 );
@@ -2373,6 +2376,13 @@ ALTER TABLE ONLY operator
 
 ALTER TABLE ONLY operator
     ADD CONSTRAINT operator_pkey PRIMARY KEY (id);
+
+--
+-- Name: owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY data_type
+    ADD CONSTRAINT owner_fkey FOREIGN KEY (owner) REFERENCES operator(id) MATCH FULL;
 
 
 --

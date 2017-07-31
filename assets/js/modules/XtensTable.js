@@ -36,6 +36,8 @@
       var Sample = xtens.module("sample");
       var DataFile = xtens.module("datafile");
       var VIEW_OVERVIEW = Privileges.VIEW_OVERVIEW;
+      var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
+
     /**
      * @class
      * @name Views.Datatable
@@ -61,6 +63,7 @@
               this.dataType = new DataTypeModel(options.dataType);
             // console.log(options.data);
               this.data = options.data;
+              this.$modal = $(".query-modal");
               this.dataTypePrivilege = options.dataTypePrivilege;
               // this.childrenViews = [];
               this.prepareDataForRenderingJSON(this.dataTypePrivilege);
@@ -111,7 +114,7 @@
          * @description show the datatable given the option object
          */
           displayDataTable: function() {
-
+              var that =this;
               if (this.tableOpts && !_.isEmpty(this.tableOpts.data)) {
                   this.table = this.$el.DataTable(this.tableOpts);
 
@@ -147,6 +150,42 @@
                   });
                   this.table.buttons().container().appendTo($('.col-sm-6:eq(0)', this.table.table().container()));
 
+                  $('td.manager').tooltip({
+                      position: {
+                          my: 'right center',
+                          at: 'left-10 center'
+                      },
+                      container: 'body',
+                      title: i18n("click-to-show-owner-contacts")
+                  });
+
+                  $('.manager').on( 'click', function (ev) {
+                      ev.stopPropagation();
+                      var data = that.table.row( $(ev.currentTarget).parents('tr') ).data();
+                      var projects = xtens.session.get("projects");
+                      var project = _.filter(projects,function (pr) {
+                          return pr.id === data.type;
+                      });
+
+
+                      if (that.modal) {
+                          that.modal.hide();
+                      }
+                      var modal = new ModalDialog({
+                          template: JST["views/templates/contact-modal.ejs"],
+                          data: { __: i18n, project: project[0], data: data}
+                      });
+
+                      that.$modal.append(modal.render().el);
+                      modal.show();
+
+                      that.$('.query-modal').on('hidden.bs.modal', function (e) {
+                          modal.remove();
+                          $('.modal-backdrop').remove();
+                      });
+
+                  } );
+
               }
 
             // the returned dataset is empty
@@ -179,7 +218,9 @@
                   hasSampleChildren = true;
               }
               var flattenedFields = this.dataType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
-              this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), xtens.session.get('canAccessPersonalData'));  // TODO manage permission for personalDetails
+              this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), xtens.session.get('canAccessPersonalData'));
+              this.columns.push({"title": i18n("manager"), "data": "owner.lastName", "className": "manager"});
+
               this.numLeft=this.columns.length;
 
               if(dataTypePrivilege && dataTypePrivilege.privilegeLevel !== VIEW_OVERVIEW){

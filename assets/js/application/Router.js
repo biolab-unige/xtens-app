@@ -903,7 +903,7 @@
             var that = this;
             var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
             var criteria = {
-                populate:['children'],
+                populate:['children', 'owner'],
                 sort: 'id ASC'
             };
             idProject ? criteria.project = idProject : null;

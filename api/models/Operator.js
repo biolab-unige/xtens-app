@@ -41,6 +41,18 @@ var Operator = {
             columnName: 'email'
         },
 
+        laboratory: {
+            type: 'string',
+            required: true,
+            columnName: 'laboratory'
+        },
+
+        phone: {
+            type: 'string',
+            required: true,
+            columnName: 'phone'
+        },
+
         login: {
             type: 'string',
             required: true,

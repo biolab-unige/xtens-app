@@ -123,6 +123,7 @@
         /* views/templates/operator-edit.ejs */
         "operator-manager": "Operator Manager",
         "confirm-password": "Confirm Password",
+        "laboratory": "Laboratory",
         "confirm": "Confirm",
         "min-8-characters": "Minimum of 8 characters",
         "create-operator": "Create Operator",
@@ -280,8 +281,11 @@
         "files": "Files",
         "derived-samples": "Derived Samples",
         "derived-data": "Derived Data",
+        /* views/templates/xtenstable-buttongroup.ejs  */
+        "contact-details": "Contact Details",
         /* assets/js/modules/XtensTable.js */
         "actions": "Actions",
+        "click-to-show-owner-contacts": "Click to Show Contacts",
         /* assets/js/modules/FileManager.js */
         "file-successfully-uploaded": "File Successfully Uploaded!",
         "the-file": "The file",

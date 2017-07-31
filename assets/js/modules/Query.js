@@ -1087,6 +1087,23 @@
                 this.modal.show(); */
                 return;
             }
+            if (_.isArray(result.dataType)) {
+              // TODO: test if works
+                _.forEach(result.dataType, function (dt, i) {
+                    var dto = _.filter(this.dataTypes.models, {id: dt.id});
+                    return _.filter(result.data, function (datum,i) {
+                        if(datum.type === dt.id){
+                            return result.data[i].owner = dto[0].attributes.owner;
+                        }
+                    });
+                });
+            }
+            else {
+                var dt = _.filter(this.dataTypes.models, {id: result.dataType.id});
+                _.forEach(result.data, function (d) {
+                    d.owner = dt[0].attributes.owner;
+                });
+            }
 
             this.tableView = new XtensTable.Views.DataTable(result);
             this.$tableCnt.append(this.tableView.render().el);

@@ -55,6 +55,8 @@ describe("PassportService protocol Local", function() {
                 "login": "createuser",
                 "firstName": "default createuser",
                 "lastName": "createuser",
+                "laboratory": "Laboratory",
+                "phone":"0001 2298329",
                 "birthDate": "1970-01-01T00:00:00.000Z",
                 "password": "password"
             };
