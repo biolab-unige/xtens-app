@@ -527,8 +527,8 @@
             var that = this;
             var operator = new Operator.Model();
             if (id) {
-                operator.set('id', id);
                 operator.fetch({
+                    data:$.param({id: id, populate:['addressInformation']}),
                     success: function(operator) {
                         that.loadView(new Operator.Views.Edit({model: operator}));
                     },

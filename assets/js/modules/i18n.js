@@ -120,6 +120,9 @@
         "update-data": "Update Data",
         "subject": "Subject",
         "sample": "Sample",
+        /* views/templates/addressinformation-edit.ejs */
+        "office": "Office",
+        "address-information": "Address Information",
         /* views/templates/operator-edit.ejs */
         "operator-manager": "Operator Manager",
         "confirm-password": "Confirm Password",

@@ -5,6 +5,7 @@
     var i18n = xtens.module('i18n').en;
     var router = xtens.router;
     var Group = xtens.module('group');
+    var AddressInformation = xtens.module("addressinformation");
     var GroupsOperator =xtens.module('groupsOperator');
     var sexOptions = xtens.module('xtensconstants').SexOptions;
     var ModalDialog = xtens.module('xtensbootstrap').Views.ModalDialog;
@@ -33,6 +34,9 @@
 
     Operator.Views.Edit = Backbone.View.extend({
 
+        tagName: 'div',
+        className: 'operator',
+
         events: {
             'click button.delete': 'deleteOperator',
             'submit .edit-operator-form': 'saveOperator'
@@ -42,6 +46,11 @@
             $('#main').html(this.el);
             this.template = JST['views/templates/operator-edit.ejs'];
             this.render();
+
+            this.personalAddressView = new AddressInformation.Views.Edit({
+                model: new AddressInformation.Model(this.model.get("addressInformation"))
+            });
+            this.$("#address-information-cnt").append(this.personalAddressView.render().el);
         },
 
         bindings: {
@@ -108,14 +117,6 @@
                 observe: 'email'
             },
 
-            '#laboratory': {
-                observe: 'laboratory'
-            },
-
-            '#phone': {
-                observe: 'phone'
-            },
-
             '#login': 'login'
 
 
@@ -132,34 +133,40 @@
 
         saveOperator: function(ev) {
             var that = this;
+            var addressInformation = _.clone(this.personalAddressView.model.attributes);
             if(!that.model.get('id')){
                 that.model.set('password',$('#password').val());
             }
-            that.model.save(null, {
-                success: function(operator) {
-                    if (that.modal) {
-                        that.modal.hide();
-                    }
-                    var modal = new ModalDialog({
-                        title: i18n('ok'),
-                        body: i18n('operator-correctly-stored-on-server')
-                    });
-                    that.$modal.append(modal.render().el);
-                    $('.modal-header').addClass('alert-success');
-                    modal.show();
+            this.personalAddressView.model.save(null,{
+                success: function(addressInformation) {
+                    that.model.save({addressInformation:addressInformation.id}, {
+                        success: function(operator) {
+                            if (that.modal) {
+                                that.modal.hide();
+                            }
+                            var modal = new ModalDialog({
+                                title: i18n('ok'),
+                                body: i18n('operator-correctly-stored-on-server')
+                            });
+                            that.$modal.append(modal.render().el);
+                            $('.modal-header').addClass('alert-success');
+                            modal.show();
 
-                    setTimeout(function(){ modal.hide(); }, 1200);
-                    that.$('.operator-modal').on('hidden.bs.modal', function (e) {
-                        modal.remove();
-                        xtens.router.navigate('operators', {trigger: true});
+                            setTimeout(function(){ modal.hide(); }, 1200);
+                            that.$('.operator-modal').on('hidden.bs.modal', function (e) {
+                                modal.remove();
+                                xtens.router.navigate('operators', {trigger: true});
+                            });
+                        },
+                        error: function(model, res) {
+                            xtens.error(res);
+                        }
                     });
-
                 },
                 error: function(model, res) {
                     xtens.error(res);
                 }
             });
-
             return false;
         },
 

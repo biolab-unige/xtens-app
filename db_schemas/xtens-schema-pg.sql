@@ -96,6 +96,41 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
+CREATE TABLE address_information (
+    id integer NOT NULL,
+    office text NOT NULL,
+    phone text NOT NULL,
+    address text NOT NULL,
+    zip text NOT NULL,
+    city text NOT NULL,
+    country text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE address_information OWNER TO xtenspg;
+
+--
+-- Name: address_information_id_seq; Type: SEQUENCE; Schema: public; Owner: xtenspg
+--
+
+CREATE SEQUENCE address_information_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE address_information_id_seq OWNER TO xtenspg;
+
+--
+-- Name: address_information_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: xtenspg
+--
+
+ALTER SEQUENCE address_information_id_seq OWNED BY address_information.id;
+
 --
 -- Name: biobank; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
@@ -1376,8 +1411,7 @@ CREATE TABLE operator (
     birth_date timestamp with time zone NOT NULL,
     sex text NOT NULL,
     email text NOT NULL,
-    laboratory text NOT NULL,
-    phone text NOT NULL,
+    address_information integer NOT NULL
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL
 );
@@ -1713,6 +1747,12 @@ ALTER SEQUENCE xtens_group_id_seq OWNED BY xtens_group.id;
 -- Name: id; Type: DEFAULT; Schema: public; Owner: xtenspg
 --
 
+ALTER TABLE ONLY address_information ALTER COLUMN id SET DEFAULT nextval('address_information_id_seq'::regclass);
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: xtenspg
+--
+
 ALTER TABLE ONLY biobank ALTER COLUMN id SET DEFAULT nextval('biobank_id_seq'::regclass);
 
 
@@ -2009,6 +2049,13 @@ ALTER TABLE ONLY subject ALTER COLUMN id SET DEFAULT nextval('subject_id_seq'::r
 
 ALTER TABLE ONLY xtens_group ALTER COLUMN id SET DEFAULT nextval('xtens_group_id_seq'::regclass);
 
+
+--
+-- Name: address_information_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
+--
+
+ALTER TABLE ONLY address_information
+    ADD CONSTRAINT address_information_pkey PRIMARY KEY (id);
 
 --
 -- Name: biobank_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
@@ -2517,6 +2564,14 @@ CREATE INDEX data_type_idx ON data USING btree (type);
 
 ALTER TABLE ONLY sample
     ADD CONSTRAINT biobank_fkey FOREIGN KEY (biobank) REFERENCES biobank(id) MATCH FULL ON DELETE CASCADE;
+
+
+--
+-- Name: address_information_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY operator
+    ADD CONSTRAINT address_information_fkey FOREIGN KEY (address_information) REFERENCES address_information(id) MATCH FULL ON DELETE CASCADE;
 
 
 --

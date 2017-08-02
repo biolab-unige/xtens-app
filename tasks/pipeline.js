@@ -74,6 +74,7 @@ var jsFilesToInject = [
     'js/modules/Utils.js',
     'js/modules/Session.js',
     'js/modules/DataTypePrivileges.js',
+    'js/modules/AddressInformation.js',
     'js/modules/MetadataComponent.js',
     'js/modules/MetadataField.js',
     'js/modules/MetadataLoop.js',

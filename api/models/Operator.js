@@ -41,18 +41,6 @@ var Operator = {
             columnName: 'email'
         },
 
-        laboratory: {
-            type: 'string',
-            required: true,
-            columnName: 'laboratory'
-        },
-
-        phone: {
-            type: 'string',
-            required: true,
-            columnName: 'phone'
-        },
-
         login: {
             type: 'string',
             required: true,
@@ -62,6 +50,11 @@ var Operator = {
         passports: {
             collection: 'passport',
             via: 'user'
+        },
+
+        addressInformation: {
+            columnName: 'address_information',
+            model: 'addressInformation'
         },
 
         createdAt: {

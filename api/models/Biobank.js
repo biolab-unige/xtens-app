@@ -16,7 +16,7 @@ module.exports = {
         acronym: {
             columnName: 'acronym',
             type: 'string',
-            required: true,
+            required: true
         },
         // MIABIS-03
         name: {
@@ -65,4 +65,3 @@ module.exports = {
 
     }
 };
-
