@@ -45,6 +45,7 @@ let SampleService = BluebirdPromise.promisifyAll({
         let validationSchema = {
             id: Joi.number().integer().positive(),
             type: Joi.number().integer().positive().required(),
+            owner: Joi.number().integer().positive().required(),
             biobank: Joi.number().integer().positive().required(),
             biobankCode: Joi.string().allow("").allow(null), // TODO change this one
             donor: Joi.number().integer().positive(),

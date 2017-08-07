@@ -226,6 +226,7 @@ CREATE TABLE data (
     parent_sample integer,
     parent_data integer,
     acquisition_date date,
+    owner integer NOT NULL,
     metadata jsonb NOT NULL,
     tags jsonb,
     notes text,
@@ -337,7 +338,6 @@ CREATE TABLE data_type (
     model text NOT NULL,
     schema jsonb NOT NULL,
     project integer NOT NULL,
-    owner integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL
 );
@@ -1600,6 +1600,7 @@ CREATE TABLE sample (
     parent_sample integer,
     biobank integer NOT NULL,
     biobank_code text NOT NULL,
+    owner integer NOT NULL,
     metadata jsonb NOT NULL,
     tags jsonb,
     notes text,
@@ -1674,6 +1675,7 @@ CREATE TABLE subject (
     personal_info integer,
     code text NOT NULL,
     sex text NOT NULL,
+    owner integer NOT NULL,
     metadata jsonb NOT NULL,
     tags jsonb,
     notes text,
@@ -2428,9 +2430,14 @@ ALTER TABLE ONLY operator
 -- Name: owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
 --
 
-ALTER TABLE ONLY data_type
+ALTER TABLE ONLY data
     ADD CONSTRAINT owner_fkey FOREIGN KEY (owner) REFERENCES operator(id) MATCH FULL;
 
+ALTER TABLE ONLY sample
+    ADD CONSTRAINT owner_fkey FOREIGN KEY (owner) REFERENCES operator(id) MATCH FULL;
+
+ALTER TABLE ONLY subject
+    ADD CONSTRAINT owner_fkey FOREIGN KEY (owner) REFERENCES operator(id) MATCH FULL;
 
 --
 -- Name: passport_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:

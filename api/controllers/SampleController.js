@@ -5,7 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 /* jshint node: true */
-/* globals _, sails, Sample, DataType, SubjectService, BiobankService, SampleService, DataTypePrivileges, TokenService, QueryService, DataService, DataTypeService */
+/* globals _, sails, Sample, DataType, SubjectService, BiobankService, OperatorService, SampleService, DataTypePrivileges, TokenService, QueryService, DataService, DataTypeService */
 "use strict";
 
 const BluebirdPromise = require('bluebird');
@@ -176,6 +176,9 @@ const coroutines = {
 
 
         if (payload.sample){
+
+            let operators = yield OperatorService.getOwners(payload.sample);
+            payload.operators = operators;
           // if operator has not access to Sensitive Data and dataType has sensitive data, then return forbidden
             const sensitiveRes = yield DataService.hasDataSensitive(payload.sample.id, SAMPLE);
             if (sensitiveRes && ((sensitiveRes.hasDataSensitive && !operator.canAccessSensitiveData))) {

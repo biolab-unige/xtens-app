@@ -17,6 +17,7 @@
     var DataTypeModel = xtens.module("datatype").Model;
     var DataTypeCollection = xtens.module("datatype").List;
     var FileManager = xtens.module("filemanager");
+    var Group = xtens.module("group");
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
     var dateUtil = xtens.module("utils").date;
     var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
@@ -694,6 +695,7 @@
             this.template = JST["views/templates/data-edit.ejs"];
             this.schemaView = null;
             this.dataTypes = options.dataTypes || [];
+            this.operators = options.operators ? options.operators : [];
             // _.extend(this, options);
             if (options.data) {
                 this.model = new Data.Model(options.data);
@@ -734,7 +736,7 @@
          * @description Backbone.stickit bindings
          */
         bindings: {
-            '#dataType': {
+            '#data-type': {
                 observe: 'type',
                 selectOptions: {
                     collection: 'this.dataTypes',
@@ -759,6 +761,29 @@
                     else {
                         return val;
                     }
+                }
+            },
+
+            '#owner': {
+                observe: 'owner',
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
+                selectOptions: {
+                    collection: function() {
+                        var coll = [];
+                        _.each(this.operators, function(op){
+                            coll.push({label:op.lastName + ' ' + op.firstName ,value:op.id});
+                        });
+                        return coll;
+                    },
+                    defaultOption: {
+                        label: '',
+                        value: null
+                    }
+                },
+                onGet: function(val) {
+                    return val && val.id;
                 }
             },
 
@@ -824,6 +849,7 @@
                 var that = this;
                 var metadata = this.schemaView.serialize(useFormattedNames);
                 this.model.set("metadata", metadata);
+                this.model.get("owner").id ? this.model.set("owner", this.model.get("owner").id) : null;
                 // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
                 this.retrieveAndSetFiles();
                 console.log(this.model);
@@ -856,6 +882,41 @@
             return false;
         },
 
+        setOwnerList: function () {
+            var that = this, project, projectId;
+            if ($('#data-type').val()) {
+                var dataTypeSelected = _.parseInt($('#data-type').val());
+                projectId = _.find(this.dataTypes,{id:dataTypeSelected}).project;
+                project = _.find(xtens.session.get('projects'), function (p) {
+                    return p.id === projectId;
+                });
+            }else {
+                project = _.find(xtens.session.get('projects'), function (p) {
+                    return p.name === xtens.session.get('activeProject');
+                });
+            }
+            var groups = new Group.List();
+
+            var groupIds =  _.compact(_.map(project.groups,function (g) {
+                if ((g.privilegeLevel ==="wheel" || g.privilegeLevel ==="admin") ) {
+                    return g.id;
+                }
+            }));
+
+            var groupsDeferred = groups.fetch({
+                data: $.param({where: {id: groupIds}, sort:'id ASC', limit:100, populate:['members']})
+            });
+            $.when(groupsDeferred).then(function(groupRes) {
+                that.operators = _.isArray(groupRes) ?_.flatten(_.map(groupRes,'members')) :groupRes.members;
+                var newColl = [];
+                that.operators.forEach(function (op) {
+                    newColl.push({label:op.lastName + ' ' + op.firstName ,value:op.id});
+                });
+                var options = {selectOptions:{collection:newColl}};
+                Backbone.Stickit.getConfiguration($('#owner')).update($('#owner'),{},{},options);
+                $('#owner').val({}).trigger("change");
+            });
+        },
         /**
          * @method
          * @name deleteDate
@@ -918,6 +979,8 @@
         },
 
         dataTypeOnChange: function() {
+            $('#owner').prop('disabled', false);
+            this.setOwnerList();
             this.renderDataTypeSchema();
         },
 
@@ -1292,7 +1355,7 @@
 
         render: function() {
             this.$el.html(this.template({__: i18n}));
-            $("#dataType").selectpicker();
+            $("#data-type").selectpicker();
             this.$('form').parsley(parsleyOpts);
             this.dropzone = new Dropzone(this.$(".dropzone")[0], this.dropzoneOpts);
 

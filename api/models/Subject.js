@@ -59,6 +59,11 @@ var Subject= {
             required: false
         },
 
+        owner: {
+            model: 'operator',
+            columnName: 'owner'
+        },
+
         createdAt: {
             type: 'datetime',
             columnName: 'created_at'

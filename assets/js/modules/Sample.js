@@ -39,7 +39,7 @@
                 observe: 'biobankCode'
             },
 
-            '#type': {
+            '#data-type': {
                 observe: 'type',
                 selectOptions: {
                     collection: 'this.dataTypes',
@@ -70,6 +70,29 @@
                     else {
                         return val;
                     }
+                }
+            },
+
+            '#owner': {
+                observe: 'owner',
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
+                selectOptions: {
+                    collection: function() {
+                        var coll = [];
+                        _.each(this.operators, function(op){
+                            coll.push({label:op.lastName + ' ' + op.firstName ,value:op.id});
+                        });
+                        return coll;
+                    },
+                    defaultOption: {
+                        label: '',
+                        value: null
+                    }
+                },
+                onGet: function(val) {
+                    return val && val.id;
                 }
             },
 
@@ -220,6 +243,7 @@
                 this.model.set("metadata", metadata);
         // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
                 this.retrieveAndSetFiles();
+                this.model.get("owner").id ? this.model.set("owner", this.model.get("owner").id) : null;
         // console.log(this.model);
                 this.model.save(null, {
                     success: function(data) {
@@ -311,7 +335,7 @@
 
         dataTypeOnChange: function() {
             Data.Views.Edit.prototype.dataTypeOnChange.call(this);
-            var typeName = this.$('#type :selected').text(),
+            var typeName = this.$('#data-type :selected').text(),
                 parentSample = this.model.get("parentSample");
 
             if (parentSample && parentSample.biobankCode) {
@@ -348,7 +372,7 @@
 
         fetchDonorsOnSuccess: function(donors, targetElem) {
             this.subjects = donors.models ? donors.toJSON() : donors;
-            var dataTypeSample = _.find(this.dataTypes, {id: _.parseInt($('#type').val())});
+            var dataTypeSample = _.find(this.dataTypes, {id: _.parseInt($('#data-type').val())});
             if(dataTypeSample){
                 this.filteredSubjects = _.filter(this.subjects, function (subj) {
                     return subj.project === dataTypeSample.project;

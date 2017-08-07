@@ -5,7 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 /* jshint node: true */
-/* globals _, sails, DataTypePrivileges, Subject, DataType, SubjectService, TokenService, QueryService, DataService, DataTypeService */
+/* globals _, sails, DataTypePrivileges, Subject, DataType, SubjectService, OperatorService, TokenService, QueryService, DataService, DataTypeService */
 "use strict";
 
 const ControllerOut = require("xtens-utils").ControllerOut;
@@ -178,6 +178,8 @@ const coroutines = {
         if (_.isEmpty(payload.dataTypes)){ throw new PrivilegesError(`Authenticated user has not edit privileges on any subject type`); }
 
         if (payload.subject){
+            let operators = yield OperatorService.getOwners(payload.subject);
+            payload.operators = operators;
           // if operator has not access to Sensitive Data and dataType has sensitive data, then return forbidden
             const sensitiveRes = yield DataService.hasDataSensitive(payload.subject.id, SUBJECT);
             if (sensitiveRes && ((sensitiveRes.hasDataSensitive && !operator.canAccessSensitiveData))) {

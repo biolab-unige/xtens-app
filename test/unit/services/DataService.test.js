@@ -456,6 +456,7 @@ describe('DataService', function() {
         var recordFound =[{
             "id":1,
             "type":3,
+            "owner":1,
             "date": "2012-12-28",
             "metadata": {
                 "name":{"value":"Aldebaran","group":"Generic Info"},
@@ -502,6 +503,7 @@ describe('DataService', function() {
             var req = {headers:{authorization : bearer}};
             operatorPayload = TokenService.getToken(req);
             var expectedData = _.cloneDeep(fixtures.data[0]);
+            console.log(expectedData);
             var dataType = _.cloneDeep(fixtures.datatype[2]);
             var dataPrivilege = _.cloneDeep(fixtures.datatypeprivileges[2]);
             var param = [dataType.id];
@@ -527,6 +529,7 @@ describe('DataService', function() {
             var expectedData = [{
                 "id":1,
                 "type":3,
+                "owner":1,
                 "date": "2012-12-28",
                 "metadata": {
                     "constellation":{"value":"taurus","group":"Generic Info"},
@@ -571,6 +574,7 @@ describe('DataService', function() {
             var expectedData = [{
                 "id":1,
                 "type":3,
+                "owner":1,
                 "date": "2012-12-28",
                 "metadata": {},
                 "tags": ["test","a test"],

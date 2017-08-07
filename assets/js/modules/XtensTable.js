@@ -150,7 +150,7 @@
                   });
                   this.table.buttons().container().appendTo($('.col-sm-6:eq(0)', this.table.table().container()));
 
-                  $('td.manager').tooltip({
+                  $('td.owner').tooltip({
                       position: {
                           my: 'right center',
                           at: 'left-10 center'
@@ -159,7 +159,7 @@
                       title: i18n("click-to-show-owner-contacts")
                   });
 
-                  $('.manager').on( 'click', function (ev) {
+                  $('.owner').on( 'click', function (ev) {
                       ev.stopPropagation();
                       var data = that.table.row( $(ev.currentTarget).parents('tr') ).data();
                       var projects = xtens.session.get("projects");
@@ -172,7 +172,7 @@
                           that.modal.hide();
                       }
                       var modal = new ModalDialog({
-                          template: JST["views/templates/contact-modal.ejs"],
+                          template: JST["views/templates/address-modal.ejs"],
                           data: { __: i18n, project: project[0], data: data}
                       });
 
@@ -219,7 +219,7 @@
               }
               var flattenedFields = this.dataType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
               this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), xtens.session.get('canAccessPersonalData'));
-              this.columns.push({"title": i18n("manager"), "data": "owner.lastName", "className": "manager"});
+              this.columns.push({"title": i18n("owner"), "data": "owner.lastName", "className": "owner"});
 
               this.numLeft=this.columns.length;
 

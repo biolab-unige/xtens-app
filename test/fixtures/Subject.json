@@ -9,6 +9,7 @@
         "code": "PAT-001",
         "sex": "M",
         "type": 1,
+        "owner":1,
         "metadata": {
             "status": {"value": "healthy"}
         }
@@ -24,6 +25,7 @@
         "code": "PAT0067",
         "sex": "N.D.",
         "type": 1,
+        "owner":1,
         "metadata": {
             "status": {"value": "diseased"},
             "disease": {"value": "medulloblastoma"},

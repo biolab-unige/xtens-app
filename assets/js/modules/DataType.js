@@ -198,6 +198,9 @@
             },
             '#model': {
                 observe: 'model',
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
                 selectOptions: {
                     collection: function() {
                         var coll = [];
@@ -205,6 +208,10 @@
                             coll.push({label: value.toUpperCase(), value: value});
                         });
                         return coll;
+                    },
+                    defaultOption: {
+                        label: '',
+                        value: null
                     }
                 }
             },

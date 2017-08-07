@@ -49,6 +49,7 @@ describe('SampleController', function() {
             .set('Authorization', `Bearer ${tokenDataSens}`)
             .send({
                 type: 2,
+                owner:1,
                 biobank:2,
                 biobankCode: "081852",
                 donor: 11,
@@ -79,6 +80,7 @@ describe('SampleController', function() {
             .send({
                 type: 2,
                 biobank:2,
+                owner:1,
                 biobankCode: "081852",
                 donor: 11,
                 metadata: metadata
@@ -95,6 +97,7 @@ describe('SampleController', function() {
             .set('Authorization', `Bearer ${tokenNoPriv}`)
             .send({
                 type:2,
+                owner:1,
                 metadata:metadata,
                 date:"2015-12-06",
                 tags:[],
@@ -116,6 +119,7 @@ describe('SampleController', function() {
             .set('Authorization', `Bearer ${tokenDataSens}`)
             .send({
                 type:2,
+                owner:1,
                 metadata:metadata,
                 date:"wrongFormat",
                 tags:[],
@@ -142,6 +146,7 @@ describe('SampleController', function() {
             .set('Authorization', `Bearer ${tokenDataSens}`)
             .send({
                 type: 2,
+                owner:1,
                 biobank: biobank,
                 biobankCode: "081852",
                 donor: 11,
@@ -167,6 +172,7 @@ describe('SampleController', function() {
             .set('Authorization', `Bearer ${tokenDataSens}`)
             .send({
                 type: 1,
+                owner:1,
                 biobank:14,
                 biobankCode: "081852",
                 donor: 11,
@@ -182,7 +188,7 @@ describe('SampleController', function() {
             request(sails.hooks.http.app)
             .put('/sample/3')
             .set('Authorization', `Bearer ${tokenDataSens}`)
-            .send({id:2, type:2, metadata: metadata, date:"wrongFormat",tags:[],notes:"New data"})
+            .send({id:2, type:2, owner:1, metadata: metadata, date:"wrongFormat",tags:[],notes:"New data"})
             .expect(400)
             .end(function(err, res) {
                 expect(res.body.error.message.name).to.eql("ValidationError");
@@ -204,6 +210,7 @@ describe('SampleController', function() {
                 .send({
                     id: 3,
                     type: 2,
+                    owner:1,
                     metadata: metadata,
                     notes: "New Data Updated"
                 })
@@ -229,6 +236,7 @@ describe('SampleController', function() {
                 .send({
                     id: 3,
                     type: 2,
+                    owner:1,
                     metadata: metadata,
                     notes: "New Data Updated"
                 })

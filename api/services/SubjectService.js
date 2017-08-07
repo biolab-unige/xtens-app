@@ -76,6 +76,7 @@ let SubjectService = BluebirdPromise.promisifyAll({
         let validationSchema = {
             id: Joi.number().integer().positive(),
             type: Joi.number().integer().positive().required(),
+            owner: Joi.number().integer().positive().required(),
             code: Joi.string().uppercase(),
             sex: Joi.string().required().valid(_.values(sails.config.xtens.constants.SexOptions)),
             personalInfo: Joi.object().keys(personalInfoValidationSchema).allow(null),

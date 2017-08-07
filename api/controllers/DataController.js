@@ -5,7 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 /* jshint node: true */
-/* globals _, sails, Data, DataType, DataService, DataTypeService, SubjectService, SampleService, QueryService, TokenService, DataTypePrivileges */
+/* globals _, sails, Data, DataType, DataService, DataTypeService, SubjectService, OperatorService, SampleService, QueryService, TokenService, DataTypePrivileges */
 "use strict";
 
 const BluebirdPromise = require('bluebird');
@@ -175,6 +175,8 @@ const coroutines = {
         if (_.isEmpty(payload.dataTypes)){ throw new PrivilegesError(`Authenticated user has not edit privileges on any data type`); }
 
         if (payload.data){
+            let operators = yield OperatorService.getOwners(payload.data);
+            payload.operators = operators;
           // if operator has not access to Sensitive Data and dataType has sensitive data, then return forbidden
             const sensitiveRes = yield DataService.hasDataSensitive(payload.data.id, DATA);
             if (sensitiveRes && ((sensitiveRes.hasDataSensitive && !operator.canAccessSensitiveData))) {

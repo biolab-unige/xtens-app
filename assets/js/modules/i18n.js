@@ -119,6 +119,7 @@
         "create-data": "Create Data",
         "update-data": "Update Data",
         "subject": "Subject",
+        "owner": "Owner",
         "sample": "Sample",
         /* views/templates/addressinformation-edit.ejs */
         "office": "Office",

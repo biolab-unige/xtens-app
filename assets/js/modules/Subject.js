@@ -40,30 +40,28 @@
 
         bindings: {
 
-            // '#projects': {
-            //     observe: 'projects',
-            //     initialize: function($el, model, option) {
-            //         $el.select2({ placeholder: i18n("please-select") });
-            //     },
-            //     selectOptions: {
-            //         collection: 'this.projects',
-            //         labelPath: 'name',
-            //         valuePath: 'id',
-            //         defaultOption: {
-            //             label: "",
-            //             value: null
-            //         }
-            //     },
-            //     getVal: function($el, ev, options) {
-            //         return $el.val().map(function(value) {
-            //             // return _.findWhere(options.view.projects, {id: parseInt(value)});
-            //             return _.parseInt(value);
-            //         });
-            //     },
-            //     onGet: function(vals, options) {
-            //         return (vals && vals.map(function(val){return val.id; }));
-            //     }
-            // },
+            '#owner': {
+                observe: 'owner',
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
+                selectOptions: {
+                    collection: function() {
+                        var coll = [];
+                        _.each(this.operators, function(op){
+                            coll.push({label:op.lastName + ' ' + op.firstName ,value:op.id});
+                        });
+                        return coll;
+                    },
+                    defaultOption: {
+                        label: '',
+                        value: null
+                    }
+                },
+                onGet: function(val) {
+                    return val && val.id;
+                }
+            },
 
             '#code': {
                 observe: 'code'
@@ -104,7 +102,7 @@
             this.template = JST["views/templates/subject-edit.ejs"];
             this.personalDetailsView = null;
             this.schemaView = null;
-            // this.projects = options.projects;
+            this.operators = options.operators ? options.operators : [];
             if(xtens.session.get('activeProject') !== 'all'){
                 this.project = _.parseInt(_.find(xtens.session.get('projects'),{name: xtens.session.get('activeProject')} ).id);
                 this.dataType = _.find(this.dataTypes, {'project' : this.project} );
@@ -200,6 +198,8 @@
             if (this.personalDetailsView && this.personalDetailsView.model) {
                 this.model.set("personalInfo", _.clone(this.personalDetailsView.model.attributes));
             }
+            this.model.get("owner").id ? this.model.set("owner", this.model.get("owner").id) : null;
+            
             this.model.save(null, {
                 success: function(subject) {
                     if (that.modal) {

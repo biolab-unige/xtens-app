@@ -27,7 +27,7 @@ const coroutines = {
     }),
 
     getGroupsByProject: BluebirdPromise.coroutine(function *(idProject) {
-        let groups = yield Group.find().populate('projects');
+        let groups = yield Group.find().populate(['projects','members']);
 
         for (var i = groups.length - 1; i >= 0; i--) {
             if(groups[i].privilegeLevel !== "wheel" && _.indexOf(_.map(groups[i].projects,'id'), _.parseInt(idProject))<0){

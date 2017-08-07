@@ -6,13 +6,12 @@
     "firstName": "default administrator",
     "lastName": "sysadmin",
     "birthDate": "1970-01-01T00:00:00.000Z",
-    "laboratory": "Laboratory",
-    "phone": "0001 3237632",
+    "addressInformation": 1,
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [1]
-},
-{
+  },
+  {
     "sex": "N.A.",
     "email": "none@none.com",
     "login": "adminuser",
@@ -20,13 +19,12 @@
     "firstName": "default adminuser",
     "lastName": "demo adminuser",
     "birthDate": "1970-01-01T00:00:00.000Z",
-    "laboratory": "Laboratory",
-    "phone": "0001 3237632",
+    "addressInformation": 1,
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [2]
-},
-{
+  },
+  {
     "sex": "N.A.",
     "email": "none@none.com",
     "login": "demouser",
@@ -34,13 +32,12 @@
     "firstName": "default user",
     "lastName": "demo user",
     "birthDate": "1970-01-01T00:00:00.000Z",
-    "laboratory": "Laboratory",
-    "phone": "0001 3237632",
+    "addressInformation": 1,
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [3]
-},
-{
+  },
+  {
     "sex": "N.A.",
     "email": "none@none.com",
     "login": "anotherdemouser",
@@ -48,13 +45,12 @@
     "firstName": "default user",
     "lastName": "demo user",
     "birthDate": "1970-01-01T00:00:00.000Z",
-    "laboratory": "Laboratory",
-    "phone": "0001 3237632",
+    "addressInformation": 1,
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [3]
-},
-{
+  },
+  {
     "sex": "N.A.",
     "email": "none@none.com",
     "login": "anotherdemousernodatasens",
@@ -62,13 +58,12 @@
     "firstName": "default user",
     "lastName": "demo user",
     "birthDate": "1970-01-01T00:00:00.000Z",
-    "laboratory": "Laboratory",
-    "phone": "0001 3237632",
+    "addressInformation": 1,
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [4]
-},
-{
+  },
+  {
     "sex": "N.A.",
     "email": "none@none.com",
     "login": "loginlogouttest",
@@ -76,13 +71,12 @@
     "firstName": "login user",
     "lastName": "logout user",
     "birthDate": "1970-01-01T00:00:00.000Z",
-    "laboratory": "Laboratory",
-    "phone": "0001 3237632",
+    "addressInformation": 1,
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [4]
-},
-{
+  },
+  {
     "sex": "N.A.",
     "email": "none@none.com",
     "login": "PassportServiceTest",
@@ -90,13 +84,12 @@
     "firstName": "Passport",
     "lastName": "Service",
     "birthDate": "1970-01-01T00:00:00.000Z",
-    "laboratory": "Laboratory",
-    "phone": "0001 3237632",
+    "addressInformation": 1,
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [5]
-},
-{
+  },
+  {
     "sex": "N.A.",
     "email": "none@none.com",
     "login": "userNoPriv",
@@ -104,9 +97,9 @@
     "firstName": "user",
     "lastName": "NoPrivileges",
     "birthDate": "1970-01-01T00:00:00.000Z",
-    "laboratory": "Laboratory",
-    "phone": "0001 3237632",
+    "addressInformation": 1,
     "createdAt": "2015-06-18T10:13:11.000Z",
     "updatedAt": "2015-06-18T10:13:11.000Z",
     "groups": [5]
-}]
+  }
+]

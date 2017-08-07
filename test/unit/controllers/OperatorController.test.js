@@ -44,8 +44,6 @@ describe('OperatorController', function() {
                 birthDate: '1900-01-01',
                 sex: 'M',
                 email: 'operator@domain.com',
-                laboratory: "Laboratory",
-                phone: "0001 3237632",
                 login: 'newoperator',
                 password: 'pswdoperator'
             })

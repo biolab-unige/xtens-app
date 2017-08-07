@@ -54,6 +54,10 @@ var Data = {
             model: 'data',
             columnName: 'parent_data'
         },
+        owner: {
+            model: 'operator',
+            columnName: 'owner'
+        },
         createdAt: {
             type: 'datetime',
             columnName: 'created_at'
