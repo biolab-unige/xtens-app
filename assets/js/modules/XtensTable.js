@@ -35,6 +35,7 @@
       var Data = xtens.module("data");
       var Sample = xtens.module("sample");
       var DataFile = xtens.module("datafile");
+      var AddressInformation = xtens.module("addressinformation");
       var VIEW_OVERVIEW = Privileges.VIEW_OVERVIEW;
       var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
 
@@ -167,21 +168,25 @@
                           return pr.id === data.type;
                       });
 
+                      var address = new AddressInformation.Model({id: data.owner_address});
+                      var addressDeferred = address.fetch();
 
-                      if (that.modal) {
-                          that.modal.hide();
-                      }
-                      var modal = new ModalDialog({
-                          template: JST["views/templates/address-modal.ejs"],
-                          data: { __: i18n, project: project[0], data: data}
-                      });
+                      $.when(addressDeferred).then(function(addressRes) {
+                          if (that.modal) {
+                              that.modal.hide();
+                          }
+                          var modal = new ModalDialog({
+                              template: JST["views/templates/address-modal.ejs"],
+                              data: { __: i18n, project: project[0], data: data, address: addressRes}
+                          });
 
-                      that.$modal.append(modal.render().el);
-                      modal.show();
+                          that.$modal.append(modal.render().el);
+                          modal.show();
 
-                      that.$('.query-modal').on('hidden.bs.modal', function (e) {
-                          modal.remove();
-                          $('.modal-backdrop').remove();
+                          that.$('.query-modal').on('hidden.bs.modal', function (e) {
+                              modal.remove();
+                              $('.modal-backdrop').remove();
+                          });
                       });
 
                   } );
@@ -219,7 +224,7 @@
               }
               var flattenedFields = this.dataType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
               this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), xtens.session.get('canAccessPersonalData'));
-              this.columns.push({"title": i18n("owner"), "data": "owner.lastName", "className": "owner"});
+              this.columns.push({"title": i18n("owner"), "data": "owner_surname", "className": "owner"});
 
               this.numLeft=this.columns.length;
 

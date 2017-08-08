@@ -16,31 +16,31 @@
               <div class="form-group metadataform-group">
                   <label for="firstName" class="data-label"><%= __('given-name') %></label>
                   <div class="data-input-div">
-                      <span class="form-control" id="firstName" placeholder="Name" name="firstName" ><%= data.owner.lastName %></span>
+                      <span class="form-control" id="firstName" placeholder="Name" name="firstName" ><%= data.owner_surname %></span>
                   </div>
               </div>
               <div class="form-group metadataform-group">
                   <label for="lastName" class="data-label"><%= __('surname') %></label>
                   <div class="data-input-div">
-                      <span class="form-control" id="lastName" placeholder="Surname" name="lastName" ><%= data.owner.firstName %></span>
+                      <span class="form-control" id="lastName" placeholder="Surname" name="lastName" ><%= data.owner_name %></span>
                   </div>
               </div>
               <div class="form-group metadataform-group">
-                  <label for="birthDate" class="data-label"><%= __('laboratory') %></label>
+                  <label for="birthDate" class="data-label"><%= __('office') %></label>
                   <div class="data-input-div">
-                      <span class="form-control" id="birthDate" name="birthDate" placeholder="<%= __('please-select') %>" ><%= data.owner.laboratory %></span>
+                      <span class="form-control" id="birthDate" name="birthDate" placeholder="<%= __('please-select') %>" ><%= address.office %></span>
                   </div>
               </div>
               <div class="form-group metadataform-group">
                   <label for="email" class="data-label"><%= __('email') %></label>
                   <div class="data-input-div">
-                      <span name="email" type="email" class="form-control" id="email" placeholder="ex@example.com"><%= data.owner.email %></span>
+                      <span name="email" type="email" class="form-control" id="email" placeholder="ex@example.com"><%= data.owner_email %></span>
                   </div>
               </div>
               <div class="form-group metadataform-group">
                   <label for="login" class="data-label"><%= __('phone') %></label>
                   <div class="data-input-div">
-                      <span class="form-control" id="login" name="login" placeholder="Username" ><%= data.owner.phone %></span>
+                      <span class="form-control" id="login" name="login" placeholder="Username" ><%= address.phone %></span>
                   </div>
               </div>
             </div>
