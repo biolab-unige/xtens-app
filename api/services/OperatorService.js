@@ -6,7 +6,7 @@
 
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, sails , GroupService */
+/* globals _, sails , GroupService, DataType */
 
 const BluebirdPromise = require('bluebird');
 
@@ -17,8 +17,16 @@ const coroutines = {
         if (!datum || !datum.type) {
             return [];
         }
-        let idProject = _.isObject(datum.type.project) ? datum.type.project.id : datum.type.project;
-        // _.isObject(datum.type.project);
+
+        let idProject;
+        if (!_.isObject(datum.type)) {
+            let dataType = yield DataType.findOne(datum.type);
+            idProject = dataType.project;
+        }
+        else {
+            idProject = _.isObject(datum.type.project) ? datum.type.project.id : datum.type.project;
+        }
+
         let groups = yield GroupService.getGroupsByProject(idProject);
 
         let operators = _.uniq(_.flatten(_.map(groups,'members')));
