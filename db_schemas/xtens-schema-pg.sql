@@ -1411,7 +1411,7 @@ CREATE TABLE operator (
     birth_date timestamp with time zone NOT NULL,
     sex text NOT NULL,
     email text NOT NULL,
-    address_information integer NOT NULL
+    address_information integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL
 );
