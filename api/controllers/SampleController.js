@@ -38,14 +38,14 @@ const coroutines = {
         }
         SampleService.simplify(sample);
         const dataType = yield DataType.findOne(sample.type);
-
         const validationRes = SampleService.validate(sample, true, dataType);
         if (validationRes.error !== null) {
             throw new ValidationError(validationRes.error);
         }
         sample = validationRes.value;
         const dataTypeName = dataType && dataType.name;
-        const result = yield crudManager.createSample(sample, dataTypeName);
+        const project = dataType && dataType.project;
+        const result = yield crudManager.createSample(sample, dataTypeName, project);
         sails.log.info(result);
         res.set('Location', `${req.baseUrl}${req.url}/${result.id}`);
         return res.json(201, result);
