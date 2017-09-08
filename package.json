@@ -46,7 +46,7 @@
     "winston": "^2.2.0",
     "xregexp": "^3.0.0",
     "xtens-fs": "git+https://github.com/biolab-unige/xtens-fs.git",
-    "xtens-pg": "git+https://git@github.com/biolab-unige/xtens-pg.git#feat/owner",
+    "xtens-pg": "git+https://git@github.com/biolab-unige/xtens-pg.git#feat/@type",
     "xtens-utils": "git+https://github.com/biolab-unige/xtens-utils.git",
     "xtens-waterline": "git+https://github.com/biolab-unige/xtens-waterline.git",
     "waterline": "0.11.9"
