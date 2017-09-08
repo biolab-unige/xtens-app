@@ -26,7 +26,7 @@
 
         // model: MetadataGroup.Model,
 
-        tagName: 'div',   
+        tagName: 'div',
         className: 'metadataGroup',
 
         bindings: {
@@ -72,7 +72,7 @@
             this.listenTo(view, 'closeMe', this.removeChild);
             this.nestedViews.push(view);
         }
-        
+
     });
 
 } (xtens, xtens.module("metadatagroup")));

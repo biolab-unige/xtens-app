@@ -6,8 +6,9 @@
     var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames;
     var Constants = xtens.module("xtensconstants").Constants;
     var i18n = xtens.module("i18n").en;
-    var DataType = xtens.module("datatype");
-    var DataTypeModel = xtens.module("datatype").Model;
+    // var DataType = xtens.module("datatype");
+    var SuperTypeModel = xtens.module("supertype").Model;
+    // var DataTypeModel = xtens.module("datatype").Model;
     var Data = xtens.module("data");
     var Subject = xtens.module("subject");
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
@@ -289,7 +290,8 @@
             var modal = new ModalDialog({
                 template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
                 title: i18n('confirm-deletion'),
-                body: i18n('sample-will-be-permanently-deleted-are-you-sure')
+                body: i18n('sample-will-be-permanently-deleted-are-you-sure'),
+                type: "delete"
             });
 
             this.$modal.append(modal.render().el);
@@ -452,8 +454,10 @@
         },
 
         render: function() {
-            var dataType = new DataTypeModel(this.model.get("type"));
-            var fields = dataType.getFlattenedFields();
+            // var dataType = new DataTypeModel(this.model.get("type"));
+            var superType = new SuperTypeModel(this.model.get("type").superType);
+
+            var fields = superType.getFlattenedFields();
 
             this.$el.html(this.template({
                 __: i18n,

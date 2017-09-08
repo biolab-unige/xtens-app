@@ -10,7 +10,8 @@
     var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
     var i18n = xtens.module("i18n").en;
     var Data = xtens.module("data");
-    var DataTypeModel = xtens.module("datatype").Model;
+    // var DataTypeModel = xtens.module("datatype").Model;
+    var SuperTypeModel = xtens.module("supertype").Model;
     var PersonalDetails = xtens.module("personaldetails");
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
     var sexOptions = xtens.module("xtensconstants").SexOptions;
@@ -199,7 +200,7 @@
                 this.model.set("personalInfo", _.clone(this.personalDetailsView.model.attributes));
             }
             this.model.get("owner").id ? this.model.set("owner", this.model.get("owner").id) : null;
-            
+
             this.model.save(null, {
                 success: function(subject) {
                     if (that.modal) {
@@ -236,7 +237,8 @@
             var modal = new ModalDialog({
                 template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
                 title: i18n('confirm-deletion'),
-                body: i18n('subject-will-be-permanently-deleted-are-you-sure')
+                body: i18n('subject-will-be-permanently-deleted-are-you-sure'),
+                type: "delete"
             });
 
             this.$modal.append(modal.render().el);
@@ -306,8 +308,8 @@
             }
         },
         render: function() {
-            var dataType = new DataTypeModel(this.model.get("type"));
-            var fields = dataType.getFlattenedFields();
+            var superType = new SuperTypeModel(this.model.get("type").superType);
+            var fields = superType.getFlattenedFields();
 
             this.$el.html(this.template({
                 __: i18n,

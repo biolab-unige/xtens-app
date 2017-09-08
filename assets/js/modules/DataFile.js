@@ -139,7 +139,8 @@
                     console.log("DataFile.Views.List - downloadFileContent: could not download file");
                     that.modal = new ModalDialog({
                         title: i18n('could-not-download-file'),
-                        body: xhr.statusText
+                        body: xhr.statusText,
+                        type: "delete"
                     });
                     that.$queryModal.append(that.modal.render().el);
                     that.modal.show();

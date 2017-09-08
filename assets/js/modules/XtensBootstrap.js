@@ -23,7 +23,9 @@
             options.template ? this.template = options.template: this.template = JST['views/templates/dialog-bootstrap.ejs'];
             this.title = options.title;
             this.body = options.body;
+            this.type = options.type && options.type;
             this.data = options.data ? options.data : { __: i18n };
+            this.type ? this.data.type = this.type : this.data.type = "other";
         },
 
         render: function() {
@@ -35,6 +37,9 @@
             if (this.body) {
                 this.$(".modal-body").html(this.body);
             }
+            this.$('.modal-header').addClass(this.type === "edit" ? "alert-warning" : this.type === "delete" ? "alert-danger" : "");
+            this.$('#confirm').addClass(this.type === "edit" ? "btn-warning" : this.type === "delete" ? "btn-danger" : "");
+            // this.$('#confirm-delete').addClass("btn-warning");
             return this;
         },
 

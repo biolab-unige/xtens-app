@@ -33,6 +33,7 @@
       var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
       var DataTypeModel = xtens.module("datatype").Model;
       var Data = xtens.module("data");
+      var SuperType = xtens.module("supertype");
       var Sample = xtens.module("sample");
       var DataFile = xtens.module("datafile");
       var AddressInformation = xtens.module("addressinformation");
@@ -209,7 +210,7 @@
             if (!this.dataType) {
                 return; //TODO add alert box
             } */
-              var fileUpload = this.dataType.get("schema").header.fileUpload;
+              var fileUpload = this.dataType.get("superType").schema.header.fileUpload;
               var hasDataSensitive = false;
               this.fieldsToShow = [];
               var that = this;
@@ -222,7 +223,8 @@
               if (sampleTypeChildren.length > 0) {
                   hasSampleChildren = true;
               }
-              var flattenedFields = this.dataType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
+              var selectedSuperType = new SuperType.Model(this.dataType.get("superType"));
+              var flattenedFields = selectedSuperType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
               this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), xtens.session.get('canAccessPersonalData'));
               this.columns.push({"title": i18n("owner"), "data": "owner_surname", "className": "owner"});
 

@@ -14,7 +14,8 @@
     var FieldTypes = xtens.module("xtensconstants").FieldTypes;
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
     var MetadataComponent = xtens.module("metadatacomponent");
-    var DataTypeModel = xtens.module("datatype").Model;
+    // var DataTypeModel = xtens.module("datatype").Model;
+    var SuperTypeModel = xtens.module("supertype").Model;
     var DataTypeCollection = xtens.module("datatype").List;
     var FileManager = xtens.module("filemanager");
     var Group = xtens.module("group");
@@ -932,7 +933,8 @@
             var modal = new ModalDialog({
                 template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
                 title: i18n('confirm-deletion'),
-                body: i18n('data-will-be-permanently-deleted-are-you-sure')
+                body: i18n('data-will-be-permanently-deleted-are-you-sure'),
+                type: "delete"
             });
 
             this.$modal.append(modal.render().el);
@@ -1097,8 +1099,10 @@
         },
 
         render: function() {
-            var dataType = new DataTypeModel(this.model.get("type"));
-            var fields = dataType.getFlattenedFields();
+            // var dataType = new DataTypeModel(this.model.get("type"));
+            var superType = new SuperTypeModel(this.model.get("type").superType);
+
+            var fields = superType.getFlattenedFields();
             // var metadata = this.model.get("metadata");
             this.$el.html(this.template({
                 __: i18n,

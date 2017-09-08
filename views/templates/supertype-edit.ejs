@@ -1,0 +1,11 @@
+<h4><%= __("schema-details") %></h4>
+<div class="form-group row">
+    <label for="st-name" class="col-md-2 control-label"><%=__("name") %></label>
+    <div class="col-md-3">
+        <input class="form-control" id="st-name" name="st-name" placeholder="<%= __('super-type-name') %>" required></input>
+    </div>
+    <label for="uri" class="col-md-2 control-label"><%=__("uri") %></label>
+    <div class="col-md-4">
+      <input class="form-control" id="uri" name="uri" placeholder="<%= __('super-type-uri') %>" type="url" data-parsley-type="url" required/>
+    </div>
+</div>

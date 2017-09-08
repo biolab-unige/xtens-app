@@ -106,7 +106,7 @@
             // (all the chars that  cannot be used in Javascript property names with dot notation)
             name = name.toLowerCase().replace(metadataFieldNameNotAllowedCharset, "_");
 
-            console.log(name);
+            // console.log(name);
             // set the formatted name in the metadata field
             this.set("formattedName", name);
         }

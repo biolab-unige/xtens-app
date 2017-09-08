@@ -10,6 +10,7 @@
     var QueryStrategy = xtens.module("querystrategy");
     var Data = xtens.module("data");
     var DataType = xtens.module("datatype");
+    var SuperType = xtens.module("supertype");
     var DataTypeClasses = xtens.module("xtensconstants").DataTypeClasses;
     var sexOptions = xtens.module("xtensconstants").SexOptions;
     var XtensTable = xtens.module("xtenstable");
@@ -789,8 +790,8 @@
                 this.$addFieldButton.removeClass('hidden');
             }
             this.$addNestedButton.removeClass('hidden');
-
-            var flattenedFields = this.selectedDataType.getFlattenedFields();
+            var selectedSuperType = new SuperType.Model(this.selectedDataType.get("superType"));
+            var flattenedFields = selectedSuperType.getFlattenedFields();
             if (!xtens.session.get('canAccessSensitiveData') && this.selectedPrivilege.get('privilegeLevel') !== VIEW_OVERVIEW){
                 flattenedFields = _.filter(flattenedFields, function(field) { return !field.sensitive; });
             }

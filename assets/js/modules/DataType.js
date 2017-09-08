@@ -12,6 +12,7 @@
     var MetadataComponent = xtens.module("metadatacomponent");
     var MetadataGroup = xtens.module("metadatagroup");
     var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
+    var SuperType = xtens.module("supertype");
 
     // XTENS router alias
     var router = xtens.router;
@@ -35,111 +36,13 @@
      */
     DataType.Model = Backbone.Model.extend({
 
-        defaults: {
-            model: DataTypeClasses.DATA
-        },
+        // defaults: {
+        //     model: DataTypeClasses.DATA
+        // },
 
-        urlRoot: '/dataType',
+        urlRoot: '/dataType'
 
-        /**
-         * @description flattens the metadata schema returning a 1D array containing all the metadata fields
-         * @param {boolean} skipFieldsWithinLoops - if true skips all the metadatafields that are contained within metadata loops
-         */
-        getFlattenedFields: function(skipFieldsWithinLoops) {
-            var flattened = [], groupName, groupContent, loopContent;
-            var body = this.get("schema") && this.get("schema").body;
-            if (!body) return flattened;
-            for (var i=0, len=body.length; i<len; i++) {
-                groupName = body[i].name;
-                groupContent = body[i] && body[i].content;
-                for (var j=0, l=groupContent.length; j<l; j++) {
-                    if (groupContent[j].label === Constants.METADATA_FIELD) {
-                        flattened.push(_.extend(groupContent[j], {_group: groupName}));
-                    }
-                    else if (groupContent[j].label === Constants.METADATA_LOOP && !skipFieldsWithinLoops) {
-                        loopContent = groupContent[j] && groupContent[j].content;
-                        for (var k=0; k<loopContent.length; k++) {
-                            if (loopContent[k].label === Constants.METADATA_FIELD) {
 
-                                // add to the field a private flag that specifies its belonging to a loop
-                                flattened.push(_.extend(loopContent[k], {
-                                    _group: groupName,
-                                    _loop: true
-                                }));
-                            }
-                        }
-                    }
-
-                }
-            }
-            return flattened;
-        },
-
-        /**
-         * @description checks whether the DataType contains at least a loop
-         * @return{boolean} - true if the DataType contains at least a loop, false otherwise
-         */
-        hasLoops: function() {
-            var body = this.get("schema") && this.get("schema").body;
-            for (var i=0, len=body.length; i<len; i++){
-                var groupContent = body[i] && body[i].content;
-                if (_.where(groupContent, {label: Constants.METADATA_LOOP}).length > 0) {
-                    return true;
-                }
-            }
-            return false;
-        },
-
-        /**
-         * @method
-         * @name getLoops
-         * @description returns a list of the metadata loops contained in the current DataType
-         * @return{Array} - an array containing all the Metadata loops
-         */
-        getLoops: function() {
-            var body = this.get("schema") && this.get("schema").body;
-            var res = [];
-            for (var i=0, len=body.length; i<len; i++) {
-                var groupContent = body[i] && body[i].content;
-                res.push(_.where(groupContent, {label: Constants.METADATA_LOOP}));
-            }
-            return _.flatten(res, true);
-        },
-
-        /**
-         * @method
-         * @name validate
-         * @description customized client-side validation for DataType Model
-         */
-        validate: function(attrs, opts) {
-            var errors = [];
-
-            if (!attrs.schema.body || !attrs.schema.body.length) {
-                // errors.push({name:'groups', message: i18n("please-add-at-least-a-metadata-group")});
-                return false;
-            }
-            // create a temporary DataType.Model to check the fields
-            var tempModel = new DataType.Model(attrs);
-            var flattened = tempModel.getFlattenedFields();
-            if (!flattened.length) {
-                errors.push({name:'attributes', message: i18n("please-add-at-least-a-metadata-field")});
-            }
-            // check that there are no fields with more than one occurrence
-            var occurrences = {}, duplicates = [];
-            _.each(_.map(flattened, 'name'), function(fieldName) {
-                if (!occurrences[fieldName]) {
-                    occurrences[fieldName] = 1;
-                }
-                else {
-                    occurrences[fieldName]++;
-                    duplicates.push(fieldName);
-                }
-            });
-            if (!_.isEmpty(duplicates)) {
-                errors.push({name: 'duplicates', message: i18n("data-type-has-the-following-duplicate-names") + ": " + duplicates.join(", ") });
-            }
-            return errors.length > 0 ? errors : false;
-        }
 
     });
 
@@ -158,6 +61,8 @@
             'click .add-metadata-group': 'addMetadataGroupOnClick',  // not used yet
             'click button.delete': 'deleteDataType',
             'change select#project': 'getProjectParents'
+            // 'change select#super-type': 'superTypeOnChange',
+            // "change #schemaBody": "schemaOnChange"
         },
 
         tagName: 'div',
@@ -173,23 +78,29 @@
             this.existingDataTypes = options.dataTypes;
             this.projects = xtens.session.get('projects');
             this.isCreation = true;
-            if (this.idDataType) {
-                var that =this;
-                this.model = new DataType.Model(_.find(this.existingDataTypes, function(dt){ return dt.id === that.idDataType; }));
 
-                // if options.params.duplicate exist unset id and set the right project
-                if(this.duplicate) {
-                    this.model.unset('id');
-                    var project = _.find(this.projects, {'id': _.parseInt(options.params.projectDest)});
-                    this.model.set('project', project);
-                }
+            var that =this;
+            this.model = this.idDataType ? new DataType.Model(_.find(this.existingDataTypes, function(dt){ return dt.id === that.idDataType; })) : new DataType.Model();
+            this.stModel = this.idDataType || this.duplicate ? new SuperType.Model(this.model.get('superType')) : new SuperType.Model();
+
+          // if options.params.duplicate exist unset id and set the right project
+            if(this.duplicate) {
+                this.model.unset('id');
+                var project = _.find(this.projects, {'id': _.parseInt(options.params.projectDest)});
+                this.model.set('project', project);
             }
-            else {
-                this.model = new DataType.Model();
-            }
+
+            this.superTypeView = new SuperType.Views.Edit({
+                model: this.stModel
+            });
 
             this.render();
             this.listenTo(this.model, 'invalid', this.handleValidationErrors);
+            this.$("#super-type-cnt").append(this.superTypeView.render().el);
+            if (this.idDataType) {
+                $('#st-name').attr("disabled", true);
+                $('#uri').attr("disabled", true);
+            }
         },
 
         bindings: {
@@ -252,7 +163,7 @@
                         return _.findWhere(options.view.existingDataTypes, {id: parseInt(value)});
                     });
                 },
-                onGet: function(vals, options) {
+                onGet: function(vals) {
                     return (vals && vals.map(function(val) {return val.id; }));
                 }
             }
@@ -302,10 +213,62 @@
                 this.isCreation = false;
             }
 
-            if (this.model.get("schema") && _.isArray(this.model.get('schema').body)) {
-                var body = this.model.get('schema').body;
+            if (this.model.get("superType") && this.model.get("superType").schema && _.isArray(this.model.get('superType').schema.body)) {
+                var body = this.model.get('superType').schema.body;
                 for (var i=0, len=body.length; i<len; i++) {
                     this.add(body[i]);
+                }
+            }
+
+            //creation
+            if (!this.idDataType && !this.duplicate) {
+                $("#schema-title-icon").append('<i class="fa fa-unlock-alt fa-lg right"></i>');
+                $('#collapse-schema').collapse('show');
+                $('.bg-transition').removeClass('bg-transition');
+                $('#schema-title').css('cursor','default');
+            }
+            //duplication or edit
+            if (this.idDataType) {
+                $("#schema-title-icon").append('<i class="fa fa-lock fa-lg right"></i>');
+                if (this.duplicate) {
+                    $("#schemaBody :input").attr("disabled", true);
+                    $(".add-metadata-group").attr("disabled", true);
+                    $('#collapse-schema').collapse('show');
+                }
+                else {
+                  //edit
+                    var that = this;
+
+                    $(".panel-heading").on('click',function(){
+                        if ($('.fa-unlock-alt').length === 0) {
+
+                            if (that.modal) {
+                                that.modal.hide();
+                            }
+                            var modal = new ModalDialog({
+                                template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
+                                title: i18n('confirm-edit'),
+                                body: i18n('edit-data-type-schema-warning'),
+                                type: "edit"
+                            });
+
+                            that.$modal.append(modal.render().el);
+                            modal.show();
+
+                            that.$('#confirm').click( function () {
+                                modal.hide();
+                                that.$('.datatype-modal').on('hidden.bs.modal', function () {
+                                    modal.remove();
+                                    $("#schema-title-icon").empty();
+                                    $("#schema-title-icon").append('<i class="fa fa-unlock-alt fa-lg right"></i>');
+                                    $(".add-metadata-group").attr("disabled", false);
+                                    $('.bg-transition').removeClass('bg-transition');
+                                    $('#schema-title').css('cursor','default');
+                                    setTimeout(function(){ $('#collapse-schema').collapse('show'); }, 350);
+                                });
+                            });
+                        }
+                    });
                 }
             }
             return this;
@@ -335,22 +298,24 @@
             header.fileUpload = header.fileUpload ? true : false;
             this.model.get("project").id ? header.project = this.model.get("project").id : header.project = this.model.get("project");
 
-            var that = this;
-            var body = this.serialize();
             var dataTypeDetails = {
                 id: id,
-                name: header.name,
-                schema: {
-                    header: _.omit(header, ['parents']), // parent-child many-to-many associations are not currently saved in the JSON schema
-                    body: body
-                }
+                name: header.name
             };
-
             this.model.set("parents", _.map(this.model.get("parents"),'id'));
             this.model.get("project").id ? this.model.set("project", this.model.get("project").id) : null;
 
-            this.model.save(dataTypeDetails, {
-                //  patch: true,
+            // if (this.superTypeView && this.superTypeView.model) {
+            var body = this.serialize();
+            this.stModel.attributes.schema = {
+                header: _.omit(header, ['parents']), // parent-child many-to-many associations are not currently saved in the JSON schema
+                body: body
+            };
+            this.model.set("superType", _.clone(this.stModel.attributes));
+            var that = this;
+
+            that.model.save(dataTypeDetails, {
+                  //  patch: true,
                 success: function(dataType) {
                     if (that.modal) {
                         that.modal.hide();
@@ -364,7 +329,7 @@
                     modal.show();
 
                     setTimeout(function(){ modal.hide(); }, 1200);
-                    that.$('.datatype-modal').on('hidden.bs.modal', function (e) {
+                    that.$('.datatype-modal').on('hidden.bs.modal', function () {
                         modal.remove();
                         if (xtens.session.get("isWheel") || !that.isCreation) {
                             router.navigate('datatypes', {trigger: true});
@@ -372,7 +337,6 @@
                             router.navigate('datatypeprivileges/new/0?dataTypeId=' + dataType.get("id"), {trigger: true});
                         }
                     });
-
                 },
                 error: function(model, res) {
                     xtens.error(res);
@@ -391,18 +355,19 @@
             var modal = new ModalDialog({
                 template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
                 title: i18n('confirm-deletion'),
-                body: i18n('datatype-will-be-permanently-deleted-are-you-sure')
+                body: i18n('datatype-will-be-permanently-deleted-are-you-sure'),
+                type: "delete"
             });
 
             this.$modal.append(modal.render().el);
             modal.show();
 
-            this.$('#confirm-delete').click( function (e) {
+            this.$('#confirm-delete').click( function () {
                 modal.hide();
 
                 that.model.destroy({
-                    success: function(model, res) {
-                        that.$modal.one('hidden.bs.modal', function (e) {
+                    success: function() {
+                        that.$modal.one('hidden.bs.modal', function () {
                             modal.template= JST["views/templates/dialog-bootstrap.ejs"];
                             modal.title= i18n('ok');
                             modal.body= i18n('datatype-deleted');
@@ -410,7 +375,7 @@
                             $('.modal-header').addClass('alert-success');
                             modal.show();
                             setTimeout(function(){ modal.hide(); }, 1200);
-                            that.$modal.on('hidden.bs.modal', function (e) {
+                            that.$modal.on('hidden.bs.modal', function () {
                                 modal.remove();
                                 xtens.router.navigate('datatypes', {trigger: true});
                             });
@@ -502,7 +467,7 @@
 
             modal.show();
 
-            $('#project-source').on('change.bs.select', function (e) {
+            $('#project-source').on('change.bs.select', function () {
                 var projectSource= $('#project-source').val();
                 $("label[for='data-type']").prop('hidden',false);
                 $('#data-type-selector').selectpicker('show');
@@ -513,7 +478,7 @@
                 $('#project-dest option[value='+projectSource +']').prop('disabled', true);
                 $('#project-dest').selectpicker('refresh');
 
-                $('#data-type-selector').on('change.bs.select', function (e) {
+                $('#data-type-selector').on('change.bs.select', function () {
                     var dataTypeSelected= $('#data-type-selector').val();
                     $("label[for='project-dest']").prop('hidden',false);
                     // if (xtens.session.get('activeProject') !== 'all') {
@@ -523,7 +488,7 @@
                     // }
                     $('#project-dest').selectpicker('show');
 
-                    $('#project-dest').on('change.bs.select', function (e) {
+                    $('#project-dest').on('change.bs.select', function () {
                         var projectDest= $('#project-dest').val();
 
                         // $('#confirm-duplication').text( i18n('confirm') + " " + e.target.value);
@@ -533,7 +498,7 @@
                             e.preventDefault();
 
                             modal.hide();
-                            that.$modal.on('hidden.bs.modal', function (e) {
+                            that.$modal.on('hidden.bs.modal', function () {
                                 modal.remove();
                                 router.navigate('#/datatypes/new?duplicate='+dataTypeSelected+'&projectDest='+projectDest, {trigger: true});
                             });
@@ -648,7 +613,7 @@
 
                     var nodesByName = {};
 
-                    console.log(links);
+                    // console.log(links);
 
                                // Create nodes for each unique source and target.
                     links.forEach(function(link) {
@@ -685,7 +650,7 @@
                                             //generate the tree
                     var nodes = tree.nodes(links[0].source);
                     nodes =_.uniq(nodes,'name');
-                    console.log(nodes);
+                    // console.log(nodes);
 
 
                                             //Count nodes/depth
@@ -705,20 +670,6 @@
                             d.x= (( c[d.depth] / countDepth[d.depth] ) * width - ( 1 / countDepth[d.depth ]) * width / 2 );
                         }
 
-
-
-                                                          // if(d.x>1000 && d.x<100000){
-                                                          //     d.x=d.x/80 -100;
-                                                          // }
-                                                          // else if(d.x>=100000 && d.x<1000000000){
-                                                          //     d.x=d.x/200000 - 120;
-                                                          // }
-                                                          // else if(d.x >=1000000000){
-                                                          //     d.x=d.x/200000000000 -40;
-                                                          // }
-                                                          // else if(d.x>500 && d.x <1000){
-                                                          //     d.x=(d.x/1.5)*3 -750;
-                                                          // }
                     });
 
                                             // define the links format/appereance
@@ -779,7 +730,7 @@
                                                                 .attr("x", function(d){
                                                                     return d.x;
                                                                 })
-                                                                .attr("id",function(d){
+                                                                .attr("id",function(){
                                                                     if( i=== arr.length-1){
                                                                         return arr[i];
                                                                     }
@@ -805,15 +756,10 @@
 
 
                 }, /* success */
-
                 error: function(jqXHR, textStatus, err) {
                     alert(err);
                 }
             });
-            /*
-                   .fail(function(res){
-                   alert("Error: " + res.responseJSON.error);
-                   }); */
 
         }
     });

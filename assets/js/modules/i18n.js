@@ -77,6 +77,9 @@
         "add-attribute": "Add Attribute",
         "add-loop": "Add Loop",
         "attribute": "Attribute",
+        "data-type-name": "Data Type Name",
+        "define-new-schema": "Define a new Schema",
+        "please-select-an-existing-schema": "Please select an existing Schema",
         "new-operator" : "New Operator",
         "first-name" : "First Name",
         "last-name": "Last Name",
@@ -96,6 +99,14 @@
         "username": "Username",
         "sign-in": "Sign in",
         "wrong-username-and-or-password!": "Wrong username and/or password!",
+        /* views/templates/supertype-edit.ejs */
+        "schema-details": "Schema Details",
+        "schema-name": "Schema Name",
+        "uri": "Uri",
+        "confirm-edit": "Confirm Edit",
+        "edit-data-type-schema-warning": "Be careful - This schema is used by multiple Projects than your. Any change will be applied to all Projects. Are you sure to edit the Schema?",
+        "super-type-uri": "Please insert a valid uri",
+        "super-type-name": "Name new Schema",
         /* view/templates/menu-bar.ejs */
         "management": "Management",
         "super-user": "Super User",
@@ -300,7 +311,7 @@
         /* assets/js/modules/DataFile.js */
         "could-not-download-file": "Could Not Download File",
         /* views/templates/datatypeprivileges-list.ejs */
-        "data-type-name": "Data Type Name",
+        // "data-type-name": "Data Type Name",
         "new-data-type-privilege": "New Data Type Privilege",
         /* views/templates/datatypeprivileges-edit.ejs */
         "update-data-type-privileges": "Update Data Type Privilege",

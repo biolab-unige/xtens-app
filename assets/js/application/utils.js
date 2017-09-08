@@ -44,7 +44,8 @@
         !body ? body = 'Error - Generic' : null;
         modal = new ModalDialog({
             title: title,
-            body: body
+            body: body,
+            type: "delete"
         });
 
         $("#main").append(modal.render().el);

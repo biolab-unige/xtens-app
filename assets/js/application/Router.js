@@ -175,7 +175,7 @@
                 data: $.param(privilegesParams)
             });
             var dataTypesDeferred = dataTypes.fetch({
-                data: $.param({populate:['project']})
+                data: $.param({populate:['project','superType']})
             });
 
             $.when(groupDeferred, privilegesDeferred, dataTypesDeferred).then(function(groupRes, privilegesRes, dataTypesRes) {
@@ -253,7 +253,7 @@
             var dataTypes = new DataType.List();
 
             dataTypes.fetch({
-                data:$.param({populate:['project','parents'], sort: 'id ASC'}),
+                data:$.param({populate:['project','parents','superType'], sort: 'id ASC'}),
                 success: function(dataTypes) {
                     var adminProjects = xtens.session.get("adminProjects");
                     dataTypes.models = _.filter(dataTypes.models,function (dt) {
@@ -335,7 +335,7 @@
             $.when($operatorDeferred).then(function(operatorRes) {
                 var groupId = operatorRes && operatorRes[0].groups[0].id;
                 var $dataTypesDeferred = dataTypes.fetch({
-                    data: $.param({ populate: ['children'] })
+                    data: $.param({ populate: ['children','superType'] })
                 });
                 var $privilegesDeferred = privileges.fetch({
                     data: $.param({group: groupId, limit:100})
@@ -592,7 +592,7 @@
                     data: $.param({group: groupId, limit:100})
                 });
                 var $dataTypesDeferred = dataTypes.fetch({
-                    data: $.param({ populate: ['children'] })
+                    data: $.param({ populate: ['children','superType'] })
                 });
                 $.when($dataTypesDeferred, $privilegesDeferred).then(function(dataTypesRes, privilegesRes) {
                     var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
@@ -762,7 +762,7 @@
                     data: $.param({group: groupId, limit:100})
                 });
                 var $dataTypesDeferred = dataTypes.fetch({
-                    data: $.param({populate:['children']})
+                    data: $.param({populate:['children','superType']})
                 });
 
                 $.when($dataTypesDeferred, $privilegesDeferred).then( function(dataTypesRes, privilegesRes) {
@@ -903,7 +903,7 @@
             var that = this;
             var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
             var criteria = {
-                populate:['children', 'owner'],
+                populate:['children', 'owner', 'superType'],
                 sort: 'id ASC'
             };
             idProject ? criteria.project = idProject : null;
