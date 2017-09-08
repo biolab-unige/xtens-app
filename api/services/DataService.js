@@ -200,7 +200,7 @@ let DataService = BluebirdPromise.promisifyAll({
         sails.log("DataService.executeAdvancedQuery - query: " + queryObj.statement);
         sails.log(queryObj.parameters);
 
-        DataType.findOne(idDataType).populate('children')
+        DataType.findOne(idDataType).populate(['children','superType'])
 
          .then(result => {
              dataType = result;

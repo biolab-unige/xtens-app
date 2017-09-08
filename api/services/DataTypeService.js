@@ -161,12 +161,22 @@ let DataTypeService = {
      */
     validate: function(dataType, performSchemaValidation) {
 
+        let superTypeValidationSchema = {
+            id: Joi.number().integer().positive(),
+            name: Joi.string().trim(),
+            uri: Joi.string().trim(),
+            schema: Joi.object().required(),
+            createdAt: Joi.date(),
+            updatedAt: Joi.date()
+        };
+
         let validationSchema = {
             id: Joi.number().integer().positive(),
             name: Joi.string().required(),
             model: Joi.string().required().valid(_.values(constants.DataTypeClasses)),
-            schema: Joi.object().required(),
+            // schema: Joi.object().required(),
             project: Joi.number().integer().required(),
+            superType: Joi.object().required().keys(superTypeValidationSchema),
             parents: Joi.array().allow(null),
             children: Joi.array().allow(null),
             data: Joi.array().allow(null),
@@ -224,12 +234,12 @@ let DataTypeService = {
                 ontology: Joi.string().allow("")
             });
 
-            validationSchema.schema = Joi.object().required().keys({
+            superTypeValidationSchema.schema = Joi.object().required().keys({
                 header: metadataHeaderValidationSchema,
                 body: Joi.array().required().items(metadataGroupValidationSchema)
             });
 
-
+            validationSchema.superType = Joi.object().required().keys(superTypeValidationSchema);
         }
 
         validationSchema = Joi.object().keys(validationSchema);

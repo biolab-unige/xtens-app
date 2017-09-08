@@ -33,7 +33,7 @@ const coroutines = {
             query.limit(1000);  // default limit for dataTypes
         }
         if (!req.param('populate')) {
-            query.populate('parents');  // by default populate only with 'parents' dataTypes
+            query.populate(['parents', 'superType']);  // by default populate only with 'parents' dataTypes and 'superType'
         }
         else {
             query = actionUtil.populateRequest(query, req);
@@ -154,7 +154,7 @@ const coroutines = {
 
         const projects = yield Project.find().sort('id ASC');
 
-        const dataTypes= yield DataType.find({ project:_.map(projects,'id') }).populate(['project','parents']).sort('id ASC');
+        const dataTypes= yield DataType.find({ project:_.map(projects,'id') }).populate(['project','parents','superType']).sort('id ASC');
         return res.json({params: params, dataTypes: dataTypes});
     }),
 

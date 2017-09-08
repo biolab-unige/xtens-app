@@ -61,6 +61,11 @@ module.exports.policies = {
         'edit':  ['bearerAuth', 'isAdmin']
     },
 
+    SuperTypeController: {
+        '*':  ['bearerAuth', 'isAdmin'],
+        find: 'bearerAuth'
+    },
+
     BiobankController: {
         '*':  ['bearerAuth', 'isAdmin'],
         find: 'bearerAuth'
