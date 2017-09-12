@@ -336,7 +336,7 @@ CREATE TABLE data_type (
     id integer NOT NULL,
     name text NOT NULL,
     model text NOT NULL,
-    schema jsonb NOT NULL,
+    super_type integer NOT NULL,
     project integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL
@@ -1708,6 +1708,42 @@ ALTER SEQUENCE subject_id_seq OWNED BY subject.id;
 
 
 --
+-- Name: super_type; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
+--
+
+CREATE TABLE super_type (
+    id integer NOT NULL,
+    name text NOT NULL,
+    uri text NOT NULL,
+    schema jsonb NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE super_type OWNER TO xtenspg;
+
+-- Name: super_type_id_seq; Type: SEQUENCE; Schema: public; Owner: xtenspg
+--
+
+CREATE SEQUENCE super_type_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE super_type_id_seq OWNER TO xtenspg;
+
+--
+-- Name: super_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: xtenspg
+--
+
+ALTER SEQUENCE super_type_id_seq OWNED BY super_type.id;
+
+
+--
 -- Name: xtens_group; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
 
@@ -2044,6 +2080,11 @@ ALTER TABLE ONLY somatic_variant ALTER COLUMN id SET DEFAULT nextval('somatic_va
 
 ALTER TABLE ONLY subject ALTER COLUMN id SET DEFAULT nextval('subject_id_seq'::regclass);
 
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY super_type ALTER COLUMN id SET DEFAULT nextval('super_type_id_seq'::regclass);
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: xtenspg
@@ -2427,19 +2468,6 @@ ALTER TABLE ONLY operator
     ADD CONSTRAINT operator_pkey PRIMARY KEY (id);
 
 --
--- Name: owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
---
-
-ALTER TABLE ONLY data
-    ADD CONSTRAINT owner_fkey FOREIGN KEY (owner) REFERENCES operator(id) MATCH FULL;
-
-ALTER TABLE ONLY sample
-    ADD CONSTRAINT owner_fkey FOREIGN KEY (owner) REFERENCES operator(id) MATCH FULL;
-
-ALTER TABLE ONLY subject
-    ADD CONSTRAINT owner_fkey FOREIGN KEY (owner) REFERENCES operator(id) MATCH FULL;
-
---
 -- Name: passport_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
 
@@ -2469,6 +2497,13 @@ ALTER TABLE ONLY project
 
 ALTER TABLE ONLY project
     ADD CONSTRAINT project_pkey PRIMARY KEY (id);
+
+--
+-- Name: super_type_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
+--
+
+ALTER TABLE ONLY super_type
+    ADD CONSTRAINT super_type_pkey PRIMARY KEY (id);
 
 
 --
@@ -2572,6 +2607,26 @@ CREATE INDEX data_type_idx ON data USING btree (type);
 ALTER TABLE ONLY sample
     ADD CONSTRAINT biobank_fkey FOREIGN KEY (biobank) REFERENCES biobank(id) MATCH FULL ON DELETE CASCADE;
 
+--
+-- Name: owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY data
+    ADD CONSTRAINT owner_fkey FOREIGN KEY (owner) REFERENCES operator(id) MATCH FULL;
+
+--
+-- Name: owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY sample
+    ADD CONSTRAINT owner_fkey FOREIGN KEY (owner) REFERENCES operator(id) MATCH FULL;
+
+--
+-- Name: owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY subject
+    ADD CONSTRAINT owner_fkey FOREIGN KEY (owner) REFERENCES operator(id) MATCH FULL;
 
 --
 -- Name: address_information_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
@@ -2609,8 +2664,14 @@ ALTER TABLE ONLY datatype_privileges
 --
 
 ALTER TABLE ONLY data_type
-    ADD CONSTRAINT project_fkey FOREIGN KEY (project) REFERENCES project(id) MATCH FULL ON DELETE CASCADE;
+    ADD CONSTRAINT project_fkey FOREIGN KEY (project) REFERENCES project(id) MATCH FULL ON DELETE CASCADE;ù
 
+--
+-- Name: super_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY data_type
+    ADD CONSTRAINT super_type_fkey FOREIGN KEY (super_type) REFERENCES super_type(id) MATCH FULL ON DELETE RESTRICT;
 
 --
 -- Name: datafile_data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
