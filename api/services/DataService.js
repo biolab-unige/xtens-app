@@ -11,36 +11,21 @@ let FieldTypes = sails.config.xtens.constants.FieldTypes;
 let Joi = require('joi');
 let crudManager = sails.hooks['persistence'].getDatabaseManager().crudManager;
 let queryBuilder = sails.hooks['persistence'].getDatabaseManager().queryBuilder;
+const co = require('co');
 const DATA = sails.config.xtens.constants.DataTypeClasses.DATA;
 const VIEW_OVERVIEW = sails.config.xtens.constants.DataTypePrivilegeLevels.VIEW_OVERVIEW;
 
-
-let DataService = BluebirdPromise.promisifyAll({
-
-    /**
-     * @method
-     * @name simplify
-     * @description removes all associated Objects if present keeping only their primary keys (i.e. IDs)
-     */
-    simplify: function(data) {
-        ["type", "parentSubject", "parentSample", "parentData"].forEach(elem => {
-            if (data[elem]) {
-                data[elem] = data[elem].id || data[elem];
-            }
-        });
-    },
+const coroutines = {
 
     /**
      * @method
      * @name validate
-     * @param{Object} data - the data to be validated
-     * @param{boolean} performMetadataValidation - if true perform the metadata validation
-     * @param{Object} dataType - the dataType containing the schema aginst which the data's metadata are to be validated
-     * @return {Object} - the result object contains two properties:
-     *                      - error: null if the Data is validated, an Error object otherwise
-     *                      - value: the validated data object if no error is returned
+     * @param{ Object } data to be validated
+     * @param{ boolean} perform metadata validation
+     * @param{ Object } data type object
+     * @description coroutine for data validation
      */
-    validate: function(data, performMetadataValidation, dataType) {
+    validate: BluebirdPromise.coroutine(function *(data, performMetadataValidation, dataType) {
 
         if (dataType.model !== DATA) {
             return {
@@ -77,7 +62,7 @@ let DataService = BluebirdPromise.promisifyAll({
             let metadataValidationSchema = {
                 __DATA: Joi.any()   // key to store any possible data object or "blob"
             };
-            let flattenedFields = DataTypeService.getFlattenedFields(dataType);
+            let flattenedFields = yield DataTypeService.getFlattenedFields(dataType);
             _.each(flattenedFields, field => {
                 metadataValidationSchema[field.formattedName] = DataService.buildMetadataFieldValidationSchema(field);
             });
@@ -87,7 +72,145 @@ let DataService = BluebirdPromise.promisifyAll({
 
         validationSchema = Joi.object().keys(validationSchema);
         return Joi.validate(data, validationSchema);
+    }),
 
+    filterOutSensitiveInfo: BluebirdPromise.coroutine(function* (data, canAccessSensitiveData) {
+        if (!data || _.isEmpty(data)) {
+            return [];
+        }
+        let arrData = [], idDataType, typeIds, forbiddenField, forbiddenFields  = [];
+        _.isArray(data) ? arrData=data : arrData[0] = data;
+
+      //retrive all unique idDatatypes from data Array
+        typeof(arrData[0]['type']) === 'object' ?
+        typeIds = _.uniq(_.map(_.uniq(_.map(arrData, 'type')), 'id')) :
+        typeIds = _.uniq(_.map(arrData, 'type'));
+
+      //retrieve datatypes of datum
+        let dataTypes = yield DataType.find({select: ['schema','id'], where: {id: typeIds}}).populate('superType');
+
+          //if canAccessSensitiveData is true or metadata is Empty skip the function and return data
+        if(!canAccessSensitiveData || (!_.isEmpty(arrData[0].metadata) && !arrData[1])){
+            yield BluebirdPromise.each( dataTypes,co.wrap( function *(datatype) {
+
+                //create an array with metadata fields sensitive for each dataType
+                idDataType = datatype.id;
+                let flattenedFields = yield DataTypeService.getFlattenedFields(datatype, false);
+                forbiddenField = _.filter(flattenedFields, (field) => {return field.sensitive;});
+                forbiddenFields[idDataType] = _.map(forbiddenField, (field) => {return field.formattedName;});
+
+                for (let datum of arrData) {
+                    _.each(forbiddenFields[datum.type], (forbField) => {
+                        if(datum.metadata[forbField]){
+                            delete datum.metadata[forbField];
+                        }
+                    });
+                }
+            }));
+
+            return arrData.length > 1 ? arrData : arrData[0];
+        }
+        else {
+            return data;
+        }
+    }),
+
+    hasDataSensitive: BluebirdPromise.coroutine(function* (idData, modelName ) {
+
+        let datum = yield global[modelName].findOne({id : idData}).populateAll();
+
+        sails.log("DataService hasDataSensitive - called for model: " +  datum.type.model);
+          //retrieve metadata fields sensitive
+        const flattenedFields = yield DataTypeService.getFlattenedFields(datum.type, false);
+        const forbiddenFields = _.filter(flattenedFields, field => { return field.sensitive; });
+
+        const hasDataSensitive = forbiddenFields.length > 0;
+
+        const json = {
+            hasDataSensitive : hasDataSensitive,
+            data : datum
+        };
+        return json;
+
+    }),
+
+    filterListByPrivileges:  BluebirdPromise.coroutine(function* (data, dataTypesId, privileges, canAccessSensitiveData) {
+        // filter out privileges not pertaining the dataTypes we have
+        const arrPrivileges = _.isArray(privileges) ? privileges : [privileges];
+            //if operator has not at least a privilege on Data filter metadata
+        if (!arrPrivileges || _.isEmpty(arrPrivileges) ){
+            return [];
+        }
+        //or exists at least a VIEW_OVERVIEW privilege level filter metadata
+        else if( arrPrivileges.length < dataTypesId.length ||
+              (arrPrivileges.length === dataTypesId.length && _.find(arrPrivileges, { privilegeLevel: VIEW_OVERVIEW }))) {
+
+            // check for each datum if operator has the privilege to view details. If not metadata object is cleaned
+            let index = 0, arrDtPrivId = arrPrivileges.map(el => el.dataType);
+            for ( let i = data.length - 1; i >= 0; i-- ) {
+                let idDataType = _.isObject(data[i].type) ? data[i].type.id : data[i].type;
+                index = arrDtPrivId.indexOf(idDataType);
+                if( index < 0 ){
+                    data.splice(i, 1);
+                }
+                else if (arrPrivileges[index].privilegeLevel === VIEW_OVERVIEW) { data[i].metadata = {}; }
+            }
+        }
+        if( canAccessSensitiveData ){ return data; }
+            //filter Out Sensitive Info if operator can not access to Sensitive Data
+        let results = yield coroutines.filterOutSensitiveInfo(data, canAccessSensitiveData);
+        return results;
+    }),
+
+    preprocessQueryParams: BluebirdPromise.coroutine(function* (queryArgs, idGroups, idDataType, next) {
+        // let dataType, dataPrivilege;
+        let queryObj = queryBuilder.compose(queryArgs);
+        sails.log("DataService.executeAdvancedQuery - query: " + queryObj.statement);
+        sails.log(queryObj.parameters);
+
+        let dataType = yield DataType.findOne(idDataType).populate(['children','superType']);
+
+        let dataPrivilege = yield DataTypeService.getDataTypePrivilegeLevel(idGroups, idDataType);
+
+        let flattenedFields = yield DataTypeService.getFlattenedFields(dataType, false);
+
+        let forbiddenFields = _.filter(flattenedFields, (field) => {return field.sensitive;});
+        return next(null ,{queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: forbiddenFields});
+    })
+
+};
+
+let DataService = BluebirdPromise.promisifyAll({
+
+    /**
+     * @method
+     * @name simplify
+     * @description removes all associated Objects if present keeping only their primary keys (i.e. IDs)
+     */
+    simplify: function(data) {
+        ["type", "parentSubject", "parentSample", "parentData"].forEach(elem => {
+            if (data[elem]) {
+                data[elem] = data[elem].id || data[elem];
+            }
+        });
+    },
+
+    /**
+     * @method
+     * @name validate
+     * @param{Object} data - the data to be validated
+     * @param{boolean} performMetadataValidation - if true perform the metadata validation
+     * @param{Object} dataType - the dataType containing the schema aginst which the data's metadata are to be validated
+     * @return {Object} - the result object contains two properties:
+     *                      - error: null if the Data is validated, an Error object otherwise
+     *                      - value: the validated data object if no error is returned
+     */
+    validate: function(data, performMetadataValidation, dataType) {
+        return coroutines.validate(data, performMetadataValidation, dataType)
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log(err);
+            return err;
+        });
     },
 
     /**
@@ -190,33 +313,18 @@ let DataService = BluebirdPromise.promisifyAll({
 
     /**
      * @method
-     * @name executeAdvancedQuery
+     * @name preprocessQueryParams
      * @param{Object} queryArgs - a nested object containing all the query arguments
+     * @param{Array - integer} idGroups - an array containg the operator's groups
+     * @param{integer} idDataType - id Data Type
      * @return{Promise} promise with all parameters needed for the query
      */
     preprocessQueryParams: function(queryArgs, idGroups, idDataType, next) {
-        let dataType, dataPrivilege;
-        let queryObj = queryBuilder.compose(queryArgs);
-        sails.log("DataService.executeAdvancedQuery - query: " + queryObj.statement);
-        sails.log(queryObj.parameters);
-
-        DataType.findOne(idDataType).populate(['children','superType'])
-
-         .then(result => {
-             dataType = result;
-             return DataTypeService.getDataTypePrivilegeLevel(idGroups, idDataType);
-         })
-         .then(dataTypePrivilege => {
-             let flattenedFields = DataTypeService.getFlattenedFields(dataType, false);
-             let forbiddenFields = _.filter(flattenedFields, (field) => {return field.sensitive;});
-             dataPrivilege = dataTypePrivilege;
-
-             return next(null ,{queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: forbiddenFields});
-         })
-         .catch(err => {
-             sails.log(err);
-             next(err, null);
-         });
+        return coroutines.preprocessQueryParams(queryArgs, idGroups, idDataType, next)
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log(err);
+            return err;
+        });
 
     },
 
@@ -228,48 +336,9 @@ let DataService = BluebirdPromise.promisifyAll({
      * @return {Promise} -  a Bluebird Promise with Data Array filtered
      */
     filterOutSensitiveInfo: function(data, canAccessSensitiveData) {
-        if (!data || _.isEmpty(data)) {
-            return [];
-        }
-        let arrData = [], idDataType, typeIds, flattenedFields,
-            forbiddenField, forbiddenFields  = [];
-        _.isArray(data) ? arrData=data : arrData[0] = data;
-
-        //retrive all unique idDatatypes from data Array
-        typeof(arrData[0]['type']) === 'object' ?
-          typeIds = _.uniq(_.map(_.uniq(_.map(arrData, 'type')), 'id')) :
-          typeIds = _.uniq(_.map(arrData, 'type'));
-
-        //retrieve datatypes of datum
-        return DataType.find({select: ['schema','id'], where: {id: typeIds}}).then(dataTypes => {
-
-            //if canAccessSensitiveData is true or metadata is Empty skip the function and return data
-            if(!canAccessSensitiveData || (!_.isEmpty(arrData[0].metadata) && !arrData[1])){
-                _.each(dataTypes, (datatype) => {
-
-                  //create an array with metadata fields sensitive for each dataType
-                    idDataType = datatype.id;
-                    flattenedFields = DataTypeService.getFlattenedFields(datatype, false);
-                    forbiddenField = _.filter(flattenedFields, (field) => {return field.sensitive;});
-                    forbiddenFields[idDataType] = _.map(forbiddenField, (field) => {return field.formattedName;});
-                });
-
-                for (let datum of arrData) {
-                    _.each(forbiddenFields[datum.type], (forbField) => {
-                        if(datum.metadata[forbField]){
-                            // sails.log("Deleted field: " + datum.metadata[forbField]);
-                            delete datum.metadata[forbField];
-                        }
-                    });
-                }
-                return arrData.length > 1 ? arrData : arrData[0];
-            }
-            else {
-                return data;
-            }
-        })
-        .catch(err => {
-            sails.log.error(err);
+        return coroutines.filterOutSensitiveInfo(data, canAccessSensitiveData)
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log(err);
             return err;
         });
     },
@@ -281,29 +350,11 @@ let DataService = BluebirdPromise.promisifyAll({
      * @return {Promise} -  a Bluebird Promise with an object containing boolean value of investigation and data
      */
     hasDataSensitive: function(idData, modelName) {
-
-        return global[modelName].findOne({id : idData}).populateAll()
-        .then(datum => {
-            //if (!datum){ return BluebirdPromise.resolve(undefined);}
-
-            sails.log("DataService hasDataSensitive - called for model: " +  datum.type.model);
-            //retrieve metadata fields sensitive
-            const flattenedFields = DataTypeService.getFlattenedFields(datum.type, false);
-            const forbiddenFields = _.filter(flattenedFields, field => { return field.sensitive; });
-
-            const hasDataSensitive = forbiddenFields.length > 0;
-
-            const json = {
-                hasDataSensitive : hasDataSensitive,
-                data : datum
-            };
-            return json;
-        })
-        .catch ( err => {
-            sails.log.error(err);
+        return coroutines.hasDataSensitive(idData, modelName)
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log(err);
             return err;
         });
-
     },
 
     /**
@@ -409,30 +460,11 @@ let DataService = BluebirdPromise.promisifyAll({
      * @return {Promise} - a Bluebird promise returning an Array with the filtered data
      */
     filterListByPrivileges: function(data, dataTypesId, privileges, canAccessSensitiveData) {
-        // filter out privileges not pertaining the dataTypes we have
-        const arrPrivileges = _.isArray(privileges) ? privileges : [privileges];
-            //if operator has not at least a privilege on Data filter metadata
-        if (!arrPrivileges || _.isEmpty(arrPrivileges) ){
-            return [];
-        }
-        //or exists at least a VIEW_OVERVIEW privilege level filter metadata
-        else if( arrPrivileges.length < dataTypesId.length ||
-              (arrPrivileges.length === dataTypesId.length && _.find(arrPrivileges, { privilegeLevel: VIEW_OVERVIEW }))) {
-
-            // check for each datum if operator has the privilege to view details. If not metadata object is cleaned
-            let index = 0, arrDtPrivId = arrPrivileges.map(el => el.dataType);
-            for ( let i = data.length - 1; i >= 0; i-- ) {
-                let idDataType = _.isObject(data[i].type) ? data[i].type.id : data[i].type;
-                index = arrDtPrivId.indexOf(idDataType);
-                if( index < 0 ){
-                    data.splice(i, 1);
-                }
-                else if (arrPrivileges[index].privilegeLevel === VIEW_OVERVIEW) { data[i].metadata = {}; }
-            }
-        }
-        if( canAccessSensitiveData ){ return data; }
-            //filter Out Sensitive Info if operator can not access to Sensitive Data
-        return DataService.filterOutSensitiveInfo(data, canAccessSensitiveData);
+        return coroutines.filterListByPrivileges(data, dataTypesId, privileges, canAccessSensitiveData)
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log(err);
+            return err;
+        });
     },
 
     /**

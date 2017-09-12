@@ -39,7 +39,7 @@ const coroutines = {
         SampleService.simplify(sample);
         const dataType = yield DataType.findOne(sample.type);
 
-        const validationRes = SampleService.validate(sample, true, dataType);
+        const validationRes = yield SampleService.validate(sample, true, dataType);
         if (validationRes.error !== null) {
             throw new ValidationError(validationRes.error);
         }
@@ -114,7 +114,7 @@ const coroutines = {
         SampleService.simplify(sample);
 
         const dataType = yield DataType.findOne(idSampleType);
-        const validationRes = SampleService.validate(sample, true, dataType);
+        const validationRes = yield SampleService.validate(sample, true, dataType);
         if (validationRes.error !== null) {
             throw new ValidationError(validationRes.error);
         }

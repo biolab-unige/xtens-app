@@ -76,20 +76,28 @@ describe('SubjectService', function() {
 
     describe("#validate", function() {
 
-        it("should correctly validate a valid subject using its schema", function() {
+        it("should correctly validate a valid subject using its schema", function(done) {
             var subject = _.cloneDeep(fixtures.subject[0]);
             var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: subject.type}));
-            var res = SubjectService.validate(subject, true, dataType);
-            expect(res.error).to.be.null;
-            expect(_.omit(res.value, 'personalInfo')).to.eql(_.omit(subject, 'personalInfo'));
+            return SubjectService.validate(subject, true, dataType).then(function (res) {
+
+                expect(res.error).to.be.null;
+                expect(_.omit(res.value, 'personalInfo')).to.eql(_.omit(subject, 'personalInfo'));
+                done();
+                return;
+            });
         });
 
-        it("should correctly validate a valid subject with complete metadata using its schema", function() {
+        it("should correctly validate a valid subject with complete metadata using its schema", function(done) {
             var subject = _.cloneDeep(fixtures.subject[1]);
             var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: subject.type}));
-            var res = SubjectService.validate(subject, true, dataType);
-            expect(res.error).to.be.null;
-            expect(_.omit(res.value, 'personalInfo')).to.eql(_.omit(subject, 'personalInfo'));
+            return SubjectService.validate(subject, true, dataType).then(function (res) {
+
+                expect(res.error).to.be.null;
+                expect(_.omit(res.value, 'personalInfo')).to.eql(_.omit(subject, 'personalInfo'));
+                done();
+                return;
+            });
         });
 
     });

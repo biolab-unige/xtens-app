@@ -53,7 +53,7 @@ var PopulateService = {
     */
     generateData: function(dataType, blacklist) {
 
-        if (!dataType.schema) {
+        if (!dataType.superType.schema) {
             throw new Error("missing metadata schema");
         }
 
@@ -64,36 +64,37 @@ var PopulateService = {
         };
 
         // skipping the loop fields getRandomArbitrary(min, max
-        var fields = DataTypeService.getFlattenedFields(dataType,true);
-        var metadata = {};
-        fields.forEach(function(field){
+        return DataTypeService.getFlattenedFields(dataType, false).then(function (fields) {
+            var metadata = {};
+            fields.forEach(function(field){
 
             // skip field if its name is in blacklist
-            if (blacklist && blacklist.indexOf(field.name) > 0) {
-                return true;
-            }
+                if (blacklist && blacklist.indexOf(field.name) > 0) {
+                    return true;
+                }
 
-            switch(field.fieldType){
-                case FieldTypes.TEXT:
-                    metadata[field.name] = PopulateService.generateTextField(field);
-                    break;
-                case FieldTypes.FLOAT:
-                    metadata[field.name] = PopulateService.generateFloatField(field);
-                    break;
-                case FieldTypes.INTEGER:
-                    metadata[field.name] = PopulateService.generateIntegerField(field);
-                    break;
-                case FieldTypes.BOOLEAN:
-                    metadata[field.name] = PopulateService.generateBooleanField();
-                    break;
-                case FieldTypes.DATE:
-                    metadata[field.name] = PopulateService.generateDateField();
-                    break;
-            }
+                switch(field.fieldType){
+                    case FieldTypes.TEXT:
+                        metadata[field.name] = PopulateService.generateTextField(field);
+                        break;
+                    case FieldTypes.FLOAT:
+                        metadata[field.name] = PopulateService.generateFloatField(field);
+                        break;
+                    case FieldTypes.INTEGER:
+                        metadata[field.name] = PopulateService.generateIntegerField(field);
+                        break;
+                    case FieldTypes.BOOLEAN:
+                        metadata[field.name] = PopulateService.generateBooleanField();
+                        break;
+                    case FieldTypes.DATE:
+                        metadata[field.name] = PopulateService.generateDateField();
+                        break;
+                }
 
+            });
+            data.metadata = metadata;
+            return data;
         });
-        data.metadata = metadata;
-        return data;
     },
 
     /**
@@ -319,7 +320,7 @@ var PopulateService = {
 
         var idTissue;
 
-        return DataType.find({name:'Tissue'}).then(function(tissue){
+        return DataType.find({name:'Tissue'}).populate('superType').then(function(tissue){
             idTissue = tissue[0].id;
             return idTissue;
         }).catch(function(e){
@@ -335,7 +336,7 @@ var PopulateService = {
 
     returnDNA : function() {
 
-        return DataType.find({name:'DNA'}).then(function(dna){
+        return DataType.find({name:'DNA'}).populate('superType').then(function(dna){
             return dna[0];
         }).catch(function(e){
             console.log(err);
@@ -546,29 +547,33 @@ var PopulateService = {
 
         var variantFields = {}, annotationFields = {}, variant ={};
 
-        return DataType.find({name:'Variant'})
+        return DataType.find({name:'Variant'}).populate('superType')
 
     // flatten Variant type fields
     .then(function(dataType) {
         console.log("PopulateService.generateVariant - variant type retrieved");
-        variantFields.fields = DataTypeService.getFlattenedFields(dataType[0],false);
         variantFields.id = dataType[0].id;
-    })
+        return DataTypeService.getFlattenedFields(dataType[0],false);
 
-    // find the variant annotation DataType
-    .then(function() {
+    })
+    .then(function (fields) {
+        variantFields.fields = fields;
+
+        // find the variant annotation DataType
         console.log("PopulateService.generateVariant - trying to retrieve annotation");
-        return DataType.findOne({name: 'Variant Annotation'});
+        return DataType.findOne({name: 'Variant Annotation'}).populate('superType');
     })
 
     .then(function(annotationType) {
         console.log("PopulateService.generateVariant - annotation type retrieved");
-        annotationFields.fields = DataTypeService.getFlattenedFields(annotationType);
         annotationFields.id = annotationType.id;
-    })
+        return DataTypeService.getFlattenedFields(annotationType);
 
-    // create all the Variants
-    .then(function() {
+    })
+    .then(function (fields) {
+        annotationFields.fields = fields;
+        // create all the Variants
+
         console.log("PopulateService.generateVariant - creating all the variants");
         var array = new Array(N);
         return BluebirdPromise.map(array, function() {
@@ -635,17 +640,17 @@ console.log(e);
         var sampleChildren = [];
         var dataChildren = [];
 
-        DataType.findOne({name:'Patient'}).then(function(patient){
+        DataType.findOne({name:'Patient'}).populate('superType').then(function(patient){
 
             subject = patient;
         })
     .then(function(){
 
-        return DataType.find().then( function(dataTypes){
+        return DataType.find().populate('superType').then( function(dataTypes){
 
             return BluebirdPromise.map(dataTypes,function(dataType){
 
-                if(dataType.schema.header.parents && (dataType.schema.header.parents).indexOf(subject.id) > -1) {
+                if(dataType.superType.schema.header.parents && (dataType.superType.schema.header.parents).indexOf(subject.id) > -1) {
                     if(dataType.model === DataTypeClasses.SAMPLE){
                         sampleChildren.push(dataType);
                     }

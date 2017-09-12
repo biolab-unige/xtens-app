@@ -69,33 +69,43 @@ describe('DataService', function() {
         });
     });
 
-    describe("#validate", function() {
+    describe("#validate", function(done) {
 
-        it("should correctly validate a valid data using its schema", function() {
+        it("should correctly validate a valid data using its schema", function(done) {
             var data = _.cloneDeep(fixtures.data[0]);
             var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: data.type}));
-            var res = DataService.validate(data, true, dataType); // skip metadata validation
-            data.metadata.name.value = data.metadata.name.value.toUpperCase(); // set case insensitive value to uppercase;
-            expect(res.error).to.be.null;
-            expect(res.value).to.eql(data);
+            DataService.validate(data, true, dataType).then(function (res) { // skip metadata validation
+
+                data.metadata.name.value = data.metadata.name.value.toUpperCase(); // set case insensitive value to uppercase;
+                expect(res.error).to.be.null;
+                expect(res.value).to.eql(data);
+                done();
+            });
         });
 
-        it("should raise an Error if the data is not valid", function() {
+        it("should raise an Error if the data is not valid", function(done) {
             var invalidData = _.cloneDeep(fixtures.data[0]);
             var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: invalidData.type}));
             invalidData.metadata.radius = {value: "Unknown", unit: "M☉"};
-            var res = DataService.validate(invalidData, true, dataType);
-            expect(res.error).to.be.not.null;
-            sails.log(res.error);
+            DataService.validate(invalidData, true, dataType).then(function (res) {
+                expect(res.error).to.be.not.null;
+                sails.log(res.error);
+                done();
+
+            });
         });
 
-        it("should raise an Error if the model is not valid", function() {
+        it("should raise an Error if the model is not valid", function(done) {
             var invalidData = _.cloneDeep(fixtures.subject[0]);
             var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: invalidData.type}));
+            var superType = _.cloneDeep(fixtures.supertype[0]);
+            dataType.superType = superType;
             // invalidData.metadata.radius = {value: "Unknown", unit: "M☉"};
-            var res = DataService.validate(invalidData, true, dataType);
-            expect(res.error).to.be.not.null;
-            sails.log(res.error);
+            DataService.validate(invalidData, true, dataType).then(function (res) {
+                expect(res.error).to.be.not.null;
+                sails.log(res.error);
+                done();
+            });
         });
 
     });
@@ -103,7 +113,7 @@ describe('DataService', function() {
     describe("#buildMetadataFieldValidationSchema", function() {
 
         it("should create the correct schema for an textual metadata field", function() {
-            var textField = _.cloneDeep(fixtures.datatype[2].schema.body[0].content[0]);  // name of star
+            var textField = _.cloneDeep(fixtures.supertype[2].schema.body[0].content[0]);  // name of star
             var schema = DataService.buildMetadataFieldValidationSchema(textField);
             var expectedSchema = Joi.object().required().keys({
                 value: Joi.string().uppercase().required(),
@@ -116,7 +126,7 @@ describe('DataService', function() {
         });
 
         it("should create the correct schema for an integer metadata field", function() {
-            var integerField = _.cloneDeep(fixtures.datatype[2].schema.body[1].content[3]); // temperature of star
+            var integerField = _.cloneDeep(fixtures.supertype[2].schema.body[1].content[3]); // temperature of star
             var schema = DataService.buildMetadataFieldValidationSchema(integerField);
             var expectedSchema = Joi.object().keys({
                 value: Joi.number().integer().allow(null),
@@ -127,7 +137,7 @@ describe('DataService', function() {
         });
 
         it("should create the correct schema for a float metadata field", function() {
-            var floatField = _.cloneDeep(fixtures.datatype[2].schema.body[1].content[0]); // mass of star
+            var floatField = _.cloneDeep(fixtures.supertype[2].schema.body[1].content[0]); // mass of star
             var schema = DataService.buildMetadataFieldValidationSchema(floatField);
             var expectedSchema = Joi.object().required().keys({
                 value: Joi.number().required(),
@@ -138,7 +148,7 @@ describe('DataService', function() {
         });
 
         it("should create the correct schema for a boolean metadata field with custom value", function() {
-            var floatField = _.cloneDeep(fixtures.datatype[3].schema.body[0].content[9]); // mass of star
+            var floatField = _.cloneDeep(fixtures.supertype[3].schema.body[0].content[9]); // mass of star
             var schema = DataService.buildMetadataFieldValidationSchema(floatField);
             var expectedSchema = Joi.object().keys({
                 value: Joi.boolean().allow(null).default(true),
@@ -148,7 +158,7 @@ describe('DataService', function() {
         });
 
         it("should create the correct schema for a date metadata field", function() {
-            var floatField = _.cloneDeep(fixtures.datatype[3].schema.body[0].content[10]); // mass of star
+            var floatField = _.cloneDeep(fixtures.supertype[3].schema.body[0].content[10]); // mass of star
             var schema = DataService.buildMetadataFieldValidationSchema(floatField);
             var expectedSchema = Joi.object().keys({
                 value: Joi.string().allow(null).isoDate(),
@@ -158,7 +168,7 @@ describe('DataService', function() {
         });
 
         it("should create the correct schema for an textual metadata field from controlled vocabulary", function() {
-            var controlledVocField = _.cloneDeep(fixtures.datatype[2].schema.body[0].content[1]); // constellation of star
+            var controlledVocField = _.cloneDeep(fixtures.supertype[2].schema.body[0].content[1]); // constellation of star
             var schema = DataService.buildMetadataFieldValidationSchema(controlledVocField);
             var expectedSchema = Joi.object().required().keys({
                 value: Joi.string().required().valid(controlledVocField.possibleValues),
@@ -168,7 +178,7 @@ describe('DataService', function() {
         });
 
         it("should create the correct schema for an textual metadata field in loop (case sensitive)", function() {
-            var loopTextField = _.extend(_.cloneDeep(fixtures.datatype[2].schema.body[0].content[3].content[0]), {_loop: true});
+            var loopTextField = _.extend(_.cloneDeep(fixtures.supertype[2].schema.body[0].content[3].content[0]), {_loop: true});
             var schema = DataService.buildMetadataFieldValidationSchema(loopTextField);
             var expectedSchema = Joi.object().required().keys({
                 values: Joi.array().required().items(Joi.string().required()),
@@ -179,7 +189,7 @@ describe('DataService', function() {
         });
 
         it("should create the correct schema for an textual metadata field in loop (case insensitive/uppercase) with unit", function() {
-            var loopTextField = _.extend(_.cloneDeep(fixtures.datatype[2].schema.body[0].content[3].content[0]), {_loop: true, caseInsensitive: true});
+            var loopTextField = _.extend(_.cloneDeep(fixtures.supertype[2].schema.body[0].content[3].content[0]), {_loop: true, caseInsensitive: true});
             var schema = DataService.buildMetadataFieldValidationSchema(loopTextField);
             var expectedSchema = Joi.object().required().keys({
                 values: Joi.array().required().items(Joi.string().uppercase().required()),
@@ -190,7 +200,7 @@ describe('DataService', function() {
         });
 
         it("should create the correct schema for an textual metadata field in loop (case insensitive/uppercase)", function() {
-            var loopTextField = _.extend(_.cloneDeep(fixtures.datatype[3].schema.body[0].content[4].content[0]), {_loop: true, caseInsensitive: true});
+            var loopTextField = _.extend(_.cloneDeep(fixtures.supertype[3].schema.body[0].content[4].content[0]), {_loop: true, caseInsensitive: true});
             var schema = DataService.buildMetadataFieldValidationSchema(loopTextField);
             var expectedSchema = Joi.object().keys({
                 values: Joi.array().items(Joi.string().allow(null).valid(loopTextField.possibleValues)),
@@ -302,22 +312,22 @@ describe('DataService', function() {
 
             var data = _.cloneDeep(fixtures.data[0]);
 
-            var result = DataService.hasDataSensitive(data.id, "Data");
-
-            expect(result).to.eventually.have.deep.property('hasDataSensitive', true);
-            done();
-            return;
+            return DataService.hasDataSensitive(data.id, "Data").then(function (result) {
+                expect(result).to.have.deep.property('hasDataSensitive', true);
+                done();
+                return;
+            });
         });
 
         it("should return an object with false result of investigation", function(done) {
 
             var data = _.cloneDeep(fixtures.data[25]);
 
-            var result = DataService.hasDataSensitive(data.id, "Data");
-
-            expect(result).to.eventually.have.deep.property('hasDataSensitive', false);
-            done();
-            return;
+            return DataService.hasDataSensitive(data.id, "Data").then(function (result) {
+                expect(result).to.have.deep.property('hasDataSensitive', false);
+                done();
+                return;
+            });
         });
     });
 
@@ -338,16 +348,16 @@ describe('DataService', function() {
                 "id": 2
             };
 
-            var result = DataService.filterOutSensitiveInfo(data, false);
+            return DataService.filterOutSensitiveInfo(data, false).then(function (result) {
 
-            delete data[0].metadata['name'];
-            delete data[1].metadata['gene_id'];
-            delete data[1].metadata['quality_prediction'];
-            var expectedData = data;
-
-            expect(result).to.eventually.equal(expectedData);
-            done();
-            return;
+                delete data[0].metadata['name'];
+                delete data[1].metadata['gene_id'];
+                delete data[1].metadata['quality_prediction'];
+                var expectedData = data;
+                expect(result).to.eql(expectedData);
+                done();
+                return;
+            });
 
         });
 
@@ -365,11 +375,11 @@ describe('DataService', function() {
                 "id": 2
             };
 
-            var result = DataService.filterOutSensitiveInfo(data, true);
-
-            expect(result).to.eventually.equal(data);
-            done();
-            return;
+            return DataService.filterOutSensitiveInfo(data, true).then(function (result) {
+                expect(result).to.equal(data);
+                done();
+                return;
+            });
 
         });
     });
@@ -707,61 +717,77 @@ describe('DataService', function() {
         });
 
         afterEach(() => {
-            stub.restore();
+            DataService.filterOutSensitiveInfo.restore();
         });
 
-        it('should return an empty array if no privileges were found', () => {
+        it('should return an empty array if no privileges were found', (done) => {
             const dataToFilter = _.cloneDeep(fixtures.data),
                 dataTypesId = [3, 4, 5], privileges = [], canAccessSensitiveData = false;
-            const filteredData = DataService.filterListByPrivileges(dataToFilter, dataTypesId, privileges, canAccessSensitiveData);
-            expect(filteredData).to.be.empty;
+            return DataService.filterListByPrivileges(dataToFilter, dataTypesId, privileges, canAccessSensitiveData).then(function (filteredData) {
+                expect(filteredData).to.be.empty;
+                done();
+                return;
+            });
         });
 
-        it('should return all the data unfiltered', () => {
+        it('should return all the data unfiltered', (done) => {
             const dataTypesId = [3, 4];
             const dataToFilter = _.filter(fixtures.data, el => {
                 return dataTypesId.indexOf(el.type) > -1;
             });
             const privileges = _.filter(fixtures.datatypeprivileges, {'group': 1}),
                 canAccessSensitiveData = true;
-            const filteredData = DataService.filterListByPrivileges(dataToFilter, dataTypesId, privileges, canAccessSensitiveData);
-            expect(filteredData).to.eql(dataToFilter);
+            return DataService.filterListByPrivileges(dataToFilter, dataTypesId, privileges, canAccessSensitiveData).then(function (filteredData) {
+                expect(filteredData).to.eql(dataToFilter);
+                done();
+                return;
+            });
         });
 
-        it('should filter out all the data for which the user does not posses a privilege level', () => {
+        it('should filter out all the data for which the user does not posses a privilege level', (done) => {
             const dataToFilter = _.cloneDeep(fixtures.data),
                 dataTypesId = [3, 4, 5], privileges = fixtures.datatypeprivileges.filter(el => {
                     return el.group === 1 && dataTypesId.indexOf(el.dataType) > -1;
                 });
             const canAccessSensitiveData = false;
-            const actualFilteredData = DataService.filterListByPrivileges(dataToFilter, dataTypesId, privileges, canAccessSensitiveData);
-            const allowedDataTypesId = privileges.map(el => el.dataType);
-            const expectedFilteredData = _.filter(fixtures.data, el => {
-                return allowedDataTypesId.indexOf(el.type) > -1;
+            return DataService.filterListByPrivileges(dataToFilter, dataTypesId, privileges, canAccessSensitiveData).then(function (actualFilteredData) {
+
+                const allowedDataTypesId = privileges.map(el => el.dataType);
+                const expectedFilteredData = _.filter(fixtures.data, el => {
+                    return allowedDataTypesId.indexOf(el.type) > -1;
+                });
+                // console.log(actualFilteredData);
+                expect(actualFilteredData).to.eql(expectedFilteredData);
+                done();
+                return;
             });
-            expect(actualFilteredData).to.eql(expectedFilteredData);
         });
 
-        it('should filter out all metadata for which the user does posses an overview privilege level', () => {
+        it('should filter out all metadata for which the user does posses an overview privilege level', (done) => {
             const dataToFilter = _.cloneDeep(fixtures.data),
                 dataTypesId = [3, 4, 5], privileges = fixtures.datatypeprivileges.filter(el => {
                     return el.group === 3 && dataTypesId.indexOf(el.dataType) > -1;
                 });
             const canAccessSensitiveData = false;
-            const actualFilteredData = DataService.filterListByPrivileges(dataToFilter, dataTypesId, privileges, canAccessSensitiveData);
-            const allowedDataTypesId = privileges.map(el => el.dataType);
-            const overviewPrivileges = _.filter(privileges, el => {
-                return el.privilegeLevel === "view_overview";
+            return DataService.filterListByPrivileges(dataToFilter, dataTypesId, privileges, canAccessSensitiveData).then(function (actualFilteredData) {
+
+                const allowedDataTypesId = privileges.map(el => el.dataType);
+                const overviewPrivileges = _.filter(privileges, el => {
+                    return el.privilegeLevel === "view_overview";
+                });
+                const overviewDataTypesid = overviewPrivileges.map( el => el.dataType);
+                let expectedData = _.filter(fixtures.data, el => {
+                    return allowedDataTypesId.indexOf(el.type) > -1;
+                });
+                _.forEach(expectedData, datum => {
+                    let found = overviewDataTypesid.find(el => {return el === datum.type;});
+                    found ? datum.metadata = {} : null;
+                });
+                // console.log(actualFilteredData);
+                expect(actualFilteredData).to.eql(expectedData);
+                done();
+                return;
             });
-            const overviewDataTypesid = overviewPrivileges.map( el => el.dataType);
-            let expectedData = _.filter(fixtures.data, el => {
-                return allowedDataTypesId.indexOf(el.type) > -1;
-            });
-            _.forEach(expectedData, datum => {
-                let found = overviewDataTypesid.find(el => {return el === datum.type;});
-                found ? datum.metadata = {} : null;
-            });
-            expect(actualFilteredData).to.eql(expectedData);
         });
 
     });

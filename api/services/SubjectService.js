@@ -15,6 +15,57 @@ let SUBJECT = sails.config.xtens.constants.DataTypeClasses.SUBJECT;
 
 const UNICODE_NAME_REGEX = new XRegExp("^[\\p{L} .'-]+$");
 
+const coroutines = {
+    validate: BluebirdPromise.coroutine(function *(subject, performMetadataValidation, dataType) {
+
+        if (dataType.model !== SUBJECT) {
+            return {
+                error: "This data type is for another model: " + dataType.model
+            };
+        }
+
+        let personalInfoValidationSchema = {
+            id: Joi.number().integer().positive(),
+            givenName: Joi.string().uppercase().regex(UNICODE_NAME_REGEX).trim(),
+            surname: Joi.string().uppercase().regex(UNICODE_NAME_REGEX).trim(),
+            birthDate: Joi.string().isoDate(),
+            createdAt: Joi.date(),
+            updatedAt: Joi.date()
+        };
+
+        let validationSchema = {
+            id: Joi.number().integer().positive(),
+            type: Joi.number().integer().positive().required(),
+            owner: Joi.number().integer().positive().required(),
+            code: Joi.string().uppercase(),
+            sex: Joi.string().required().valid(_.values(sails.config.xtens.constants.SexOptions)),
+            personalInfo: Joi.object().keys(personalInfoValidationSchema).allow(null),
+          // projects: Joi.array().allow(null),
+            samples: Joi.array().allow(null),
+            childrenData: Joi.array().allow(null),
+            tags: Joi.array().allow(null),
+            notes: Joi.string().allow(null),
+            metadata: Joi.object().required(),
+            createdAt: Joi.date(),
+            updatedAt: Joi.date()
+        };
+
+
+        if (performMetadataValidation) {
+            let metadataValidationSchema = {};
+            let flattenedFields = yield DataTypeService.getFlattenedFields(dataType);
+            _.each(flattenedFields, field => {
+                metadataValidationSchema[field.formattedName] = DataService.buildMetadataFieldValidationSchema(field);
+            });
+            validationSchema.metadata = Joi.object().required().keys(metadataValidationSchema);
+        }
+
+        validationSchema = Joi.object().keys(validationSchema);
+        return Joi.validate(subject, validationSchema);
+    })
+
+};
+
 let SubjectService = BluebirdPromise.promisifyAll({
 
     /**
@@ -58,50 +109,11 @@ let SubjectService = BluebirdPromise.promisifyAll({
      */
     validate: function(subject, performMetadataValidation, dataType) {
 
-        if (dataType.model !== SUBJECT) {
-            return {
-                error: "This data type is for another model: " + dataType.model
-            };
-        }
-
-        let personalInfoValidationSchema = {
-            id: Joi.number().integer().positive(),
-            givenName: Joi.string().uppercase().regex(UNICODE_NAME_REGEX).trim(),
-            surname: Joi.string().uppercase().regex(UNICODE_NAME_REGEX).trim(),
-            birthDate: Joi.string().isoDate(),
-            createdAt: Joi.date(),
-            updatedAt: Joi.date()
-        };
-
-        let validationSchema = {
-            id: Joi.number().integer().positive(),
-            type: Joi.number().integer().positive().required(),
-            owner: Joi.number().integer().positive().required(),
-            code: Joi.string().uppercase(),
-            sex: Joi.string().required().valid(_.values(sails.config.xtens.constants.SexOptions)),
-            personalInfo: Joi.object().keys(personalInfoValidationSchema).allow(null),
-            // projects: Joi.array().allow(null),
-            samples: Joi.array().allow(null),
-            childrenData: Joi.array().allow(null),
-            tags: Joi.array().allow(null),
-            notes: Joi.string().allow(null),
-            metadata: Joi.object().required(),
-            createdAt: Joi.date(),
-            updatedAt: Joi.date()
-        };
-
-
-        if (performMetadataValidation) {
-            let metadataValidationSchema = {};
-            let flattenedFields = DataTypeService.getFlattenedFields(dataType);
-            _.each(flattenedFields, field => {
-                metadataValidationSchema[field.formattedName] = DataService.buildMetadataFieldValidationSchema(field);
-            });
-            validationSchema.metadata = Joi.object().required().keys(metadataValidationSchema);
-        }
-
-        validationSchema = Joi.object().keys(validationSchema);
-        return Joi.validate(subject, validationSchema);
+        return coroutines.validate(subject, performMetadataValidation, dataType)
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log(err);
+            return err;
+        });
     },
 
     /**

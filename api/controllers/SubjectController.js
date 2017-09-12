@@ -39,7 +39,7 @@ const coroutines = {
         SubjectService.simplify(subject);
         const dataType = yield DataType.findOne(subject.type);
 
-        const validationRes = SubjectService.validate(subject, true, dataType);
+        const validationRes = yield SubjectService.validate(subject, true, dataType);
         if (validationRes.error !== null) {
             throw new ValidationError(validationRes.error);
         }
@@ -123,7 +123,7 @@ const coroutines = {
         SubjectService.simplify(subject);
 
         const dataType = yield DataType.findOne(idSubjectType);
-        const validationRes = SubjectService.validate(subject, true, dataType);
+        const validationRes = yield SubjectService.validate(subject, true, dataType);
         if (validationRes.error !== null) {
             throw new ValidationError(validationRes.error);
         }

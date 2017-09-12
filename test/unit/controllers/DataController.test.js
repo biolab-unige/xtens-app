@@ -508,7 +508,7 @@ describe('DataController', function() {
         it('Should return 403 FORBIDDEN - Authenticated user has not edit privileges on any data type', function (done) {
             let expectedError = 'Authenticated user has not edit privileges on any data type';
 
-            let stub = sinon.stub(sails.hooks.persistence.crudManager, "getDataTypesByRolePrivileges",function () {
+            sinon.stub(sails.hooks.persistence.crudManager, "getDataTypesByRolePrivileges",function () {
                 return [];
             });
 
@@ -534,7 +534,7 @@ describe('DataController', function() {
     it('Should return 403 FORBIDDEN - Authenticated user has not edit privileges on the data type', function (done) {
         let expectedError = 'Authenticated user has not edit privileges on the data type';
 
-        let prova = sinon.stub(sails.hooks.persistence.crudManager, "getDataTypesByRolePrivileges",function () {
+        sinon.stub(sails.hooks.persistence.crudManager, "getDataTypesByRolePrivileges",function () {
             return [2];
         });
 

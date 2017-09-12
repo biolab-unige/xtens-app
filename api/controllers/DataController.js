@@ -38,8 +38,8 @@ const coroutines = {
             throw new PrivilegesError(`Authenticated user has not edit privileges on the data type ${data.type}`);
         }
         DataService.simplify(data);
-        const dataType = yield DataType.findOne(data.type);
-        const validationRes = DataService.validate(data, true, dataType);
+        const dataType = yield DataType.findOne(data.type).populate('superType');
+        const validationRes = yield DataService.validate(data, true, dataType);
         if (validationRes.error !== null) {
             throw new ValidationError(validationRes.error);
         }
@@ -103,6 +103,7 @@ const coroutines = {
         const operator = TokenService.getToken(req);
 
         let result = yield DataService.hasDataSensitive(data.id, DATA);
+        console.log(result,operator);
         if (result.hasDataSensitive && !operator.canAccessSensitiveData) {
             throw new PrivilegesError("Authenticated user is not allowed to modify sensitive data");
         }
@@ -114,8 +115,8 @@ const coroutines = {
         }
         DataService.simplify(data);
 
-        const dataType = yield DataType.findOne(idDataType);
-        const validationRes = DataService.validate(data, true, dataType);
+        const dataType = yield DataType.findOne(idDataType).populate('superType');
+        const validationRes = yield DataService.validate(data, true, dataType);
         if (validationRes.error !== null) {
             throw new ValidationError(validationRes.error);
         }
