@@ -76,6 +76,7 @@
             this.idDataType = parseInt(options.params.id) ? parseInt(options.params.id) : parseInt(options.params.duplicate);
             this.duplicate =  options.params.duplicate ? options.params.duplicate : false;
             this.existingDataTypes = options.dataTypes;
+            this.isMultiProject = options.isMultiProject && options.isMultiProject;
             this.projects = xtens.session.get('projects');
             this.isCreation = true;
 
@@ -192,7 +193,7 @@
 
         render: function() {
 
-            this.$el.html(this.template({__: i18n, dataType: this.model}));
+            this.$el.html(this.template({__: i18n, dataType: this.model, isMultiProject: this.isMultiProject}));
             this.$form = this.$("form");
             this.$form.parsley(parsleyOpts);
             this.$modal = this.$(".datatype-modal");
@@ -238,37 +239,46 @@
                 else {
                   //edit
                     var that = this;
+                    if (this.isMultiProject) {
 
-                    $(".panel-heading").on('click',function(){
-                        if ($('.fa-unlock-alt').length === 0) {
+                        $(".panel-heading").on('click',function(){
+                            if ($('.fa-unlock-alt').length === 0) {
 
-                            if (that.modal) {
-                                that.modal.hide();
-                            }
-                            var modal = new ModalDialog({
-                                template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
-                                title: i18n('confirm-edit'),
-                                body: i18n('edit-data-type-schema-warning'),
-                                type: "edit"
-                            });
-
-                            that.$modal.append(modal.render().el);
-                            modal.show();
-
-                            that.$('#confirm').click( function () {
-                                modal.hide();
-                                that.$('.datatype-modal').on('hidden.bs.modal', function () {
-                                    modal.remove();
-                                    $("#schema-title-icon").empty();
-                                    $("#schema-title-icon").append('<i class="fa fa-unlock-alt fa-lg right"></i>');
-                                    $(".add-metadata-group").attr("disabled", false);
-                                    $('.bg-transition').removeClass('bg-transition');
-                                    $('#schema-title').css('cursor','default');
-                                    setTimeout(function(){ $('#collapse-schema').collapse('show'); }, 350);
+                                if (that.modal) {
+                                    that.modal.hide();
+                                }
+                                var modal = new ModalDialog({
+                                    template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
+                                    title: i18n('confirm-edit'),
+                                    body: i18n('edit-data-type-schema-warning'),
+                                    type: "edit"
                                 });
-                            });
-                        }
-                    });
+
+                                that.$modal.append(modal.render().el);
+                                modal.show();
+
+                                that.$('#confirm').click( function () {
+                                    modal.hide();
+                                    that.$('.datatype-modal').on('hidden.bs.modal', function () {
+                                        modal.remove();
+                                        $("#schema-title-icon").empty();
+                                        $("#schema-title-icon").append('<i class="fa fa-unlock-alt fa-lg right"></i>');
+                                        $(".add-metadata-group").attr("disabled", false);
+                                        $('.bg-transition').removeClass('bg-transition');
+                                        $('#schema-title').css('cursor','default');
+                                        setTimeout(function(){ $('#collapse-schema').collapse('show'); }, 150);
+                                    });
+                                });
+                            }
+                        });
+                    }else {
+                        $("#schema-title-icon").empty();
+                        $("#schema-title-icon").append('<i class="fa fa-unlock-alt fa-lg right"></i>');
+                        $(".add-metadata-group").attr("disabled", false);
+                        $('.bg-transition').removeClass('bg-transition');
+                        $('#schema-title').css('cursor','default');
+                        setTimeout(function(){ $('#collapse-schema').collapse('show'); }, 150);
+                    }
                 }
             }
             return this;
@@ -362,7 +372,7 @@
             this.$modal.append(modal.render().el);
             modal.show();
 
-            this.$('#confirm-delete').click( function () {
+            this.$('#confirm').click( function () {
                 modal.hide();
 
                 that.model.destroy({

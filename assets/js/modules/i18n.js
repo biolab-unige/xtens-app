@@ -69,6 +69,7 @@
         "max": "Max",
         "step": "Step",
         "schema": "Schema",
+        "shared-schema": "Shared Schema",
         "json-schema": "JSON Schema",
         "new-data-type": "New Data Type",
         "edit": "Edit",

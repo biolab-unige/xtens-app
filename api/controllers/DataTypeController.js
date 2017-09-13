@@ -5,7 +5,7 @@
 * @help        :: See http://links.sailsjs.org/docs/controllers
 */
 /* jshint node: true */
-/* globals _, sails, DataType, DataTypeService, TokenService, Group, Project */
+/* globals _, sails, DataType, DataTypeService, TokenService, Group, Project, SuperTypeService */
 "use strict";
 const ControllerOut = require("xtens-utils").ControllerOut, ValidationError = require('xtens-utils').Errors.ValidationError;
 const PrivilegesError = require('xtens-utils').Errors.PrivilegesError;
@@ -150,12 +150,20 @@ const coroutines = {
     edit: BluebirdPromise.coroutine(function *(req, res) {
         const operator = TokenService.getToken(req);
         const params = req.allParams();
+        let isMultiProject, resObject = {};
         sails.log.info("DataTypeController.edit - Decoded ID is: " + operator.id);
 
         const projects = yield Project.find().sort('id ASC');
 
         const dataTypes= yield DataType.find({ project:_.map(projects,'id') }).populate(['project','parents','superType']).sort('id ASC');
-        return res.json({params: params, dataTypes: dataTypes});
+        if (params.id) {
+            const dataType = _.find(dataTypes,{'id': parseInt(params.id)});
+            isMultiProject = yield SuperTypeService.isMultiProject(dataType.superType);
+            resObject.isMultiProject = isMultiProject;
+        }
+        resObject.params = params;
+        resObject.dataTypes = dataTypes;
+        return res.json(resObject);
     }),
 
     destroy: BluebirdPromise.coroutine(function *(req, res, co) {
