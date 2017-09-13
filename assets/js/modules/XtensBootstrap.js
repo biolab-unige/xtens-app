@@ -39,7 +39,7 @@
             }
             this.$('.modal-header').addClass(this.type === "edit" ? "alert-warning" : this.type === "delete" ? "alert-danger" : "");
             this.$('#confirm').addClass(this.type === "edit" ? "btn-warning" : this.type === "delete" ? "btn-danger" : "");
-            // this.$('#confirm-delete').addClass("btn-warning");
+            // this.$('#confirm').addClass("btn-warning");
             return this;
         },
 

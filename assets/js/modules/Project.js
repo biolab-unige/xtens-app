@@ -204,7 +204,7 @@
             this.$modal.append(modal.render().el);
             modal.show();
 
-            this.$('#confirm-delete').click( function (e) {
+            this.$('#confirm').click( function (e) {
                 modal.hide();
                 $('.modal-backdrop').remove();
                 var targetRoute = $(ev.currentTarget).data('targetRoute') || 'data';

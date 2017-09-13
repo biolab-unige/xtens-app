@@ -158,7 +158,7 @@
             this.$modal.append(modal.render().el);
             modal.show();
 
-            this.$('#confirm-delete').click( function (e) {
+            this.$('#confirm').click( function (e) {
                 modal.hide();
                 var targetRoute = $(ev.currentTarget).data('targetRoute') || 'data';
 

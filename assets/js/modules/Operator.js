@@ -187,7 +187,7 @@
             this.$modal.append(modal.render().el);
             modal.show();
 
-            this.$('#confirm-delete').click( function (e) {
+            this.$('#confirm').click( function (e) {
                 modal.hide();
                 that.model.destroy({
                     success: function(model, res) {
