@@ -498,7 +498,8 @@
                     });
                     if (dataTypeChildren.length > 0) {
                         var dids = _.map(dataTypeChildren, 'id').join();
-                        sample.set("newDataLink", "#/data/new/0?idDataTypes=" + dids + "&parentSample=" + sample.id);
+                        var parentSubject = sample.get('parent_subject') ? "&parentSubject=" + sample.get('parent_subject') : "";
+                        sample.set("newDataLink", "#/data/new/0?idDataTypes=" + dids + "&parentSample=" + sample.id + parentSubject);
                     }
                 }
             }, this);
