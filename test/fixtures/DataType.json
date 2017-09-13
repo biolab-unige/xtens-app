@@ -45,6 +45,6 @@
     "name": "DataType",
     "model": "Data",
     "project":5,
-    "superType": 7
+    "superType": 3
   }
 ]
