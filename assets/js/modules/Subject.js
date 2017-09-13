@@ -11,7 +11,7 @@
     var i18n = xtens.module("i18n").en;
     var Data = xtens.module("data");
     // var DataTypeModel = xtens.module("datatype").Model;
-    var SuperTypeModel = xtens.module("supertype").Model;
+    // var SuperTypeModel = xtens.module("supertype").Model;
     var PersonalDetails = xtens.module("personaldetails");
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
     var sexOptions = xtens.module("xtensconstants").SexOptions;
@@ -302,19 +302,20 @@
         initialize: function(options) {
             $("#main").html(this.el);
             this.template = JST["views/templates/subject-details.ejs"];
+            this.fields = options.fields;
             this.render();
             if (xtens.session.get('canAccessPersonalData')) {
                 this.addPersonalDetailsParam();
             }
         },
         render: function() {
-            var superType = new SuperTypeModel(this.model.get("type").superType);
-            var fields = superType.getFlattenedFields();
+            // var superType = new SuperTypeModel(this.model.get("type").superType);
+            // var fields = superType.getFlattenedFields();
 
             this.$el.html(this.template({
                 __: i18n,
                 data: this.model,
-                fields: fields
+                fields: this.fields
             }));
 
             if (MISSING_VALUE_ALERT) {

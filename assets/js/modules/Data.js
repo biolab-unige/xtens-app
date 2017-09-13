@@ -13,14 +13,14 @@
     var Constants = xtens.module("xtensconstants").Constants;
     var FieldTypes = xtens.module("xtensconstants").FieldTypes;
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
-    var MetadataComponent = xtens.module("metadatacomponent");
+    // var MetadataComponent = xtens.module("metadatacomponent");
     // var DataTypeModel = xtens.module("datatype").Model;
-    var SuperTypeModel = xtens.module("supertype").Model;
-    var DataTypeCollection = xtens.module("datatype").List;
+    // var SuperTypeModel = xtens.module("supertype").Model;
+    // var DataTypeCollection = xtens.module("datatype").List;
     var FileManager = xtens.module("filemanager");
     var Group = xtens.module("group");
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
-    var dateUtil = xtens.module("utils").date;
+    // var dateUtil = xtens.module("utils").date;
     var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
 
     var MISSING_VALUE_ALERT = true;
@@ -1093,21 +1093,20 @@
         initialize: function(options) {
             $("#main").html(this.el);
             this.template = JST["views/templates/data-details.ejs"];
-          // var filename= this.getFileName(this.model);
-          //  this.model.set("filename", filename);
+            this.fields = options.fields;          //  this.model.set("filename", filename);
             this.render();
         },
 
         render: function() {
             // var dataType = new DataTypeModel(this.model.get("type"));
-            var superType = new SuperTypeModel(this.model.get("type").superType);
-
-            var fields = superType.getFlattenedFields();
+            // var superType = new SuperTypeModel(this.model.get("type").superType);
+            //
+            // var fields = superType.getFlattenedFields();
             // var metadata = this.model.get("metadata");
             this.$el.html(this.template({
                 __: i18n,
                 data: this.model,
-                fields: fields,
+                fields: this.fields,
                 PATH_SEPARATOR: Constants.PATH_SEPARATOR || '/'
             }));
 

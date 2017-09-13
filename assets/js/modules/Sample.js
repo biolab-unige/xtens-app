@@ -450,19 +450,20 @@
         initialize: function(options) {
             $("#main").html(this.el);
             this.template = JST["views/templates/sample-details.ejs"];
+            this.fields = options.fields;
             this.render();
         },
 
         render: function() {
             // var dataType = new DataTypeModel(this.model.get("type"));
-            var superType = new SuperTypeModel(this.model.get("type").superType);
+            // var superType = new SuperTypeModel(this.model.get("type").superType);
 
-            var fields = superType.getFlattenedFields();
+            // var fields = superType.getFlattenedFields();
 
             this.$el.html(this.template({
                 __: i18n,
                 data: this.model,
-                fields: fields,
+                fields: this.fields,
                 PATH_SEPARATOR: Constants.PATH_SEPARATOR || '/'
             }));
 
