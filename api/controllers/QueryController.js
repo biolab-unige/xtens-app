@@ -46,7 +46,7 @@
 
          })
 
-         .catch(error => {
+         .catch(/* istanbul ignore next */ function(error) {
              sails.log.error(error);
              res.serverError(error.message);
          });

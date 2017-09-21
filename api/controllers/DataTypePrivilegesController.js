@@ -40,7 +40,7 @@ let DataTypePrivilegesController = {
             return res.json(201, result);
         })
 
-        .catch(function(err) {
+        .catch(/* istanbul ignore next */ function(err) {
             sails.log.error("DataTypePrivilegesController.create - got some error while creating new data type privileges");
             return co.error(err);
         });
@@ -62,12 +62,13 @@ let DataTypePrivilegesController = {
         query = actionUtil.populateRequest(query, req);
 
         query.then(function(result) {
-          
+
             return res.json(result);
         })
 
-        .catch(function(error) {
-            return co.error(error);
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log.error(err);
+            return co.error(err);
         });
 
     },
@@ -145,7 +146,8 @@ let DataTypePrivilegesController = {
             return res.json({deleted: results && results.length});
         })
 
-        .catch(function(err) {
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log.error(err);
             return co.error(err);
         });
 
@@ -177,8 +179,8 @@ let DataTypePrivilegesController = {
             return res.json(result);
         })
 
-        .catch(function(err) {
-            sails.log(err);
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log.error(err);
             return co.error(err);
         });
 

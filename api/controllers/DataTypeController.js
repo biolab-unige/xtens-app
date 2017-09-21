@@ -202,7 +202,7 @@ const DataTypeController = {
     find: function(req, res) {
         const co = new ControllerOut(res);
         coroutines.find(req, res)
-        .catch(err => {
+        .catch(/* istanbul ignore next */ function(err) {
             sails.log.error(err);
             return co.error(err);
         });
@@ -245,7 +245,7 @@ const DataTypeController = {
 
         let co = new ControllerOut(res);
         coroutines.destroy(req,res,co)
-        .catch(function(err) {
+        .catch(/* istanbul ignore next */ function(err) {
             sails.log(err);
             return co.error(err);
         });
@@ -260,7 +260,7 @@ const DataTypeController = {
     edit: function(req, res) {
         let co = new ControllerOut(res);
         coroutines.edit(req,res)
-        .catch(function(err) {
+        .catch(/* istanbul ignore next */ function(err) {
             sails.log(err);
             return co.error(err);
         });

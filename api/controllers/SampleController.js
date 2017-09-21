@@ -223,8 +223,9 @@ module.exports = {
     findOne: function(req, res) {
         const co = new ControllerOut(res);
         coroutines.findOne(req,res)
-        .catch(error => {
-            return co.error(error);
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log.error(err);
+            return co.error(err);
         });
 
     },
@@ -240,7 +241,7 @@ module.exports = {
     find: function(req, res) {
         const co = new ControllerOut(res);
         coroutines.find(req,res)
-        .catch(err => {
+        .catch(/* istanbul ignore next */ function(err) {
             sails.log.error(err);
             return co.error(err);
         });

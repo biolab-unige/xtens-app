@@ -92,8 +92,8 @@ let AuthController = {
             return res.ok("User successfully logged out.");
         })
 
-        .catch(function(err) {
-            // console.log(err);
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log.error(err);
             return res.serverError("Caught some error while disconnecting the user");
         });
     }

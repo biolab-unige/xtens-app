@@ -66,7 +66,7 @@ module.exports = {
     find: function(req, res) {
         const co = new ControllerOut(res);
         coroutines.find(req, res)
-            .catch(err => {
+            .catch(/* istanbul ignore next */ function(err) {
                 sails.log.error(err);
                 return co.error(err);
             });
@@ -81,7 +81,7 @@ module.exports = {
     edit: function(req, res) {
         const co = new ControllerOut(res);
         coroutines.edit(req, res)
-            .catch(err => {
+            .catch(/* istanbul ignore next */ function(err) {
                 sails.log.error(err);
                 return co.error(err);
             });
