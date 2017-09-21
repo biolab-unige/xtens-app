@@ -51,8 +51,8 @@ var GroupService = BluebirdPromise.promisifyAll({
        */
     getGroupsToEditProject: function(idProject) {
         return coroutines.getGroupsToEditProject(idProject)
-          .catch((err) => {
-              sails.log(err);
+          .catch(/* istanbul ignore next */ function(err) {
+              sails.log.error(err);
               return err;
           });
 
@@ -67,8 +67,8 @@ var GroupService = BluebirdPromise.promisifyAll({
      */
     getGroupsByProject: function(idProject) {
         return coroutines.getGroupsByProject(idProject)
-        .catch((err) => {
-            sails.log(err);
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log.error(err);
             return err;
         });
     },

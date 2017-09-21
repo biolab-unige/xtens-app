@@ -48,8 +48,8 @@ var OperatorService = BluebirdPromise.promisifyAll({
      */
     getOwners: function(datum) {
         return coroutines.getOwners(datum)
-        .catch((err) => {
-            sails.log(err);
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log.error(err);
             return err;
         });
     }
