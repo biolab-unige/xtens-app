@@ -244,7 +244,7 @@ module.exports = {
         coroutines.find(req,res)
         .catch( /* istanbul ignore next */ function(err) {
             sails.log(err);
-            return err;
+            return co.error(err);
         });
     },
 
