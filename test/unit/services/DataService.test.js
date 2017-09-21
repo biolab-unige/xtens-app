@@ -393,24 +393,23 @@ describe('DataService', function() {
           /**
            * @description BEFORE HOOK: stub all the methods wrapped inside DataService.executeAdvancedQuery()
            */
-        beforeEach(function() {
+        before(function() {
             var bearer = "Bearer "+ tokenSA;
             var req = {headers:{authorization : bearer}};
             operatorPayload = TokenService.getToken(req);
-
-            composeStub = sinon.stub(sails.hooks['persistence'].getDatabaseManager().queryBuilder, 'compose', function(args) {
+            composeStub = sinon.stub(sails.hooks['persistence'].queryBuilder, 'compose', function(args) {
                 return ({
                     statement: queryStatement,
                     parameters: [args.dataType]
                 });
             });
-            // afterEach(function() {
-            //     sails.hooks['persistence'].getDatabaseManager().queryBuilder.compose.restore();
-            // });
+            after(function() {
+                sails.hooks['persistence'].queryBuilder.compose.restore();
+            });
 
         });
 
-        it("should return an object with the right queryObject, dataPrivilege, dataType and forbiddenFields array", function(done) {
+        it("should return an object with the right queryObject, dataPrivilege, dataType and forbiddenFields array, multiProject false", function(done) {
             var dataType = _.cloneDeep(fixtures.datatype[2]);
             var dataPrivilege = _.cloneDeep(fixtures.datatypeprivileges[2]);
             var param = [dataType.id];
@@ -444,11 +443,64 @@ describe('DataService', function() {
                     "possibleUnits":null
                 }]
             };
-            DataService.preprocessQueryParamsAsync(queryArgs, operatorPayload.id, dataType.id).then(function (results) {
+            DataService.preprocessQueryParamsAsync(queryArgs, operatorPayload.groups, dataType.id).then(function (results) {
 
                 expect(results.queryObj).to.eql(expectedResults.queryObj);
                 expect(results.dataTypePrivilege.id).to.equal(expectedResults.dataTypePrivilege.id);
                 expect(results.dataType.id).to.eql(expectedResults.dataType.id);
+                expect(results.forbiddenFields).to.eql(expectedResults.forbiddenFields);
+                done();
+                return;
+            }).catch(function (err) {
+                sails.log.error(err);
+                done(err);
+            });
+        });
+
+        it("should return an object with the right queryObject, dataPrivileges, dataTypes and forbiddenFields array, multiProject true", function(done) {
+            var dataTypes = [_.cloneDeep(fixtures.datatype[2]), _.cloneDeep(fixtures.datatype[6])];
+            var dataPrivileges = [_.cloneDeep(fixtures.datatypeprivileges[2]), _.cloneDeep(fixtures.datatypeprivileges[22])];
+            // console.log(dataTypes,dataPrivileges);
+            var param = [[_.cloneDeep(dataTypes[0].id) , _.cloneDeep(dataTypes[1].id)]];
+            var queryObj = { statement: queryStatement, parameters: param};
+            var queryArgs = {
+                "multiProject": true,
+                "wantsSubject":false,
+                "dataType":3,
+                "model":"Data",
+                "content":[]
+            };
+            var expectedResults = {
+                queryObj:queryObj,
+                dataType: dataTypes,
+                dataTypePrivilege: dataPrivileges,
+                forbiddenFields: [{
+                    "label":"METADATA FIELD",
+                    "fieldType":"Text",
+                    "name":"Name",
+                    "formattedName":"name",
+                    "ontologyUri":null,
+                    "customValue":null,
+                    "visible":true,
+                    "description": "Description",
+                    "caseInsensitive":true,
+                    "required":true,
+                    "sensitive":true,
+                    "hasRange":false,
+                    "isList":false,
+                    "possibleValues":null,
+                    "hasUnit":false,
+                    "possibleUnits":null
+                }]
+            };
+            return DataService.preprocessQueryParamsAsync(queryArgs, operatorPayload.groups, dataTypes[0].id).then(function (results) {
+                expect(results.queryObj).to.eql(expectedResults.queryObj);
+                expect(results.dataTypePrivilege.length).to.equal(expectedResults.dataTypePrivilege.length);
+                expect(results.dataTypePrivilege[0].id).to.equal(expectedResults.dataTypePrivilege[0].id);
+                expect(results.dataTypePrivilege[1].id).to.equal(expectedResults.dataTypePrivilege[1].id);
+                expect(results.dataType.length).to.equal(expectedResults.dataType.length);
+                expect(results.dataType[0].id).to.equal(expectedResults.dataType[0].id);
+                expect(results.dataType[1].id).to.equal(expectedResults.dataType[1].id);
                 expect(results.forbiddenFields).to.eql(expectedResults.forbiddenFields);
                 done();
                 return;
@@ -580,6 +632,89 @@ describe('DataService', function() {
             });
         });
 
+        it("should return an object with right attributes and data without sensitive informations (set NULL)- multi Project", function(done) {
+            var expectedData = [{
+                "id":1,
+                "type":3,
+                "owner":1,
+                "date": "2012-12-28",
+                "metadata": {
+                    "name": null,
+                    "constellation":{"value":"taurus","group":"Generic Info"},
+                    "classification":{"value":"giant","group":"Generic Info"},
+                    "designation":{"values":["87 Tauri","Alpha Tauri","SAO 94027","Borgil(?)"],"group":"Generic Info","loop":"Other Designations"},
+                    "mass":{"value":1.7,"unit":"M☉","group":"Physical Details"},
+                    "radius":{"value":44.2,"unit":"R☉","group":"Physical Details"},
+                    "luminosity":{"value":518,"unit":"L☉","group":"Physical Details"},
+                    "temperature":{"value":3910,"unit":"K","group":"Physical Details"}
+                },
+                "tags": ["test","a test"],
+                "notes": "just a test",
+                "parentSubject": 2,
+                "parentSample": null,
+                "parentData": null
+            }];
+            var bearer = "Bearer "+ tokenNS;
+            var req = {headers:{authorization : bearer}};
+            operatorPayload = TokenService.getToken(req);
+            var dataType = [_.cloneDeep(fixtures.datatype[2]),_.cloneDeep(fixtures.datatype[6])];
+            var dataPrivilege = [_.cloneDeep(fixtures.datatypeprivileges[2]), _.cloneDeep(fixtures.datatypeprivileges[22])];
+            var param = [dataType.id];
+            var queryObj = { statement: queryStatement, parameters: param};
+            var processedArgs = {queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: [{"label":"METADATA FIELD","fieldType":"Text","name":"Name","formattedName":"name","ontologyUri":null,"customValue":null,"visible":true,"caseInsensitive":true,"required":true,"sensitive":true,"hasRange":false,"isList":false,"possibleValues":null,"hasUnit":false,"possibleUnits":null}]};
+
+            DataService.executeAdvancedQuery(processedArgs, operatorPayload, (err, results) =>{
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
+                }
+
+                expect(results.dataType).to.eql(dataType);
+                expect(results.dataTypePrivilege).to.eql(dataPrivilege);
+                expect(results.data).to.eql(expectedData);
+                done();
+                return;
+            });
+        });
+
+        it("should return an object with right attributes and data without metadata", function(done) {
+            var expectedData = [{
+                "id":1,
+                "type":3,
+                "owner":1,
+                "date": "2012-12-28",
+                "metadata": {},
+                "tags": ["test","a test"],
+                "notes": "just a test",
+                "parentSubject": 2,
+                "parentSample": null,
+                "parentData": null
+            }];
+            var bearer = "Bearer "+ tokenSOV;
+            var req = {headers:{authorization : bearer}};
+            operatorPayload = TokenService.getToken(req);
+            var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: 4}));
+            var dataPrivilege = _.cloneDeep(_.findWhere(fixtures.datatypeprivileges, {dataType: dataType.id, group: 3 }));
+            var param = [dataType.id];
+            var queryObj = { statement: queryStatement, parameters: param};
+            var processedArgs = {queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: [{"label":"METADATA FIELD","fieldType":"Text","name":"Name","formattedName":"name","ontologyUri":null,"customValue":null,"visible":true,"caseInsensitive":true,"required":true,"sensitive":true,"hasRange":false,"isList":false,"possibleValues":null,"hasUnit":false,"possibleUnits":null}]};
+
+            DataService.executeAdvancedQuery(processedArgs, operatorPayload, (err, results) =>{
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
+                }
+
+                expect(results.dataType).to.eql(dataType);
+                expect(results.dataTypePrivilege).to.eql(dataPrivilege);
+                expect(results.data).to.eql(expectedData);
+                done();
+                return;
+            });
+        });
+
         it("should return an object with right attributes and data without metadata", function(done) {
             var expectedData = [{
                 "id":1,
@@ -666,29 +801,45 @@ describe('DataService', function() {
 
         var queryStreamStub, operatorPayload, queryObj;
 
-        beforeEach(function() {
+        before(function() {
             var dataType = _.cloneDeep(fixtures.datatype[2]);
-            var dataPrivilege = _.cloneDeep(fixtures.datatypeprivileges[2]);
             queryObj = { statement: "WITH s AS (SELECT id, code, sex, personal_info FROM subject) SELECT DISTINCT d.id, s.code, s.sex, d.metadata FROM data d LEFT JOIN s ON s.id = d.parent_subject WHERE d.type = $1;", parameters: [dataType.id]};
 
-            queryStreamStub = sinon.stub(sails.hooks['persistence'].getDatabaseManager().crudManager, "queryStream", function(query, next) {
-
+            queryStreamStub = sinon.stub(sails.hooks['persistence'].crudManager, "queryStream", function(query, next) {
                 let stream = fs.createReadStream('./test/resources/data.json');
                 return next(stream,null);
-
             });
         });
+
         // afterEach(function(done) {
-        //     sails.hooks['persistence'].getDatabaseManager().crudManager.queryStream.restore();
+        //     sails.hooks['persistence'].crudManager.queryStream.restore();
         //     done();
         // });
 
         it("should return a Readable Stream and should end", function(done) {
-            var expectedData = _.cloneDeep(fixtures.data[0]);
             var dataType = _.cloneDeep(fixtures.datatype[2]);
             var dataPrivilege = _.cloneDeep(fixtures.datatypeprivileges[2]);
-            var param = [dataType.id];
             var processedArgs = {queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: []};
+
+            DataService.executeAdvancedStreamQuery(processedArgs, operatorPayload, (err, stream) =>{
+
+                if (err) {
+                    sails.log.error(err);
+                    done(err);
+                    return;
+                }
+                assert.isStream(stream);
+                expect(stream).to.be.a.ReadableStream;
+                expect(stream).to.end;
+                done();
+                return;
+            });
+        });
+
+        it("should return a Readable Stream and should end,  multi Project true", function(done) {
+            var dataTypes = [_.cloneDeep(fixtures.datatype[2]), _.cloneDeep(fixtures.datatype[6])];
+            var dataPrivileges = [_.cloneDeep(fixtures.datatypeprivileges[2]), _.cloneDeep(fixtures.datatypeprivileges[22])];
+            var processedArgs = {queryObj: queryObj, dataType: dataTypes, dataTypePrivilege : dataPrivileges, forbiddenFields: []};
 
             DataService.executeAdvancedStreamQuery(processedArgs, operatorPayload, (err, stream) =>{
 

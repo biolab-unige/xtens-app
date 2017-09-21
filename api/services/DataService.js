@@ -163,16 +163,25 @@ const coroutines = {
     }),
 
     preprocessQueryParams: BluebirdPromise.coroutine(function* (queryArgs, idGroups, idDataType, next) {
-        // let dataType, dataPrivilege;
+        let dataType = yield DataType.findOne(idDataType).populate(['children','superType']);
+        let dataPrivilege = [];
+
+        if (queryArgs.multiProject) {
+            dataType = yield DataType.find({superType: dataType.superType.id}).populate(['children','superType']);
+            queryArgs.dataType = _.map(dataType,'id');
+            yield BluebirdPromise.each( dataType,co.wrap( function *(datatype) {
+                let priv = yield DataTypeService.getDataTypePrivilegeLevel(idGroups, datatype.id);
+                priv && !_.isEmpty(priv) && dataPrivilege.push(priv);
+            }));
+        }
+        else {
+            dataPrivilege = yield DataTypeService.getDataTypePrivilegeLevel(idGroups, idDataType);
+        }
         let queryObj = queryBuilder.compose(queryArgs);
         sails.log("DataService.executeAdvancedQuery - query: " + queryObj.statement);
         sails.log(queryObj.parameters);
 
-        let dataType = yield DataType.findOne(idDataType).populate(['children','superType']);
-
-        let dataPrivilege = yield DataTypeService.getDataTypePrivilegeLevel(idGroups, idDataType);
-
-        let flattenedFields = yield DataTypeService.getFlattenedFields(dataType, false);
+        let flattenedFields = yield DataTypeService.getFlattenedFields(_.isArray(dataType) ? dataType[0] : dataType, false);
 
         let forbiddenFields = _.filter(flattenedFields, (field) => {return field.sensitive;});
         return next(null ,{queryObj: queryObj, dataType: dataType, dataTypePrivilege : dataPrivilege, forbiddenFields: forbiddenFields});
@@ -369,28 +378,29 @@ let DataService = BluebirdPromise.promisifyAll({
             queryObj = processedArgs.queryObj,
             forbiddenFields = processedArgs.forbiddenFields;
         let data;
-
+        let multiProject = _.isArray(dataType) ? true : false;
         crudManager.query(queryObj, (err, results) => {
             if (err) {
                 sails.log(err);
                 return next(err, null);
             }
             data = results.rows;
-            //if operator has not privilege on dataType return empty data
-            if (!dataPrivilege || _.isEmpty(dataPrivilege) ){ data = []; }
+            _.forEach(data, (datum, i) => {
 
-          //else if operator has not at least Details privilege level delete metadata object
-            else if( dataPrivilege.privilegeLevel === VIEW_OVERVIEW) {
-                for (const datum of data) { datum.metadata = {}; }
-            }
-            //else if operator can not access to Sensitive Data and datatype has Sensitive data, remove them.
-            else if( forbiddenFields.length > 0 && !operator.canAccessSensitiveData){
-                for (const field of forbiddenFields) {
-                    for (const datum of data) {
-                        delete datum.metadata[field.formattedName];
-                    }
-                }
-            }
+                // console.log(dataPrivilege, datum.type);
+                let priv = multiProject ? _.find(dataPrivilege,{'dataType': datum.type}) : dataPrivilege;
+
+              //if operator has not privilege on dataType return empty data
+                if (!priv || _.isEmpty(priv) ) { data.splice(i,1); }
+
+                else if( priv.privilegeLevel === VIEW_OVERVIEW) { datum.metadata = {}; }
+              /*istanbul ignore if*/
+              else if( forbiddenFields.length > 0 && !operator.canAccessSensitiveData){
+                  for (const field of forbiddenFields) {
+                      multiProject ? datum.metadata[field.formattedName] = null : delete datum.metadata[field.formattedName];
+                  }
+              }
+            });
             const json = {data: data, dataType: dataType, dataTypePrivilege : dataPrivilege };
 
             return next(null, json);
@@ -410,6 +420,7 @@ let DataService = BluebirdPromise.promisifyAll({
             dataPrivilege = processedArgs.dataTypePrivilege,
             queryObj = processedArgs.queryObj,
             forbiddenFields = processedArgs.forbiddenFields;
+        let multiProject = _.isArray(dataType) ? true : false;
 
         return crudManager.queryStream(queryObj, stream => {
 
@@ -432,14 +443,20 @@ let DataService = BluebirdPromise.promisifyAll({
             stream.on('data', chunk => {
                 if(chunk.dataType || chunk.dataPrivilege) { return; }
 
-                //if operator has not privilege on dataType return empty data
-                if (!dataPrivilege || _.isEmpty(dataPrivilege) ) { return; }
+                let priv = multiProject ? _.find(dataPrivilege,{'dataType': chunk.type}) : dataPrivilege;
 
-                else if( dataPrivilege.privilegeLevel === VIEW_OVERVIEW) { chunk.metadata = {}; }
+                //if operator has not privilege on dataType return empty data
+                if (!priv || _.isEmpty(priv) ) {
+                    for(let i in chunk){
+                        delete chunk[i];
+                    }
+                }
+
+                else if( priv.privilegeLevel === VIEW_OVERVIEW) { chunk.metadata = {}; }
                 /*istanbul ignore if*/
                 else if( forbiddenFields.length > 0 && !operator.canAccessSensitiveData){
                     for (const field of forbiddenFields) {
-                        delete chunk.metadata[field.formattedName];
+                        multiProject ? chunk.metadata[field.formattedName] = null : delete chunk.metadata[field.formattedName];
                     }
                 }
             });
