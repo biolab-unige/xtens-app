@@ -252,7 +252,8 @@ exports.updatePassword = function(param, idOperator, next) {
                 return next(null, true);
             });
         });
-    }).catch(function(err) {
+    }).catch(/* istanbul ignore next */ function(err) {
+        sails.log.error(err);
         return next(err, false);
     });
 };
