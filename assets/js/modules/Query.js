@@ -7,20 +7,20 @@
     var Constants = xtens.module("xtensconstants").Constants;
     var FieldTypes = xtens.module("xtensconstants").FieldTypes;
     var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
-    var QueryStrategy = xtens.module("querystrategy");
-    var Data = xtens.module("data");
+    // var QueryStrategy = xtens.module("querystrategy");
+    // var Data = xtens.module("data");
     var DataType = xtens.module("datatype");
     var SuperType = xtens.module("supertype");
     var DataTypeClasses = xtens.module("xtensconstants").DataTypeClasses;
     var sexOptions = xtens.module("xtensconstants").SexOptions;
     var XtensTable = xtens.module("xtenstable");
-    var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
+    // var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
     var Privileges = xtens.module("xtensconstants").DataTypePrivilegeLevels;
     var VIEW_OVERVIEW = Privileges.VIEW_OVERVIEW;
     // constant to define the field-value HTML element
     var FIELD_VALUE = 'field-value';
 
-    var checkboxTemplate = _.template("<div class='checkbox'><input type='checkbox'></div>");
+    // var checkboxTemplate = _.template("<div class='checkbox'><input type='checkbox'></div>");
 
     // Factory method class to create specialized query views
     function QueryViewFactory() {
@@ -85,9 +85,16 @@
             if (_.isArray(this.nestedViews)) {
                 res.content = [];
                 for (var i=0, len=this.nestedViews.length; i<len; i++) {
-                    res.content.push(this.nestedViews[i].serialize());
+                    var serilized = this.nestedViews[i].serialize();
+                    if (!_.isEmpty(serilized) && (!serilized.content || (serilized.content && !_.isEmpty(serilized.content)))) {
+                        res.content.push(serilized);
+                    }
                 }
-                res.content = _.flatten(res.content, true);
+                if(res.content && res.content.length > 0 && !_.isEmpty(res.content[0])){
+                    res.content = _.flatten(res.content, true) ;
+                }else {
+                    delete res['content'];
+                }
             }
             return res;
         }
@@ -682,6 +689,8 @@
             this.nestedViews = [];
             this.biobanks = options.biobanks || [];
             this.dataTypes = options.dataTypes || [];
+            this.isFirst = options.isFirst;
+            this.isFirst ? this.model.set('multiProject',false) : null;
             this.dataTypesComplete = options.dataTypesComplete || [];
             this.dataTypePrivileges = options.dataTypePrivileges || [];
             // this.listenTo(this.model, 'change:dataType', this.dataTypeOnChange);
@@ -690,12 +699,14 @@
         events: {
             'click [name="add-field"]': 'addQueryRow',
             // 'click [name="add-loop"]': 'addLoopQuery',
-            'click [name="add-nested"]': 'nestedQueryBtnOnClick'
+            'click [name="add-nested"]': 'nestedQueryBtnOnClick',
+            'click [name="multi-search"]': 'multiQueryBtnOnClick'
         },
 
         addQueryRow: function(ev) {
             ev.stopPropagation();
-            var childView = new Query.Views.Row({fieldList: this.dataTypes.get(this.model.get('dataType')).getFlattenedFields(),
+            var superType = new SuperType.Model( this.dataTypes.get(this.model.get('dataType')).get('superType'));
+            var childView = new Query.Views.Row({fieldList: superType.getFlattenedFields(),
                                                 model: new Query.RowModel()});
             this.$el.append(childView.render().el);
             this.add(childView);
@@ -716,6 +727,28 @@
             this.addNestedQuery();
         },
 
+        multiQueryBtnOnClick: function(ev) {
+            ev.stopPropagation();
+            if (this.model.get('multiProject') == false) {
+                this.model.set('multiProject',true);
+                this.$multiSearchButton.removeClass('btn-danger');
+                this.$multiSearchButton.addClass('btn-success');
+                this.$addNestedButton.prop('disabled',true);
+                $('div.query-composite',this.el).remove();
+                this.nestedViews = _.filter(this.nestedViews, function(view){
+                    if( _.find(view.el.classList, function(classes){ return classes !== "query-composite";}) ){
+                        return view;
+                    }
+                });
+
+            } else if (this.model.get('multiProject') == true) {
+                this.$multiSearchButton.removeClass('btn-success');
+                this.$multiSearchButton.addClass('btn-danger');
+                this.$addNestedButton.prop('disabled',false);
+                this.model.set('multiProject',false);
+            }
+        },
+
         /**
          * @method
          * @name addNestedQuery
@@ -731,6 +764,7 @@
 
             // create composite subview
             var childView = new Query.Views.Composite({
+                isFirst: false,
                 biobanks: this.biobanks,
                 dataTypes: childrenDataTypes,
                 dataTypesComplete: this.dataTypesComplete,
@@ -751,14 +785,65 @@
         dataTypeOnChange: function(model, idDataType) {
             this.clear();
             if (!idDataType) {
+                this.$multiSearchButton.addClass('hidden');
                 this.$addFieldButton.addClass('hidden');
                 this.$addLoopButton.addClass('hidden');
                 this.$addNestedButton.removeClass('hidden');
                 this.selectedDataType = null;
                 this.model.set("model", null);
-                return;
             }
-            this.createDataTypeRow(idDataType);
+            else {
+                this.createDataTypeRow(idDataType);
+                if(this.isFirst){
+                    this.setMultiProject(false, false, function () {
+                        $('input#search').prop('disabled',false);
+                    });
+                }
+            }
+
+        },
+
+        /**
+         * @method
+         * @name setMultiProject
+         */
+        setMultiProject: function(isYetMulti, triggedSearch ,callback) {
+
+            // triggedSearch ? this.$multiSearchButton.removeClass('hidden') : null;
+            this.model.set('multiProject', false);
+            this.$multiSearchButton.removeClass('btn-success');
+            this.$multiSearchButton.addClass('btn-danger');
+            this.$addNestedButton.prop('disabled',false);
+            if (!isYetMulti) {
+                var that = this;
+                var superTypeSelected = _.isObject(this.selectedDataType.get('superType')) ? this.selectedDataType.get('superType').id : this.selectedDataType.get('superType');
+                var dataTypes = new DataType.List();
+
+                var dataTypesDeferred = dataTypes.fetch({
+                    data: $.param({superType: superTypeSelected})
+                });
+                $.when(dataTypesDeferred).then(function(dataTypesRes) {
+                    if (dataTypesRes.length > 1) {
+                        that.$multiSearchButton.removeClass('hidden');
+                    }
+                    else {
+                        that.$multiSearchButton.addClass('hidden');
+                    }
+                    callback(true);
+                });
+            }
+            else if (isYetMulti && triggedSearch) {
+              // reloading a query multi project
+                this.$multiSearchButton.removeClass('btn-danger');
+                this.$multiSearchButton.addClass('btn-success');
+                this.$multiSearchButton.removeClass('hidden');
+                this.$addNestedButton.prop('disabled',true);
+                $('div.query-composite',this.el).remove();
+                this.model.set('multiProject',true);
+                callback(true);
+            }else {
+                callback(true);
+            }
         },
 
         /**
@@ -865,6 +950,7 @@
                 this.stickit();
             }
             this.$addFieldButton = this.$("[name='add-field']");
+            this.$multiSearchButton = this.$("[name='multi-search']");
             this.$addLoopButton = this.$("[name='add-loop']");
             this.$addNestedButton = this.$("[name='add-nested']");
             if (this.model.get("dataType")) {
@@ -908,6 +994,7 @@
             this.dataTypePrivileges = options.dataTypePrivileges || [];
             this.render(options);
             this.queryView = new Query.Views.Composite({
+                isFirst: true,
                 biobanks: this.biobanks,
                 dataTypes: this.dataTypes,
                 dataTypesComplete: this.dataTypes,
@@ -923,7 +1010,13 @@
             this.listenToOnce(this, 'search', this.sendQuery);
             // if a query object exists trigger a server-side search
             if (options.queryObj) {
-                this.trigger('search');
+                var that = this;
+                this.queryView.setMultiProject(options.queryObj.multiProject, true ,function(){
+                    that.trigger('search');
+                });
+            }
+            else {
+                this.$('input#search').prop('disabled',true);
             }
         },
 
@@ -945,12 +1038,13 @@
             var isStream = xtens.infoBrowser[0] === "Chrome" && xtens.infoBrowser[1] >= 54 ? true : false;
             // extend queryArgs with flags to retrieve subject and personal informations and if retrieve data in stream mode
             var queryArgs = _.extend({
+                multiProject: this.queryView.model.get('multiProject'),
                 wantsSubject: true,
                 wantsPersonalInfo: xtens.session.get('canAccessPersonalData')
             }, this.queryView.serialize());
 
             var queryParameters = JSON.stringify({queryArgs: queryArgs});
-            console.log(this.queryView.serialize());
+            // console.log(this.queryView.serialize());
             var path = '/query/' + encodeURIComponent(queryParameters);
             xtens.router.navigate(path, {trigger: false});
             if (isStream) {
@@ -967,12 +1061,11 @@
                   return that.pumpStream(res.body.getReader());
               })
               .catch(function(ex) {
-                  console.log('parsing failed', ex);
+                  // console.log('parsing failed', ex);
                   that.queryOnError();
               });
             }
             else {
-
                 $.ajax({
                     method: 'POST',
                     headers: {
@@ -1035,7 +1128,7 @@
                         parsed.dataType ? that.optStream.dataType = parsed.dataType :
                             parsed.dataPrivilege ? that.optStream.dataPrivilege = parsed.dataPrivilege :
                             parsed.error ? that.optStream.error = parsed.error :
-                            that.buffer.push(parsed);
+                            !_.isEmpty(parsed) ? that.buffer.push(parsed) : null;
                     }
                     catch (e) {
                         that.temp = data;
@@ -1079,33 +1172,8 @@
 
             if (_.isEmpty(result.data)) {
                 this.$queryNoResultCnt.show();
-                /*
-                this.modal = new ModalDialog({
-                    title: i18n('no-result-found'),
-                    body: i18n("no-data-was-found-to-match-your-search-options") + ' ' + i18n('please-try-again-with-different-parameters')
-                });
-                this.$queryModal.append(this.modal.render().el);
-                this.modal.show(); */
                 return;
             }
-            if (_.isArray(result.dataType)) {
-              // TODO: test if works
-                _.forEach(result.dataType, function (dt, i) {
-                    var dto = _.filter(this.dataTypes.models, {id: dt.id});
-                    return _.filter(result.data, function (datum,i) {
-                        if(datum.type === dt.id){
-                            return result.data[i].owner = dto[0].attributes.owner;
-                        }
-                    });
-                });
-            }
-            else {
-                var dt = _.filter(this.dataTypes.models, {id: result.dataType.id});
-                _.forEach(result.data, function (d) {
-                    d.owner = dt[0].attributes.owner;
-                });
-            }
-
             this.tableView = new XtensTable.Views.DataTable(result);
             this.$tableCnt.append(this.tableView.render().el);
             this.tableView.displayDataTable();

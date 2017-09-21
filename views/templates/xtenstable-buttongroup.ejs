@@ -40,7 +40,7 @@
 
 
 <div class="btn-group" role="group" aria-label="...">
-  <% if(privilegeLevel !== "view_overview"){ %>
+  <% if(privilegeLevel && privilegeLevel !== "view_overview"){ %>
       <button type="button" class="btn btn-xs btn-default xtenstable-details"><%= __('details') %></button>
 
       <% if(privilegeLevel === "edit" && (xtens.session.get("canAccessSensitiveData") || !hasDataSensitive)){ %>

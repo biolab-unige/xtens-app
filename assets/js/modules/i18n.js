@@ -274,6 +274,7 @@
         "add-field": "Add Field",
         "add-loop-condition": "Add Loop Condition",
         "add-nested-condition": "Add Nested Condition",
+        "multi-project-serach": "Multi Project",
         /* views/templates/data-table.ejs */
         "overall-status": "Overall Status",
         "diagnosis-age": "Diagnosis Age",
@@ -299,6 +300,7 @@
         "derived-data": "Derived Data",
         /* views/templates/xtenstable-buttongroup.ejs  */
         "contact-details": "Contact Details",
+        "project-owner": "Project Owner",
         /* assets/js/modules/XtensTable.js */
         "actions": "Actions",
         "click-to-show-owner-contacts": "Click to Show Contacts",

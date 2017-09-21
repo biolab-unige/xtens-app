@@ -31,13 +31,16 @@
       var Classes = xtens.module("xtensconstants").DataTypeClasses;
       var Privileges = xtens.module("xtensconstants").DataTypePrivilegeLevels;
       var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
-      var DataTypeModel = xtens.module("datatype").Model;
+      var DataType = xtens.module("datatype");
       var Data = xtens.module("data");
       var SuperType = xtens.module("supertype");
       var Sample = xtens.module("sample");
       var DataFile = xtens.module("datafile");
-      var AddressInformation = xtens.module("addressinformation");
+      var Operator = xtens.module("operator");
       var VIEW_OVERVIEW = Privileges.VIEW_OVERVIEW;
+      var VIEW_DETAILS = Privileges.VIEW_DETAILS;
+      var EDIT = Privileges.EDIT;
+      var DOWNLOAD = Privileges.DOWNLOAD;
       var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
 
     /**
@@ -62,7 +65,8 @@
               if (!options || !options.dataType) {
                   throw new Error("Missing required options: dataType");
               }
-              this.dataType = new DataTypeModel(options.dataType);
+              this.multiProject = _.isArray(options.dataType) ? this.multiProject = true : false;
+              this.dataType = this.multiProject? new DataType.List(options.dataType) : new DataType.Model(options.dataType);
             // console.log(options.data);
               this.data = options.data;
               this.$modal = $(".query-modal");
@@ -152,7 +156,7 @@
                   });
                   this.table.buttons().container().appendTo($('.col-sm-6:eq(0)', this.table.table().container()));
 
-                  $('td.owner').tooltip({
+                  $('td.project-owner').tooltip({
                       position: {
                           my: 'right center',
                           at: 'left-10 center'
@@ -161,24 +165,27 @@
                       title: i18n("click-to-show-owner-contacts")
                   });
 
-                  $('.owner').on( 'click', function (ev) {
+                  $('td.project-owner').on('click', function (ev) {
                       ev.stopPropagation();
                       var data = that.table.row( $(ev.currentTarget).parents('tr') ).data();
                       var projects = xtens.session.get("projects");
                       var project = _.filter(projects,function (pr) {
-                          return pr.id === data.type;
+                          var dt = that.multiProject ? _.find(that.dataType.models, {'id': data.type}) : that.dataType;
+                          return pr.id === dt.get('project');
                       });
 
-                      var address = new AddressInformation.Model({id: data.owner_address});
-                      var addressDeferred = address.fetch();
+                      var owner = new Operator.Model({id: data.owner});
+                      var ownerDeferred = owner.fetch({
+                          data: $.param({populate:['addressInformation']})
+                      });
 
-                      $.when(addressDeferred).then(function(addressRes) {
+                      $.when(ownerDeferred).then(function(ownerRes) {
                           if (that.modal) {
                               that.modal.hide();
                           }
                           var modal = new ModalDialog({
                               template: JST["views/templates/address-modal.ejs"],
-                              data: { __: i18n, project: project[0], data: data, address: addressRes}
+                              data: { __: i18n, project: project[0], data: data, owner: ownerRes, address: ownerRes.addressInformation }
                           });
 
                           that.$modal.append(modal.render().el);
@@ -210,33 +217,44 @@
             if (!this.dataType) {
                 return; //TODO add alert box
             } */
-              var fileUpload = this.dataType.get("superType").schema.header.fileUpload;
+              var fileUpload =  this.multiProject ? false : this.dataType.get("superType").schema.header.fileUpload;
               var hasDataSensitive = false;
               this.fieldsToShow = [];
               var that = this;
               var hasDataChildren = false, hasSampleChildren = false;
-              var dataTypeChildren = _.where(this.dataType.get("children"), {"model": Classes.DATA});
-              var sampleTypeChildren = _.where(this.dataType.get("children"), {"model": Classes.SAMPLE});
+              var dataTypeChildren = _.where(this.multiProject ? this.dataType.models[0].get("children") : this.dataType.get("children"), {"model": Classes.DATA});
+              var sampleTypeChildren = _.where(this.multiProject ? this.dataType.models[0].get("children") : this.dataType.get("children"), {"model": Classes.SAMPLE});
               if (dataTypeChildren.length > 0) {
                   hasDataChildren = true;
               }
               if (sampleTypeChildren.length > 0) {
                   hasSampleChildren = true;
               }
-              var selectedSuperType = new SuperType.Model(this.dataType.get("superType"));
+              var selectedSuperType = new SuperType.Model(this.multiProject ? this.dataType.models[0].get("superType") : this.dataType.get("superType"));
               var flattenedFields = selectedSuperType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
-              this.columns = this.insertModelSpecificColumns(this.dataType.get("model"), xtens.session.get('canAccessPersonalData'));
-              this.columns.push({"title": i18n("owner"), "data": "owner_surname", "className": "owner"});
+              var model = this.multiProject ? this.dataType.models[0].get("model") : this.dataType.get("model");
+              this.columns = this.insertModelSpecificColumns(model, xtens.session.get('canAccessPersonalData'));
+              this.columns.push({"title": i18n("project-owner"), "data": function (data) {
+                  var projects = xtens.session.get("projects");
+                  var project = _.filter(projects,function (pr) {
+                      var dt = that.multiProject ? _.find(that.dataType.models, {'id': data.type}) : that.dataType;
+                      return pr.id === dt.get('project');
+                  });
+                  return project.length > 0 ? project[0].name : "No project";
+              }, "className": "project-owner"});
 
               this.numLeft=this.columns.length;
-
-              if(dataTypePrivilege && dataTypePrivilege.privilegeLevel !== VIEW_OVERVIEW){
+              // let highPrivilege = this.multiProject ? dataTypePrivilege[0] : dataTypePrivilege;
+              var dtpOverview = this.multiProject ? _.filter(dataTypePrivilege,function (dtp) { return dtp.privilegeLevel === VIEW_OVERVIEW;}) : dataTypePrivilege && dataTypePrivilege.privilegeLevel === VIEW_OVERVIEW ? true : false;
+              // if (!this.multiProject || (this.multiProject && dtpOverview && dtpOverview.length === dataTypePrivilege.length)) {
+              if(!dtpOverview || (this.multiProject && dtpOverview.length !== dataTypePrivilege.length)){
                   flattenedFields.forEach(function(field) {
                       if (field.sensitive) { hasDataSensitive = true; }
-                      if ( !field.sensitive || xtens.session.get('canAccessSensitiveData') ) {
+                      if (!field.sensitive || xtens.session.get('canAccessSensitiveData') ) {
                           that.fieldsToShow.push(field);
                       }});
               }
+              // }
 
               this.optLinks = {dataTypePrivilege: dataTypePrivilege, hasDataSensitive : hasDataSensitive, fileUpload : fileUpload, hasDataChildren : hasDataChildren, hasSampleChildren : hasSampleChildren};
 
@@ -328,7 +346,7 @@
               if (!dataType) {
                   return;
               }
-              dataType = new DataTypeModel(dataType);
+              dataType = new DataType.Model(dataType);
               var fields = dataType.getFlattenedFields(true);
               var columns = this.insertModelSpecificColumns(dataType.get("model"), xtens.session.get('canAccessPersonalData'));
 
@@ -419,10 +437,11 @@
               var btnGroupTemplate = JST["views/templates/xtenstable-buttongroup.ejs"];
               var that = this;
               _.each(this.data, function(datum) {
+                  var privilege = that.multiProject ? _.find(options.dataTypePrivilege, {dataType: datum.type}) : options.dataTypePrivilege;
                   datum._links = btnGroupTemplate({
                       __:i18n,
                       dataTypeModel: that.dataType.get("model"),
-                      privilegeLevel : options.dataTypePrivilege.privilegeLevel,
+                      privilegeLevel : privilege ? privilege.privilegeLevel : undefined,
                       hasDataSensitive: options.hasDataSensitive,
                       fileUpload: options.fileUpload,
                       hasDataChildren: options.hasDataChildren,
@@ -448,7 +467,7 @@
               var data = currRow.data();
 
             // model here is the ENTITY model (a.k.a. the server-side resource)
-              var model = this.dataType.get("model");
+              var model = this.multiProject ? this.dataType.models[0].get("model") : this.dataType.get("model");
               var path = model === Classes.DATA ? model.toLowerCase() : model.toLowerCase() + 's';
               path += "/details/" + data.id;
               xtens.router.navigate(path, {trigger: true});
@@ -466,7 +485,7 @@
               var data = currRow.data();
 
             // model here is the ENTITY model (a.k.a. the server-side resource)
-              var model = this.dataType.get("model");
+              var model = this.multiProject ? this.dataType.models[0].get("model") : this.dataType.get("model");
               var path = model === Classes.DATA ? model.toLowerCase() : model.toLowerCase() + 's';
               path += "/edit/" + data.id;
               xtens.router.navigate(path, {trigger: true});
@@ -484,7 +503,7 @@
               var currRow = this.table.row($(ev.currentTarget).parents('tr'));
               var data = currRow.data();
               var childrenData = new Data.List();
-              var model = this.dataType.get("model");
+              var model = this.multiProject ? this.dataType.models[0].get("model") : this.dataType.get("model");
               var parentProperty = model === Classes.SUBJECT ? 'parentSubject' : model === Classes.SAMPLE ? 'parentSample' : 'parentData';
               var path = "data?" + parentProperty + "=" + data.id;
 

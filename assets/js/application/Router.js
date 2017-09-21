@@ -924,7 +924,7 @@
             var that = this;
             var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
             var criteria = {
-                populate:['children', 'owner', 'superType'],
+                populate:['children', 'superType'],
                 sort: 'id ASC'
             };
             idProject ? criteria.project = idProject : null;
@@ -932,7 +932,7 @@
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
             $.when($operatorDeferred).then( function(operatorRes) {
-                var groupId = operatorRes && operatorRes[0].groups[0].id;
+                var groupId = operatorRes && _.uniq(_.map(operatorRes[0].groups, 'id'));
                 var $privilegesDeferred = privileges.fetch({
                     data: $.param({group: groupId, limit:100})
                 });

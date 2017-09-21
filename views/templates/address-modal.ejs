@@ -16,13 +16,13 @@
               <div class="form-group metadataform-group">
                   <label for="firstName" class="data-label"><%= __('given-name') %></label>
                   <div class="data-input-div">
-                      <span class="form-control" id="firstName" placeholder="Name" name="firstName" ><%= data.owner_surname %></span>
+                      <span class="form-control" id="firstName" placeholder="Name" name="firstName" ><%= owner.lastName %></span>
                   </div>
               </div>
               <div class="form-group metadataform-group">
                   <label for="lastName" class="data-label"><%= __('surname') %></label>
                   <div class="data-input-div">
-                      <span class="form-control" id="lastName" placeholder="Surname" name="lastName" ><%= data.owner_name %></span>
+                      <span class="form-control" id="lastName" placeholder="Surname" name="lastName" ><%= owner.firstName %></span>
                   </div>
               </div>
               <div class="form-group metadataform-group">
@@ -34,7 +34,7 @@
               <div class="form-group metadataform-group">
                   <label for="email" class="data-label"><%= __('email') %></label>
                   <div class="data-input-div">
-                      <span name="email" type="email" class="form-control" id="email" placeholder="ex@example.com"><%= data.owner_email %></span>
+                      <span name="email" type="email" class="form-control" id="email" placeholder="ex@example.com"><%= owner.email %></span>
                   </div>
               </div>
               <div class="form-group metadataform-group">
