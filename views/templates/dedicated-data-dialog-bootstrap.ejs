@@ -1,0 +1,22 @@
+<div class="modal-body">
+  <div class="row summary">
+      <div class="row">
+          <% if (summary.created >= 0) {%>
+          <label for="created" class="data-label"><%= __("created") %>: </label>
+          <span class="data-span"><%= summary.created %></span>
+          <%} %>
+      </div>
+      <div class="row">
+          <% if (summary.updated >= 0) {%>
+          <label for="updated" class="data-label"><%= __("updated") %>: </label>
+          <span class="data-span"><%= summary.updated %></span>
+          <%} %>
+      </div>
+      <div class="row">
+          <% if (summary.notUpdated >= 0) {%>
+          <label for="not-updated" class="data-label"><%= __("not-updated") %>: </label>
+          <span class="data-span"><%= summary.notUpdated %></span>
+          <%} %>
+      </div>
+  </div>
+</div>

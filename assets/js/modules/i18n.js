@@ -14,6 +14,10 @@
         "data-type-list": "Data Type List",
         "id":"ID",
         "duplicate-data-type": "Duplicate Data Type",
+        // views/templates/dedicated-data-dialog-bootstrap.ejs
+        "created":"Created",
+        "updated":"Updated",
+        "not-updated":"Not Updated",
         // views/templates/datatype-duplicate.ejs
         "edit-data-type":"Edit Data Type",
         "from": "From",

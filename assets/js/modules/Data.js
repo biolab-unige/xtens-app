@@ -1348,20 +1348,20 @@
             return false;
         },
 
-        saveOnSuccess: function() {
+        saveOnSuccess: function(summary) {
             var that = this;
             if (this.modal) {
                 this.modal.hide();
             }
             this.$modal.one('hidden.bs.modal', function (e) {
-                that.modal.title= i18n('ok');
-                that.modal.body= i18n('data-correctly-stored-on-server');
+                that.modal.title= i18n('data-correctly-stored-on-server');
+                that.modal.body= JST["views/templates/dedicated-data-dialog-bootstrap.ejs"]({__: i18n, summary: summary});
 
                 that.$modal.append(that.modal.render().el);
                 $('.modal-header').addClass('alert-success');
                 that.modal.show();
 
-                setTimeout(function(){ that.modal.hide(); }, 1200);
+                // setTimeout(function(){ that.modal.hide(); }, 1200);
                 that.$modal.on('hidden.bs.modal', function (e) {
                     that.modal.remove();
                     xtens.router.navigate('data', {trigger: true});
