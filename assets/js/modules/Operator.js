@@ -268,6 +268,11 @@
             this.$el.html(this.template({__:i18n}));
             this.$modal = this.$(".project-modal");
             this.$('form').parsley(parsleyOpts);
+            $(document).bind('keyup', function(e) {
+                if(e.which==13){
+                    $('#login').trigger('click');
+                }
+            });
             return this;
         },
 
@@ -284,6 +289,7 @@
                     password: password
                 }, function(data, status, jqxhr) {
                     xtens.session.load(data, function () {
+                        $(document).unbind('keyup');
                         var projects = xtens.session.get("projects");
                         if (xtens.session.get("isWheel")) {
                             xtens.session.set('activeProject', 'all');

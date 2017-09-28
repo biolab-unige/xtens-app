@@ -20,6 +20,18 @@
     // constant to define the field-value HTML element
     var FIELD_VALUE = 'field-value';
 
+    var parsleyOpts = {
+        priorityEnabled: false,
+        // excluded: "select[name='fieldUnit']",
+        successClass: "has-success",
+        errorClass: "has-error",
+        classHandler: function(el) {
+            return el.$element.parent();
+        },
+        errorsWrapper: "<span class='help-block'></span>",
+        errorTemplate: "<span></span>"
+    };
+
     // var checkboxTemplate = _.template("<div class='checkbox'><input type='checkbox'></div>");
 
     // Factory method class to create specialized query views
@@ -76,8 +88,10 @@
             return null;
         },
 
-        closeMe: function(ev) {
-            this.trigger('closeMe', this);
+        clearMe: function(ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.clear(false);
         },
 
         serialize: function() {
@@ -85,9 +99,11 @@
             if (_.isArray(this.nestedViews)) {
                 res.content = [];
                 for (var i=0, len=this.nestedViews.length; i<len; i++) {
-                    var serilized = this.nestedViews[i].serialize();
-                    if (!_.isEmpty(serilized) && (!serilized.content || (serilized.content && !_.isEmpty(serilized.content)))) {
-                        res.content.push(serilized);
+                    var serialized = this.nestedViews[i].serialize();
+                    if (!_.isEmpty(serialized) && (!serialized.content || (serialized.content && !_.isEmpty(serialized.content)))) {
+                        if (!serialized.fieldName || serialized.fieldValue && serialized.comparator) {
+                            res.content.push(serialized);
+                        }
                     }
                 }
                 if(res.content && res.content.length > 0 && !_.isEmpty(res.content[0])){
@@ -184,9 +200,47 @@
             this.$unit = this.$("input[name=unit]");
             this.$junction = this.$("input[name=junction]");
             if (this.model.get("fieldName")) {
-                this.generateStatementOptions(this.model, this.model.get("fieldName"));
+                var selectedField = this.generateStatementOptions(this.model, this.model.get("fieldName"));
+                this.$fieldValue = this.$("input[name='"+FIELD_VALUE+"']");
+                this.setValidationOptions(selectedField);
+                $("#query-form").parsley(parsleyOpts);
             }
             return this;
+        },
+
+        setValidationOptions: function(selectedField) {
+
+            this.$fieldValue.prop('required', true);
+            this.$comparator.prop('required', true);
+
+            switch (selectedField.fieldType) {
+                case FieldTypes.INTEGER:
+                    this.$fieldValue.attr("data-parsley-type", "integer");
+                    break;
+                case FieldTypes.FLOAT:
+                    this.$fieldValue.attr("data-parsley-type", "number");
+                    break;
+                case FieldTypes.DATE:
+                    this.initDatepicker();
+                    this.$fieldValue.attr("placeholder", "YYYY-MM-DD");
+                    break;
+            }
+            if (selectedField.hasRange) {
+                this.$fieldValue.attr("min", selectedField.min);
+                this.$fieldValue.attr("max", selectedField.max);
+            }
+            if (selectedField.hasUnit && selectedField.possibleUnits) {
+                this.$unit.prop('required', true);
+            }
+        },
+
+        initDatepicker: function() {
+            var picker = new Pikaday({
+                field: this.$fieldValue[0],
+                format: 'YYYY-MM-DD',
+                yearRange: [1900, new Date().getYear()],
+                maxDate: new Date()
+            });
         },
 
         fieldNameOnChange: function(model, fieldName) {
@@ -196,12 +250,16 @@
                     model.unset(key);
                 }
             });
-
-            this.generateStatementOptions(model, fieldName);
+            var selectedField = this.generateStatementOptions(model, fieldName);
+            this.$fieldValue = this.$("input[name='"+FIELD_VALUE+"']");
+            this.setValidationOptions(selectedField);
+            $("#query-form").parsley(parsleyOpts);
         },
 
         generateStatementOptions: function(model, fieldName) {
-            this.$("input[type=hidden]").select2('destroy');
+            this.$("input[type=text]").select2('destroy');
+            this.$("input[type=text]").addClass('hidden');
+            this.$("input[type=text]").attr('required', false);
 
             // set match criteria on formatted or unformatted names depending of the application usage
             var matchCriteria = useFormattedNames ? {"formattedName": fieldName} : {"name": fieldName};
@@ -217,6 +275,7 @@
                 this.generateComparedUnitItem(selectedField.possibleUnits);
             }
             this.generateJunctionItem();
+            return selectedField;
         },
 
         generateComparisonItem: function(metadataField) {
@@ -251,6 +310,10 @@
                     $el.select2({
                         data: data
                     });
+                    $el.removeClass('hidden');
+                    $el.change(function() {
+                        $el.trigger('input');
+                    });
                 }
             });
         },
@@ -271,8 +334,8 @@
         appendComparedBoolean: function() {
             var $container = this.$("[name='query-value-div']").empty().removeClass().addClass("query-value-div");
             var selector = document.createElement("input");
-            selector.type = 'hidden';
-            selector.className = 'form-control';
+            selector.type = 'text';
+            selector.className = 'form-control hidden';
             selector.name = FIELD_VALUE;
             $container.append(selector);
             this.addBinding(null, "input[name='"+FIELD_VALUE+"']", {
@@ -281,6 +344,10 @@
                     $el.select2({
                         data: [{id: true, text: i18n('yes')}, {id: false, text: i18n('no')}]
                     });
+                    $el.removeClass('hidden');
+                    $el.change(function() {
+                        $el.trigger('input');
+                    });
                 }
             });
         },
@@ -288,9 +355,9 @@
         appendComparedValueList: function(list) {
             var $container = this.$("[name='query-value-div']").empty().removeClass().addClass("query-value-div");
             var selector = document.createElement("input");
-            selector.type = 'hidden';
+            selector.type = 'text';
             selector.name = FIELD_VALUE;
-            selector.className = 'form-control';
+            selector.className = 'form-control hidden';
             var data = list.map(function(elem) { return {"id":elem, "text":elem}; });
             $container.append(selector);
             this.addBinding(null, "input[name='"+FIELD_VALUE+"']", {
@@ -299,7 +366,12 @@
                     $el.select2({
                         multiple: true,
                         data: data,
-                        placeholder: i18n("please-select")});
+                        placeholder: i18n("please-select")
+                    });
+                    $el.removeClass('hidden');
+                    $el.change(function() {
+                        $el.trigger('input');
+                    });
                 },
                 getVal: function($el) {
                     return $el.val().split(",");
@@ -329,8 +401,14 @@
                 initialize: function($el) {
                     $el.select2({
                         data: data,
-                        placeholder: i18n("please-select")});
+                        placeholder: i18n("please-select")
+                    });
+                    $el.removeClass('hidden');
+                    $el.change(function() {
+                        $el.trigger('input');
+                    });
                 }
+
             });
         },
 
@@ -700,7 +778,9 @@
             'click [name="add-field"]': 'addQueryRow',
             // 'click [name="add-loop"]': 'addLoopQuery',
             'click [name="add-nested"]': 'nestedQueryBtnOnClick',
-            'click [name="multi-search"]': 'multiQueryBtnOnClick'
+            'click [name="multi-search"]': 'multiQueryBtnOnClick',
+            'click .remove-me-field': 'closeMeField',
+            'click .clear-me': 'clearMe'
         },
 
         addQueryRow: function(ev) {
@@ -712,6 +792,17 @@
             this.add(childView);
         },
 
+        closeMeField: function (ev) {
+            ev.preventDefault();
+            var that = this;
+            $($(ev.currentTarget).closest('.query-row')).remove();
+            _.forEach(this.nestedViews, function(val,i){
+                if (_.isEqual(val.$el, $($(ev.currentTarget).closest('.query-row')))) {
+                    that.nestedViews.splice(i,1);
+                }
+
+            });
+        },
         /**
          * @deprecated
         addLoopQuery: function(ev) {
@@ -731,9 +822,9 @@
             ev.stopPropagation();
             if (this.model.get('multiProject') == false) {
                 this.model.set('multiProject',true);
-                this.$multiSearchButton.removeClass('btn-danger');
-                this.$multiSearchButton.addClass('btn-success');
+                this.$multiSearchButton.removeClass('btn-danger').addClass('btn-success');
                 this.$addNestedButton.prop('disabled',true);
+                this.$clearMe.addClass('hidden');
                 $('div.query-composite',this.el).remove();
                 this.nestedViews = _.filter(this.nestedViews, function(view){
                     if( _.find(view.el.classList, function(classes){ return classes !== "query-composite";}) ){
@@ -742,8 +833,7 @@
                 });
 
             } else if (this.model.get('multiProject') == true) {
-                this.$multiSearchButton.removeClass('btn-success');
-                this.$multiSearchButton.addClass('btn-danger');
+                this.$multiSearchButton.removeClass('btn-success').addClass('btn-danger');
                 this.$addNestedButton.prop('disabled',false);
                 this.model.set('multiProject',false);
             }
@@ -774,6 +864,7 @@
 
             this.$el.append(childView.render({}).el);
             this.add(childView);
+            this.$clearMe.removeClass('hidden');
         },
 
         /**
@@ -783,7 +874,7 @@
          * @param{integer} idDataType - the ID of the selected Data Type
          */
         dataTypeOnChange: function(model, idDataType) {
-            this.clear();
+            this.clear(true);
             if (!idDataType) {
                 this.$multiSearchButton.addClass('hidden');
                 this.$addFieldButton.addClass('hidden');
@@ -930,12 +1021,22 @@
          * @name clear
          * @description removes all the nested subviews, if present
          */
-        clear: function() {
+        clear: function(initialization) {
             var len = this.nestedViews.length;
-            for(var i=len-1; i>=0; i--) {
-                this.removeChild(this.nestedViews[i]);
+            if (initialization) {
+                for(var i=len-1; i>=0; i--) {
+                    this.removeChild(this.nestedViews[i]);
+                }
+            } else {
+                this.nestedViews = _.filter(this.nestedViews, function(view){
+                    if( _.find(view.el.classList, function(classes){ return classes !== "query-composite";}) ){
+                        return view;
+                    }else {
+                        view.remove();
+                    }
+                });
+                this.$clearMe.addClass('hidden');
             }
-            // this.model.clear(); // clear your model
         },
 
         /**
@@ -953,6 +1054,7 @@
             this.$multiSearchButton = this.$("[name='multi-search']");
             this.$addLoopButton = this.$("[name='add-loop']");
             this.$addNestedButton = this.$("[name='add-nested']");
+            this.$clearMe = this.$("[name='clear-me']");
             if (this.model.get("dataType")) {
                 this.createDataTypeRow(this.model.get("dataType"));
             }
@@ -971,7 +1073,7 @@
      */
     Query.Views.Builder = Backbone.View.extend({
         events : {
-            'click #search': 'sendQuery'
+            'submit #query-form': 'sendQuery'
         },
 
 
@@ -990,6 +1092,8 @@
             this.template = JST["views/templates/query-builder.ejs"];
             $('#main').html(this.el);
             this.biobanks = options.biobanks || [];
+            options.dataTypes.comparator = 'id';
+            options.dataTypes.sort();
             this.dataTypes = options.dataTypes || [];
             this.dataTypePrivileges = options.dataTypePrivileges || [];
             this.render(options);
@@ -1006,7 +1110,8 @@
             this.$queryNoResultCnt = this.$("#queryNoResultCnt");
             this.$queryErrorCnt = this.$("#queryErrorCnt");
             this.tableView = null;
-            this.$("#query-form").append(this.queryView.render({}).el);
+            this.$form = this.$("#query-form");
+            this.$('#buttonbardiv').before(this.queryView.render({}).el);
             this.listenToOnce(this, 'search', this.sendQuery);
             // if a query object exists trigger a server-side search
             if (options.queryObj) {

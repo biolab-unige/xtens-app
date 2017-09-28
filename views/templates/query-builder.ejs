@@ -2,12 +2,13 @@
 <div id="content">
   <div class="row">
     <div class="query-builder">
-      <form id="query-form" class="form-horizontal query-form" role="form"></form>
-      <div id="buttonbardiv" class="row text-center">
-        <div class="btn-group btn-group-margin">
-          <input type="button" id="search" class="btn btn-primary" value="<%=__('search') %>" >
+      <form id="query-form" class="form-horizontal query-form" role="form" data-parsley-focus="first" data-parsley-trigger="input" data-parsley-validate>
+        <div id="buttonbardiv" class="row text-center">
+          <div class="btn-group btn-group-margin">
+            <input type="submit" id="search" class="btn btn-primary" value="<%=__('search') %>" >
+          </div>
         </div>
-      </div>
+      </form>
     </div>
   </div>
   <div class="row">
