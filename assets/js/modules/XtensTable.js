@@ -509,8 +509,8 @@
 
             // TODO change "code" to "subjectCode" for sake of clarity
               path += data.code ? "&parentSubjectCode=" + data.code : '';
-              var parentDataType = this.multiProject ? _.find(this.dataType.models, {'id': data.type })  : this.dataType.id;
-              path += "&parentDataType=" + parentDataType.id;
+              var parentDataType = this.multiProject ? _.find(this.dataType.models, {'id': data.type }).id  : this.dataType.id;
+              path += "&parentDataType=" + parentDataType;
 
               xtens.router.navigate(path, {trigger: true});
               return false;
@@ -553,8 +553,8 @@
 
             // TODO change "code" to "subjectCode" for sake of clarity
               path += data.code ? "&donorCode=" + data.code : '';
-              var parentDataType = this.multiProject ? _.find(this.dataType.models, {'id': data.type })  : this.dataType.id;
-              path += "&parentDataType=" + parentDataType.id;
+              var parentDataType = this.multiProject ? _.find(this.dataType.models, {'id': data.type }).id  : this.dataType.id;
+              path += "&parentDataType=" + parentDataType;
 
               xtens.router.navigate(path, {trigger: true});
               return false;
