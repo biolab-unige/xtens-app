@@ -509,7 +509,8 @@
 
             // TODO change "code" to "subjectCode" for sake of clarity
               path += data.code ? "&parentSubjectCode=" + data.code : '';
-              path += "&parentDataType=" + this.dataType.id;
+              let parentDataType = this.multiProject ? _.find(this.dataType.models, {'id': data.type })  : this.dataType.id;
+              path += "&parentDataType=" + parentDataType.id;
 
               xtens.router.navigate(path, {trigger: true});
               return false;
@@ -541,7 +542,7 @@
               var currRow = this.table.row($(ev.currentTarget).parents('tr'));
               var data = currRow.data();
               var childrenSample = new Sample.List();
-              var model = this.dataType.get("model");
+              var model = this.multiProject ? this.dataType.models[0].get("model") : this.dataType.get("model");
 
             // DATA cannot have sample child
               if (model === Classes.DATA)
@@ -552,7 +553,8 @@
 
             // TODO change "code" to "subjectCode" for sake of clarity
               path += data.code ? "&donorCode=" + data.code : '';
-              path += "&parentDataType=" + this.dataType.id;
+              let parentDataType = this.multiProject ? _.find(this.dataType.models, {'id': data.type })  : this.dataType.id;
+              path += "&parentDataType=" + parentDataType.id;
 
               xtens.router.navigate(path, {trigger: true});
               return false;
@@ -569,7 +571,7 @@
               var that = this;
               var currRow = this.table.row($(ev.currentTarget).parents('tr'));
               var id = currRow.data().id;
-              var model = this.dataType.get("model");
+              var model = this.multiProject ? this.dataType.models[0].get("model") : this.dataType.get("model");
               if (!this[id]){
                   if (model === Classes.SUBJECT)
                       return false;
