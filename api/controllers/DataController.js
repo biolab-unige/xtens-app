@@ -5,7 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 /* jshint node: true */
-/* globals _, sails, Data, DataType, DataService, DataTypeService, SubjectService, SampleService, QueryService, TokenService, DataTypePrivileges */
+/* globals _, sails, Data, DataType, DataService, DataTypeService, SubjectService, OperatorService, SampleService, QueryService, TokenService, DataTypePrivileges */
 "use strict";
 
 const BluebirdPromise = require('bluebird');
@@ -38,8 +38,8 @@ const coroutines = {
             throw new PrivilegesError(`Authenticated user has not edit privileges on the data type ${data.type}`);
         }
         DataService.simplify(data);
-        const dataType = yield DataType.findOne(data.type);
-        const validationRes = DataService.validate(data, true, dataType);
+        const dataType = yield DataType.findOne(data.type).populate('superType');
+        const validationRes = yield DataService.validate(data, true, dataType);
         if (validationRes.error !== null) {
             throw new ValidationError(validationRes.error);
         }
@@ -103,6 +103,7 @@ const coroutines = {
         const operator = TokenService.getToken(req);
 
         let result = yield DataService.hasDataSensitive(data.id, DATA);
+        console.log(result,operator);
         if (result.hasDataSensitive && !operator.canAccessSensitiveData) {
             throw new PrivilegesError("Authenticated user is not allowed to modify sensitive data");
         }
@@ -114,8 +115,8 @@ const coroutines = {
         }
         DataService.simplify(data);
 
-        const dataType = yield DataType.findOne(idDataType);
-        const validationRes = DataService.validate(data, true, dataType);
+        const dataType = yield DataType.findOne(idDataType).populate('superType');
+        const validationRes = yield DataService.validate(data, true, dataType);
         if (validationRes.error !== null) {
             throw new ValidationError(validationRes.error);
         }
@@ -175,6 +176,8 @@ const coroutines = {
         if (_.isEmpty(payload.dataTypes)){ throw new PrivilegesError(`Authenticated user has not edit privileges on any data type`); }
 
         if (payload.data){
+            let operators = yield OperatorService.getOwners(payload.data);
+            payload.operators = operators;
           // if operator has not access to Sensitive Data and dataType has sensitive data, then return forbidden
             const sensitiveRes = yield DataService.hasDataSensitive(payload.data.id, DATA);
             if (sensitiveRes && ((sensitiveRes.hasDataSensitive && !operator.canAccessSensitiveData))) {
@@ -221,7 +224,7 @@ module.exports = {
     findOne: function(req, res) {
         const co = new ControllerOut(res);
         coroutines.findOne(req, res)
-        .catch(error => {
+        .catch(/* istanbul ignore next */ function(error) {
             sails.log.error("DataController.findOne: " + error.message);
             return co.error(error);
         });
@@ -239,8 +242,8 @@ module.exports = {
     find: function(req, res) {
         const co = new ControllerOut(res);
         coroutines.find(req,res)
-        .catch( function(err) {
-            sails.log.error(err);
+        .catch( /* istanbul ignore next */ function(err) {
+            sails.log(err);
             return co.error(err);
         });
     },

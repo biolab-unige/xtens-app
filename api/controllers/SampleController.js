@@ -5,7 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 /* jshint node: true */
-/* globals _, sails, Sample, DataType, SubjectService, BiobankService, SampleService, DataTypePrivileges, TokenService, QueryService, DataService, DataTypeService */
+/* globals _, sails, Sample, DataType, SubjectService, BiobankService, OperatorService, SampleService, DataTypePrivileges, TokenService, QueryService, DataService, DataTypeService */
 "use strict";
 
 const BluebirdPromise = require('bluebird');
@@ -38,7 +38,8 @@ const coroutines = {
         }
         SampleService.simplify(sample);
         const dataType = yield DataType.findOne(sample.type);
-        const validationRes = SampleService.validate(sample, true, dataType);
+
+        const validationRes = yield SampleService.validate(sample, true, dataType);
         if (validationRes.error !== null) {
             throw new ValidationError(validationRes.error);
         }
@@ -114,7 +115,7 @@ const coroutines = {
         SampleService.simplify(sample);
 
         const dataType = yield DataType.findOne(idSampleType);
-        const validationRes = SampleService.validate(sample, true, dataType);
+        const validationRes = yield SampleService.validate(sample, true, dataType);
         if (validationRes.error !== null) {
             throw new ValidationError(validationRes.error);
         }
@@ -176,6 +177,9 @@ const coroutines = {
 
 
         if (payload.sample){
+
+            let operators = yield OperatorService.getOwners(payload.sample);
+            payload.operators = operators;
           // if operator has not access to Sensitive Data and dataType has sensitive data, then return forbidden
             const sensitiveRes = yield DataService.hasDataSensitive(payload.sample.id, SAMPLE);
             if (sensitiveRes && ((sensitiveRes.hasDataSensitive && !operator.canAccessSensitiveData))) {
@@ -220,8 +224,9 @@ module.exports = {
     findOne: function(req, res) {
         const co = new ControllerOut(res);
         coroutines.findOne(req,res)
-        .catch(error => {
-            return co.error(error);
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log.error(err);
+            return co.error(err);
         });
 
     },
@@ -237,7 +242,7 @@ module.exports = {
     find: function(req, res) {
         const co = new ControllerOut(res);
         coroutines.find(req,res)
-        .catch(err => {
+        .catch(/* istanbul ignore next */ function(err) {
             sails.log.error(err);
             return co.error(err);
         });

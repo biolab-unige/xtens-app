@@ -16,7 +16,7 @@ describe('QueryService', function() {
 
         let parseModelStub, parseCriteriaStub, parseLimitStub, parseSkipStub, mockReq;
 
-        beforeEach(() => {
+        beforeEach((done) => {
             mockReq = {
                 baseUrl: 'http:/localhost:80',
                 path: '/data',
@@ -41,18 +41,21 @@ describe('QueryService', function() {
             parseCriteriaStub = sinon.stub(actionUtil, 'parseCriteria', () => {return {};});
             parseLimitStub = sinon.stub(actionUtil, 'parseLimit', req => req.params.limit);
             parseSkipStub = sinon.stub(actionUtil, 'parseSkip', req => req.params.skip);
-
+            done();
+            return;
         });
 
-        afterEach(() => {
+        afterEach((done) => {
             parseModelStub.restore();
             // this.modelCountStub.restore();
             parseCriteriaStub.restore();
             parseSkipStub.restore();
             parseLimitStub.restore();
+            done();
+            return;
         });
 
-        it('should compose correctly the header info given the response', function() {
+        it('should compose correctly the header info given the response', function(done) {
             const url = `${mockReq.baseUrl}${mockReq.path}`, totalCount = fixtures.data.length,
                 privileges = _.where(fixtures.datatypeprivileges, { 'group': 1 }),
                 numPages = Math.ceil(totalCount/5);
@@ -78,12 +81,14 @@ describe('QueryService', function() {
                     [`${url}?skip=${(numPages-1)*5}&limit=5`, `${url}?limit=5&skip=${(numPages-1)*5}`]
                 );
                 expect(headerInfo).to.have.deep.property('links[3].rel', 'last');
+                done();
+                return;
             });
         });
 
     });
 
-    describe('parseSelect', function() {
+    describe('#parseSelect', function() {
 
         it("should return the select string parsed", function() {
             const strigToBeParsed = '[{"example":10}]';
@@ -159,7 +164,7 @@ describe('QueryService', function() {
         });
     });
 
-    describe('#composeHeaderInfo', function() {
+    describe('#parseParams', function() {
 
         let parseCriteriaStub, mockReq;
 

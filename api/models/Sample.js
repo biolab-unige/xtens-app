@@ -53,6 +53,11 @@ module.exports = {
             via: 'samples',
             dominant: true
         },
+        
+        owner: {
+            model: 'operator',
+            columnName: 'owner'
+        },
 
         createdAt: {
             type: 'datetime',

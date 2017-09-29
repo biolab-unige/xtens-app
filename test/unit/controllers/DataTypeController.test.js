@@ -103,7 +103,11 @@ describe('DataTypeController', function() {
             .send({
                 "parents": [1],
                 "name": "New DataType",
-                "schema": schemaMetadata,
+                "superType": {
+                    "name": "New DataType",
+                    "uri": "http://domain.com",
+                    "schema": schemaMetadata
+                },
                 "model": "Data",
                 "project": 1
 
@@ -115,8 +119,8 @@ describe('DataTypeController', function() {
                     done(err);
                 }
                 let resDataType = res.body;
-                console.log(resDataType.id);
-                expect(resDataType.schema).to.eql(schemaMetadata);
+                console.log(resDataType);
+                expect(resDataType.superType.schema).to.eql(schemaMetadata);
                 done();
                 return;
             });
@@ -132,7 +136,11 @@ describe('DataTypeController', function() {
             .send({
                 "parents": [1,7],
                 "name": "New DataType",
-                "schema": schemaMetadata,
+                "superType": {
+                    "name": "New DataType",
+                    "uri": "http://domain.com",
+                    "schema": schemaMetadata
+                },
                 "model": "Data",
                 "project": 1
 
@@ -188,7 +196,11 @@ describe('DataTypeController', function() {
                 "parents": [1],
                 "name": "update DataType",
                 "id":8,
-                "schema": schemaMetadata,
+                "superType": {
+                    "name": "New DataType",
+                    "uri": "http://domain.com",
+                    "schema": schemaMetadata
+                },
                 "model": "Data",
                 "project": 1
             })
@@ -216,7 +228,11 @@ describe('DataTypeController', function() {
                     "parents": [1,7],
                     "name": "update DataType",
                     "id":8,
-                    "schema": schemaMetadata,
+                    "superType": {
+                        "name": "New DataType",
+                        "uri": "http://domain.com",
+                        "schema": schemaMetadata
+                    },
                     "model": "Data",
                     "project": 1
                 })
@@ -243,7 +259,11 @@ describe('DataTypeController', function() {
                 "parents": [1],
                 "name": "update DataType",
                 "id":2,
-                "schema": schemaMetadata,
+                "superType": {
+                    "name": "New DataType",
+                    "uri": "http://domain.com",
+                    "schema": schemaMetadata
+                },
                 "model": "Data"
             })
             .expect(400);

@@ -96,6 +96,41 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
+CREATE TABLE address_information (
+    id integer NOT NULL,
+    office text NOT NULL,
+    phone text NOT NULL,
+    address text NOT NULL,
+    zip text NOT NULL,
+    city text NOT NULL,
+    country text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE address_information OWNER TO xtenspg;
+
+--
+-- Name: address_information_id_seq; Type: SEQUENCE; Schema: public; Owner: xtenspg
+--
+
+CREATE SEQUENCE address_information_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE address_information_id_seq OWNER TO xtenspg;
+
+--
+-- Name: address_information_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: xtenspg
+--
+
+ALTER SEQUENCE address_information_id_seq OWNED BY address_information.id;
+
 --
 -- Name: biobank; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
 --
@@ -191,6 +226,7 @@ CREATE TABLE data (
     parent_sample integer,
     parent_data integer,
     acquisition_date date,
+    owner integer NOT NULL,
     metadata jsonb NOT NULL,
     tags jsonb,
     notes text,
@@ -300,7 +336,7 @@ CREATE TABLE data_type (
     id integer NOT NULL,
     name text NOT NULL,
     model text NOT NULL,
-    schema jsonb NOT NULL,
+    super_type integer NOT NULL,
     project integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL
@@ -1375,6 +1411,7 @@ CREATE TABLE operator (
     birth_date timestamp with time zone NOT NULL,
     sex text NOT NULL,
     email text NOT NULL,
+    address_information integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL
 );
@@ -1563,6 +1600,7 @@ CREATE TABLE sample (
     parent_sample integer,
     biobank integer NOT NULL,
     biobank_code text NOT NULL,
+    owner integer NOT NULL,
     metadata jsonb NOT NULL,
     tags jsonb,
     notes text,
@@ -1637,6 +1675,7 @@ CREATE TABLE subject (
     personal_info integer,
     code text NOT NULL,
     sex text NOT NULL,
+    owner integer NOT NULL,
     metadata jsonb NOT NULL,
     tags jsonb,
     notes text,
@@ -1666,6 +1705,42 @@ ALTER TABLE subject_id_seq OWNER TO xtenspg;
 --
 
 ALTER SEQUENCE subject_id_seq OWNED BY subject.id;
+
+
+--
+-- Name: super_type; Type: TABLE; Schema: public; Owner: xtenspg; Tablespace:
+--
+
+CREATE TABLE super_type (
+    id integer NOT NULL,
+    name text NOT NULL,
+    uri text NOT NULL,
+    schema jsonb NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE super_type OWNER TO xtenspg;
+
+-- Name: super_type_id_seq; Type: SEQUENCE; Schema: public; Owner: xtenspg
+--
+
+CREATE SEQUENCE super_type_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE super_type_id_seq OWNER TO xtenspg;
+
+--
+-- Name: super_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: xtenspg
+--
+
+ALTER SEQUENCE super_type_id_seq OWNED BY super_type.id;
 
 
 --
@@ -1705,6 +1780,12 @@ ALTER TABLE xtens_group_id_seq OWNER TO xtenspg;
 
 ALTER SEQUENCE xtens_group_id_seq OWNED BY xtens_group.id;
 
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY address_information ALTER COLUMN id SET DEFAULT nextval('address_information_id_seq'::regclass);
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: xtenspg
@@ -1999,6 +2080,11 @@ ALTER TABLE ONLY somatic_variant ALTER COLUMN id SET DEFAULT nextval('somatic_va
 
 ALTER TABLE ONLY subject ALTER COLUMN id SET DEFAULT nextval('subject_id_seq'::regclass);
 
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY super_type ALTER COLUMN id SET DEFAULT nextval('super_type_id_seq'::regclass);
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: xtenspg
@@ -2006,6 +2092,13 @@ ALTER TABLE ONLY subject ALTER COLUMN id SET DEFAULT nextval('subject_id_seq'::r
 
 ALTER TABLE ONLY xtens_group ALTER COLUMN id SET DEFAULT nextval('xtens_group_id_seq'::regclass);
 
+
+--
+-- Name: address_information_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
+--
+
+ALTER TABLE ONLY address_information
+    ADD CONSTRAINT address_information_pkey PRIMARY KEY (id);
 
 --
 -- Name: biobank_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
@@ -2374,7 +2467,6 @@ ALTER TABLE ONLY operator
 ALTER TABLE ONLY operator
     ADD CONSTRAINT operator_pkey PRIMARY KEY (id);
 
-
 --
 -- Name: passport_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
 --
@@ -2405,6 +2497,13 @@ ALTER TABLE ONLY project
 
 ALTER TABLE ONLY project
     ADD CONSTRAINT project_pkey PRIMARY KEY (id);
+
+--
+-- Name: super_type_pkey; Type: CONSTRAINT; Schema: public; Owner: xtenspg; Tablespace:
+--
+
+ALTER TABLE ONLY super_type
+    ADD CONSTRAINT super_type_pkey PRIMARY KEY (id);
 
 
 --
@@ -2508,6 +2607,34 @@ CREATE INDEX data_type_idx ON data USING btree (type);
 ALTER TABLE ONLY sample
     ADD CONSTRAINT biobank_fkey FOREIGN KEY (biobank) REFERENCES biobank(id) MATCH FULL ON DELETE CASCADE;
 
+--
+-- Name: owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY data
+    ADD CONSTRAINT owner_fkey FOREIGN KEY (owner) REFERENCES operator(id) MATCH FULL;
+
+--
+-- Name: owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY sample
+    ADD CONSTRAINT owner_fkey FOREIGN KEY (owner) REFERENCES operator(id) MATCH FULL;
+
+--
+-- Name: owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY subject
+    ADD CONSTRAINT owner_fkey FOREIGN KEY (owner) REFERENCES operator(id) MATCH FULL;
+
+--
+-- Name: address_information_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY operator
+    ADD CONSTRAINT address_information_fkey FOREIGN KEY (address_information) REFERENCES address_information(id) MATCH FULL ON DELETE CASCADE;
+
 
 --
 -- Name: contact_information_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
@@ -2537,8 +2664,14 @@ ALTER TABLE ONLY datatype_privileges
 --
 
 ALTER TABLE ONLY data_type
-    ADD CONSTRAINT project_fkey FOREIGN KEY (project) REFERENCES project(id) MATCH FULL ON DELETE CASCADE;
+    ADD CONSTRAINT project_fkey FOREIGN KEY (project) REFERENCES project(id) MATCH FULL ON DELETE CASCADE;ù
 
+--
+-- Name: super_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg
+--
+
+ALTER TABLE ONLY data_type
+    ADD CONSTRAINT super_type_fkey FOREIGN KEY (super_type) REFERENCES super_type(id) MATCH FULL ON DELETE RESTRICT;
 
 --
 -- Name: datafile_data_fkey; Type: FK CONSTRAINT; Schema: public; Owner: xtenspg

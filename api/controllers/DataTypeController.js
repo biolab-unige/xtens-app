@@ -5,7 +5,7 @@
 * @help        :: See http://links.sailsjs.org/docs/controllers
 */
 /* jshint node: true */
-/* globals _, sails, DataType, DataTypeService, TokenService, Group, Project */
+/* globals _, sails, DataType, DataTypeService, TokenService, Group, Project, SuperTypeService */
 "use strict";
 const ControllerOut = require("xtens-utils").ControllerOut, ValidationError = require('xtens-utils').Errors.ValidationError;
 const PrivilegesError = require('xtens-utils').Errors.PrivilegesError;
@@ -33,7 +33,7 @@ const coroutines = {
             query.limit(1000);  // default limit for dataTypes
         }
         if (!req.param('populate')) {
-            query.populate('parents');  // by default populate only with 'parents' dataTypes
+            query.populate(['parents', 'superType']);  // by default populate only with 'parents' dataTypes and 'superType'
         }
         else {
             query = actionUtil.populateRequest(query, req);
@@ -150,12 +150,20 @@ const coroutines = {
     edit: BluebirdPromise.coroutine(function *(req, res) {
         const operator = TokenService.getToken(req);
         const params = req.allParams();
+        let isMultiProject, resObject = {};
         sails.log.info("DataTypeController.edit - Decoded ID is: " + operator.id);
 
         const projects = yield Project.find().sort('id ASC');
 
-        const dataTypes= yield DataType.find({ project:_.map(projects,'id') }).populate(['project','parents']).sort('id ASC');
-        return res.json({params: params, dataTypes: dataTypes});
+        const dataTypes= yield DataType.find({ project:_.map(projects,'id') }).populate(['project','parents','superType']).sort('id ASC');
+        if (params.id) {
+            const dataType = _.find(dataTypes,{'id': parseInt(params.id)});
+            isMultiProject = yield SuperTypeService.isMultiProject(dataType.superType);
+            resObject.isMultiProject = isMultiProject;
+        }
+        resObject.params = params;
+        resObject.dataTypes = dataTypes;
+        return res.json(resObject);
     }),
 
     destroy: BluebirdPromise.coroutine(function *(req, res, co) {
@@ -194,7 +202,7 @@ const DataTypeController = {
     find: function(req, res) {
         const co = new ControllerOut(res);
         coroutines.find(req, res)
-        .catch(err => {
+        .catch(/* istanbul ignore next */ function(err) {
             sails.log.error(err);
             return co.error(err);
         });
@@ -237,7 +245,7 @@ const DataTypeController = {
 
         let co = new ControllerOut(res);
         coroutines.destroy(req,res,co)
-        .catch(function(err) {
+        .catch(/* istanbul ignore next */ function(err) {
             sails.log(err);
             return co.error(err);
         });
@@ -252,7 +260,7 @@ const DataTypeController = {
     edit: function(req, res) {
         let co = new ControllerOut(res);
         coroutines.edit(req,res)
-        .catch(function(err) {
+        .catch(/* istanbul ignore next */ function(err) {
             sails.log(err);
             return co.error(err);
         });

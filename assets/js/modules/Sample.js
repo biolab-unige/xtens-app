@@ -6,8 +6,9 @@
     var useFormattedNames = xtens.module("xtensconstants").useFormattedMetadataFieldNames;
     var Constants = xtens.module("xtensconstants").Constants;
     var i18n = xtens.module("i18n").en;
-    var DataType = xtens.module("datatype");
-    var DataTypeModel = xtens.module("datatype").Model;
+    // var DataType = xtens.module("datatype");
+    var SuperTypeModel = xtens.module("supertype").Model;
+    // var DataTypeModel = xtens.module("datatype").Model;
     var Data = xtens.module("data");
     var Subject = xtens.module("subject");
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
@@ -39,7 +40,7 @@
                 observe: 'biobankCode'
             },
 
-            '#type': {
+            '#data-type': {
                 observe: 'type',
                 selectOptions: {
                     collection: 'this.dataTypes',
@@ -70,6 +71,29 @@
                     else {
                         return val;
                     }
+                }
+            },
+
+            '#owner': {
+                observe: 'owner',
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
+                selectOptions: {
+                    collection: function() {
+                        var coll = [];
+                        _.each(this.operators, function(op){
+                            coll.push({label:op.lastName + ' ' + op.firstName ,value:op.id});
+                        });
+                        return coll;
+                    },
+                    defaultOption: {
+                        label: '',
+                        value: null
+                    }
+                },
+                onGet: function(val) {
+                    return val && val.id;
                 }
             },
 
@@ -220,6 +244,7 @@
                 this.model.set("metadata", metadata);
         // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
                 this.retrieveAndSetFiles();
+                this.model.get("owner").id ? this.model.set("owner", this.model.get("owner").id) : null;
         // console.log(this.model);
                 this.model.save(null, {
                     success: function(data) {
@@ -265,13 +290,14 @@
             var modal = new ModalDialog({
                 template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
                 title: i18n('confirm-deletion'),
-                body: i18n('sample-will-be-permanently-deleted-are-you-sure')
+                body: i18n('sample-will-be-permanently-deleted-are-you-sure'),
+                type: "delete"
             });
 
             this.$modal.append(modal.render().el);
             modal.show();
 
-            this.$('#confirm-delete').click(function(e) {
+            this.$('#confirm').click(function(e) {
                 modal.hide();
                 var targetRoute = $(ev.currentTarget).data('targetRoute') || 'samples';
 
@@ -311,7 +337,7 @@
 
         dataTypeOnChange: function() {
             Data.Views.Edit.prototype.dataTypeOnChange.call(this);
-            var typeName = this.$('#type :selected').text(),
+            var typeName = this.$('#data-type :selected').text(),
                 parentSample = this.model.get("parentSample");
 
             if (parentSample && parentSample.biobankCode) {
@@ -348,7 +374,7 @@
 
         fetchDonorsOnSuccess: function(donors, targetElem) {
             this.subjects = donors.models ? donors.toJSON() : donors;
-            var dataTypeSample = _.find(this.dataTypes, {id: _.parseInt($('#type').val())});
+            var dataTypeSample = _.find(this.dataTypes, {id: _.parseInt($('#data-type').val())});
             if(dataTypeSample){
                 this.filteredSubjects = _.filter(this.subjects, function (subj) {
                     return subj.project === dataTypeSample.project;
@@ -424,17 +450,20 @@
         initialize: function(options) {
             $("#main").html(this.el);
             this.template = JST["views/templates/sample-details.ejs"];
+            this.fields = options.fields;
             this.render();
         },
 
         render: function() {
-            var dataType = new DataTypeModel(this.model.get("type"));
-            var fields = dataType.getFlattenedFields();
+            // var dataType = new DataTypeModel(this.model.get("type"));
+            // var superType = new SuperTypeModel(this.model.get("type").superType);
+
+            // var fields = superType.getFlattenedFields();
 
             this.$el.html(this.template({
                 __: i18n,
                 data: this.model,
-                fields: fields,
+                fields: this.fields,
                 PATH_SEPARATOR: Constants.PATH_SEPARATOR || '/'
             }));
 

@@ -123,13 +123,14 @@
             var modal = new ModalDialog({
                 template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
                 title: i18n('confirm-deletion'),
-                body: i18n('biobank-will-be-permanently-deleted-are-you-sure')
+                body: i18n('biobank-will-be-permanently-deleted-are-you-sure'),
+                type: "delete"
             });
 
             this.$modal.append(modal.render().el);
             modal.show();
 
-            this.$('#confirm-delete').click( function (e) {
+            this.$('#confirm').click( function (e) {
                 modal.hide();
 
                 that.model.destroy({

@@ -31,7 +31,8 @@ exports.authorize = function(token, done) {
         return done(null, payload, {scope: 'all'});
     })
 
-    .catch(function(err) {
+    .catch(/* istanbul ignore next */ function(err) {
+        sails.log.error(err);
         return done(err);
     });
 

@@ -16,10 +16,13 @@
                         <%} %>
                     </div>
                     <div class="form-group">
-                        <label for="dataType" class="data-label"><%= __("select-a-data-type") %></label>
+                        <label for="data-type" class="data-label"><%= __("select-a-data-type") %></label>
                         <div class="data-input-div">
-                            <select class="form-control" id="dataType" name="dataType" required>
-                            </select>
+                            <select class="form-control" id="data-type" name="data-type" required></select>
+                        </div>
+                        <label for="owner" class="col-md-2 data-label"><%= __("owner") %></label>
+                        <div class="data-input-div">
+                            <select disabled class="form-control" id="owner" name="owner" required></select>
                         </div>
                     </div>
                     <div class="form-group metadataform-group">

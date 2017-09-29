@@ -7,19 +7,32 @@
     var Constants = xtens.module("xtensconstants").Constants;
     var FieldTypes = xtens.module("xtensconstants").FieldTypes;
     var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
-    var QueryStrategy = xtens.module("querystrategy");
-    var Data = xtens.module("data");
+    // var QueryStrategy = xtens.module("querystrategy");
+    // var Data = xtens.module("data");
     var DataType = xtens.module("datatype");
+    var SuperType = xtens.module("supertype");
     var DataTypeClasses = xtens.module("xtensconstants").DataTypeClasses;
     var sexOptions = xtens.module("xtensconstants").SexOptions;
     var XtensTable = xtens.module("xtenstable");
-    var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
+    // var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
     var Privileges = xtens.module("xtensconstants").DataTypePrivilegeLevels;
     var VIEW_OVERVIEW = Privileges.VIEW_OVERVIEW;
     // constant to define the field-value HTML element
     var FIELD_VALUE = 'field-value';
 
-    var checkboxTemplate = _.template("<div class='checkbox'><input type='checkbox'></div>");
+    var parsleyOpts = {
+        priorityEnabled: false,
+        // excluded: "select[name='fieldUnit']",
+        successClass: "has-success",
+        errorClass: "has-error",
+        classHandler: function(el) {
+            return el.$element.parent();
+        },
+        errorsWrapper: "<span class='help-block'></span>",
+        errorTemplate: "<span></span>"
+    };
+
+    // var checkboxTemplate = _.template("<div class='checkbox'><input type='checkbox'></div>");
 
     // Factory method class to create specialized query views
     function QueryViewFactory() {
@@ -75,8 +88,10 @@
             return null;
         },
 
-        closeMe: function(ev) {
-            this.trigger('closeMe', this);
+        clearMe: function(ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.clear(false);
         },
 
         serialize: function() {
@@ -84,9 +99,18 @@
             if (_.isArray(this.nestedViews)) {
                 res.content = [];
                 for (var i=0, len=this.nestedViews.length; i<len; i++) {
-                    res.content.push(this.nestedViews[i].serialize());
+                    var serialized = this.nestedViews[i].serialize();
+                    if (!_.isEmpty(serialized) && (!serialized.content || (serialized.content && !_.isEmpty(serialized.content)))) {
+                        if (!serialized.fieldName || serialized.fieldValue && serialized.comparator) {
+                            res.content.push(serialized);
+                        }
+                    }
                 }
-                res.content = _.flatten(res.content, true);
+                if(res.content && res.content.length > 0 && !_.isEmpty(res.content[0])){
+                    res.content = _.flatten(res.content, true) ;
+                }else {
+                    delete res['content'];
+                }
             }
             return res;
         }
@@ -176,9 +200,47 @@
             this.$unit = this.$("input[name=unit]");
             this.$junction = this.$("input[name=junction]");
             if (this.model.get("fieldName")) {
-                this.generateStatementOptions(this.model, this.model.get("fieldName"));
+                var selectedField = this.generateStatementOptions(this.model, this.model.get("fieldName"));
+                this.$fieldValue = this.$("input[name='"+FIELD_VALUE+"']");
+                this.setValidationOptions(selectedField);
+                $("#query-form").parsley(parsleyOpts);
             }
             return this;
+        },
+
+        setValidationOptions: function(selectedField) {
+
+            this.$fieldValue.prop('required', true);
+            this.$comparator.prop('required', true);
+
+            switch (selectedField.fieldType) {
+                case FieldTypes.INTEGER:
+                    this.$fieldValue.attr("data-parsley-type", "integer");
+                    break;
+                case FieldTypes.FLOAT:
+                    this.$fieldValue.attr("data-parsley-type", "number");
+                    break;
+                case FieldTypes.DATE:
+                    this.initDatepicker();
+                    this.$fieldValue.attr("placeholder", "YYYY-MM-DD");
+                    break;
+            }
+            if (selectedField.hasRange) {
+                this.$fieldValue.attr("min", selectedField.min);
+                this.$fieldValue.attr("max", selectedField.max);
+            }
+            if (selectedField.hasUnit && selectedField.possibleUnits) {
+                this.$unit.prop('required', true);
+            }
+        },
+
+        initDatepicker: function() {
+            var picker = new Pikaday({
+                field: this.$fieldValue[0],
+                format: 'YYYY-MM-DD',
+                yearRange: [1900, new Date().getYear()],
+                maxDate: new Date()
+            });
         },
 
         fieldNameOnChange: function(model, fieldName) {
@@ -188,12 +250,16 @@
                     model.unset(key);
                 }
             });
-
-            this.generateStatementOptions(model, fieldName);
+            var selectedField = this.generateStatementOptions(model, fieldName);
+            this.$fieldValue = this.$("input[name='"+FIELD_VALUE+"']");
+            this.setValidationOptions(selectedField);
+            $("#query-form").parsley(parsleyOpts);
         },
 
         generateStatementOptions: function(model, fieldName) {
-            this.$("input[type=hidden]").select2('destroy');
+            this.$("input[type=text]").select2('destroy');
+            this.$("input[type=text]").addClass('hidden');
+            this.$("input[type=text]").attr('required', false);
 
             // set match criteria on formatted or unformatted names depending of the application usage
             var matchCriteria = useFormattedNames ? {"formattedName": fieldName} : {"name": fieldName};
@@ -209,6 +275,7 @@
                 this.generateComparedUnitItem(selectedField.possibleUnits);
             }
             this.generateJunctionItem();
+            return selectedField;
         },
 
         generateComparisonItem: function(metadataField) {
@@ -243,6 +310,10 @@
                     $el.select2({
                         data: data
                     });
+                    $el.removeClass('hidden');
+                    $el.change(function() {
+                        $el.trigger('input');
+                    });
                 }
             });
         },
@@ -263,8 +334,8 @@
         appendComparedBoolean: function() {
             var $container = this.$("[name='query-value-div']").empty().removeClass().addClass("query-value-div");
             var selector = document.createElement("input");
-            selector.type = 'hidden';
-            selector.className = 'form-control';
+            selector.type = 'text';
+            selector.className = 'form-control hidden';
             selector.name = FIELD_VALUE;
             $container.append(selector);
             this.addBinding(null, "input[name='"+FIELD_VALUE+"']", {
@@ -273,6 +344,10 @@
                     $el.select2({
                         data: [{id: true, text: i18n('yes')}, {id: false, text: i18n('no')}]
                     });
+                    $el.removeClass('hidden');
+                    $el.change(function() {
+                        $el.trigger('input');
+                    });
                 }
             });
         },
@@ -280,9 +355,9 @@
         appendComparedValueList: function(list) {
             var $container = this.$("[name='query-value-div']").empty().removeClass().addClass("query-value-div");
             var selector = document.createElement("input");
-            selector.type = 'hidden';
+            selector.type = 'text';
             selector.name = FIELD_VALUE;
-            selector.className = 'form-control';
+            selector.className = 'form-control hidden';
             var data = list.map(function(elem) { return {"id":elem, "text":elem}; });
             $container.append(selector);
             this.addBinding(null, "input[name='"+FIELD_VALUE+"']", {
@@ -291,7 +366,12 @@
                     $el.select2({
                         multiple: true,
                         data: data,
-                        placeholder: i18n("please-select")});
+                        placeholder: i18n("please-select")
+                    });
+                    $el.removeClass('hidden');
+                    $el.change(function() {
+                        $el.trigger('input');
+                    });
                 },
                 getVal: function($el) {
                     return $el.val().split(",");
@@ -321,8 +401,14 @@
                 initialize: function($el) {
                     $el.select2({
                         data: data,
-                        placeholder: i18n("please-select")});
+                        placeholder: i18n("please-select")
+                    });
+                    $el.removeClass('hidden');
+                    $el.change(function() {
+                        $el.trigger('input');
+                    });
                 }
+
             });
         },
 
@@ -681,6 +767,8 @@
             this.nestedViews = [];
             this.biobanks = options.biobanks || [];
             this.dataTypes = options.dataTypes || [];
+            this.isFirst = options.isFirst;
+            this.isFirst ? this.model.set('multiProject',false) : null;
             this.dataTypesComplete = options.dataTypesComplete || [];
             this.dataTypePrivileges = options.dataTypePrivileges || [];
             // this.listenTo(this.model, 'change:dataType', this.dataTypeOnChange);
@@ -689,17 +777,32 @@
         events: {
             'click [name="add-field"]': 'addQueryRow',
             // 'click [name="add-loop"]': 'addLoopQuery',
-            'click [name="add-nested"]': 'nestedQueryBtnOnClick'
+            'click [name="add-nested"]': 'nestedQueryBtnOnClick',
+            'click [name="multi-search"]': 'multiQueryBtnOnClick',
+            'click .remove-me-field': 'closeMeField',
+            'click .clear-me': 'clearMe'
         },
 
         addQueryRow: function(ev) {
             ev.stopPropagation();
-            var childView = new Query.Views.Row({fieldList: this.dataTypes.get(this.model.get('dataType')).getFlattenedFields(),
+            var superType = new SuperType.Model( this.dataTypes.get(this.model.get('dataType')).get('superType'));
+            var childView = new Query.Views.Row({fieldList: superType.getFlattenedFields(),
                                                 model: new Query.RowModel()});
             this.$el.append(childView.render().el);
             this.add(childView);
         },
 
+        closeMeField: function (ev) {
+            ev.preventDefault();
+            var that = this;
+            $($(ev.currentTarget).closest('.query-row')).remove();
+            _.forEach(this.nestedViews, function(val,i){
+                if (_.isEqual(val.$el, $($(ev.currentTarget).closest('.query-row')))) {
+                    that.nestedViews.splice(i,1);
+                }
+
+            });
+        },
         /**
          * @deprecated
         addLoopQuery: function(ev) {
@@ -713,6 +816,27 @@
         nestedQueryBtnOnClick: function(ev) {
             ev.stopPropagation();
             this.addNestedQuery();
+        },
+
+        multiQueryBtnOnClick: function(ev) {
+            ev.stopPropagation();
+            if (this.model.get('multiProject') == false) {
+                this.model.set('multiProject',true);
+                this.$multiSearchButton.removeClass('btn-danger').addClass('btn-success');
+                this.$addNestedButton.prop('disabled',true);
+                this.$clearMe.addClass('hidden');
+                $('div.query-composite',this.el).remove();
+                this.nestedViews = _.filter(this.nestedViews, function(view){
+                    if( _.find(view.el.classList, function(classes){ return classes !== "query-composite";}) ){
+                        return view;
+                    }
+                });
+
+            } else if (this.model.get('multiProject') == true) {
+                this.$multiSearchButton.removeClass('btn-success').addClass('btn-danger');
+                this.$addNestedButton.prop('disabled',false);
+                this.model.set('multiProject',false);
+            }
         },
 
         /**
@@ -730,6 +854,7 @@
 
             // create composite subview
             var childView = new Query.Views.Composite({
+                isFirst: false,
                 biobanks: this.biobanks,
                 dataTypes: childrenDataTypes,
                 dataTypesComplete: this.dataTypesComplete,
@@ -739,6 +864,7 @@
 
             this.$el.append(childView.render({}).el);
             this.add(childView);
+            this.$clearMe.removeClass('hidden');
         },
 
         /**
@@ -748,16 +874,67 @@
          * @param{integer} idDataType - the ID of the selected Data Type
          */
         dataTypeOnChange: function(model, idDataType) {
-            this.clear();
+            this.clear(true);
             if (!idDataType) {
+                this.$multiSearchButton.addClass('hidden');
                 this.$addFieldButton.addClass('hidden');
                 this.$addLoopButton.addClass('hidden');
                 this.$addNestedButton.removeClass('hidden');
                 this.selectedDataType = null;
                 this.model.set("model", null);
-                return;
             }
-            this.createDataTypeRow(idDataType);
+            else {
+                this.createDataTypeRow(idDataType);
+                if(this.isFirst){
+                    this.setMultiProject(false, false, function () {
+                        $('input#search').prop('disabled',false);
+                    });
+                }
+            }
+
+        },
+
+        /**
+         * @method
+         * @name setMultiProject
+         */
+        setMultiProject: function(isYetMulti, triggedSearch ,callback) {
+
+            // triggedSearch ? this.$multiSearchButton.removeClass('hidden') : null;
+            this.model.set('multiProject', false);
+            this.$multiSearchButton.removeClass('btn-success');
+            this.$multiSearchButton.addClass('btn-danger');
+            this.$addNestedButton.prop('disabled',false);
+            if (!isYetMulti) {
+                var that = this;
+                var superTypeSelected = _.isObject(this.selectedDataType.get('superType')) ? this.selectedDataType.get('superType').id : this.selectedDataType.get('superType');
+                var dataTypes = new DataType.List();
+
+                var dataTypesDeferred = dataTypes.fetch({
+                    data: $.param({superType: superTypeSelected})
+                });
+                $.when(dataTypesDeferred).then(function(dataTypesRes) {
+                    if (dataTypesRes.length > 1) {
+                        that.$multiSearchButton.removeClass('hidden');
+                    }
+                    else {
+                        that.$multiSearchButton.addClass('hidden');
+                    }
+                    callback(true);
+                });
+            }
+            else if (isYetMulti && triggedSearch) {
+              // reloading a query multi project
+                this.$multiSearchButton.removeClass('btn-danger');
+                this.$multiSearchButton.addClass('btn-success');
+                this.$multiSearchButton.removeClass('hidden');
+                this.$addNestedButton.prop('disabled',true);
+                $('div.query-composite',this.el).remove();
+                this.model.set('multiProject',true);
+                callback(true);
+            }else {
+                callback(true);
+            }
         },
 
         /**
@@ -789,8 +966,8 @@
                 this.$addFieldButton.removeClass('hidden');
             }
             this.$addNestedButton.removeClass('hidden');
-
-            var flattenedFields = this.selectedDataType.getFlattenedFields();
+            var selectedSuperType = new SuperType.Model(this.selectedDataType.get("superType"));
+            var flattenedFields = selectedSuperType.getFlattenedFields();
             if (!xtens.session.get('canAccessSensitiveData') && this.selectedPrivilege.get('privilegeLevel') !== VIEW_OVERVIEW){
                 flattenedFields = _.filter(flattenedFields, function(field) { return !field.sensitive; });
             }
@@ -844,12 +1021,22 @@
          * @name clear
          * @description removes all the nested subviews, if present
          */
-        clear: function() {
+        clear: function(initialization) {
             var len = this.nestedViews.length;
-            for(var i=len-1; i>=0; i--) {
-                this.removeChild(this.nestedViews[i]);
+            if (initialization) {
+                for(var i=len-1; i>=0; i--) {
+                    this.removeChild(this.nestedViews[i]);
+                }
+            } else {
+                this.nestedViews = _.filter(this.nestedViews, function(view){
+                    if( _.find(view.el.classList, function(classes){ return classes !== "query-composite";}) ){
+                        return view;
+                    }else {
+                        view.remove();
+                    }
+                });
+                this.$clearMe.addClass('hidden');
             }
-            // this.model.clear(); // clear your model
         },
 
         /**
@@ -864,8 +1051,10 @@
                 this.stickit();
             }
             this.$addFieldButton = this.$("[name='add-field']");
+            this.$multiSearchButton = this.$("[name='multi-search']");
             this.$addLoopButton = this.$("[name='add-loop']");
             this.$addNestedButton = this.$("[name='add-nested']");
+            this.$clearMe = this.$("[name='clear-me']");
             if (this.model.get("dataType")) {
                 this.createDataTypeRow(this.model.get("dataType"));
             }
@@ -884,7 +1073,7 @@
      */
     Query.Views.Builder = Backbone.View.extend({
         events : {
-            'click #search': 'sendQuery'
+            'submit #query-form': 'sendQuery'
         },
 
 
@@ -903,10 +1092,13 @@
             this.template = JST["views/templates/query-builder.ejs"];
             $('#main').html(this.el);
             this.biobanks = options.biobanks || [];
+            options.dataTypes.comparator = 'id';
+            options.dataTypes.sort();
             this.dataTypes = options.dataTypes || [];
             this.dataTypePrivileges = options.dataTypePrivileges || [];
             this.render(options);
             this.queryView = new Query.Views.Composite({
+                isFirst: true,
                 biobanks: this.biobanks,
                 dataTypes: this.dataTypes,
                 dataTypesComplete: this.dataTypes,
@@ -918,11 +1110,18 @@
             this.$queryNoResultCnt = this.$("#queryNoResultCnt");
             this.$queryErrorCnt = this.$("#queryErrorCnt");
             this.tableView = null;
-            this.$("#query-form").append(this.queryView.render({}).el);
+            this.$form = this.$("#query-form");
+            this.$('#buttonbardiv').before(this.queryView.render({}).el);
             this.listenToOnce(this, 'search', this.sendQuery);
             // if a query object exists trigger a server-side search
             if (options.queryObj) {
-                this.trigger('search');
+                var that = this;
+                this.queryView.setMultiProject(options.queryObj.multiProject, true ,function(){
+                    that.trigger('search');
+                });
+            }
+            else {
+                this.$('input#search').prop('disabled',true);
             }
         },
 
@@ -944,12 +1143,13 @@
             var isStream = xtens.infoBrowser[0] === "Chrome" && xtens.infoBrowser[1] >= 54 ? true : false;
             // extend queryArgs with flags to retrieve subject and personal informations and if retrieve data in stream mode
             var queryArgs = _.extend({
+                multiProject: this.queryView.model.get('multiProject'),
                 wantsSubject: true,
                 wantsPersonalInfo: xtens.session.get('canAccessPersonalData')
             }, this.queryView.serialize());
 
             var queryParameters = JSON.stringify({queryArgs: queryArgs});
-            console.log(this.queryView.serialize());
+            // console.log(this.queryView.serialize());
             var path = '/query/' + encodeURIComponent(queryParameters);
             xtens.router.navigate(path, {trigger: false});
             if (isStream) {
@@ -966,12 +1166,11 @@
                   return that.pumpStream(res.body.getReader());
               })
               .catch(function(ex) {
-                  console.log('parsing failed', ex);
+                  // console.log('parsing failed', ex);
                   that.queryOnError();
               });
             }
             else {
-
                 $.ajax({
                     method: 'POST',
                     headers: {
@@ -1034,7 +1233,7 @@
                         parsed.dataType ? that.optStream.dataType = parsed.dataType :
                             parsed.dataPrivilege ? that.optStream.dataPrivilege = parsed.dataPrivilege :
                             parsed.error ? that.optStream.error = parsed.error :
-                            that.buffer.push(parsed);
+                            !_.isEmpty(parsed) ? that.buffer.push(parsed) : null;
                     }
                     catch (e) {
                         that.temp = data;
@@ -1078,16 +1277,8 @@
 
             if (_.isEmpty(result.data)) {
                 this.$queryNoResultCnt.show();
-                /*
-                this.modal = new ModalDialog({
-                    title: i18n('no-result-found'),
-                    body: i18n("no-data-was-found-to-match-your-search-options") + ' ' + i18n('please-try-again-with-different-parameters')
-                });
-                this.$queryModal.append(this.modal.render().el);
-                this.modal.show(); */
                 return;
             }
-
             this.tableView = new XtensTable.Views.DataTable(result);
             this.$tableCnt.append(this.tableView.render().el);
             this.tableView.displayDataTable();

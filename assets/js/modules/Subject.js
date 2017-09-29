@@ -10,7 +10,8 @@
     var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
     var i18n = xtens.module("i18n").en;
     var Data = xtens.module("data");
-    var DataTypeModel = xtens.module("datatype").Model;
+    // var DataTypeModel = xtens.module("datatype").Model;
+    // var SuperTypeModel = xtens.module("supertype").Model;
     var PersonalDetails = xtens.module("personaldetails");
     var Classes = xtens.module("xtensconstants").DataTypeClasses;
     var sexOptions = xtens.module("xtensconstants").SexOptions;
@@ -40,30 +41,28 @@
 
         bindings: {
 
-            // '#projects': {
-            //     observe: 'projects',
-            //     initialize: function($el, model, option) {
-            //         $el.select2({ placeholder: i18n("please-select") });
-            //     },
-            //     selectOptions: {
-            //         collection: 'this.projects',
-            //         labelPath: 'name',
-            //         valuePath: 'id',
-            //         defaultOption: {
-            //             label: "",
-            //             value: null
-            //         }
-            //     },
-            //     getVal: function($el, ev, options) {
-            //         return $el.val().map(function(value) {
-            //             // return _.findWhere(options.view.projects, {id: parseInt(value)});
-            //             return _.parseInt(value);
-            //         });
-            //     },
-            //     onGet: function(vals, options) {
-            //         return (vals && vals.map(function(val){return val.id; }));
-            //     }
-            // },
+            '#owner': {
+                observe: 'owner',
+                initialize: function($el) {
+                    $el.select2({placeholder: i18n("please-select") });
+                },
+                selectOptions: {
+                    collection: function() {
+                        var coll = [];
+                        _.each(this.operators, function(op){
+                            coll.push({label:op.lastName + ' ' + op.firstName ,value:op.id});
+                        });
+                        return coll;
+                    },
+                    defaultOption: {
+                        label: '',
+                        value: null
+                    }
+                },
+                onGet: function(val) {
+                    return val && val.id;
+                }
+            },
 
             '#code': {
                 observe: 'code'
@@ -104,7 +103,7 @@
             this.template = JST["views/templates/subject-edit.ejs"];
             this.personalDetailsView = null;
             this.schemaView = null;
-            // this.projects = options.projects;
+            this.operators = options.operators ? options.operators : [];
             if(xtens.session.get('activeProject') !== 'all'){
                 this.project = _.parseInt(_.find(xtens.session.get('projects'),{name: xtens.session.get('activeProject')} ).id);
                 this.dataType = _.find(this.dataTypes, {'project' : this.project} );
@@ -200,6 +199,8 @@
             if (this.personalDetailsView && this.personalDetailsView.model) {
                 this.model.set("personalInfo", _.clone(this.personalDetailsView.model.attributes));
             }
+            this.model.get("owner").id ? this.model.set("owner", this.model.get("owner").id) : null;
+
             this.model.save(null, {
                 success: function(subject) {
                     if (that.modal) {
@@ -236,13 +237,14 @@
             var modal = new ModalDialog({
                 template: JST["views/templates/confirm-dialog-bootstrap.ejs"],
                 title: i18n('confirm-deletion'),
-                body: i18n('subject-will-be-permanently-deleted-are-you-sure')
+                body: i18n('subject-will-be-permanently-deleted-are-you-sure'),
+                type: "delete"
             });
 
             this.$modal.append(modal.render().el);
             modal.show();
 
-            this.$('#confirm-delete').click( function (e) {
+            this.$('#confirm').click( function (e) {
                 modal.hide();
                 var targetRoute = $(ev.currentTarget).data('targetRoute') || 'subjects';
 
@@ -300,19 +302,20 @@
         initialize: function(options) {
             $("#main").html(this.el);
             this.template = JST["views/templates/subject-details.ejs"];
+            this.fields = options.fields;
             this.render();
             if (xtens.session.get('canAccessPersonalData')) {
                 this.addPersonalDetailsParam();
             }
         },
         render: function() {
-            var dataType = new DataTypeModel(this.model.get("type"));
-            var fields = dataType.getFlattenedFields();
+            // var superType = new SuperTypeModel(this.model.get("type").superType);
+            // var fields = superType.getFlattenedFields();
 
             this.$el.html(this.template({
                 __: i18n,
                 data: this.model,
-                fields: fields
+                fields: this.fields
             }));
 
             if (MISSING_VALUE_ALERT) {

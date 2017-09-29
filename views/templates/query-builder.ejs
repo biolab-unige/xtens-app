@@ -1,28 +1,37 @@
 <h2><%= __("query-builder") %></h2>
 <div id="content">
-    <form id="query-form" class="form-horizontal query-form" role="form">
-    </form>
-    <div id="buttonbardiv" class="row text-center">
-        <div class="btn-group btn-group-margin">
-            <input type="button" id="search" class="btn btn-primary" value="<%=__('search') %>" >
+  <div class="row">
+    <div class="query-builder">
+      <form id="query-form" class="form-horizontal query-form" role="form" data-parsley-focus="first" data-parsley-trigger="input" data-parsley-validate>
+        <div id="buttonbardiv" class="row text-center">
+          <div class="btn-group btn-group-margin">
+            <input type="submit" id="search" class="btn btn-primary" value="<%=__('search') %>" >
+          </div>
         </div>
+      </form>
     </div>
+  </div>
+  <div class="row">
+    <div class="query-graph">
+      <div id="graph-container"></div>
+    </div>
+  </div>
     <div id="result-table-cnt" class="row"></div>
-    
+
     <div id="queryNoResultCnt" class="has-warning query-hidden">
         <span class="control-label col-sm-4">
-            <strong> <%= __("no-data-was-found-to-match-your-search-options") %> </strong> <br /> 
+            <strong> <%= __("no-data-was-found-to-match-your-search-options") %> </strong> <br />
             <strong> <%= __("please-try-again-with-different-parameters") %></strong>
         </span>
     </div>
 
     <div id="queryErrorCnt" class="has-error query-hidden">
         <span class="control-label col-sm-4">
-            <strong> <%= __("the-query-is-not-correctly-composed") %> </strong> <br /> 
+            <strong> <%= __("the-query-is-not-correctly-composed") %> </strong> <br />
             <strong> <%= __("please-check-it-and-submit-it-again") %></strong>
         </span>
-    </div> 
+    </div>
 
-    <!-- Div for BOOTSTRAP Dialog --> 
+    <!-- Div for BOOTSTRAP Dialog -->
     <div class="query-modal"></div>
 </div>

@@ -56,6 +56,7 @@ describe('SubjectController', function() {
                     birthDate: '2003-12-22'
                 },
                 type: 1,
+                owner:1,
                 code: '888',
                 sex: 'N.D.',
                 metadata: metadata,
@@ -84,6 +85,7 @@ describe('SubjectController', function() {
             .set('Authorization', `Bearer ${tokenDataSens}`)
             .send({
                 type: 3,
+                owner:1,
                 metadata: metadata,
                 date: "2015-12-06",
                 tags: [],
@@ -101,6 +103,7 @@ describe('SubjectController', function() {
             .set('Authorization', `Bearer ${tokenNoPriv}`)
             .send({
                 type:1,
+                owner:1,
                 metadata:metadata,
                 date:"2015-12-06",
                 tags:[],
@@ -122,6 +125,7 @@ describe('SubjectController', function() {
             .set('Authorization', `Bearer ${tokenDataSens}`)
             .send({
                 type:1,
+                owner:1,
                 metadata:{},
                 date:"wrongFormat",
                 tags:[],
@@ -153,6 +157,7 @@ describe('SubjectController', function() {
                     birthDate: '2003-11-22'
                 },
                 type: 1,
+                owner:1,
                 code: '888',
                 sex: 'N.D.',
                 metadata: metadata,
@@ -178,6 +183,7 @@ describe('SubjectController', function() {
             .send({
                 id: 2,
                 type: 3,
+                owner:1,
                 metadata: metadata,
                 date: "2015-12-06",
                 tags: [],
@@ -193,7 +199,7 @@ describe('SubjectController', function() {
             request(sails.hooks.http.app)
             .put('/subject/3')
             .set('Authorization', `Bearer ${tokenDataSens}`)
-            .send({id:2, type:1, metadata:{}, date:"wrongFormat",tags:[],notes:"New subject"})
+            .send({id:2, type:1, owner:1, metadata:{}, date:"wrongFormat",tags:[],notes:"New subject"})
             .expect(400)
             .end(function(err, res) {
                 expect(res.body.error.message.name).to.eql("ValidationError");
@@ -215,6 +221,7 @@ describe('SubjectController', function() {
                 .send({
                     id: 3,
                     type: 3,
+                    owner:1,
                     metadata: metadata,
                     notes: "New subject Updated"
                 })
@@ -239,6 +246,7 @@ describe('SubjectController', function() {
                 .send({
                     id: 3,
                     type: 3,
+                    owner:1,
                     metadata: metadata,
                     notes: "New subject Updated"
                 })

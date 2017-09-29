@@ -11,6 +11,7 @@
     var Project = xtens.module("project");
     var Sample = xtens.module("sample");
     var Biobank = xtens.module("biobank");
+    var SuperType = xtens.module("supertype");
     var Query = xtens.module("query");
     var Operator = xtens.module("operator");
     var Group = xtens.module("group");
@@ -175,7 +176,7 @@
                 data: $.param(privilegesParams)
             });
             var dataTypesDeferred = dataTypes.fetch({
-                data: $.param({populate:['project']})
+                data: $.param({populate:['project','superType']})
             });
 
             $.when(groupDeferred, privilegesDeferred, dataTypesDeferred).then(function(groupRes, privilegesRes, dataTypesRes) {
@@ -253,7 +254,7 @@
             var dataTypes = new DataType.List();
 
             dataTypes.fetch({
-                data:$.param({populate:['project','parents'], sort: 'id ASC'}),
+                data:$.param({populate:['project','parents','superType'], sort: 'id ASC'}),
                 success: function(dataTypes) {
                     var adminProjects = xtens.session.get("adminProjects");
                     dataTypes.models = _.filter(dataTypes.models,function (dt) {
@@ -335,7 +336,7 @@
             $.when($operatorDeferred).then(function(operatorRes) {
                 var groupId = operatorRes && operatorRes[0].groups[0].id;
                 var $dataTypesDeferred = dataTypes.fetch({
-                    data: $.param({ populate: ['children'] })
+                    data: $.param({ populate: ['children','superType'] })
                 });
                 var $privilegesDeferred = privileges.fetch({
                     data: $.param({group: groupId, limit:100})
@@ -447,7 +448,14 @@
             model.fetch({
                 data: $.param({populate: ['type', 'files', 'parentSample', 'parentSubject']}),
                 success: function(data) {
-                    that.loadView(new Data.Views.Details({model: data}));
+                    var superTypeModel = new SuperType.Model({id: parseInt(data.get("type").superType)});
+                    var superTypeDeferred = superTypeModel.fetch();
+                    $.when(superTypeDeferred).then(function(res) {
+                        var superType = new SuperType.Model(res);
+
+                        var fields = superType.getFlattenedFields();
+                        that.loadView(new Data.Views.Details({model: data, fields: fields}));
+                    });
                 },
                 error: function(model, res) {
                     xtens.error(res);
@@ -527,8 +535,8 @@
             var that = this;
             var operator = new Operator.Model();
             if (id) {
-                operator.set('id', id);
                 operator.fetch({
+                    data:$.param({id: id, populate:['addressInformation']}),
                     success: function(operator) {
                         that.loadView(new Operator.Views.Edit({model: operator}));
                     },
@@ -592,7 +600,7 @@
                     data: $.param({group: groupId, limit:100})
                 });
                 var $dataTypesDeferred = dataTypes.fetch({
-                    data: $.param({ populate: ['children'] })
+                    data: $.param({ populate: ['children','superType'] })
                 });
                 $.when($dataTypesDeferred, $privilegesDeferred).then(function(dataTypesRes, privilegesRes) {
                     var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
@@ -678,7 +686,14 @@
             model.fetch({
                 data: $.param({populate: ['type', 'projects']}),
                 success: function(subject) {
-                    that.loadView(new Subject.Views.Details({model: subject}));
+                    var superTypeModel = new SuperType.Model({id: parseInt(subject.get("type").superType)});
+                    var superTypeDeferred = superTypeModel.fetch();
+                    $.when(superTypeDeferred).then(function(res) {
+                        var superType = new SuperType.Model(res);
+
+                        var fields = superType.getFlattenedFields();
+                        that.loadView(new Subject.Views.Details({model: subject, fields: fields}));
+                    });
                 },
                 error: function(model, res) {
                     xtens.error(res);
@@ -762,7 +777,7 @@
                     data: $.param({group: groupId, limit:100})
                 });
                 var $dataTypesDeferred = dataTypes.fetch({
-                    data: $.param({populate:['children']})
+                    data: $.param({populate:['children','superType']})
                 });
 
                 $.when($dataTypesDeferred, $privilegesDeferred).then( function(dataTypesRes, privilegesRes) {
@@ -780,8 +795,7 @@
                             parentSample: queryParams.parentSample,
                             project: idProject,
                             populate: ['type', 'donor'],
-                            limit: xtens.module("xtensconstants").DefaultLimit
-,
+                            limit: xtens.module("xtensconstants").DefaultLimit,
                             sort: 'created_at DESC'
                         },
                         contentType: 'application/json',
@@ -862,7 +876,14 @@
             model.fetch({
                 data: $.param({populate: ['type', 'files', 'parentSample', 'biobank', 'donor']}),
                 success: function(sample) {
-                    that.loadView(new Sample.Views.Details({model: sample}));
+                    var superTypeModel = new SuperType.Model({id: parseInt(sample.get("type").superType)});
+                    var superTypeDeferred = superTypeModel.fetch();
+                    $.when(superTypeDeferred).then(function(res) {
+                        var superType = new SuperType.Model(res);
+
+                        var fields = superType.getFlattenedFields();
+                        that.loadView(new Sample.Views.Details({model: sample, fields: fields}));
+                    });
                 },
                 error: function(model, res) {
                     xtens.error(res);
@@ -903,7 +924,7 @@
             var that = this;
             var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
             var criteria = {
-                populate:['children'],
+                populate:['children', 'superType'],
                 sort: 'id ASC'
             };
             idProject ? criteria.project = idProject : null;
@@ -911,7 +932,7 @@
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
             $.when($operatorDeferred).then( function(operatorRes) {
-                var groupId = operatorRes && operatorRes[0].groups[0].id;
+                var groupId = operatorRes && _.uniq(_.map(operatorRes[0].groups, 'id'));
                 var $privilegesDeferred = privileges.fetch({
                     data: $.param({group: groupId, limit:100})
                 });

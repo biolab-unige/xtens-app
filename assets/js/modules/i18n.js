@@ -73,6 +73,7 @@
         "max": "Max",
         "step": "Step",
         "schema": "Schema",
+        "shared-schema": "Shared Schema",
         "json-schema": "JSON Schema",
         "new-data-type": "New Data Type",
         "edit": "Edit",
@@ -81,6 +82,9 @@
         "add-attribute": "Add Attribute",
         "add-loop": "Add Loop",
         "attribute": "Attribute",
+        "data-type-name": "Data Type Name",
+        "define-new-schema": "Define a new Schema",
+        "please-select-an-existing-schema": "Please select an existing Schema",
         "new-operator" : "New Operator",
         "first-name" : "First Name",
         "last-name": "Last Name",
@@ -100,6 +104,14 @@
         "username": "Username",
         "sign-in": "Sign in",
         "wrong-username-and-or-password!": "Wrong username and/or password!",
+        /* views/templates/supertype-edit.ejs */
+        "schema-details": "Schema Details",
+        "schema-name": "Schema Name",
+        "uri": "Uri",
+        "confirm-edit": "Confirm Edit",
+        "edit-data-type-schema-warning": "Be careful - This schema is used by multiple Projects than your. Any change will be applied to all Projects. Are you sure to edit the Schema?",
+        "super-type-uri": "Please insert a valid uri",
+        "super-type-name": "Name new Schema",
         /* view/templates/menu-bar.ejs */
         "management": "Management",
         "super-user": "Super User",
@@ -123,10 +135,15 @@
         "create-data": "Create Data",
         "update-data": "Update Data",
         "subject": "Subject",
+        "owner": "Owner",
         "sample": "Sample",
+        /* views/templates/addressinformation-edit.ejs */
+        "office": "Office",
+        "address-information": "Address Information",
         /* views/templates/operator-edit.ejs */
         "operator-manager": "Operator Manager",
         "confirm-password": "Confirm Password",
+        "laboratory": "Laboratory",
         "confirm": "Confirm",
         "min-8-characters": "Minimum of 8 characters",
         "create-operator": "Create Operator",
@@ -261,6 +278,7 @@
         "add-field": "Add Field",
         "add-loop-condition": "Add Loop Condition",
         "add-nested-condition": "Add Nested Condition",
+        "multi-project-serach": "Multi Project",
         /* views/templates/data-table.ejs */
         "overall-status": "Overall Status",
         "diagnosis-age": "Diagnosis Age",
@@ -284,8 +302,12 @@
         "files": "Files",
         "derived-samples": "Derived Samples",
         "derived-data": "Derived Data",
+        /* views/templates/xtenstable-buttongroup.ejs  */
+        "contact-details": "Contact Details",
+        "project-owner": "Project Owner",
         /* assets/js/modules/XtensTable.js */
         "actions": "Actions",
+        "click-to-show-owner-contacts": "Click to Show Contacts",
         /* assets/js/modules/FileManager.js */
         "file-successfully-uploaded": "File Successfully Uploaded!",
         "the-file": "The file",
@@ -296,7 +318,7 @@
         /* assets/js/modules/DataFile.js */
         "could-not-download-file": "Could Not Download File",
         /* views/templates/datatypeprivileges-list.ejs */
-        "data-type-name": "Data Type Name",
+        // "data-type-name": "Data Type Name",
         "new-data-type-privilege": "New Data Type Privilege",
         /* views/templates/datatypeprivileges-edit.ejs */
         "update-data-type-privileges": "Update Data Type Privilege",

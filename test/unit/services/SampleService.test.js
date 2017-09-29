@@ -38,20 +38,28 @@ describe('SampleService', function() {
 
     describe("#validate", function() {
 
-        it("should correctly validate a valid sample using its schema", function() {
+        it("should correctly validate a valid sample using its schema", function(done) {
             var sample = _.cloneDeep(fixtures.sample[0]);
             var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: sample.type}));
-            var res = SampleService.validate(sample, true, dataType);
-            expect(res.error).to.be.null;
-            expect(res.value).to.eql(sample);
+            return SampleService.validate(sample, true, dataType).then(function (res) {
+
+                expect(res.error).to.be.null;
+                expect(res.value).to.eql(sample);
+                done();
+                return;
+            });
         });
 
-        it("should raise an Error if the data is not valid", function() {
+        it("should raise an Error if the data is not valid", function(done) {
             var invalidSample = _.cloneDeep(fixtures.sample[0]);
             var dataType = _.cloneDeep(_.findWhere(fixtures.datatype, {id: invalidSample.type}));
             invalidSample.metadata.location = {value: "nose"};
-            var res = SampleService.validate(invalidSample, true, dataType);
-            expect(res.error).not.to.be.null;
+            return SampleService.validate(invalidSample, true, dataType).then(function (res) {
+
+                expect(res.error).not.to.be.null;
+                done();
+                return;
+            });
         });
 
 

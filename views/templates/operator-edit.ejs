@@ -4,61 +4,53 @@
     <form class="form-horizontal edit-operator-form" data-parsley-trigger="focusout" data-parsley-validate role="form" >
 
       <div class="form-group metadataform-group">
-          <label for="firstName" class="data-label"><%= __('given-name') %></label>
-          <div class="data-input-div">
+          <label for="firstName" class="operator-label"><%= __('given-name') %></label>
+          <div class="operator-halfinput-div">
               <input class="form-control" id="firstName" placeholder="Name" name="firstName" required></input>
           </div>
-      </div>
-      <div class="form-group metadataform-group">
-          <label for="lastName" class="data-label"><%= __('surname') %></label>
-          <div class="data-input-div">
+      <label for="lastName" class="operator-label"><%= __('surname') %></label>
+          <div class="operator-halfinput-div">
               <input class="form-control" id="lastName" placeholder="Surname" name="lastName" required></input>
           </div>
       </div>
       <div class="form-group metadataform-group">
-          <label for="birthDate" class="data-label"><%= __('birth-date') %></label>
-          <div class="data-input-div">
+          <label for="birthDate" class="operator-label"><%= __('birth-date') %></label>
+          <div class="operator-halfinput-div">
               <input class="form-control" id="birthDate" name="birthDate" placeholder="<%= __('please-select') %>" required></input>
           </div>
-      </div>
-      <div class="form-group metadataform-group">
-          <label for="sex" class="data-label"><%= __('sex') %></label>
-          <div class="data-input-div">
+      <label for="sex" class="operator-label"><%= __('sex') %></label>
+          <div class="operator-halfinput-div">
             <input class="form-control" id="sex" name="sex"></select>
           </div>
       </div>
       <div class="form-group metadataform-group">
-          <label for="email" class="data-label"><%= __('email') %></label>
-          <div class="data-input-div">
-              <input name="email" type="email" class="form-control" id="email" placeholder="ex@example.com"></input>
+          <label for="email" class="operator-label"><%= __('email') %></label>
+          <div class="operator-input-div">
+              <input name="email" type="email" data-parsley-type="email" class="form-control" id="email" placeholder="ex@example.com" required></input>
           </div>
       </div>
       <div class="form-group metadataform-group">
-          <label for="login" class="data-label"><%= __('login') %></label>
-          <div class="data-input-div">
-              <input class="form-control" id="login" name="login" placeholder="Username" required></input>
+          <label for="login" class="operator-label"><%= __('login') %></label>
+          <div class="operator-input-div">
+              <input class="form-control" id="login" name="login" placeholder="<%= __('usernaem') %>" required></input>
           </div>
       </div>
 
       <% if(!data.id) { %>
         <div class="form-group metadataform-group">
-            <label for="password" class="data-label"><%= __('password') %></label>
-            <div class="help"><%= __('min-8-characters')  %></div>
-            <div class="data-input-div">
-                <input type="password" class="form-control" id="password" name="password" data-minlength="8" placeholder="Password"></input>
+            <label for="password" class="operator-label"><%= __('password') %></label>
+            <div class="operator-halfinput-div">
+                <input type="password" class="form-control" id="password" name="password" data-parsley-minlength="8" placeholder="<%= __('min-8-characters')  %>"></input>
             </div>
-        </div>
-
-        <div class="form-group metadataform-group">
-            <label for="confirmedPassword" class="data-label"><%= __('confirm-password')  %></label>
-            <div class="data-input-div">
+        <label for="confirmedPassword" class="operator-label"><%= __('confirm-password')  %></label>
+            <div class="operator-halfinput-div">
                <input type="password" class="form-control" id="passwordConfirmed" placeholder="Confirm Password" data-parsley-errors-container=".with-errors" data-parsley-equalto="#password" data-parsley-error-message="Passwords don't match">
               <div class="help-block with-errors"></div>
             </div>
         </div>
 
      <% } %>
-
+    <div id="address-information-cnt"></div>
     <div id="buttonbardiv" class="row text-center">
       <div class="btn-group btn-group-margin">
         <input type="submit" id="save" class="btn btn-primary" value="<%= data.id ? __('update-operator') : __('create-operator') %>" >

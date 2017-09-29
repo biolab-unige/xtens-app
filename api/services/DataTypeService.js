@@ -5,7 +5,7 @@
  */
 /* jshint esnext: true */
 /* jshint node: true */
-/* globals _, sails , DataType, DataTypePrivileges, Group, Project */
+/* globals _, sails , DataType, DataTypePrivileges, Group, Project, SuperType */
 "use strict";
 let Joi = require("joi");
 let BluebirdPromise = require("bluebird");
@@ -100,17 +100,44 @@ const coroutines = {
         const privilege = yield DataTypePrivileges.findOne({ id: privilegeId, group: groupId }).populate('dataType');
 
         return privilege.dataType;
-    })
+    }),
 
-    // getDataTypesToEditProject: BluebirdPromise.coroutine(function *() {
-    //
-    //     let datatypes = yield DataType.find();
-    //     datatypes = _.find(datatypes, dt =>{
-    //         return dt.project === null;
-    //     });
-    //
-    //     return datatypes ? _.isArray(datatypes) ? datatypes : [datatypes] : [] ;
-    // })
+    getFlattenedFields: BluebirdPromise.coroutine(function *(dataType, skipFieldsWithinLoops) {
+        let flattened = [];
+        let body = _.isObject(dataType.superType) ? dataType.superType.schema.body : undefined;
+
+        if (!body) {
+            let superType = yield SuperType.findOne(dataType.superType);
+            body = superType.schema.body;
+        }
+      // if no body return an empty array
+        if (!body) return flattened;
+
+      // iterate through all groups within the body
+        for (let i=0, len=body.length; i<len; i++) {
+            let groupContent = body[i] && body[i].content;
+
+          // iterate through all the fields/loops
+            for (let j=0, l=groupContent.length; j<l; j++) {
+                if (groupContent[j].label === constants.METADATA_FIELD) {
+                    flattened.push(groupContent[j]);
+                }
+                else if (groupContent[j].label === constants.METADATA_LOOP && !skipFieldsWithinLoops) {
+                    let loopContent = groupContent[j] && groupContent[j].content;
+                    for (let k=0; k<loopContent.length; k++) {
+                        if (loopContent[k].label === constants.METADATA_FIELD) {
+
+                          // add to the field a private flag that specifies its belonging to a loop
+                            flattened.push(_.extend(loopContent[k], {_loop: true}));
+
+                        }
+                    }
+                }
+
+            }
+        }
+        return flattened;
+    })
 };
 
 let DataTypeService = {
@@ -161,12 +188,22 @@ let DataTypeService = {
      */
     validate: function(dataType, performSchemaValidation) {
 
+        let superTypeValidationSchema = {
+            id: Joi.number().integer().positive(),
+            name: Joi.string().trim(),
+            uri: Joi.string().trim(),
+            schema: Joi.object().required(),
+            createdAt: Joi.date(),
+            updatedAt: Joi.date()
+        };
+
         let validationSchema = {
             id: Joi.number().integer().positive(),
             name: Joi.string().required(),
             model: Joi.string().required().valid(_.values(constants.DataTypeClasses)),
-            schema: Joi.object().required(),
+            // schema: Joi.object().required(),
             project: Joi.number().integer().required(),
+            superType: Joi.object().required().keys(superTypeValidationSchema),
             parents: Joi.array().allow(null),
             children: Joi.array().allow(null),
             data: Joi.array().allow(null),
@@ -224,12 +261,12 @@ let DataTypeService = {
                 ontology: Joi.string().allow("")
             });
 
-            validationSchema.schema = Joi.object().required().keys({
+            superTypeValidationSchema.schema = Joi.object().required().keys({
                 header: metadataHeaderValidationSchema,
                 body: Joi.array().required().items(metadataGroupValidationSchema)
             });
 
-
+            validationSchema.superType = Joi.object().required().keys(superTypeValidationSchema);
         }
 
         validationSchema = Joi.object().keys(validationSchema);
@@ -260,37 +297,13 @@ let DataTypeService = {
      * @param {boolean} skipFieldsWithinLoops - if true skips all the metadatafields that are contained within metadata loops
      */
 
-    getFlattenedFields: function(dataType, skipFieldsWithinLoops) {
-        let flattened = [];
-        let body = dataType.schema && dataType.schema.body;
+    getFlattenedFields: function (dataType, skipFieldsWithinLoops) {
 
-        // if no body return an empty array
-        if (!body) return flattened;
-
-        // iterate through all groups within the body
-        for (let i=0, len=body.length; i<len; i++) {
-            let groupContent = body[i] && body[i].content;
-
-            // iterate through all the fields/loops
-            for (let j=0, l=groupContent.length; j<l; j++) {
-                if (groupContent[j].label === constants.METADATA_FIELD) {
-                    flattened.push(groupContent[j]);
-                }
-                else if (groupContent[j].label === constants.METADATA_LOOP && !skipFieldsWithinLoops) {
-                    let loopContent = groupContent[j] && groupContent[j].content;
-                    for (let k=0; k<loopContent.length; k++) {
-                        if (loopContent[k].label === constants.METADATA_FIELD) {
-
-                            // add to the field a private flag that specifies its belonging to a loop
-                            flattened.push(_.extend(loopContent[k], {_loop: true}));
-
-                        }
-                    }
-                }
-
-            }
-        }
-        return flattened;
+        return coroutines.getFlattenedFields(dataType, skipFieldsWithinLoops)
+        .catch(/* istanbul ignore next */ function(err) {
+            sails.log(err);
+            return err;
+        });
     },
 
     /**
@@ -301,14 +314,18 @@ let DataTypeService = {
      * @param {Integer} dataType - the id of the DataType
      */
     putMetadataFieldsIntoEAV: function(dataType) {
-
+        let foundType;
         // check whether the dataType effectively exists
-        return DataType.findOne(dataType)
+        return DataType.findOne(dataType).populate('superType')
 
         // extract and store all metadata fields
-        .then(function(foundType) {
+        .then(function(result) {
+            foundType = result;
             sails.log("DataTypeService.putMetadataFieldsIntoEAV - found type" + foundType);
-            let fields = DataTypeService.getFlattenedFields(foundType, false);
+            return DataTypeService.getFlattenedFields(foundType, false);
+
+        })
+        .then(function (fields) {
             return crudManager.putMetadataFieldsIntoEAV(foundType.id, fields, true);
         })
         .then(function(inserted) {

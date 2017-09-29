@@ -5,7 +5,7 @@
 var chai = require("chai");
 var expect = chai.expect;
 
-describe('DataService', function() {
+describe('BiobankService', function() {
 
     describe('#get', function() {
 

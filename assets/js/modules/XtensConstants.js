@@ -19,7 +19,7 @@
     XtensConstants.DataTypeClasses = {
         SUBJECT: 'Subject',
         SAMPLE: 'Sample',
-        GENERIC: 'Data',
+        // GENERIC: 'Data',
         DATA: 'Data'
     };
 

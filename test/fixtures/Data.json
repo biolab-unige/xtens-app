@@ -2,6 +2,7 @@
     {
         "id":1,
         "type":3,
+        "owner":1,
         "date": "2012-12-28",
         "metadata": {
             "name":{"value":"Aldebaran","group":"Generic Info"},
@@ -22,6 +23,7 @@
     {
         "id":2,
         "type":4,
+        "owner":1,
         "date": "2012-12-28",
         "metadata": {
             "chromosome":{"value":"1","group":"Vcf Info"},
@@ -43,6 +45,7 @@
     {
         "id":3,
         "type":3,
+        "owner":1,
         "date": "2012-12-28",
         "metadata": {
             "name":{"value":"Antares","group":"Generic Info"},
@@ -60,6 +63,7 @@
     {
         "id":4,
         "type":3,
+        "owner":1,
         "date": "2012-12-28",
         "metadata": {
             "name":{"value":"Betelgeuse","group":"Generic Info"},
@@ -77,6 +81,7 @@
     {
         "id":5,
         "type":3,
+        "owner":1,
         "date": "2012-12-28",
         "metadata": {
             "name":{"value":"Sirius","group":"Generic Info"},
@@ -94,6 +99,7 @@
     {
         "id":6,
         "type":3,
+        "owner":1,
         "date": "2012-12-28",
         "metadata": {
             "name":{"value":"VY Canis Majoris","group":"Generic Info"},
@@ -111,6 +117,7 @@
     {
         "id":7,
         "type":4,
+        "owner":1,
         "date": "2015-12-28",
         "metadata": {
             "chromosome":{"value":"1","group":"Vcf Info"},
@@ -132,6 +139,7 @@
     {
         "id":8,
         "type":4,
+        "owner":1,
         "date": "2016-12-02",
         "metadata": {
             "chromosome":{"value":"X","group":"Vcf Info"},
@@ -153,6 +161,7 @@
     {
         "id":9,
         "type":4,
+        "owner":1,
         "date": "2016-12-02",
         "metadata": {
             "chromosome":{"value":"12","group":"Vcf Info"},
@@ -173,7 +182,8 @@
     },
     {
         "id": 10,
-        "type": 5,
+        "type":5,
+        "owner":1,
         "date": "2016-12-04",
         "metadata": {
             "gene_name": "mycn",
@@ -184,7 +194,8 @@
     },
     {
         "id": 11,
-        "type": 5,
+        "type":5,
+        "owner":1,
         "date": "2016-12-04",
         "metadata": {
             "gene_name": "mycn",
@@ -195,7 +206,8 @@
     },
     {
         "id": 12,
-        "type": 5,
+        "type":5,
+        "owner":1,
         "date": "2016-12-04",
         "metadata": {
             "gene_name": "sox4",
@@ -206,7 +218,8 @@
     },
     {
         "id": 13,
-        "type": 5,
+        "type":5,
+        "owner":1,
         "date": "2016-12-04",
         "metadata": {
             "gene_name": "mycn",
@@ -217,7 +230,8 @@
     },
     {
         "id": 14,
-        "type": 5,
+        "type":5,
+        "owner":1,
         "date": "2016-12-04",
         "metadata": {
             "gene_name": "sox4",
@@ -229,6 +243,7 @@
     {
         "id":15,
         "type":3,
+        "owner":1,
         "date": "2012-12-28",
         "metadata": {
             "name":{"value":"Mu Cephei","group":"Generic Info"},
@@ -246,6 +261,7 @@
     {
         "id":16,
         "type":3,
+        "owner":1,
         "date": "2012-12-28",
         "metadata": {
             "name":{"value":"VV Cephei","group":"Generic Info"},
@@ -263,6 +279,7 @@
     {
         "id":17,
         "type":3,
+        "owner":1,
         "date": "2012-12-28",
         "metadata": {
             "name":{"value":"Arcturus","group":"Generic Info"},
@@ -280,6 +297,7 @@
     {
         "id":18,
         "type":4,
+        "owner":1,
         "date": "2016-12-05",
         "metadata": {
             "chromosome":{"value":"3","group":"Vcf Info"},
@@ -300,7 +318,8 @@
     },
     {
         "id": 19,
-        "type": 5,
+        "type":5,
+        "owner":1,
         "date": "2016-12-04",
         "metadata": {
             "gene_name": "mycn",
@@ -311,7 +330,8 @@
     },
     {
         "id": 20,
-        "type": 5,
+        "type":5,
+        "owner":1,
         "date": "2016-12-04",
         "metadata": {
             "gene_name": "mycn",
@@ -322,7 +342,8 @@
     },
     {
         "id": 21,
-        "type": 5,
+        "type":5,
+        "owner":1,
         "date": "2016-12-04",
         "metadata": {
             "gene_name": "sox4",
@@ -334,6 +355,7 @@
     {
         "id":22,
         "type":4,
+        "owner":1,
         "date": "2016-12-05",
         "metadata": {
             "chromosome":{"value":"17","group":"Vcf Info"},
@@ -354,7 +376,8 @@
     },
     {
         "id": 23,
-        "type": 5,
+        "type":5,
+        "owner":1,
         "date": "2016-12-04",
         "metadata": {
             "gene_name": "alk",
@@ -365,7 +388,8 @@
     },
     {
         "id": 24,
-        "type": 5,
+        "type":5,
+        "owner":1,
         "date": "2016-12-04",
         "metadata": {
             "gene_name": "sox4",
@@ -377,6 +401,7 @@
     {
         "id":25,
         "type":3,
+        "owner":1,
         "date": "2012-12-28",
         "metadata": {
             "name":{"value":"Vega","group":"Generic Info"},
@@ -394,6 +419,7 @@
     {
         "id":26,
         "type":5,
+        "owner":1,
         "date": "2012-12-28",
         "metadata": {},
         "tags": ["test","a test"],

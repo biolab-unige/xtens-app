@@ -6,22 +6,34 @@ describe('PopulateService', function() {
 
     describe('#generateData', function() {
 
-        before(function() {
-            this.type = fixtures.datatype[2];
-            this.fields = DataTypeService.getFlattenedFields(this.type, true);
+        before(function(done) {
+            var that = this;
+
+            this.type = _.cloneDeep(fixtures.datatype[2]);
+            this.type.superType =  _.cloneDeep(fixtures.supertype[2]);
+            return DataTypeService.getFlattenedFields(this.type, true).then(function (fields) {
+                that.fields = fields;
+                done();
+                return;
+            });
+            // console.log(this.fields);
         });
 
 
-        it('should create a new data with all the metadata fields',function(){
+        it('should create a new data with all the metadata fields',function(done){
+            var that = this;
+            return PopulateService.generateData(this.type).then(function (data) {
 
-            var data = PopulateService.generateData(this.type);
-            expect(data).to.have.property('type');
-            expect(data).to.have.property('metadata');
-            expect(data.type).to.equals(this.type.id);
-            var names = _.map(this.fields,"name");
-            names.forEach(function(name) {
-                expect(data.metadata[name]).to.exist;
-                expect(data.metadata[name]).to.have.property('value');
+                expect(data).to.have.property('type');
+                expect(data).to.have.property('metadata');
+                expect(data.type).to.equals(that.type.id);
+                var names = _.map(that.fields,"name");
+                names.forEach(function(name) {
+                    expect(data.metadata[name]).to.exist;
+                    expect(data.metadata[name]).to.have.property('value');
+                });
+                done();
+                return;
             });
 
         });
@@ -31,7 +43,7 @@ describe('PopulateService', function() {
     describe('generateFloatField', function() {
 
         it('should create a metadata field with a float value', function(){
-            var floatField = fixtures.datatype[2].schema.body[1].content[0];
+            var floatField = fixtures.supertype[2].schema.body[1].content[0];
 
             var min = floatField.min || sails.config.xtens.constants.TEST_MIN;
             var max = floatField.max || sails.config.xtens.constants.TEST_MAX;
@@ -53,7 +65,7 @@ describe('PopulateService', function() {
     describe('generateTextField', function() {
 
         it('should create a metadata field with a text value', function(){
-            var textField = fixtures.datatype[2].schema.body[0].content[1];
+            var textField = fixtures.supertype[2].schema.body[0].content[1];
 
             var field = PopulateService.generateTextField(textField);
             expect(field.value).to.be.a('string');
@@ -66,7 +78,7 @@ describe('PopulateService', function() {
     describe('generateIntegerField', function() {
 
         it('should create a metadata field with a integer value', function(){
-            var integerField = fixtures.datatype[2].schema.body[1].content[2];
+            var integerField = fixtures.supertype[2].schema.body[1].content[2];
 
             var min = integerField.min || sails.config.xtens.constants.TEST_MIN;
             var max = integerField.max || sails.config.xtens.constants.TEST_MAX;
@@ -88,7 +100,7 @@ describe('PopulateService', function() {
     describe('generateBooleanField', function() {
 
         it('should create a metadata field with a boolean value', function(){
-            var booleanField = fixtures.datatype[2].schema.body[1].content[4];
+            var booleanField = fixtures.supertype[2].schema.body[1].content[4];
 
             var field = PopulateService.generateBooleanField(booleanField);
             expect(field.value).to.be.a('boolean');
@@ -102,7 +114,7 @@ describe('PopulateService', function() {
 
         it('should create a metadata field with a date value', function(){
 
-            var dateField = fixtures.datatype[1].schema.body[0].content[3];
+            var dateField = fixtures.supertype[1].schema.body[0].content[3];
 
             var field = PopulateService.generateDateField(dateField);
             expect(field.value).to.be.a('date');
@@ -112,7 +124,7 @@ describe('PopulateService', function() {
 
             var date = "2014-01-26";
 
-            var dateField = fixtures.datatype[1].schema.body[0].content[3];
+            var dateField = fixtures.supertype[1].schema.body[0].content[3];
 
             var field = PopulateService.generateDateField(dateField,date);
             expect(field.value).to.be.a('date');
@@ -122,40 +134,46 @@ describe('PopulateService', function() {
 
     describe('generateVariantData',function() {
 
-        it('should create a Variant Data', function(){
+        it('should create a Variant Data', function(done){
 
             var variantFields = fixtures.datatype[3];
             var fields = {};
 
-            fields.fields = DataTypeService.getFlattenedFields(variantFields, false);
-            fields.id = variantFields.id;
+            return DataTypeService.getFlattenedFields(variantFields, false).then(function (fields) {
+                fields.fields = fields;
+                fields.id = variantFields.id;
 
             // generateVariantData using formattedNames (second param set to TRUE)
-            var variant = PopulateService.generateVariantData(fields, true);
+                var variant = PopulateService.generateVariantData(fields, true);
 
-            expect(variant).to.be.a('object');
-            expect(variant.metadata.chromosome.value).to.be.a('string');
-            expect(Object.keys(variant.metadata).length).to.equals(13);
-
+                expect(variant).to.be.a('object');
+                expect(variant.metadata.chromosome.value).to.be.a('string');
+                expect(Object.keys(variant.metadata).length).to.equals(13);
+                done();
+                return;
+            });
         });
     });
 
     describe('generateVariantAnnotationData',function(){
 
-        it('should create a Variant Annotation Data', function(){
+        it('should create a Variant Annotation Data', function(done){
 
             var annotationFields = fixtures.datatype[4];
             var fields = {};
 
-            fields.fields = DataTypeService.getFlattenedFields(annotationFields);
-            fields.id = annotationFields.id;
+            return DataTypeService.getFlattenedFields(annotationFields).then(function (fields) {
+                fields.fields = fields;
+                fields.id = annotationFields.id;
 
             // generateVariantData using formattedNames (second param set to TRUE)
-            var annotation = PopulateService.generateVariantAnnotationData(fields, true);
+                var annotation = PopulateService.generateVariantAnnotationData(fields, true);
 
-            expect(annotation).to.be.a('object');
-            expect(annotation.metadata.gene_id.value).to.be.a('string');
-
+                expect(annotation).to.be.a('object');
+                expect(annotation.metadata.gene_id.value).to.be.a('string');
+                done();
+                return;
+            });
         });
 
     });
@@ -184,6 +202,7 @@ describe('PopulateService', function() {
         it('should call Subject.create method',function(){
             var _this = this;
             var dataType = fixtures.datatype[0];
+            dataType.superType = fixtures.supertype[0];
             return PopulateService.generateSubjectSampleData(dataType).then(function(res) {
                 console.log('PopulateService.test.generateSubjectSampleData - testing after promise fulfilled');
                 expect(_this.subjectCreateStub.calledOnce).to.be.true;
@@ -199,10 +218,5 @@ describe('PopulateService', function() {
 
 
     });
-
-
-
-
-
 
 });

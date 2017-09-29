@@ -44,6 +44,7 @@ module.exports.policies = {
     OperatorController: {
         '*': ['bearerAuth', 'isWheel'],
         find: 'bearerAuth',
+        findOne: 'bearerAuth',
         'patchPassword': 'bearerAuth'
     },
 
@@ -59,6 +60,11 @@ module.exports.policies = {
         '*':  ['bearerAuth', 'isAdmin'],
         find: 'bearerAuth',
         'edit':  ['bearerAuth', 'isAdmin']
+    },
+
+    SuperTypeController: {
+        '*':  ['bearerAuth', 'isAdmin'],
+        find: 'bearerAuth'
     },
 
     BiobankController: {

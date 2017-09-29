@@ -74,6 +74,7 @@ var jsFilesToInject = [
     'js/modules/Utils.js',
     'js/modules/Session.js',
     'js/modules/DataTypePrivileges.js',
+    'js/modules/AddressInformation.js',
     'js/modules/MetadataComponent.js',
     'js/modules/MetadataField.js',
     'js/modules/MetadataLoop.js',
@@ -94,7 +95,7 @@ var jsFilesToInject = [
     'js/modules/Project.js',
     'js/modules/Sample.js',
     'js/modules/AdminAssociation.js',
-    // 'js/modules/QueryStrategy.js',
+    'js/modules/SuperType.js',
     'js/modules/Query.js'
 
     // All of the rest of your client-side js files

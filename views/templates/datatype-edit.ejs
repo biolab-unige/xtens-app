@@ -9,21 +9,21 @@
                 <label for="name" class="col-md-2 control-label"><%= __("name") %></label>
                 <div class="col-md-6">
                     <input text class="form-control" id="name" name="name"
-                    value="<%= dataType.id ? dataType.get('name') : '' %>" placeholder="Data Type Name" required >
+                    value="<%= dataType.id ? dataType.get('name') : '' %>" placeholder="<%= __('data-type-name')%>" required >
                 </div>
                 <label for="fileUpload" class="col-md-2 control-label"><%= __("file-upload") %></label>
                 <div class="col-md-2">
                     <input type="checkbox" id="fileUpload" name="fileUpload" value="fileUpload"
-                    <% if(dataType.id && dataType.get('schema').header.fileUpload) { %> checked="checked" <% } %> >
+                    <% if(dataType.id && dataType.get('superType').schema.header.fileUpload) { %> checked="checked" <% } %> >
                 </div>
             </div>
             <div class="form-group row">
                 <label for="model" class="col-md-2 control-label"><%= __("model") %></label>
                 <div class="col-md-4">
-                    <select class="form-control" id="model" name="model"></select>
+                    <select class="form-control" id="model" name="model" placeholder="<%= __('please-select')%>" required></select>
                 </div>
                 <label for="parent" class="col-md-2 control-label"><%= __("parent") %></label>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <select multiple class="form-control" id="parents" name="parents"></select>
                 </div>
             </div>
@@ -35,29 +35,54 @@
             </div>
             <div class="form-group row">
                 <label for="description" class="col-md-2 control-label"><%=__("description") %></label>
-                <div class="col-md-10">
+                <div class="col-md-9">
                     <input text class="form-control" id="description" name="description" required
-                    value="<%= dataType.id ? dataType.get('schema').header.description : '' %>" placeholder="Brief Description" >
+                    value="<%= dataType.id ? dataType.get('superType').schema.header.description : '' %>" placeholder="Brief Description" >
                 </div>
             </div>
             <div class="form-group row">
                 <label for="version" class="col-md-2 control-label"><%=__("version") %></label>
                 <div class="col-md-2">
                     <input text class="form-control" id="version" name="version"
-                    value="<%= dataType.id ? dataType.get('schema').header.version : '' %>" placeholder="0.0.X">
+                    value="<%= dataType.id ? dataType.get('superType').schema.header.version : '' %>" placeholder="0.0.X">
                 </div>
                 <label for="ontology" class="col-md-2 control-label"><%=__("ontology") %></label>
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <select class="form-control" id="ontology" name="ontology">
                         <option value="" selected="true">Select an ontology to name metadata fields</option>
                     </select>
                 </div>
             </div>
-        </div> <!-- schemaHeader -->
-        <div id="schemaBody"></div>
+        </div>
+        <div class="form-group row">
+          <div class="panel-group col-md-offset-1 col-md-10" id="schema-data-type">
+            <div class="panel panel-default">
+              <div class="panel-heading bg-transition">
+                <div class="row">
+                  <div class="col-md-offset-1 col-md-10">
+                    <h4 class="panel-title">
+                      <div id="schema-title" data-parent="#schema-data-type" href="#collapse-schema"><%=__("edit") %> <%= isMultiProject ? __("shared-schema") : __("schema") %></div>
+                    </h4>
+                  </div>
+                  <div id="schema-title-icon" class="col-md-1"></div>
+                </div>
+              </div>
+              <div id="collapse-schema" class="panel-collapse collapse">
+                <div id="super-type-cnt" class="panel-body"></div>
+                <div class="container-schema panel-body">
+                <div id="schemaBody" class="panel-body"></div>
+                  <div class="add-metadata-group-container text-center">
+                    <input type="button" class="btn btn-info add-metadata-group" value="<%=__('add-metadata-group') %>" >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div id="buttonbardiv" class="row text-center">
                 <div class="btn-group btn-group-margin">
-                    <input type="button" class="btn btn-info add-metadata-group" value="<%=__('add-metadata-group') %>" >
+
                     <input type="submit" class="btn btn-primary" value="<%=__('save-data-type') %>" >
                     <% if (dataType.id) { %>
                         <input type="hidden" id="id" name="id" value="<%= dataType.id %>" />

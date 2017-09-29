@@ -52,6 +52,11 @@ var Operator = {
             via: 'user'
         },
 
+        addressInformation: {
+            columnName: 'address_information',
+            model: 'addressInformation'
+        },
+
         createdAt: {
             type:'datetime',
             columnName: 'created_at'

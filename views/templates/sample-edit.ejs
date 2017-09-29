@@ -20,9 +20,13 @@
                         </div>
                     </div>
                     <div class="form-group metadataform-group">
-                        <label for="type" class="data-label"><%= __('type') %></label>
+                        <label for="type" class="data-label"><%= __('data-type') %></label>
                         <div class="data-input-div">
-                            <select class="form-control" id="type" name="type"></select>
+                            <select class="form-control" id="data-type" name="data-type"></select>
+                        </div>
+                        <label for="owner" class="col-md-2 data-label"><%= __("owner") %></label>
+                        <div class="data-input-div">
+                            <select disabled class="form-control" id="owner" name="owner" required></select>
                         </div>
                     </div>
                     <div class="form-group metadataform-group">

@@ -1,0 +1,31 @@
+<h4><%= __('address-information') %></h4>
+<div class="form-group metadataform-group">
+    <label for="office" class="operator-label"><%= __('office') %></label>
+    <div class="operator-halfinput-div">
+        <input text class="form-control" id="office" name="office" required data-parsley-pattern="[a-zA-Z]+"></input>
+    </div>
+    <label for="phone" class="operator-label"><%= __('phone') %></label>
+    <div class="operator-halfinput-div">
+        <input text class="form-control" id="phone" name="phone" required></input>
+    </div>
+</div>
+<div class="form-group metadataform-group">
+    <label for="address" class="operator-label"><%= __('address') %></label>
+    <div class="operator-input-div">
+        <input text class="form-control" id="address" name="address" required></input>
+    </div>
+</div>
+<div class="form-group metadataform-group">
+    <label for="zip" class="operator-label"><%= __('zip') %></label>
+    <div class="operator-thirdinput-div">
+        <input text class="form-control" id="zip" name="zip" required></input>
+    </div>
+    <label for="city" class="operator-label"><%= __('city') %></label>
+    <div class="operator-thirdinput-div">
+        <input text class="form-control" id="city" name="city" required data-parsley-pattern="[a-zA-Z]+"></input>
+    </div>
+    <label for="country" class="operator-label"><%= __('country') %></label>
+    <div class="operator-thirdinput-div">
+        <input text class="form-control" id="country" name="country" required data-parsley-length="[2,2]" data-parsley-pattern="[a-zA-Z]+"></input>
+    </div>
+</div>

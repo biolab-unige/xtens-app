@@ -11,10 +11,9 @@ var DataType = {
             required: true,
             columnName: 'name'
         },
-        schema: {
-            type: 'json',
-            required: true,
-            columnName: 'schema'
+        superType: {
+            model:'superType',
+            columnName: 'super_type'
         },
         model: {
             type: 'string',
@@ -68,7 +67,7 @@ var DataType = {
          */
     getFlattenedFields: /*istanbul ignore next*/ function(skipFieldsWithinLoops) {
         var flattened = [];
-        var body = this.schema && this.schema.body;
+        var body = _.isObject(this.superType) && this.superType.schema && this.superType.schema.body;
 
             // if no body return an empty array
         if (!body) return flattened;
