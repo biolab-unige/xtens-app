@@ -244,7 +244,7 @@
               }, "className": "project-owner"});
 
               this.numLeft=this.columns.length;
-              // let highPrivilege = this.multiProject ? dataTypePrivilege[0] : dataTypePrivilege;
+              // var highPrivilege = this.multiProject ? dataTypePrivilege[0] : dataTypePrivilege;
               var dtpOverview = this.multiProject ? _.filter(dataTypePrivilege,function (dtp) { return dtp.privilegeLevel === VIEW_OVERVIEW;}) : dataTypePrivilege && dataTypePrivilege.privilegeLevel === VIEW_OVERVIEW ? true : false;
               // if (!this.multiProject || (this.multiProject && dtpOverview && dtpOverview.length === dataTypePrivilege.length)) {
               if(!dtpOverview || (this.multiProject && dtpOverview.length !== dataTypePrivilege.length)){
@@ -509,7 +509,7 @@
 
             // TODO change "code" to "subjectCode" for sake of clarity
               path += data.code ? "&parentSubjectCode=" + data.code : '';
-              let parentDataType = this.multiProject ? _.find(this.dataType.models, {'id': data.type })  : this.dataType.id;
+              var parentDataType = this.multiProject ? _.find(this.dataType.models, {'id': data.type })  : this.dataType.id;
               path += "&parentDataType=" + parentDataType.id;
 
               xtens.router.navigate(path, {trigger: true});
@@ -553,7 +553,7 @@
 
             // TODO change "code" to "subjectCode" for sake of clarity
               path += data.code ? "&donorCode=" + data.code : '';
-              let parentDataType = this.multiProject ? _.find(this.dataType.models, {'id': data.type })  : this.dataType.id;
+              var parentDataType = this.multiProject ? _.find(this.dataType.models, {'id': data.type })  : this.dataType.id;
               path += "&parentDataType=" + parentDataType.id;
 
               xtens.router.navigate(path, {trigger: true});
