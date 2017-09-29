@@ -324,7 +324,6 @@
             var queryParams = parseQueryString(queryString);
             var dataTypes = new DataType.List();
             var privileges = new DataTypePrivileges.List();
-            var data = new Data.List();
             var operator = new Operator.List();
             var that = this;
 
@@ -334,7 +333,10 @@
             });
 
             $.when($operatorDeferred).then(function(operatorRes) {
-                var groupId = operatorRes && operatorRes[0].groups[0].id;
+                var activeProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'), { 'name': xtens.session.get('activeProject')}) : undefined;
+                var groupsActiveProject = activeProject && activeProject.groups ? _.map(activeProject.groups,'id') : undefined;
+                var groupsOperator = operatorRes && _.uniq(_.map(operatorRes[0].groups, 'id'));
+                var groupId = groupsActiveProject ? _.intersection(groupsActiveProject, groupsOperator) : groupsOperator;
                 var $dataTypesDeferred = dataTypes.fetch({
                     data: $.param({ populate: ['children','superType'] })
                 });
@@ -342,16 +344,8 @@
                     data: $.param({group: groupId, limit:100})
                 });
 
-                // var $dataDeferred = data.fetch({
-                //     data: $.param(_.assign(_.omit(queryParams, ['parentDataType', 'parentSubjectCode']), { // omit "parentSubjectCode" as param in server-side GET request
-                //         populate: ['type'],
-                //         limit: xtens.module("xtensconstants").DefaultLimit
-                //         sort: 'created_at DESC'
-                //     }))
-                // });
-
                 $.when($dataTypesDeferred, $privilegesDeferred).then(function(dataTypesRes, privilegesRes) {
-                    var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
+
                     $.ajax({
                         url: '/data',
                         type: 'GET',
@@ -362,7 +356,7 @@
                             parentData: queryParams.parentData,
                             parentSample: queryParams.parentSample,
                             parentSubject: queryParams.parentSubject,
-                            project: idProject,
+                            project: activeProject ? activeProject.id : undefined,
                             populate: ['type'],
                             limit: xtens.module("xtensconstants").DefaultLimit
 ,
@@ -588,14 +582,16 @@
             var privileges = new DataTypePrivileges.List();
             var operator = new Operator.List();
             var dataTypes = new DataType.List();
-            var subjects = new Subject.List();
             var that = this;
             var $operatorDeferred = operator.fetch({
                 data: $.param({login: xtens.session.get("login"), populate: ['groups']})
             });
 
             $.when($operatorDeferred).then(function(operatorRes) {
-                var groupId = operatorRes && operatorRes[0].groups[0].id;
+                var activeProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'), { 'name': xtens.session.get('activeProject')}) : undefined;
+                var groupsActiveProject = activeProject && activeProject.groups ? _.map(activeProject.groups,'id') : undefined;
+                var groupsOperator = operatorRes && _.uniq(_.map(operatorRes[0].groups, 'id'));
+                var groupId = groupsActiveProject ? _.intersection(groupsActiveProject, groupsOperator) : groupsOperator;
                 var $privilegesDeferred = privileges.fetch({
                     data: $.param({group: groupId, limit:100})
                 });
@@ -603,7 +599,6 @@
                     data: $.param({ populate: ['children','superType'] })
                 });
                 $.when($dataTypesDeferred, $privilegesDeferred).then(function(dataTypesRes, privilegesRes) {
-                    var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
                     $.ajax({
                         url: '/subject',
                         type: 'GET',
@@ -611,7 +606,7 @@
                             'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                         },
                         data: {
-                            project: idProject,
+                            project: activeProject ? activeProject.id : undefined,
                             populate: ['type'],
                             limit: xtens.module("xtensconstants").DefaultLimit,
                             sort: 'created_at DESC'
@@ -719,7 +714,7 @@
             //     data: $.param({ populate: ['children'] })
             // });
             // $.when($dataTypesDeferred).then(function(dataTypesRes) {
-            var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
+            var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'), { 'name': xtens.session.get('activeProject')}).id : undefined;
             $.ajax({
                 url: '/subject',
                 type: 'GET',
@@ -772,7 +767,10 @@
             });
 
             $.when($operatorDeferred).then( function(operatorRes) {
-                var groupId = operatorRes && operatorRes[0].groups[0].id;
+                var activeProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'), { 'name': xtens.session.get('activeProject')}) : undefined;
+                var groupsActiveProject = activeProject && activeProject.groups ? _.map(activeProject.groups,'id') : undefined;
+                var groupsOperator = operatorRes && _.uniq(_.map(operatorRes[0].groups, 'id'));
+                var groupId = groupsActiveProject ? _.intersection(groupsActiveProject, groupsOperator) : groupsOperator;
                 var $privilegesDeferred = privileges.fetch({
                     data: $.param({group: groupId, limit:100})
                 });
@@ -781,7 +779,6 @@
                 });
 
                 $.when($dataTypesDeferred, $privilegesDeferred).then( function(dataTypesRes, privilegesRes) {
-                    var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
 
                     $.ajax({
                         url: '/sample',
@@ -793,7 +790,7 @@
                             donor: queryParams.donor,
                             parentData: queryParams.parentData,
                             parentSample: queryParams.parentSample,
-                            project: idProject,
+                            project: activeProject ? activeProject.id : undefined,
                             populate: ['type', 'donor'],
                             limit: xtens.module("xtensconstants").DefaultLimit,
                             sort: 'created_at DESC'
@@ -922,7 +919,7 @@
             var dataTypes = new DataType.List();
             var biobanks = new Biobank.List();
             var that = this;
-            var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'),function (p) { return p.name === xtens.session.get('activeProject'); }).id : undefined;
+            var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'), { 'name': xtens.session.get('activeProject')}).id : undefined;
             var criteria = {
                 populate:['children', 'superType'],
                 sort: 'id ASC'

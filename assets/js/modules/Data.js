@@ -1206,9 +1206,9 @@
         addLinksToModels: function() {
             _.each(this.data.models, function(data) {
                 var privilege = _.find(this.dataTypePrivileges, function(model){ return model.get('dataType') === data.get("type");});
-                if(privilege.get('privilegeLevel') === "edit" ){
+                if(privilege && privilege.get('privilegeLevel') === "edit" ){
                     data.set("editLink", "#/data/edit/" + data.id);}
-                if(privilege.get('privilegeLevel') !== "view_overview" ){
+                if(privilege && privilege.get('privilegeLevel') !== "view_overview" ){
                     data.set("detailsLink", "#/data/details/" + data.id);}
                 var type = this.dataTypes.get(data.get("type"));
                 var dataTypeChildren = _.where(type.get("children"), {"model": Classes.DATA});

@@ -512,6 +512,8 @@
                 if (privilege && privilege.get('privilegeLevel') === "edit") {
                     sample.set("editLink", "#/samples/edit/" + sample.id);
                 }
+                if(privilege && privilege.get('privilegeLevel') !== "view_overview" ){
+                    sample.set("detailsLink", "#/samples/details/" + sample.id);}
                 var typeId = sample.get("type");
                 var type = this.dataTypes.get(typeId);
                 if (type && type.get("children") && type.get("children").length > 0) {
