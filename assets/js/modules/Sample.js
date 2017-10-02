@@ -206,6 +206,7 @@
             this.dataTypes = options.dataTypes || [];
             this.biobanks = options.biobanks || [];
             this.subjects = options.subjects || [];
+            this.operators = options.operators ? options.operators : [];
             if (options.sample) {
                 this.model = new Sample.Model(options.sample);
             } else {
