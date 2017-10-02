@@ -87,7 +87,7 @@ const coroutines = {
         typeIds = _.uniq(_.map(arrData, 'type'));
 
       //retrieve datatypes of datum
-        let dataTypes = yield DataType.find({select: ['schema','id'], where: {id: typeIds}}).populate('superType');
+        let dataTypes = yield DataType.find({select: ['id'], where: {id: typeIds}}).populate('superType');
 
           //if canAccessSensitiveData is true or metadata is Empty skip the function and return data
         if(!canAccessSensitiveData || (!_.isEmpty(arrData[0].metadata) && !arrData[1])){

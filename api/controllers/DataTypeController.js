@@ -68,8 +68,8 @@ const coroutines = {
             throw new PrivilegesError('User has not privilege as Admin on this project');
         }
 
-        if (!dataType.name) dataType.name = dataType.schema && dataType.schema.name;
-        if (!dataType.model) dataType.model = dataType.schema && dataType.schema.model;
+        if (!dataType.name) dataType.name = dataType.superType.schema && dataType.superType.schema.name;
+        if (!dataType.model) dataType.model = dataType.superType.schema && dataType.superType.schema.model;
         if(dataType.parents){
             const idParents = _.isObject(dataType.parents[0]) ? _.map(dataType.parents,'id') : dataType.parents;
             const idProject = _.isObject(dataType.project) ? dataType.project.id : dataType.project;

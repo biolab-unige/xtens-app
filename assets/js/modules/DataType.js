@@ -232,6 +232,7 @@
             if (this.idDataType) {
                 $("#schema-title-icon").append('<i class="fa fa-lock fa-lg right"></i>');
                 if (this.duplicate) {
+                    $("#model").attr("disabled", true);
                     $("#schemaBody :input").attr("disabled", true);
                     $(".add-metadata-group").attr("disabled", true);
                     $('#collapse-schema').collapse('show');
