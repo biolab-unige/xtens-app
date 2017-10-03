@@ -199,6 +199,7 @@
             if (this.personalDetailsView && this.personalDetailsView.model) {
                 this.model.set("personalInfo", _.clone(this.personalDetailsView.model.attributes));
             }
+            this.model.get("notes") === "" ? this.model.set("notes", null) : null;
             this.model.get("owner").id ? this.model.set("owner", this.model.get("owner").id) : null;
 
             this.model.save(null, {

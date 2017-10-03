@@ -243,10 +243,10 @@
                 this.$modal = this.$(".sample-modal");
                 var metadata = this.schemaView.serialize(useFormattedNames);
                 this.model.set("metadata", metadata);
-        // this.model.set("type", this.model.get("type").id); // trying to send only the id to permorf POST or PUT
+                this.model.get("notes") === "" ? this.model.set("notes", null) : null;
                 this.retrieveAndSetFiles();
                 this.model.get("owner").id ? this.model.set("owner", this.model.get("owner").id) : null;
-        // console.log(this.model);
+
                 this.model.save(null, {
                     success: function(data) {
 
