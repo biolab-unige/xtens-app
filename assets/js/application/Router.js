@@ -954,7 +954,40 @@
          * @description loads the view to upload data that is automatically extracted on the server-side
          */
         dedicatedDataManagement: function() {
-            this.loadView(new Data.Views.DedicatedManagement());
+            var procedures = xtens.module("xtensconstants").Procedures;
+            var privileges = new DataTypePrivileges.List();
+            var operator = new Operator.List();
+            var dataTypes = new DataType.List();
+            var that = this;
+            var idProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'), { 'name': xtens.session.get('activeProject')}).id : undefined;
+            var idSuperTypeProcedures = _.map( procedures, 'superType');
+
+            var criteria = {
+                superType : idSuperTypeProcedures,
+                sort: 'id ASC'
+            };
+            idProject ? criteria.project = idProject : null;
+            var $operatorDeferred = operator.fetch({
+                data: $.param({login: xtens.session.get("login"), populate: ['groups']})
+            });
+
+            var $dataTypesDeferred = dataTypes.fetch({ data: $.param(criteria) });
+            $.when($dataTypesDeferred, $operatorDeferred).then( function(dataTypesRes, operatorRes) {
+                var groupId = operatorRes && _.uniq(_.map(operatorRes[0][0].groups, 'id'));
+                var dataTypesId = _.map(dataTypesRes && dataTypesRes[0], 'id');
+                var $privilegesDeferred = privileges.fetch({
+                    data: $.param({dataType : dataTypesId, group: groupId, privilegeLevel: 'edit'})
+                });
+                $.when($privilegesDeferred).then( function(privilegesRes) {
+                    that.loadView(new Data.Views.DedicatedManagement({
+                        dataTypes: new DataType.List(dataTypesRes && dataTypesRes[0]),
+                        dataTypePrivileges: new DataTypePrivileges.List(privilegesRes)
+                    }));
+                }, function(jqxhr) {
+                    xtens.error(jqxhr);
+                });
+            });
+
         }
 
     });

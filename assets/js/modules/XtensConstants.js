@@ -23,6 +23,12 @@
         DATA: 'Data'
     };
 
+    XtensConstants.Procedures = [
+        {label:'CGH', value:'CGH', superType: 8},
+        {label:'NB Clinical information', value:'CBINFO', superType: 16},
+        {label:'VCF', value:'VCF', superType: 112}
+    ];
+
     XtensConstants.FieldTypes = {
         TEXT: 'Text',
         INTEGER: 'Integer',
