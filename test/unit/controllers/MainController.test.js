@@ -47,19 +47,22 @@ describe('OperatorController', function() {
     });
 
     describe('POST /customisedData', function() {
-        it('Should return OK 200 with the file system connection', function(done) {
-            let expectedFileSystemConn = sails.hooks['persistence'].getFileSystem().defaultConnection;
+        it('Should return OK 200', function(done) {
+            // let expectedFileSystemConn = sails.hooks['persistence'].getFileSystem().defaultConnection;
 
             request(sails.hooks.http.app)
             .post('/customisedData')
+            .set('Authorization', `Bearer ${tokenSA}`)
             .send({
-                dataType: 'TEST'
+                dataType: 'TEST',
+                superType: 2,
+                idProject: 1
             })
             .expect(200)
             .end(function(err, res) {
-                // console.log(err,res);
+                console.log(err,res);
                 if (err) {
-                    sails.log.error(err);
+                    // sails.log.error(err);
                     done(err);
                     return;
                 }
@@ -82,6 +85,6 @@ describe('OperatorController', function() {
                 return;
             });
         });
-        
+
     });
 });

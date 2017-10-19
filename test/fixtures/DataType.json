@@ -9,6 +9,7 @@
     "id": 2,
     "name": "Tissue",
     "model": "Sample",
+    "parents": 1,
     "project":1,
     "superType": 2
   },

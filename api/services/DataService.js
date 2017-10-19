@@ -245,6 +245,9 @@ let DataService = BluebirdPromise.promisifyAll({
             case FieldTypes.DATE:
                 value = Joi.string().isoDate();
                 break;
+            case FieldTypes.LINK:
+                value = Joi.string().trim();
+                break;
                 // default is TEXT
             default:
                 value = Joi.string();

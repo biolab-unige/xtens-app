@@ -1,6 +1,13 @@
 /**
+ *  @module
+ *  @name SuperTypeService
  *  @author Nicolò Zanardi
  */
+/* jshint esnext: true */
+/* jshint node: true */
+/* globals _, sails, DataType*/
+"use strict";
+
 var BluebirdPromise = require('bluebird');
 
 const coroutines = {

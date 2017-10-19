@@ -15,6 +15,7 @@
  let customisedDataMap = new Map();
  customisedDataMap.set('CGH', '../migrate-utils/createCGH.js');
  customisedDataMap.set('CBINFO', '../migrate-utils/updateCBInfo.js');
+ customisedDataMap.set('VCF', '../migrate-utils/createVCF.js');
 
  module.exports = {
 

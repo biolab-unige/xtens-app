@@ -23,7 +23,12 @@
             if (_.isArray(details)){
               //error.message is object and has details
                 var path = details[0].path.split(".");
-                body = path[0] + " " + path[1].toUpperCase() + " " + details[0].message;
+                if (path[1]){
+                    body = path[0] + " " + path[1].toUpperCase() + " " + details[0].message;
+                }else {
+                    body = details[0].message;
+                }
+
             }
             else{
               //error.message is a string

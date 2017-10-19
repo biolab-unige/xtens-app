@@ -57,6 +57,7 @@ module.exports.xtens = {
 
         FieldTypes: {
             TEXT: 'Text',
+            LINK: 'Link',
             INTEGER: 'Integer',
             FLOAT: 'Float',
             BOOLEAN: 'Boolean',

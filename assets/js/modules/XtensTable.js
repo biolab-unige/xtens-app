@@ -292,6 +292,11 @@
                               return  renderDatatablesBoolean(data);
                           };
                           break;
+                      case "Link":    // if the column has dates render them in the desired format
+                          columnOpts.render = function ( data ) {
+                              return  data = '<a href="' + data + '" target="_blank">' + data + '</a>';
+                          };
+                          break;
                   }
 
                   this.columns.push(columnOpts);
@@ -319,7 +324,6 @@
               this.addLinks(this.optLinks);
 
               this.tableOpts = {
-                // processing:     true,
                   data:           this.data,
                   columns:        this.columns,
                   info:           true,
@@ -407,8 +411,12 @@
 
           insertPersonalDetailsColumns: function() {
               return [
-                {"title": i18n("surname"), "data": "surname"},
-                {"title": i18n("given-name"), "data": "given_name"},
+                {"title": i18n("surname"), "data": function ( data ) {
+                    return  data.surname ? data.surname : "";
+                }},
+                {"title": i18n("given-name"), "data": function ( data ) {
+                    return  data.given_name ? data.given_name : "";
+                }},
                 {"title": i18n("birth-date"), "data": "birth_date", "render": renderDatatablesDate}
               ];
           },

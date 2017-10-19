@@ -22,6 +22,7 @@
     var replaceUnderscoreAndCapitalize = xtens.module("utils").replaceUnderscoreAndCapitalize;
     // var dateUtil = xtens.module("utils").date;
     var ModalDialog = xtens.module("xtensbootstrap").Views.ModalDialog;
+    var procedures = xtens.module("xtensconstants").Procedures;
 
     var MISSING_VALUE_ALERT = true;
 
@@ -564,6 +565,9 @@
                     break;
                 case FieldTypes.FLOAT:
                     this.$fieldValue.attr("data-parsley-type", "number");
+                    break;
+                case FieldTypes.LINK:
+                    this.$fieldValue.attr("data-parsley-type", "url");
                     break;
                 case FieldTypes.DATE:
                     this.initDatepicker();
@@ -1340,10 +1344,12 @@
         tagName: 'div',
         className: 'data',
 
-        initialize: function() {
+        initialize: function(options) {
             _.bindAll(this, 'saveOnSuccess');
             $("#main").html(this.el);
             this.template = JST["views/templates/dedicated-data-edit.ejs"];
+            this.dataTypes = options.dataTypes && options.dataTypes.toJSON();
+            this.privileges = options.dataTypePrivileges && options.dataTypePrivileges.toJSON();
             this.render();
             this.$modal = this.$(".customised-data-modal");
         },
@@ -1357,8 +1363,20 @@
         },
 
         render: function() {
+            var that = this;
+            var textHtml = "";
             this.$el.html(this.template({__: i18n}));
-            $("#data-type").selectpicker();
+            _.forEach(procedures, function (procedure) {
+                var dt = _.find(that.dataTypes, function(dt){ return dt.superType.id === procedure.superType; });
+                if( dt && _.find(that.privileges, { 'dataType': dt.id } )){
+                    textHtml = textHtml + '<option value=\"' + procedure.value + '\">' + procedure.label +'</option>';
+                }
+            });
+            $("#data-type").html(textHtml).selectpicker();
+            if ( xtens.session.get('activeProject') === 'all') {
+                this.$("#save").prop("disabled", true);
+                this.$("#save").prop('title', 'Select a specific project to perform a procedure');
+            }
             this.$('form').parsley(parsleyOpts);
             this.dropzone = new Dropzone(this.$(".dropzone")[0], this.dropzoneOpts);
 
@@ -1381,7 +1399,8 @@
 
         saveCustomisedData: function(ev) {
             ev.preventDefault();
-            var that = this, dataType = this.$("select option:selected").val();
+            var that = this, dataType = this.$("select option:selected").val(), superType = _.find(procedures, {'value': dataType}).superType, owner = _.find(procedures, {'value': dataType}).owner;
+            var activeProject = xtens.session.get('activeProject') !== 'all' ? _.find(xtens.session.get('projects'), { 'name': xtens.session.get('activeProject')}) : undefined;
             $.ajax({
                 url: '/customisedData',
                 type: 'POST',
@@ -1389,7 +1408,11 @@
                     'Authorization': 'Bearer ' + xtens.session.get("accessToken")
                 },
                 data: JSON.stringify({
-                    dataType: dataType
+                    dataType: dataType,
+                    superType: superType,
+                    owner: owner,
+                    idProject: activeProject && activeProject.id
+
                 }),
                 contentType: 'application/json',
 
