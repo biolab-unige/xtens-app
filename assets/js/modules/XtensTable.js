@@ -55,7 +55,10 @@
               "mouseover .xtenstable-files": "showFileList",
               "click .xtenstable-derivedsamples": "showDerivedSampleList",
               "click .xtenstable-deriveddata": "showDerivedDataList",
-              "click .xtenstable-subjectgraph": "showSubjectGraph"
+              "click .xtenstable-subjectgraph": "showSubjectGraph",
+              "mouseover td.project-owner": "showTooltipOwner",
+              "click td.project-owner": "showPopoverOwner"
+
           },
 
           tagName: 'table',
@@ -114,6 +117,55 @@
               }
           },
 
+          showTooltipOwner: function (ev) {
+              ev.stopPropagation();
+              $(ev.currentTarget).tooltip({
+                  position: {
+                      my: 'right center',
+                      at: 'left-10 center'
+                  },
+                  container: 'body',
+                  title: i18n("click-to-show-owner-contacts")
+              }).tooltip('show');
+          },
+
+          showPopoverOwner: function (ev) {
+              ev.stopPropagation();
+              var that = this;
+              var data = this.table.row( $(ev.currentTarget).parents('tr') ).data();
+              var projects = xtens.session.get("projects");
+              var project = _.filter(projects,function (pr) {
+                  var dt = that.multiProject ? _.find(that.dataType.models, {'id': data.type}) : that.dataType;
+                  return pr.id === dt.get('project');
+              });
+
+              var owner = new Operator.Model({id: data.owner});
+              var ownerDeferred = owner.fetch({
+                  data: $.param({populate:['addressInformation']})
+              });
+
+              $.when(ownerDeferred).then(function(ownerRes) {
+                  if (that.modal) {
+                      that.modal.hide();
+                  }
+                  var modal = new ModalDialog({
+                      template: JST["views/templates/address-modal.ejs"],
+                      data: { __: i18n, project: project[0], data: data, owner: ownerRes, address: ownerRes.addressInformation }
+                  });
+
+                  that.$modal.append(modal.render().el);
+                  modal.show();
+
+                  that.$('.query-modal').on('hidden.bs.modal', function (e) {
+                      modal.remove();
+                      $('.modal-backdrop').remove();
+                  });
+              });
+
+
+
+          },
+
         /**
          * @method
          * @name displayDataTable
@@ -155,49 +207,6 @@
                       ]
                   });
                   this.table.buttons().container().appendTo($('.col-sm-6:eq(0)', this.table.table().container()));
-
-                  $('td.project-owner').tooltip({
-                      position: {
-                          my: 'right center',
-                          at: 'left-10 center'
-                      },
-                      container: 'body',
-                      title: i18n("click-to-show-owner-contacts")
-                  });
-
-                  $('td.project-owner').on('click', function (ev) {
-                      ev.stopPropagation();
-                      var data = that.table.row( $(ev.currentTarget).parents('tr') ).data();
-                      var projects = xtens.session.get("projects");
-                      var project = _.filter(projects,function (pr) {
-                          var dt = that.multiProject ? _.find(that.dataType.models, {'id': data.type}) : that.dataType;
-                          return pr.id === dt.get('project');
-                      });
-
-                      var owner = new Operator.Model({id: data.owner});
-                      var ownerDeferred = owner.fetch({
-                          data: $.param({populate:['addressInformation']})
-                      });
-
-                      $.when(ownerDeferred).then(function(ownerRes) {
-                          if (that.modal) {
-                              that.modal.hide();
-                          }
-                          var modal = new ModalDialog({
-                              template: JST["views/templates/address-modal.ejs"],
-                              data: { __: i18n, project: project[0], data: data, owner: ownerRes, address: ownerRes.addressInformation }
-                          });
-
-                          that.$modal.append(modal.render().el);
-                          modal.show();
-
-                          that.$('.query-modal').on('hidden.bs.modal', function (e) {
-                              modal.remove();
-                              $('.modal-backdrop').remove();
-                          });
-                      });
-
-                  } );
 
               }
 

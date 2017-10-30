@@ -255,7 +255,7 @@ let DataTypeService = {
                 name: Joi.string().required(),
                 description: Joi.string().required(),
                 model: Joi.string().valid(_.values(constants.DataTypeClasses)),
-                project: Joi.number().integer().required(),
+                project: Joi.number().integer().allow(null),
                 fileUpload: Joi.boolean().required(),
                 version: Joi.string().allow(""),
                 ontology: Joi.string().allow("")
