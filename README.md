@@ -4,9 +4,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/biolab-unige/xtens-app/badge.svg?branch=master&etc=1)](https://coveralls.io/github/biolab-unige/xtens-app?branch=master)
 
 
-To migrate from XTENS 2.0 to **2.1** follow the link: [guide](https://github.com/biolab-unige/xtens-app/blob/master/docs/migration_guide_to_2_1.md)
-
-
 XTENS 2 is an open source web-based digital repository for heterogeneous data in life science.
 
 It is designed with the following features:
@@ -30,9 +27,9 @@ The following software packages are required to be installed on your system:
 
 * <a href="https://www.postgresql.org/"><img src="https://cloud.githubusercontent.com/assets/14332186/22330780/2e1b4b4a-e3c8-11e6-84f0-6cf256719e01.png" width="60"></a>   [PostgreSQL 9.5+](http://www.postgresql.org/);
 
-* <a href="http://bower.io/"><img src="https://cloud.githubusercontent.com/assets/14332186/22330443/8bda895a-e3c6-11e6-9809-2d0e50c537b6.png" width="50"></a>   [Bower](http://bower.io/). 
+* <a href="http://bower.io/"><img src="https://cloud.githubusercontent.com/assets/14332186/22330443/8bda895a-e3c6-11e6-9809-2d0e50c537b6.png" width="50"></a>   [Bower](http://bower.io/).
 
-* <a href="https://gruntjs.com/"><img src="https://cloud.githubusercontent.com/assets/14332186/23852502/76eeb570-07e8-11e7-9643-fc6ee8f58a84.png" width="50"></a>   [Grunt](https://gruntjs.com/). 
+* <a href="https://gruntjs.com/"><img src="https://cloud.githubusercontent.com/assets/14332186/23852502/76eeb570-07e8-11e7-9643-fc6ee8f58a84.png" width="50"></a>   [Grunt](https://gruntjs.com/).
 
 
 ## Installation (ubuntu server):
@@ -40,38 +37,38 @@ The following software packages are required to be installed on your system:
 * Download the file .zip or Clone the repository:
 
         git clone https://github.com/biolab-unige/xtens-app.git
-        
+
 * Move into xtens-app directory:
 
         cd xtens-app
-        
+
 * Install npm packages:
 
         npm [sudo] install sails -g
-        
+
         npm install && npm install sails
-        
+
         npm [sudo] install grunt-cli -g
-        
+
         npm [sudo] install bower -g
-        
+
 * Install ruby and sass       
 
         [sudo] apt-get install ruby
-        
+
         [sudo] gem install sass
-        
+
 * Install bower packages:
 
         bower install
-        
+
 * Load the bower packages:
 
         grunt bower
 * Create logs folder
 
         mkdir logs
-        
+
 ## Database Configuration:
 
 Now configure PostgreSQL:
@@ -83,7 +80,7 @@ Now configure PostgreSQL:
 * Import the sql-schema located in xtens-app/db-schema/ into database
 
 
-Then create a file named ```local.js``` in the ```config/``` directory. This config file should include any settings specific of your local system/setup (db passwords, operators etc.). 
+Then create a file named ```local.js``` in the ```config/``` directory. This config file should include any settings specific of your local system/setup (db passwords, operators etc.).
 
 In the minimal setup it should contain the following information, including two default users with two user groups (admin and general user).
 
@@ -145,18 +142,18 @@ In the minimal setup it should contain the following information, including two 
                 }
             ]
     };
-    
+
 Last set your connection  in ```config/models.js``` file
 
 
     module.exports.models = {
-    
+
         migrate: 'safe',      
         connection: 'postgresql'  // your db connection name
 
     };
-    
-    
+
+
 ## FileSystem Configuration:
 You can choose among two options to store raw/bulk data files:
 
@@ -179,9 +176,9 @@ e.g:
         },
 
         fileSystemConnections: {
-    
+
             'default': 'localConnection',
-    
+
             localConnection: {
                 type: 'local',             
                 path: '/filesystem/home/path/',   // your fs home path
@@ -189,23 +186,23 @@ e.g:
                 landingDirectory: 'landing',   // landing directory name
             }
         },
-        
+
         defaultOperators: [{    ...    }]
     };
-    
+
 Second choice:
 ### Irods FileSystem
 This is the supported solution for distribuited data grid scenarios, using iRODS (https://irods.org/)
 Irods File System Prerequisities:
 * Irods Data Grid
 * Tomcat Server
-    * Java 
+    * Java
 * Irods Rest Api
 
 #### Irods
 Install and configure irods following the official guide at: https://docs.irods.org/4.1.10/
-        
-#### Tomcat 
+
+#### Tomcat
 
 Before install tomcat, must be install Java environment
 ##### Java
@@ -216,7 +213,7 @@ Before install tomcat, must be install Java environment
         sudo add-apt-repository ppa:webupd8team/java
         sudo apt-get update
         sudo apt-get install oracle-java7-installer
-        
+
 - Set env variable $JAVA_HOME in /etc/environment
 
 
@@ -224,20 +221,20 @@ Before install tomcat, must be install Java environment
         sudo nano /etc/environment
         JAVA_HOME=/usr/lib/jvm/java-7-oracle        // e.g. line to be added
         source /etc/environment
-      
+
 Now can install Tomcat Server (7th version): follow any installation guide like [this](https://www.digitalocean.com/community/tutorials/how-to-install-apache-tomcat-7-on-ubuntu-14-04-via-apt-get).
 
 #### Irods Rest Api
 * Install maven to build the tomcat package:
 
         sudo apt-get purge maven maven2 maven3
-        sudo apt-add-repository ppa:andrei-pozolotin/maven3 
+        sudo apt-add-repository ppa:andrei-pozolotin/maven3
         sudo apt-get update sudo apt-get install maven3
 
 * Download the zip file or clone the repo:
 
         git clone https://github.com/DICE-UNC/irods-rest.git
-        
+
 * Edit the config file jargon_beans.xml located in /irods-rest/src/main/resources/ with the right settings
 
         sudo nano /irods-rest/src/main/resources/jargon_beans.xml
@@ -264,16 +261,16 @@ e.g:
         },
 
         fileSystemConnections: {
-    
+
             'default': 'irodRestConn',
-    
+
             irodRestConn: {
                 type: 'irods-rest',            
                  restURL: {                     // irods-rest url
                     protocol:'http:',               // protocol
                     hostname: 'host',               // tomcat ip host
                     port: 8080,                     // tomcat port
-                    path: '/irods-rest/rest'        // path 
+                    path: '/irods-rest/rest'        // path
                 },
                 irodsHome: '/nameZone/home/rods',   // irods home path
                 repoCollection: 'xtens-repo',   // irods default Collection name
@@ -286,7 +283,7 @@ e.g:
     defaultOperators: [{    ...    }]
 };
 
-        
+
 ## Starting Application:
 
 You need to be in xtens-app directory:
@@ -303,18 +300,15 @@ or:
 To ensure that XTENS 2 will be executed without interrupts, install a simple CLI tool like ForeverJS:
 
         $ [sudo] npm install forever -g
-        
+
 and now you can start your XTENS 2 Platform:
 
         NODE_ENV=production forever start app.js
-        
+
 Now you can go to the application page http://host:port/#/. (the host is the ip address that you set in local.js and port is the "port: process.env.PORT || #port;" that you set in local.js).
 
 To discover XTENS 2 RESTful API follow the link: [RESTful API](http://docs.xtens2.apiary.io)
 
+To migrate from XTENS 2.0 to **2.1** follow the link: [guide](https://github.com/biolab-unige/xtens-app/blob/master/docs/migration_guide_to_2_1.md)
+
 XTENS 2 is published under the BSD 3-clause License.
-
-
-
-
-
