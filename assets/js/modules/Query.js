@@ -1334,7 +1334,6 @@
                     url: '/query/dataSearch',
                     data: 'queryArgs='+JSON.stringify(queryArgs)+'&isStream='+JSON.stringify(isStream),
                     success: function (results) {
-
                         that.initializeDataTable(results,queryArgs);
                     },
                     error: this.queryOnError
