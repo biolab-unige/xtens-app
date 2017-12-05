@@ -57,7 +57,7 @@ var jsFilesToInject = [
     'dependencies/**/buttons.bootstrap.js',
     'dependencies/**/buttons.html5.js',
     'dependencies/**/jszip.js',
-    'dependencies/**/buttons.colvis.js',
+    'dependencies/**/buttons.colVis.js',
     'dependencies/**/async.js',
     'dependencies/**/d3.js',
     'dependencies/d3-tip/index.js',

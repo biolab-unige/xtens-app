@@ -279,6 +279,7 @@
         "add-loop-condition": "Add Loop Condition",
         "add-nested-condition": "Add Nested Condition",
         "multi-project-serach": "Multi Project",
+        "get-metadata": "Get Metadata",
         /* views/templates/data-table.ejs */
         "overall-status": "Overall Status",
         "diagnosis-age": "Diagnosis Age",
@@ -344,8 +345,6 @@
         "cnew-password": "Confirm New Password",
         "change-password": "Change Password",
         "password-correctly-changed-on-server": "Password correctly changed on server"
-
-
     };
 
     var it = {};

@@ -65,21 +65,42 @@
           className: 'query-table',
 
           initialize: function(options) {
-              if (!options || !options.dataType) {
-                  throw new Error("Missing required options: dataType");
+              // var that = this;
+              if (!options || !options.result.dataTypes) {
+                  throw new Error("Missing required options: dataTypes");
               }
-              this.multiProject = _.isArray(options.dataType) ? this.multiProject = true : false;
-              this.dataType = this.multiProject? new DataType.List(options.dataType) : new DataType.Model(options.dataType);
-            // console.log(options.data);
-              this.data = options.data;
+              // this.multiProject = _.isArray(options.result.dataTypes) ? true : false;
+              this.multiProject = options.multiProject;
+              this.dataTypes = _.isArray(options.result.dataTypes) ? new DataType.List(options.result.dataTypes) : new DataType.Model(options.result.dataTypes);
+              this.dataTypePrivileges = options.result.dataTypePrivileges;
+            // console.log(options.result.data);
+              this.isLeafSearch = options.leafSearch.isLeafSearch;
+              this.leafInfo = options.leafSearch.info;
+              this.queryArgs = options.queryArgs;
+
+              var results = this.getCurrentTypeAndPrivileges(options.queryArgs.dataType);
+              this.rootDataType = results.dt;
+
+              this.data = options.result.data;
               this.$modal = $(".query-modal");
-              this.dataTypePrivilege = options.dataTypePrivilege;
-              // this.childrenViews = [];
-              this.prepareDataForRenderingJSON(this.dataTypePrivilege);
+              this.prepareDataForRenderingJSON(results.dtps, results.dts, this.queryArgs);
             // this.render();
           },
 
-
+          getCurrentTypeAndPrivileges: function (dataType) {
+              var currentDT = this.isLeafSearch || this.multiProject ? _.find(this.dataTypes.models, function (dt) {
+                  return dt.id === dataType;
+              }) : this.dataTypes;
+              var currentMDT = this.isLeafSearch || this.multiProject ? _.filter(this.dataTypes.models, function (dt) {
+                  return dt.get('superType').id === currentDT.get('superType').id;
+              }) : this.dataTypes;
+              var idDts = _.map(currentMDT,'id');
+              // var currentMDTP = [];
+              var currentMDTP = this.isLeafSearch || this.multiProject ? this.dataTypePrivileges.filter(function(dtp) {
+                  return idDts.indexOf(dtp.dataType) != -1;
+              }) : this.dataTypePrivileges;
+              return {dt: currentDT, dts: currentMDT, dtps: currentMDTP};
+          },
 
         /**
          * @method
@@ -105,12 +126,13 @@
 
         /**
          * @method
-         * @name addRowDataTable
+         * @name addRowsDataTable
          */
-          addRowDataTable: function(data) {
+          addRowsDataTable: function(data) {
               if (data) {
                   this.data = this.data.concat(data);
                   this.addLinks(this.optLinks);
+                  // TODO: disabilitare le actions per i multi projects
                   this.table.rows.add(data);
                   var currentPage = this.table.page();
                   this.table.page(currentPage).draw(false);
@@ -134,8 +156,8 @@
               var that = this;
               var data = this.table.row( $(ev.currentTarget).parents('tr') ).data();
               var projects = xtens.session.get("projects");
-              var project = _.filter(projects,function (pr) {
-                  var dt = that.multiProject ? _.find(that.dataType.models, {'id': data.type}) : that.dataType;
+              var project = _.find(projects,function (pr) {
+                  var dt = that.multiProject ? _.find(that.dataTypes.models, {'id': data.type}) : that.dataTypes;
                   return pr.id === dt.get('project');
               });
 
@@ -150,7 +172,7 @@
                   }
                   var modal = new ModalDialog({
                       template: JST["views/templates/address-modal.ejs"],
-                      data: { __: i18n, project: project[0], data: data, owner: ownerRes, address: ownerRes.addressInformation }
+                      data: { __: i18n, project: project, data: data, owner: ownerRes, address: ownerRes.addressInformation }
                   });
 
                   that.$modal.append(modal.render().el);
@@ -161,9 +183,6 @@
                       $('.modal-backdrop').remove();
                   });
               });
-
-
-
           },
 
         /**
@@ -172,165 +191,6 @@
          * @description show the datatable given the option object
          */
           displayDataTable: function() {
-              var that =this;
-              if (this.tableOpts && !_.isEmpty(this.tableOpts.data)) {
-                  this.table = this.$el.DataTable(this.tableOpts);
-
-                  if (this.tableOpts.columns.length>9){
-                      new $.fn.dataTable.FixedColumns(this.table, {
-                          leftColumns:this.numLeft,
-                          rightColumns:1
-                      });
-                  }
-                  else{
-                      this.tableOpts.fixedColumns=false;
-                  }
-                  //Generating an array with the right length of columns to export without action column
-                  this.numColExport = Array.apply(null, {length: this.tableOpts.columns.length - 1}).map(Function.call, Number);
-                // display the buttons option
-                  new $.fn.dataTable.Buttons(this.table, {
-                      buttons: [
-                          {
-                              extend: 'copy',
-                              exportOptions: {
-                                  orthogonal: 'export', // to export source data and not rendered data
-                                  columns:  this.numColExport //to not export action column
-                              }
-                          },
-                          {
-                              extend: 'excel',
-                              exportOptions: {
-                                  orthogonal: 'export', // to export source data and not rendered data
-                                  columns:  this.numColExport //to not export action column
-                              }
-                          }
-                      ]
-                  });
-                  this.table.buttons().container().appendTo($('.col-sm-6:eq(0)', this.table.table().container()));
-
-              }
-
-            // the returned dataset is empty
-              else {
-                  this.remove();
-              }
-          },
-
-        /**
-         * @method
-         * @name prepareDataForRenderingJSON
-         * @description Format the data according to the dataType schema and prepare data for visualization through DataTables
-         */
-          prepareDataForRenderingJSON: function(dataTypePrivilege) {
-            /*
-            if (!this.dataType) {
-                return; //TODO add alert box
-            } */
-              var fileUpload =  this.multiProject ? false : this.dataType.get("superType").schema.header.fileUpload;
-              var hasDataSensitive = false;
-              this.fieldsToShow = [];
-              var that = this;
-              var hasDataChildren = false, hasSampleChildren = false;
-              var dataTypeChildren = _.where(this.multiProject ? this.dataType.models[0].get("children") : this.dataType.get("children"), {"model": Classes.DATA});
-              var sampleTypeChildren = _.where(this.multiProject ? this.dataType.models[0].get("children") : this.dataType.get("children"), {"model": Classes.SAMPLE});
-              if (dataTypeChildren.length > 0) {
-                  hasDataChildren = true;
-              }
-              if (sampleTypeChildren.length > 0) {
-                  hasSampleChildren = true;
-              }
-              var selectedSuperType = new SuperType.Model(this.multiProject ? this.dataType.models[0].get("superType") : this.dataType.get("superType"));
-              var flattenedFields = selectedSuperType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
-              var model = this.multiProject ? this.dataType.models[0].get("model") : this.dataType.get("model");
-              this.columns = this.insertModelSpecificColumns(model, xtens.session.get('canAccessPersonalData'));
-              this.columns.push({"title": i18n("project-owner"), "data": function (data) {
-                  var projects = xtens.session.get("projects");
-                  var project = _.filter(projects,function (pr) {
-                      var dt = that.multiProject ? _.find(that.dataType.models, {'id': data.type}) : that.dataType;
-                      return pr.id === dt.get('project');
-                  });
-                  return project.length > 0 ? project[0].name : "No project";
-              }, "className": "project-owner"});
-
-              this.numLeft=this.columns.length;
-              // var highPrivilege = this.multiProject ? dataTypePrivilege[0] : dataTypePrivilege;
-              var dtpOverview = this.multiProject ? _.filter(dataTypePrivilege,function (dtp) { return dtp.privilegeLevel === VIEW_OVERVIEW;}) : dataTypePrivilege && dataTypePrivilege.privilegeLevel === VIEW_OVERVIEW ? true : false;
-              // if (!this.multiProject || (this.multiProject && dtpOverview && dtpOverview.length === dataTypePrivilege.length)) {
-              if(!dtpOverview || (this.multiProject && dtpOverview.length !== dataTypePrivilege.length)){
-                  flattenedFields.forEach(function(field) {
-                      if (field.sensitive) { hasDataSensitive = true; }
-                      if (!field.sensitive || xtens.session.get('canAccessSensitiveData') ) {
-                          that.fieldsToShow.push(field);
-                      }});
-              }
-              // }
-
-              this.optLinks = {dataTypePrivilege: dataTypePrivilege, hasDataSensitive : hasDataSensitive, fileUpload : fileUpload, hasDataChildren : hasDataChildren, hasSampleChildren : hasSampleChildren};
-
-              _.each(this.fieldsToShow, function(field) {
-                  var colTitle = field.name;
-
-                  var fieldName = useFormattedNames ? field.formattedName : field.name;
-
-                  var columnOpts = {
-                      "title": colTitle,
-                      "data": "metadata." + fieldName + ".value",
-                      "visible": field.visible,
-                      "defaultContent": ""
-                  };
-
-                        // if field is loop retrieve multiple values
-                  if (field._loop) {
-                      columnOpts.data = "metadata." + fieldName + ".values";
-                      var data = columnOpts.data;
-                      columnOpts.render = function (data, type, row) {
-                          return  type === 'export' ? data.join() : data ? data.length > 2 ? '<span>List on Details button</span>' : data.join() : null;
-                      };
-                      // columnOpts.render = function ( data ) {
-                      //     return  data && data.length > 2 ? '<span>List on Details button</span>' : data.join();
-                      // };
-
-                  }
-
-                  switch(field.fieldType) {
-                      case "Date":    // if the column has dates render them in the desired format
-                          columnOpts.render = renderDatatablesDate;
-                          break;
-                      case "Boolean":    // if the column has dates render them in the desired format
-                          columnOpts.render = function ( data ) {
-                              return  renderDatatablesBoolean(data);
-                          };
-                          break;
-                      case "Link":    // if the column has dates render them in the desired format
-                          columnOpts.render = function ( data ) {
-                              return  data = '<a href="' + data + '" target="_blank">' + data + '</a>';
-                          };
-                          break;
-                  }
-
-                  this.columns.push(columnOpts);
-
-                  if (field.hasUnit) {
-
-                      columnOpts = {
-                          "title": colTitle + " Unit",
-                          "data": "metadata." + fieldName + ".unit",
-                          "visible": field.visible,
-                          "defaultContent": ""
-                      };
-
-                            // if field is loop retrieve multiple units
-                      if (field._loop) {
-                          columnOpts.data = "metadata." + fieldName + ".units";
-                      }
-
-                      this.columns.push(columnOpts);
-                  }
-
-              }, this);
-
-            // add links
-              this.addLinks(this.optLinks);
 
               this.tableOpts = {
                   data:           this.data,
@@ -348,56 +208,305 @@
                   pagingType: "full_numbers" // DOES NOT WORK!!
               };
 
+              if (this.tableOpts && !_.isEmpty(this.tableOpts.data)) {
+                  this.table = this.$el.DataTable(this.tableOpts);
+
+                  if (this.tableOpts.columns.length>9){
+                      new $.fn.dataTable.FixedColumns(this.table, {
+                          leftColumns:this.numLeft,
+                          rightColumns: this.multiProject ? 0 : 1 //for multiProject search no available actions
+                      });
+                  }
+                  else{
+                      this.tableOpts.fixedColumns=false;
+                  }
+                  var buttons = [
+                      {
+                          extend: 'colvis',
+                          postfixButtons: [ 'colvisRestore' ]
+                      },
+                      {
+                          extend: 'copyHtml5',
+                          exportOptions: {
+                              orthogonal: 'export', // to export source data and not rendered data
+                              columns:  ':visible:not(.actions)' //to not export actions column
+                          }
+                      },
+                      {
+                          extend: 'excelHtml5',
+                          exportOptions: {
+                              orthogonal: 'export', // to export source data and not rendered data
+                              columns:  ':visible:not(.actions)' //to not export actions column
+                          }
+                      }
+                  ];
+                //TODO CREAZIONE BOTTONI SULLA BASE DI LEAF SEARCH
+                  this.colvisButtons.push(buttons);
+                  this.colvisButtons = _.flatten(this.colvisButtons);
+                  new $.fn.dataTable.Buttons(this.table, {
+                      buttons: this.colvisButtons
+                  });
+                  this.table.buttons().container().appendTo($('.col-sm-6:eq(0)', this.table.table().container()));
+
+              }
+
+            // the returned dataset is empty
+              else {
+                  this.remove();
+              }
+          },
+
+          /**
+           * @method
+           * @name prepareDataForRenderingJSON
+           * @description Format the data according to the dataType schema and prepare data for visualization through DataTables
+           */
+          prepareDataForRenderingJSON: function(dataTypePrivileges, dataTypes, queryArgs) {
+              var that = this;
+              this.colvisButtons = [];
+
+              var model = this.multiProject || this.isLeafSearch ? dataTypes[0].get("model") : dataTypes.get("model");
+              this.columns = this.insertModelSpecificColumns(model, xtens.session.get('canAccessPersonalData'));
+              if (this.multiProject) {
+                  this.columns.push({"title": i18n("project-owner"), "data": function (data) {
+                      var projects = xtens.session.get("projects");
+                      var project = _.filter(projects,function (pr) {
+                          var dt = that.multiProject || that.isLeafSearch ? _.find(that.dataTypes.models, {'id': data.type}) : that.dataTypes;
+                          return pr.id === dt.get('project');
+                      });
+                      return project.length > 0 ? project[0].name : "No project";
+                  }, "className": "project-owner"});
+              }
+              this.numLeft=this.columns.length;
+
+              var fileUpload =  !this.multiProject ? this.isLeafSearch ? dataTypes[0].get("superType").schema.header.fileUpload : dataTypes.get("superType").schema.header.fileUpload : false;
+              var hasDataChildren = false, hasSampleChildren = false;
+              var dataTypeChildren = !this.multiProject ?  _.where( this.isLeafSearch ? dataTypes[0].get("children") : dataTypes.get("children"), {"model": Classes.DATA}) : [];
+              var sampleTypeChildren = !this.multiProject ?  _.where( this.isLeafSearch ? dataTypes[0].get("children") : dataTypes.get("children"), {"model": Classes.SAMPLE}) : [];
+              if (dataTypeChildren.length > 0) {
+                  hasDataChildren = true;
+              }
+              if (sampleTypeChildren.length > 0) {
+                  hasSampleChildren = true;
+              }
+              this.optLinks = {dataTypes: dataTypes, dataTypePrivileges: dataTypePrivileges, hasDataSensitive : false, fileUpload : fileUpload, hasDataChildren : hasDataChildren, hasSampleChildren : hasSampleChildren};
+
+              this.prepareDataForRenderingJSONLeaf(dataTypePrivileges, dataTypes, queryArgs, queryArgs.dataType);
+
+              if (!this.multiProject) {
+                  this.addLinks(this.optLinks);
+              }
+          },
+
+          /**
+           * @method
+           * @name prepareDataForRenderingJSONLeaf
+           * @description Format the data according to the dataType schema and prepare data for visualization through DataTables
+           */
+          prepareDataForRenderingJSONLeaf: function (dataTypePrivileges, dataTypes, queryArgs, idDataType) {
+              var that = this;
+              if(queryArgs.getMetadata || idDataType) {
+                  var fieldsToShow = [];
+
+                  var selectedSuperType = new SuperType.Model(this.multiProject || this.isLeafSearch ? dataTypes[0].get("superType") : dataTypes.get("superType"));
+                  var flattenedFields = selectedSuperType.getFlattenedFields(); // get the names of all the madatafields but those within loops;
+
+                  var dtpOverview = this.multiProject || this.isLeafSearch ? _.filter(dataTypePrivileges, function (dtp) { return dtp.privilegeLevel === VIEW_OVERVIEW;}) : dataTypePrivileges && dataTypePrivileges.privilegeLevel === VIEW_OVERVIEW ? true : false;
+                  if(!dtpOverview || !dtpOverview.length || (this.multiProject && dtpOverview.length !== dataTypePrivileges.length)){
+                      flattenedFields.forEach(function(field) {
+                          if (field.sensitive && idDataType) { that.optLinks.hasDataSensitive = true; }
+                          if (!field.sensitive || xtens.session.get('canAccessSensitiveData') ) {
+                              fieldsToShow.push(field);
+                          }});
+                  }
+                  var className = "deafult-label";
+                  className = idDataType ? this.rootDataType.get('name').toLowerCase().replace(/[||\-*/,=<>~!^()\ ]/g,"_") : queryArgs.label;
+
+                  //set up colvis buttons for any leafs
+                  if (this.isLeafSearch) {
+                      var colvisButton = {
+                          extend: 'colvisGroup',
+                          text : 'Show only '
+                      };
+                      colvisButton.text =+ idDataType ? this.rootDataType.get('name') : queryArgs.title;
+                      colvisButton.show = '.' + className; //not(.actions)
+                      colvisButton.hide = ':not(.' + className + '):not(.header):not(.actions):not(.project-owner)';
+                      this.colvisButtons.push(colvisButton);
+                  }
+
+                  _.each(fieldsToShow, function(field) {
+                      var colTitle = field.name;
+                      var fieldName = useFormattedNames ? field.formattedName : field.name;
+                      var columnOpts = {
+                          "title": colTitle,
+                          "data": idDataType ? "metadata." + fieldName + ".value" : queryArgs.label + "." + fieldName + ".value",
+                          "visible": field.visible,
+                          "defaultContent": "",
+                          "className": className
+                      };
+                      // if field is loop retrieve multiple values
+                      if (field._loop) {
+                          columnOpts.data = idDataType ? "metadata." + fieldName + ".values" : queryArgs.label + "." + fieldName + ".values";
+                          columnOpts.render = function (data, type, row) {
+                              var priv = this.multiProject || this.isLeafSearch ? _.findWhere(dataTypePrivileges, {'dataType': row.type}) : dataTypePrivileges;
+                              if (priv && priv.privilegeLevel !== VIEW_OVERVIEW) {
+                                  return data && type === 'export' ? data.join() : data ? data.length > 2 ? '<span>List on Details button</span>' : data.join() : null;
+                              }
+                              else {
+                                  return null;
+                              }
+                          };
+                      }
+                      else {
+                          switch(field.fieldType) {
+                              case "Date":    // if the column has dates render them in the desired format
+                                  columnOpts.render = function (data,  type, row ) {
+                                      var priv = this.multiProject || this.isLeafSearch ? _.findWhere(dataTypePrivileges, {'dataType': row.type}) : dataTypePrivileges;
+                                      if (priv && priv.privilegeLevel !== VIEW_OVERVIEW) {
+
+                                          return renderDatatablesDate(data, type);
+                                      }
+                                      else {
+                                          return null;
+                                      }
+                                  };
+                                  break;
+                              case "Boolean":    // if the column has booleans render them in the desired format
+                                  columnOpts.render = function ( data,  type, row ) {
+                                      var priv = this.multiProject || this.isLeafSearch ? _.findWhere(dataTypePrivileges, {'dataType': row.type}) : dataTypePrivileges;
+                                      if (priv && priv.privilegeLevel !== VIEW_OVERVIEW) {
+                                          return renderDatatablesBoolean(data);
+                                      }
+                                      else {
+                                          return null;
+                                      }
+                                  };
+                                  break;
+                              case "Link":    // if the column has links render them in the desired format
+                                  columnOpts.render = function ( data, type, row ) {
+                                      var priv = this.multiProject || this.isLeafSearch ? _.findWhere(dataTypePrivileges, {'dataType': row.type}) : dataTypePrivileges;
+                                      if (priv && priv.privilegeLevel !== VIEW_OVERVIEW) {
+                                          return  data = '<a href="' + data + '" target="_blank">' + data + '</a>';
+                                      }
+                                      else {
+                                          return null;
+                                      }
+                                  };
+                                  break;
+                              default:      // if the column has numbers, texts, floats render them in the default format
+                                  columnOpts.render = function ( data, type, row ) {
+                                      var priv = this.multiProject || this.isLeafSearch ? _.findWhere(dataTypePrivileges, {'dataType': row.type}) : dataTypePrivileges;
+                                      if (priv && priv.privilegeLevel !== VIEW_OVERVIEW) {
+                                          return  data;
+                                      }
+                                      else {
+                                          return null;
+                                      }
+                                  };
+                                  break;
+                          }
+                      }
+
+                      this.columns.push(columnOpts);
+
+                      if (field.hasUnit) {
+                          columnOpts = {
+                              "title": colTitle + " Unit",
+                              "data": idDataType ? "metadata." + fieldName + ".unit" : queryArgs.label + "." + fieldName + ".unit",
+                              "visible": field.visible,
+                              "defaultContent": "",
+                              "className": className
+                          };
+
+                          // if field is loop retrieve multiple units
+                          if (field._loop) {
+                              columnOpts.data = idDataType ? "metadata." + fieldName + ".units" : queryArgs.label + "." + fieldName + ".units";
+                          }
+                          this.columns.push(columnOpts);
+                      }
+
+                  }, this);
+
+
+
+              }
+              else {
+                  this.setLeafIdColumns(queryArgs);
+              }
+              // handle leafs
+              if (this.isLeafSearch){
+                  var contents = queryArgs.content ? queryArgs.content : [];
+                  _.forEach( contents, function (content) {
+                      if (content.dataType) {
+                        // get right dataTypes and privileges of nested content
+                          var results = that.getCurrentTypeAndPrivileges(content.dataType);
+                          that.prepareDataForRenderingJSONLeaf(results.dtps, results.dts, content);
+                      }
+                  });
+              }
+
+          },
+
+          setLeafIdColumns: function (content) {
+              var columnOpts = {
+                  "title": content.title,
+                  "data": content.label + "_id",
+                  "visible": true,
+                  "defaultContent": "",
+                  "className": content.label
+              };
+              this.columns.push(columnOpts);
           },
 
         /**
          * @method
-         * @name prepareDataForRenderingJSON
+         * @name prepareDataForRenderingHTML
          * @description Format the data according to the dataType schema and prepare data for visualization through DataTables
          */
-          prepareDataForRenderingHtml: function(data, dataType, headers) {
-              if (!dataType) {
-                  return;
-              }
-              dataType = new DataType.Model(dataType);
-              var fields = dataType.getFlattenedFields(true);
-              var columns = this.insertModelSpecificColumns(dataType.get("model"), xtens.session.get('canAccessPersonalData'));
 
-              var i, j, row = "<thead><tr>", value, unit;
-
-              for (i=0; i<fields.length; i++) {
-                  if (fields[i].visible) {
-                      row += "<th>" + fields[i].name + "</th>";
-
-                      if (fields[i].hasUnit) {
-                          row += "<th>" + fields[i].name + " Unit</th>";
-                      }
-                  }
-              }
-
-              row += "</tr></thead>";
-              this.$el.append(row);
-
-              for (i=0; i<data.length; i++) {
-                  row = "<tr>";
-                  for (j=0; j<fields.length; j++) {
-
-                      if (fields[j].visible) {
-                          value = data[i].metadata[fields[j].name] && data[i].metadata[fields[j].name].value;
-                          row += "<td>" + (value || "") + "</td>";
-
-                          if (fields[j].hasUnit) {
-                              unit = data[i].metadata[fields[j].name] && data[i].metadata[fields[j].name].unit;
-                              row += "<td>" + (unit || "") + "</td>";
-                          }
-                      }
-
-                  }
-                  row += "</tr>";
-                  this.$el.append(row);
-              }
-
-          },
+          // prepareDataForRenderingHtml: function(data, dataType, headers) {
+          //     if (!dataType) {
+          //         return;
+          //     }
+          //     dataType = new DataType.Model(dataType);
+          //     var fields = dataType.getFlattenedFields(true);
+          //     var columns = this.insertModelSpecificColumns(dataType.get("model"), xtens.session.get('canAccessPersonalData'));
+          //
+          //     var i, j, row = "<thead><tr>", value, unit;
+          //
+          //     for (i=0; i<fields.length; i++) {
+          //         if (fields[i].visible) {
+          //             row += "<th>" + fields[i].name + "</th>";
+          //
+          //             if (fields[i].hasUnit) {
+          //                 row += "<th>" + fields[i].name + " Unit</th>";
+          //             }
+          //         }
+          //     }
+          //
+          //     row += "</tr></thead>";
+          //     this.$el.append(row);
+          //
+          //     for (i=0; i<data.length; i++) {
+          //         row = "<tr>";
+          //         for (j=0; j<fields.length; j++) {
+          //
+          //             if (fields[j].visible) {
+          //                 value = data[i].metadata[fields[j].name] && data[i].metadata[fields[j].name].value;
+          //                 row += "<td>" + (value || "") + "</td>";
+          //
+          //                 if (fields[j].hasUnit) {
+          //                     unit = data[i].metadata[fields[j].name] && data[i].metadata[fields[j].name].unit;
+          //                     row += "<td>" + (unit || "") + "</td>";
+          //                 }
+          //             }
+          //
+          //         }
+          //         row += "</tr>";
+          //         this.$el.append(row);
+          //     }
+          //
+          // },
 
           insertModelSpecificColumns: function(model, canViewPersonalInfo) {
               var cols = [];
@@ -420,27 +529,29 @@
 
           insertPersonalDetailsColumns: function() {
               return [
-                {"title": i18n("surname"), "data": function ( data ) {
+                {"title": i18n("surname"),
+                "data": function ( data ) {
                     return  data.surname ? data.surname : "";
-                }},
+                },"className": "header"},
                 {"title": i18n("given-name"), "data": function ( data ) {
                     return  data.given_name ? data.given_name : "";
-                }},
-                {"title": i18n("birth-date"), "data": "birth_date", "render": renderDatatablesDate}
+                },"className": "header"},
+                {"title": i18n("birth-date"), "data": "birth_date", "render": renderDatatablesDate,"className": "header"}
               ];
           },
 
           insertSubjectColumns: function() {
               return [
-                {"title": i18n("code"),"data": "code"},
-                {"title": i18n("sex"),"data": "sex"}
+                {"title": i18n("code"),"data": "code","className": "header"},
+                {"title": i18n("sex"),"data": "sex",
+              "className": "header"}
               ];
           },
 
           insertSampleColumns: function() {
               return [
-                {"title": i18n("biobank"), "data": "biobank_acronym"},
-                {"title": i18n("biobank-code"), "data": "biobank_code"}
+                {"title": i18n("biobank"), "data": "biobank_acronym","className": "header"},
+                {"title": i18n("biobank-code"), "data": "biobank_code","className": "header"}
               ];
           },
 
@@ -454,10 +565,10 @@
               var btnGroupTemplate = JST["views/templates/xtenstable-buttongroup.ejs"];
               var that = this;
               _.each(this.data, function(datum) {
-                  var privilege = that.multiProject ? _.find(options.dataTypePrivilege, {dataType: datum.type}) : options.dataTypePrivilege;
+                  var privilege = that.multiProject || that.isLeafSearch ? _.find(options.dataTypePrivileges, {dataType: datum.type}) : options.dataTypePrivileges;
                   datum._links = btnGroupTemplate({
                       __:i18n,
-                      dataTypeModel: that.dataType.get("model"),
+                      dataTypeModel: that.multiProject || that.isLeafSearch ? options.dataTypes[0].get("model") : options.dataTypes.get("model"),
                       privilegeLevel : privilege ? privilege.privilegeLevel : undefined,
                       hasDataSensitive: options.hasDataSensitive,
                       fileUpload: options.fileUpload,
@@ -468,7 +579,8 @@
 
               this.columns.push({
                   "data": "_links",
-                  "title": i18n("actions")
+                  "title": i18n("actions"),
+                  "className": "actions"
               });
 
           },
@@ -484,7 +596,7 @@
               var data = currRow.data();
 
             // model here is the ENTITY model (a.k.a. the server-side resource)
-              var model = this.multiProject ? this.dataType.models[0].get("model") : this.dataType.get("model");
+              var model = this.multiProject || this.isLeafSearch ? _.find(this.dataTypes.models, {'id': data.type }).get("model") : this.dataTypes.get("model");
               var path = model === Classes.DATA ? model.toLowerCase() : model.toLowerCase() + 's';
               path += "/details/" + data.id;
               xtens.router.navigate(path, {trigger: true});
@@ -502,7 +614,7 @@
               var data = currRow.data();
 
             // model here is the ENTITY model (a.k.a. the server-side resource)
-              var model = this.multiProject ? this.dataType.models[0].get("model") : this.dataType.get("model");
+              var model = this.multiProject || this.isLeafSearch ? _.find(this.dataTypes.models, {'id': data.type }).get("model") : this.dataTypes.get("model");
               var path = model === Classes.DATA ? model.toLowerCase() : model.toLowerCase() + 's';
               path += "/edit/" + data.id;
               xtens.router.navigate(path, {trigger: true});
@@ -519,15 +631,14 @@
           showDerivedDataList: function(ev) {
               var currRow = this.table.row($(ev.currentTarget).parents('tr'));
               var data = currRow.data();
-              var childrenData = new Data.List();
-              var model = this.multiProject ? this.dataType.models[0].get("model") : this.dataType.get("model");
+              var dataType = this.multiProject || this.isLeafSearch ? _.find(this.dataTypes.models, {'id': data.type }) : this.dataTypes;
+              var model = dataType.get("model");
               var parentProperty = model === Classes.SUBJECT ? 'parentSubject' : model === Classes.SAMPLE ? 'parentSample' : 'parentData';
               var path = "data?" + parentProperty + "=" + data.id;
 
             // TODO change "code" to "subjectCode" for sake of clarity
               path += data.code ? "&parentSubjectCode=" + data.code : '';
-              var parentDataType = this.multiProject ? _.find(this.dataType.models, {'id': data.type }).id  : this.dataType.id;
-              path += "&parentDataType=" + parentDataType;
+              path += "&parentDataType=" + dataType.id;
 
               xtens.router.navigate(path, {trigger: true});
               return false;
@@ -558,9 +669,8 @@
           showDerivedSampleList: function(ev) {
               var currRow = this.table.row($(ev.currentTarget).parents('tr'));
               var data = currRow.data();
-              var childrenSample = new Sample.List();
-              var model = this.multiProject ? this.dataType.models[0].get("model") : this.dataType.get("model");
-
+              var dataType = this.multiProject || this.isLeafSearch ? _.find(this.dataTypes.models, {'id': data.type }) : this.dataTypes;
+              var model = dataType && dataType.get("model");
             // DATA cannot have sample child
               if (model === Classes.DATA)
                   return false;
@@ -570,8 +680,7 @@
 
             // TODO change "code" to "subjectCode" for sake of clarity
               path += data.code ? "&donorCode=" + data.code : '';
-              var parentDataType = this.multiProject ? _.find(this.dataType.models, {'id': data.type }).id  : this.dataType.id;
-              path += "&parentDataType=" + parentDataType;
+              path += "&parentDataType=" + dataType.id;
 
               xtens.router.navigate(path, {trigger: true});
               return false;
@@ -588,7 +697,7 @@
               var that = this;
               var currRow = this.table.row($(ev.currentTarget).parents('tr'));
               var id = currRow.data().id;
-              var model = this.multiProject ? this.dataType.models[0].get("model") : this.dataType.get("model");
+              var model = this.multiProject || this.isLeafSearch ? this.dataTypes.models[0].get("model") : this.dataTypes.get("model");
               if (!this[id]){
                   if (model === Classes.SUBJECT)
                       return false;

@@ -29,7 +29,7 @@
     "d3-tip":"~0.6.8",
     "datatables": "https://github.com/gicaz/DataTables.git#1.10.14-dev",
     "datatables.net": "https://github.com/gicaz/Dist-DataTables.git#1.10.13",
-    "datatables-buttons": "~1.0.3",
+    "datatables-buttons": "~1.4.2",
     "datatables-plugins": "~1.10.7",
     "datatables.net-fixedcolumns": "^3.2.2",
     "dropzone": "~4.0.1",

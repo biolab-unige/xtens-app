@@ -11,7 +11,12 @@
         <button name="add-field" type="button" class="btn btn-info hidden"><%= __("add-field") %></button>
         <button name="add-loop" type="button" class="btn btn-info hidden"><%= __("add-loop-condition") %></button>
         <button name="add-nested" type="button" class="btn btn-primary hidden"><%= __("add-nested-condition") %></button>
-        <button name="multi-search" type="button" value ="False" class="btn btn-danger hidden"><%= __("multi-project-serach") %></button>
+        <% if(isFirst){%>
+          <button name="multi-search" type="button" value ="False" class="btn btn-danger hidden"><%= __("multi-project-serach") %></button>
+        <%}
+        else { %>
+          <button name="get-metadata" type="button" value ="False" class="btn btn-default hidden"><i class="fa fa-check"></i><%= __("get-metadata") %></button>
+        <% } %>
         <button name="clear-me" class="btn clear-me hidden"><span class="fa fa-times-circle"></span></button>
     </div>
 </div>
