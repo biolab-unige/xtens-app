@@ -37,7 +37,8 @@
         }
         else {
           //error is a string
-            var splitted = error && error.split(":");
+            var spl = error && error.split(/\r?\n/);
+            var splitted = spl && spl[0].split(":");
             body = splitted && splitted[1];
             if(res.responseJSON.error.raw){
                 var err = res.responseJSON.error.raw;
