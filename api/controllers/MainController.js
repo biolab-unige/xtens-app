@@ -46,7 +46,7 @@ const MainController = {
         let idProject = req.param('idProject');
         let deafultOwner = req.param('owner');
         const operator = TokenService.getToken(req);
-        let obj = { bearerToken: req.headers.authorization.split(' ')[1]};
+        let obj = { bearerToken: req.headers.authorization.split(' ')[1], idProject: idProject};
         let summary = {};
 
         return DataType.findOne({superType: superType, project: idProject}).populate('parents').then( (dataType) => {

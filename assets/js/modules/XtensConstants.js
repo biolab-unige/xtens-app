@@ -26,7 +26,7 @@
     XtensConstants.Procedures = [
         {label:'CGH', value:'CGH', superType: 6, owner: 31},
         {label:'NB Clinical information', value:'CBINFO', superType: 16, owner: 31},
-        {label:'VCF', value:'VCF', superType: 112, owner: undefined}
+        {label:'VCF', value:'VCF', superType: 113, owner: undefined}
     ];
 
     XtensConstants.FieldTypes = {
