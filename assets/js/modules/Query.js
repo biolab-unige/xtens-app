@@ -1282,6 +1282,7 @@
         sendQuery: function() {
             var that = this;
             var isStream = xtens.infoBrowser[0] === "Chrome" && xtens.infoBrowser[1] >= 54 ? true : false;
+            isStream = false;
             // extend queryArgs with flags to retrieve subject and personal informations and if retrieve data in stream mode
             var serialized = this.queryView.serialize([]);
 
@@ -1332,7 +1333,10 @@
                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                     url: '/query/dataSearch',
                     data: 'queryArgs='+JSON.stringify(queryArgs)+'&isStream='+JSON.stringify(isStream),
-                    success: this.initializeDataTable,
+                    success: function (results) {
+
+                        that.initializeDataTable(results,queryArgs);
+                    },
                     error: this.queryOnError
                 });
             }
