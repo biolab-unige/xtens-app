@@ -108,7 +108,7 @@
                 }
                 for (var i=0, len=this.nestedViews.length; i<len; i++) {
                     var result = this.nestedViews[i].serialize(leafSearch);
-                    var serialized = result.res;
+                    var serialized = result.leafSearch ? result.res : result;
                     if (!_.isEmpty(serialized) && (!serialized.content || (serialized.content && !_.isEmpty(serialized.content)))) {
                         if (!serialized.fieldName || serialized.fieldValue && serialized.comparator) {
                             res.content.push(serialized);
